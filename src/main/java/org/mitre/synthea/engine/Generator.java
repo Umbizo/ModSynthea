@@ -168,6 +168,8 @@ public class Generator {
      * True for live, false includes deceased */
     public boolean overflow = true;
     /** Gender to be generated. M for Male, F for Female, null for any. */
+    public boolean countAllPatients = false;
+    /** Mod: Count all generated patients toward population target- not just live ones at end of simulation (base behavior). */
     public String gender;
     /** Age range applies. */
     public boolean ageSpecified = false;
@@ -288,6 +290,11 @@ public class Generator {
 
     this.onlyDeadPatients = Config.getAsBoolean("generate.only_dead_patients");
     this.onlyAlivePatients = Config.getAsBoolean("generate.only_alive_patients");
+
+    boolean countAllPatients =
+        Config.getAsBoolean("generate.count_all_patients", false);
+    //Mod: set default for new counting parameter
+    
     //If both values are set to true, then they are both set back to the default
     if (this.onlyDeadPatients && this.onlyAlivePatients) {
       Config.set("generate.only_dead_patients", "false");
@@ -601,22 +608,28 @@ public class Generator {
           }
         }
 
-        // TODO - export is DESTRUCTIVE when it filters out data
+        // export is DESTRUCTIVE when it filters out data
         // this means export must be the LAST THING done with the person
         wasExported = Exporter.export(person, finishTime, exporterRuntimeOptions);
+        
         if (!wasExported) {
           personSeed = person.randLong();
           demoAttributes = randomDemographics(person);
         }
-
-      } while (!patientMeetsCriteria || !wasExported);
+        
+        if (this.countAllPatients && wasExported) {
+          break;
+        }
+        
+        } while (!patientMeetsCriteria || !wasExported);
       //repeat while patient doesn't meet criteria
-      // if the patient is alive and we want only dead ones => loop & try again
+      // Base behavior- if the patient is alive and we want only dead ones => loop & try again
       //  (and dont even export, see above)
       // if the patient is dead and we only want dead ones => done
       // if the patient is dead and we want live ones => loop & try again
       //  (but do export the record anyway)
       // if the patient is alive and we want live ones => done
+
     } catch (Throwable e) {
       // lots of fhir things throw errors for some reason
       e.printStackTrace();
@@ -670,15 +683,28 @@ public class Generator {
   public CriteriaCheck checkCriteria(Person person, long finishTime, int index, boolean isAlive) {
     CriteriaCheck check = new CriteriaCheck();
 
-    check.rejectDeadButOverflow = !isAlive && !onlyDeadPatients && this.options.overflow;
-    // if patient is not alive and the criteria isn't dead patients new patient is needed
-    // however in this one case we still want to export the patient
-
-    check.isAliveButDeadRequired = isAlive && onlyDeadPatients;
-    // if patient is alive and the criteria is dead patients new patient is needed
-
-    check.isDeadButAliveRequired = !isAlive && onlyAlivePatients;
-    // if patient is not alive and the criteria is alive patients new patient is needed
+    if (countAllPatients) {
+    
+      // Mod: In cohort mode:
+      // alive/dead outcome does NOT affect acceptance. Gives clinically viable mix of mortality outcomes
+    
+      check.rejectDeadButOverflow = false;
+      check.isAliveButDeadRequired = false;
+      check.isDeadButAliveRequired = false;
+    
+    } else {
+    
+      // Original Synthea behavior.
+    
+      check.rejectDeadButOverflow =
+          !isAlive && !onlyDeadPatients && this.options.overflow;
+    
+      check.isAliveButDeadRequired =
+          isAlive && onlyDeadPatients;
+    
+      check.isDeadButAliveRequired =
+          !isAlive && onlyAlivePatients;
+    }
 
     int providerCount = person.providerCount();
     int providerMinimum = 1;

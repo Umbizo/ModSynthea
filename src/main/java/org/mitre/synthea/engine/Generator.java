@@ -101,6 +101,7 @@ public class Generator {
   private boolean onlyAlivePatients;
   private boolean onlyDeadPatients;
   private boolean onlyVeterans;
+  private boolean countAllPatients;
   private Module keepPatientsModule;
   private Long maxAttemptsToKeepPatient;
   /** The state to default to */

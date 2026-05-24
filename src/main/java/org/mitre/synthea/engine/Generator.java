@@ -291,8 +291,7 @@ public class Generator {
     this.onlyDeadPatients = Config.getAsBoolean("generate.only_dead_patients");
     this.onlyAlivePatients = Config.getAsBoolean("generate.only_alive_patients");
 
-    boolean countAllPatients =
-        Config.getAsBoolean("generate.count_all_patients", false);
+    this.countAllPatients = Config.getAsBoolean("generate.count_all_patients", false);
     //Mod: set default for new counting parameter
     
     //If both values are set to true, then they are both set back to the default

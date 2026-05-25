@@ -116,17 +116,8 @@ public class Generator {
    */
   public final int threadPoolSize;
 
-  /**
-   * Used only for testing and debugging. Populate this field to keep track of all patients
-   * generated, living or dead, during a simulation. Note that this may result in significantly
-   * increased memory usage as patients cannot be GC'ed.
-   */
   List<Person> internalStore;
 
-  /**
-   * A filename predicate used to filter a subset of modules. Helpful when testing a particular
-   * module. Use "-m filename" on the command line to filter which modules get loaded.
-   */
   Predicate<String> modulePredicate;
 
   private static final String TARGET_AGE = "target_age";
@@ -175,10 +166,11 @@ public class Generator {
     /** Age range applies. */
     public boolean ageSpecified = false;
     /** Minimum age of people to be generated. Defaults to zero. */
-    public int minAge = 0;
+    public int minAge = 65;
     /** Maximum age of people to be generated. Defaults to 140. */
-    public int maxAge = 140;
+    public int maxAge = 110;
     /** City name */
+    public int simulationStartAge = 65;
     public String city;
     /** State name */
     public String state;
@@ -621,7 +613,7 @@ public class Generator {
           break;
         }
         
-        } while (!patientMeetsCriteria || !wasExported);
+      } while (!patientMeetsCriteria || !wasExported);
       //repeat while patient doesn't meet criteria
       // Base behavior- if the patient is alive and we want only dead ones => loop & try again
       //  (and dont even export, see above)
@@ -965,12 +957,22 @@ public class Generator {
 
     // Generate the person's age data.
     int targetAge;
-    if (options.ageSpecified) {
-      targetAge =
-          (int) (options.minAge + ((options.maxAge - options.minAge) * random.rand()));
+    double r = random.rand();
+
+    if (r < 0.26) {
+      targetAge = 65 + random.randInt(5); // 65-69
+    } else if (r < 0.50) {
+      targetAge = 70 + random.randInt(5); // 70-74
+    } else if (r < 0.70) {
+      targetAge = 75 + random.randInt(5); // 75-79
+    } else if (r < 0.85) {
+      targetAge = 80 + random.randInt(5); // 80-84
+    } else if (r < 0.94) {
+      targetAge = 85 + random.randInt(5); // 85-89
     } else {
-      targetAge = city.pickAge(random);
+      targetAge = 90 + random.randInt(15); // 90-104
     }
+
     demographicsOutput.put(TARGET_AGE, targetAge);
 
     long birthdate = birthdateFromTargetAge(targetAge, random);

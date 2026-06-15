@@ -139,17 +139,43 @@ public class OutpatientExporter extends RIFExporter {
             fieldValues.remove(BB2RIFStructure.OUTPATIENT.REV_CNTR_NDC_QTY);
             fieldValues.remove(BB2RIFStructure.OUTPATIENT.REV_CNTR_NDC_QTY_QLFR_CD);
           } else if (lineItem.entry instanceof HealthRecord.Medication) {
-            HealthRecord.Medication med = (HealthRecord.Medication) lineItem.entry;
-            if (med.administration) {
-              hcpcsCode = "T1502";  // Administration of medication
-              // Drugs requiring specific id
-              fieldValues.put(BB2RIFStructure.OUTPATIENT.REV_CNTR, "0636");
-              String ndcCode = exporter.medicationCodeMapper.map(med.codes.get(0), person);
-              fieldValues.put(BB2RIFStructure.OUTPATIENT.REV_CNTR_IDE_NDC_UPC_NUM, ndcCode);
-              fieldValues.put(BB2RIFStructure.OUTPATIENT.REV_CNTR_NDC_QTY, "1"); // 1 Unit
-              fieldValues.put(BB2RIFStructure.OUTPATIENT.REV_CNTR_NDC_QTY_QLFR_CD, "UN"); // Unit
+            HealthRecord.Medication med =
+                (HealthRecord.Medication) lineItem.entry;
+
+
+            if (exporter.rxnormHcpcsMapper.canMap(med.codes.get(0))) {
+                hcpcsCode =
+                    exporter.rxnormHcpcsMapper.map(med.codes.get(0), person);
+            } else {                    
+                hcpcsCode = "T1502";
             }
-          }
+
+            fieldValues.put(
+                BB2RIFStructure.OUTPATIENT.REV_CNTR,
+                "0636"
+            );
+
+            if (exporter.medicationCodeMapper.canMap(med.codes.get(0))) {
+                String ndcCode =
+                    exporter.medicationCodeMapper.map(
+                        med.codes.get(0), person);
+
+                fieldValues.put(
+                    BB2RIFStructure.OUTPATIENT.REV_CNTR_IDE_NDC_UPC_NUM,
+                    ndcCode
+                );
+            }
+
+            fieldValues.put(
+                BB2RIFStructure.OUTPATIENT.REV_CNTR_NDC_QTY,
+                "1"
+            );
+
+            fieldValues.put(
+                BB2RIFStructure.OUTPATIENT.REV_CNTR_NDC_QTY_QLFR_CD,
+                "UN"
+            );
+        }
 
           fieldValues.put(BB2RIFStructure.OUTPATIENT.CLM_LINE_NUM, Integer.toString(claimLine++));
           fieldValues.put(BB2RIFStructure.OUTPATIENT.REV_CNTR_DT,

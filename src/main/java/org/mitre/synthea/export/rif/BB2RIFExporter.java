@@ -83,6 +83,7 @@ public class BB2RIFExporter {
   final CodeMapper hospiceRevCntrMapper;
   final CodeMapper inpatientRevCntrMapper;
   final CodeMapper outpatientRevCntrMapper;
+  final CodeMapper rxnormHcpcsMapper;
   final Map<String, RandomCollection<String>> externalCodes;
   final RandomCollection<String> hhaCaseMixCodes;
   final RandomCollection<String> hhaPDGMCodes;
@@ -108,6 +109,7 @@ public class BB2RIFExporter {
     dmeCodeMapper = new CodeMapper("export/dme_code_map.json");
     hcpcsCodeMapper = new CodeMapper("export/hcpcs_code_map.json");
     betosCodeMapper = new CodeMapper("export/betos_code_map.json");
+    rxnormHcpcsMapper = new CodeMapper("export/rxnorm_hcpcs_map.json");
     snfPPSMapper = new CodeMapper("export/snf_pps_code_map.json");
     snfPDPMMapper = new CodeMapper("export/snf_pdpm_code_map.json");
     snfRevCntrMapper = new CodeMapper("export/snf_rev_cntr_code_map.json");

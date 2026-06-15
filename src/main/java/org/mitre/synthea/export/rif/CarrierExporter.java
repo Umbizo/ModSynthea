@@ -214,10 +214,22 @@ public class CarrierExporter extends RIFExporter {
               }
             }
           } else if (lineItem.entry instanceof HealthRecord.Medication) {
-            HealthRecord.Medication med = (HealthRecord.Medication) lineItem.entry;
-            if (med.administration) {
-              hcpcsCode = "T1502";  // Administration of medication
-              ndcCode = exporter.medicationCodeMapper.map(med.codes.get(0), person);
+            HealthRecord.Medication med =
+                (HealthRecord.Medication) lineItem.entry;
+
+            if (exporter.rxnormHcpcsMapper.canMap(med.codes.get(0))) {
+
+                if (exporter.rxnormHcpcsMapper.canMap(med.codes.get(0))) {
+                    hcpcsCode =
+                        exporter.rxnormHcpcsMapper.map(med.codes.get(0), person);
+                } else {
+                    hcpcsCode = "T1502";
+                }
+
+                if (exporter.medicationCodeMapper.canMap(med.codes.get(0))) {
+                    ndcCode =
+                        exporter.medicationCodeMapper.map(med.codes.get(0), person);
+                }
             }
           }
           if (icdReasonCode == null) {

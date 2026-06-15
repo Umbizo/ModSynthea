@@ -603,6 +603,10 @@ public class Generator {
         // export is DESTRUCTIVE when it filters out data
         // this means export must be the LAST THING done with the person
         wasExported = Exporter.export(person, finishTime, exporterRuntimeOptions);
+
+	if (this.countAllPatients) {
+  	  wasExported = true;
+	}
         
         if (!wasExported) {
           personSeed = person.randLong();

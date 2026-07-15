@@ -150,6 +150,14 @@ public class Costs {
       // Not an entry type that has an associated cost.
       return 0.0;
     }
+    if (entry.codes == null || entry.codes.isEmpty()) {
+      System.out.println("=================================");
+      System.out.println("EMPTY CODES DETECTED");
+      System.out.println("ENTRY = " + entry);
+      System.out.println("CLASS = " + entry.getClass().getName());
+      System.out.println("=================================");
+      throw new RuntimeException("Entry has no codes");
+    }
 
     String code = entry.codes.get(0).code;
     // Retrieve the base cost based on the code.

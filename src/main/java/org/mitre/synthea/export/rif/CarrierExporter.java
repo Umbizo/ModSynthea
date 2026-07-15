@@ -200,9 +200,8 @@ public class CarrierExporter extends RIFExporter {
         int lineNum = 1;
         CLIA cliaLab = RIFExporter.cliaLabNumbers[
                 person.randInt(RIFExporter.cliaLabNumbers.length)];
-        List<Claim.ClaimEntry> allItems = new ArrayList<>();
-        allItems.add(encounter.claim.mainEntry);
-        allItems.addAll(encounter.claim.items);
+        List<Claim.ClaimEntry> allItems =
+            getBillableProcedureAndMedAdminItems(encounter);
         for (Claim.ClaimEntry lineItem : allItems) {
           String hcpcsCode = "";
           String ndcCode = "";

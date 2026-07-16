@@ -1,190 +1,356 @@
 CODE,MIN,MODE,MAX,COMMENTS
-312617,2,7,25,predniSONE 5 MG Oral Tablet
-1870230,2.47,7.20,18.25,NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injector
-895994,6,20,60,120 ACTUAT Fluticasone propionate 0.044 MG/ACTUAT Metered Dose Inhaler -- note that brand name Flovent HFA ranges from 130 - 500
-2123111,0.72,62.31,1174.83,NDA020503 200 ACTUAT Albuterol 0.09 MG/ACTUAT Metered Dose Inhale
-1091392,20,90,250,"Methylphenidate Hydrochloride 20 MG Oral Tablet -- note high variability on this one, I see 20-250, avg is ~90"
-608139,2.11,4.22,8.44,atomoxetine 100 MG Oral Capsule
-1043400,4,8,12,Acetaminophen 21.7 MG/ML / Dextromethorphan Hydrobromide 1 MG/ML / doxylamine succinate 0.417 MG/ML Oral Solution - OTC cough syrup
-313782,3,7,12,Acetaminophen 325 MG Oral Tablet - OTC
-1803932,5.5,10,100,"Leucovorin 100 MG Injection -- note some major outliers of 50s and 1 of 900+, but mostly < 10"
-1736776,2000,2500,3500,10 ML oxaliplatin 5 MG/ML Injection -- note few instances in data
-1366343,300,600,800,Levonorgestrel 0.00354 MG/HR Drug Implant -- using 365 from https://www.washingtonpost.com/archive/lifestyle/wellness/1993/11/16/the-price-of-norplant/fc4fb471-7b53-4b87-9abb-bad368b88042/ adjusted to 2018 dollars
-389221,25.75,51.5,103,Etonogestrel 68 MG Drug Implant
-1000126,20,55,715,1 ML medroxyprogesterone acetate 150 MG/ML Injection - est https://clearhealthcosts.com/blog/2014/05/much-depo-provera-cost-draft/
-807283,19.63,21.92,24.17,"Mirena 52 MG Intrauterine System -- all 3 IUDs estimated at 1000, based on http://time.com/4985605/iud-birth-control-health-insurance/"
-1605257,800,1000,1494,Liletta 52 MG Intrauterine System
-1856546,21.96,22.05,22.14,Kyleena 19.5 MG Intrauterine System
-748962,15,35,50,Camila 28 Day Pack -- all pills est at 15-50 based on https://money.usnews.com/money/blogs/alpha-consumer/2012/03/05/the-real-cost-of-birth-control
-831533,15,35,50,Errin 28 Day Pack
-757594,15,35,50,Jolivette 28 Day Pack
-235389,15,35,50,Mestranol / Norethynodrel [Enovid]
-749882,15,35,50,Norinyl 1+50 28 Day Pack
-1359133,15,35,50,Estrostep Fe 28 Day Pack
-749785,15,35,50,Ortho Tri-Cyclen 28 Day Pack
-751905,15,35,50,Trinessa 28 Day Pack
-749762,15,35,50,Seasonique 91 Day Pack
-748856,15,35,50,Yaz 28 Day Pack
-978950,15,35,50,Natazia 28 Day Pack
-748879,15,35,50,Levora 0.15/30 28 Day Pack
-1534809,15,35,50,168 HR Ethinyl Estradiol 0.00146 MG/HR / norelgestromin 0.00625 MG/HR Transdermal System - same source as pills
-1367439,15,40,50,NuvaRing 0.12/0.015 MG per 24HR 21 Day Vaginal Ring - est from https://www.plannedparenthood.org/learn/birth-control/birth-control-vaginal-ring-nuvaring/how-do-i-get-nuvaring
-896209,6,20,60,60 ACTUAT Fluticasone propionate 0.25 MG/ACTUAT / salmeterol 0.05 MG/ACTUAT Dry Powder Inhaler
-310436,0.11,1.67,6.70,Galantamine 4 MG Oral Tablet
-997223,2,250,630,Donepezil hydrochloride 10 MG Oral Tablet
-313185,1280,1350,1447,Tacrine 10 MG Oral Capsule -- using yearly cost from https://webcache.googleusercontent.com/search?q=cache:tEYxPDcg0UoJ:https://www.thepharmaletter.com/article/cognex-approved-for-alzheimer-s-in-usa+&cd=12&hl=en&ct=clnk&gl=us&client=firefox-b-1
-1599803,10.03,20.06,40.12,24 HR Donepezil hydrochloride 10 MG / Memantine hydrochloride 28 MG Extended Release Oral Capsule -- https://www.drugs.com/price-guide/namzaric
-996740,33,275,900,Memantine hydrochloride 2 MG/ML Oral Solution
-1100184,1.19,19.76,1417.21,Donepezil hydrochloride 23 MG Oral Tablet
-106258,3,7,12,Hydrocortisone 10 MG/ML Topical Cream - OTC
-308971,2,35,500,Carbamazepine[Tegretol] -- note fairly high variability
-197591,0.145,0.29,0.58,Diazepam 5 MG Oral Tablet
-204892,0.11,0.61,1.22,clonazePAM 0.25 MG Oral Tablet
-198014,3,8,30,Naproxen 500 MG Oral Tablet
-483438,0.45,0.9,1.8,pregabalin 100 MG Oral Capsule
-596926,0.12,0.84,2.14,duloxetine 20 MG Delayed Release Oral Capsule
-833135,4.16,8.32,16.64,Milnacipran hydrochloride 100 MG Oral Tablet
-1049635,1.39,45.37,5767.86,Acetaminophen 325 MG / oxyCODONE Hydrochloride 2.5 MG Oral Tablet
-197541,2.93,5.87,11.74,Colchicine 0.6 MG Oral Tablet
-197319,2,10,35,Allopurinol 100 MG Oral Tablet
-1736854,400,445,500,Cisplatin 50 MG Injection -- https://www.mskcc.org/sites/default/files/node/25097/documents/drug-prices-table-bach-center-health-policy-and-outcomes-v2.pdf
-1734340,150,200,250,Etoposide 100 MG Injection -- https://www.drugs.com/price-guide/etoposide
-583214,1.79,3.59,7.18,PACLitaxel 100 MG Injection
-849574,6,8,11,Naproxen sodium 220 MG Oral Tablet - OTC
-312615,0.19,0.38,0.76,predniSONE 20 MG Oral Tablet
-241834,1.06,6.00,16.27,cycloSPORIN modified 100 MG Oral Capsule
-105078,0.01,7,43,Penicillin G 375 MG/ML Injectable Solution
-789980,11,175,350,Ampicillin 100 MG/ML Injectable Solution
-1652673,8.8,60,733,Doxycycline Monohydrate 50 MG Oral Tablet
-1650142,8.8,60,733,Doxycycline Monohydrate 100 MG Oral Tablet
-308182,0.01,4,25,Amoxicillin 250 MG Oral Capsule
-308192,0.01,4,25,Amoxicillin 500 MG Oral Tablet
-309045,40,55,66,Cefaclor 250 MG Oral Capsule
-309043,40,55,66,12 HR Cefaclor 500 MG Extended Release Oral Tablet
-309097,9.5,35,273,Cefuroxime 250 MG Oral Tablet
-861467,0.40,1.24,2.64,Meperidine Hydrochloride 50 MG Oral Tablet -- note a couple major outliers
-1049221,0.26,0.26,0.26,Acetaminophen 325 MG / oxyCODONE Hydrochloride 5 MG Oral Tablet
-857005,0.05,0.43,1.34,Acetaminophen 325 MG / HYDROcodone Bitartrate 7.5 MG Oral Tablet
-1049630,4,5,12,diphenhydrAMINE Hydrochloride 25 MG Oral Tablet - OTC [Benadryl]
-477045,4,5,10,Chlorpheniramine Maleate 2 MG/ML Oral Solution - otc [Chlor-Timeton] - see otc_antihistamine
-1363309,4,5,10,Chlorpheniramine Maleate 4 MG Oral Tablet - otc
-197378,3,7,12,Astemizole 10 MG Oral Tablet - otc [hismanal] - no longer available so assumed to be similar to other otc antihistamines
-141918,6,9,12,Terfenadine 60 MG Oral Tablet - otc [seldane]
-665078,5,7,19,Loratadine 5 MG Chewable Tablet - OTC [claritin]
-311372,5,7,19,Loratadine 10 MG Oral Tablet - OTC [claritin]
-997488,14,18,36,Fexofenadine hydrochloride 30 MG Oral Tablet - OTC [allegra]
-997501,14,18,36,Fexofenadine hydrochloride 60 MG Oral Tablet - OTC [allegra]
-1014676,15,19,25,cetirizine hydrochloride 5 MG Oral Tablet - OTC [zyrtec]
-1014678,15,19,25,cetirizine hydrochloride 10 MG Oral Tablet - OTC [zyrtec]
-243670,4,6.5,12,Aspirin 81 MG Oral Tablet - OTC
-313820,3,4,8,Acetaminophen 160 MG Chewable Tablet - OTC
-198405,1.11,7,45,Ibuprofen 100 MG Oral Tablet
-310965,1.11,8,45,Ibuprofen 200 MG Oral Tablet
-1049683,0.19,0.49,0.80,oxyCODONE Hydrochloride 10 MG Oral Tablet
-864718,0.15,0.2,0.4,Methadone Hydrochloride 5 MG Oral Tablet
-860975,0.01,0.25,4.32,24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet
-897122,200,600,1600,3 ML liraglutide 6 MG/ML Pen Injector -- note: I see 2-pak and 3-pak
-1373463,75,400,885,canagliflozin 100 MG Oral Tablet
-106892,8.30,16.61,33.22,insulin human isophane 70 UNT/ML / Regular Insulin Human 30 UNT/ML Injectable Suspension [Humulin]
-865098,15.465,30.93,61.86,Insulin Lispro 100 UNT/ML Injectable Solution [Humalog]
-856987,0.06,1.38,8.15,Acetaminophen 300 MG / HYDROcodone Bitartrate 5 MG Oral Tablet
-1860154,3,4.89,8.06,Abuse-Deterrent 12 HR Oxycodone Hydrochloride 15 MG Extended Release Oral Tablet
-904419,0.03,0.34,1.54,Alendronic acid 10 MG Oral Tablet -- SEE ALENDRONATE SODIUM
-105585,0.88,1.92,2.13,Methotrexate 2.5 MG Oral Tablet
-562251,3,16,153,Amoxicillin 250 MG / Clavulanate 125 MG Oral Tablet -- see AMOX TR-POTASSIUM CLAVULANATE
-834061,0.01,7,43,Penicillin V Potassium 250 MG Oral Tablet
-834102,0.01,7,43,Penicillin V Potassium 500 MG Oral Tablet
-311989,0.55,11.44,30.09,Nitrofurantoin 5 MG/ML Oral Suspension-- note few examples
-1094107,6.75,22,65,Phenazopyridine hydrochloride 100 MG Oral Tablet
-311995,3,40,146,NITROFURANTOIN MACROCRYSTALS 50 MG Oral Capsule
-309362,3,26,150,Clopidogrel 75 MG Oral Tablet
-197361,1.29,9,93,Amlodipine 5 MG Oral Tablet -- using AMLODIPINE BESYLATE
-834357,2.5,25,360,3 ML Amiodarone hydrocholoride 50 MG/ML Prefilled Syringe
-705129,1.01,6.05,66.30,Nitroglycerin 0.4 MG/ACTUAT Mucosal Spray
-1190795,7.45,20,40,Atropine Sulfate 1 MG/ML Injectable Solution
-897718,2,30,285,Verapamil Hydrochloride 40 MG
-312961,2,10,55,Simvastatin 20 MG Oral Tablet
-1660014,1,5,5,1 ML Epinephrine 1 MG/ML Injection -- https://www.cbsnews.com/news/cheaper-epipen-alternative-may-carry-risks/
-197604,4,45,150,Digoxin 0.125 MG Oral Tablet
-259255,0.01,0.41,2.12,Atorvastatin 80 MG Oral Tablet
-1804799,6000,6400,6800,"Alteplase 100 MG Injection -- not found in data, used https://www.managedcaremag.com/news/cost-clot-busting-drug-alteplase-outpaces-reimbursement"
-855332,0.01,0.37,1.37,Warfarin Sodium 5 MG Oral Tablet
-833036,15,65,150,"Captopril 25 MG Oral Tablet -- high variability, ranges 15-150, avg ~65"
-1114085,6.45,6.45,6.45,100 ML zoledronic acid 0.04 MG/ML Injection - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-1116758,64.76,232.4,302,chloroquine phosphate 500 MG Oral Tablet - https://www.goodrx.com/aralen?kw=price&utm_source=bing&utm_medium=cpc&utm_term=aralen|p&utm_campaign=aralen&utm_content=Ad-Group_General&msclkid=b1c17c16e7cf11ec047d232b92825621
-1234995,0.78,1.25,2.94,Rocuronium bromide 10 MG/ML Injectable Solution - https://www.drugs.com/price-guide/rocuronium
-1243052,445.66,445.66,445.66,Kalydeco 150 MG Oral Tablet - https://www.drugs.com/price-guide/kalydeco
-1601380,619.36,619.36,619.36,palbociclib 100 MG Oral Capsule - https://www.drugs.com/price-guide/ibrance
-1656318,4.58,4.58,4.58,Cefotaxime 2000 MG Injection - https://www.drugs.com/price-guide/cefotaxime
-1657981,120.84,120.84,120.84,20 ML tocilizumab 20 MG/ML Injection - https://www.drugs.com/price-guide/actemra
-1658084,3302.79,3302.79,3302.79,ado-trastuzumab emtansine 100 MG Injection - https://www.drugs.com/price-guide/kadcyla
-1659149,6.93,8.09,13.86,piperacillin 4000 MG / tazobactam 500 MG Injection - https://www.drugs.com/price-guide/piperacillin-tazobactam
-1659263,1.02,1.76,2.75,1 ML heparin sodium  porcine 5000 UNT/ML Injection - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-1665227,0.01,0.01,0.01,20 ML Ciprofloxacin 10 MG/ML Injection - https://data.medicaid.gov/d/a4y5-998d/visualization
-1719286,0.08,0.09,0.3,10 ML Furosemide 10 MG/ML Injection - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-1723208,2,3.08,4.16,10 ML Alfentanil 0.5 MG/ML Injection - https://www.drugs.com/price-guide/alfentanil
-1729584,108.99,108.99,108.99,"remifentanil 2 MG Injection - https://www.drugs.com/price-guide/remifentanil#:~:text=Remifentanil%20Prices%20This%20remifentanil%20price%20guide%20is%20based,for%20injection%2C%20depending%20on%20the%20pharmacy%20you%20visit."
-1732136,0.99,1.76,2.05,1 ML Morphine Sulfate 5 MG/ML Injection - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-1732186,1.72,2,2.34,100 ML Epirubicin Hydrochloride 2 MG/ML Injection - https://www.drugs.com/price-guide/epirubicin
-1734919,454,454,454,Cyclophosphamide 1000 MG Injection - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-1735006,0.36,0.511,0.61,10 ML Fentanyl 0.05 MG/ML Injection - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-1737449,2.11,2.66,3.22,10 ML Pamidronate Disodium 3 MG/ML Injection - https://www.drugs.com/price-guide/pamidronate
-1740467,0.18,0.33,0.43,2 ML Ondansetron 2 MG/ML Injection - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-1790099,2.63,2.98,3.13,10 ML Doxorubicin Hydrochloride 2 MG/ML Injection - https://www.drugs.com/price-guide/doxorubicin
-1791701,0.39,0.45,0.51,"10 ML Fluorouracil 50 MG/ML Injection - https://www.drugs.com/price-guide/fluorouracil#:~:text=Fluorouracil%20Prices.%20This%20fluorouracil%20price%20guide%20is%20based,only%20and%20are%20not%20valid%20with%20insurance%20plans."
-1807513,4.88,6.9,9.2,vancomycin 1000 MG Injection - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-1808217,0.27,0.27,0.27,"100 ML Propofol 10 MG/ML Injection - https://www.drugs.com/price-guide/propofol#:~:text=Brand%20names%20for%20propofol%20include%20Diprivan.%20Propofol%20Prices.,100%20milliliters%2C%20depending%20on%20the%20pharmacy%20you%20visit."
-1809104,4.72,5.22,5.84,5 ML SUFentanil 0.05 MG/ML Injection - https://www.drugs.com/price-guide/sufentanil
-1860480,27.98,31.11,34.45,1 ML DOCEtaxel 20 MG/ML Injection - https://www.drugs.com/price-guide/docetaxel
-1873983,219.61,245.5,263.81,ribociclib 200 MG Oral Tablet - https://www.drugs.com/price-guide/kisqali
-1940648,96.88,96.88,96.88,neratinib 40 MG Oral Tablet - https://www.drugs.com/price-guide/nerlynx
-1946840,231.42,231.42,231.42,Verzenio 100 MG Oral Tablet - https://www.drugs.com/price-guide/verzenio
-198031,1.69,2.35,3.02,24hr nicotine transdermal patch - https://www.drugs.com/price-guide/nicotine
-198240,0.19,0.21,0.22,Tamoxifen 10 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-198440,0.02,0.05,0.07,Acetaminophen 500 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-199224,0.12,0.17,0.21,anastrozole 1 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-200064,0.13,0.17,0.2,letrozole 2.5 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-2001499,0.33,3.6,7.76,Vitamin B 12 5 MG/ML Injectable Solution (cyanocobalamin) - https://data.medicaid.gov/d/a4y5-998d/visualization
-200243,0.44,0.45,0.46,"sevoflurane 1000 MG/ML Inhalant Solution - https://www.drugs.com/price-guide/sevoflurane#:~:text=Sevoflurane%20Prices%20This%20sevoflurane%20price%20guide%20is%20based,250%20milliliters%2C%20depending%20on%20the%20pharmacy%20you%20visit."
-2047241,79.14,79.14,79.14,baricitinib 2 MG Oral Tablet - https://www.drugs.com/price-guide/olumiant
-205532,30.65,39.5,44.79,Pulmozyme (Dornase Alfa) - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-205923,57.33,58.5,60.2,1 ML Epoetin Alfa 4000 UNT/ML Injection [Epogen] - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-2103182,2.36,12.45,31.46,"1 ML Vasopressin (USP) 20 UNT/ML Injection - https://www.drugs.com/price-guide/vasopressin#:~:text=Vasopressin%20Prices.%20This%20vasopressin%20price%20guide%20is%20based,only%20and%20are%20not%20valid%20with%20insurance%20plans."
-2119714,978.09,978.09,978.09,5 ML hyaluronidase-oysk 2000 UNT/ML / trastuzumab 120 MG/ML Injection - https://www.drugs.com/price-guide/herceptin-hylecta
-2284960,7.5,7.5,7.5,remdesivir 100 MG Injection - https://www.drugs.com/price-guide/remdesivir
-238100,0.57,0.77,1.9,Lorazepam 2 MG/ML Injectable Solution - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-242969,2.08,3.45,4.22,"4 ML Norepinephrine 1 MG/ML Injection - https://www.drugs.com/price-guide/norepinephrine#:~:text=The%20cost%20for%20norepinephrine%20intravenous%20solution%20%281%20mg%2FmL%29,only%20and%20are%20not%20valid%20with%20insurance%20plans."
-245314,0.45,1.25,2.1,Albuterol 5 MG/ML Inhalation Solution - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-308136,0.02,0.02,0.03,amLODIPine 2.5 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-308460,0.37,0.5,0.69,Azithromycin 250 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-309845,0.09,0.1,0.12,Diazepam 5 MG/ML Injectable Solution - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-310261,1.88,6,10.22,exemestane 25 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-310325,0.01,0.01,0.01,ferrous sulfate 325 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-310385,0.02,0.03,0.04,FLUoxetine 20 MG Oral Capsule - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-310798,0.01,0.01,0.02,Hydrochlorothiazide 25 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-311700,0.22,0.22,0.22,Midazolam 1 MG/ML Injectable Solution - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-312938,0.05,0.08,0.08,Sertraline 100 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-313002,0.05,0.06,0.08,Sodium Chloride 9 MG/ML Injectable Solution - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-313572,17.5,28.3,46.28,Vancomycin 50 MG/ML Injectable Solution - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-313988,0.01,0.32,0.04,Furosemide 40 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-314076,0.02,0.02,0.02,lisinopril 10 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-314231,0.02,0.03,0.03,Simvastatin 10 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-360110,17.02,17.88,17.88,Sirolimus 2 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-542347,0.14,0.2,0.23,"Isoflurane 999 MG/ML Inhalant Solution - https://www.drugs.com/price-guide/isoflurane#:~:text=Brand%20names%20for%20isoflurane%20include%20Forane%2C%20and%20Terrell.,100%20milliliters%2C%20depending%20on%20the%20pharmacy%20you%20visit."
-562366,0.01,0.45,0.7,desflurane 1000 MG/ML Inhalation Solution - https://www.drugs.com/price-guide/suprane
-597195,0.99,0.99,0.99,Carboplatin 10 MG/ML Injectable Solution - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-597730,1.17,2.34,2.34,lopinavir 200 MG / Ritonavir 50 MG Oral Tablet - https://www.drugs.com/price-guide/lopinavir-ritonavir
-672149,58.2,58.2,58.2,lapatinib 250 MG Oral Tablet - https://www.drugs.com/price-guide/tykerb
-727711,136.25,192.31,192.31,0.67 ML anakinra 149 MG/ML Prefilled Syringe (Kineret) - https://data.medicaid.gov/d/a4y5-998d/visualization
-727762,203.39,203.39,203.39,5 ML fulvestrant 50 MG/ML Prefilled Syringe - https://www.drugs.com/price-guide/faslodex
-752899,633.2,633.2,633.2,0.25 ML Leuprolide Acetate 30 MG/ML Prefilled Syringe - https://www.drugs.com/price-guide/leuprolide
-854228,9.1,10.88,38.57,0.3 ML Enoxaparin sodium 100 MG/ML Prefilled Syringe - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-854235,9.1,10.88,38.57,0.4 ML Enoxaparin sodium 100 MG/ML Prefilled Syringe - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-854252,11.56,13.07,60.71,1 ML Enoxaparin sodium 150 MG/ML Prefilled Syringe - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-856980,0.03,0.49,1.69,Acetaminophen/Hydrocodone - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-866414,0.2,0.2,1.73,24 HR metoprolol succinate 100 MG Extended Release Oral Tablet [Toprol] - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-883826,1.63,2.33,4.03,Tranexamic Acid 650 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-966222,0.25,0.28,0.43,Levothyroxine Sodium 0.075 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-979092,0.1,0.28,2.62,Hydroxychloroquine Sulfate 200 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-979485,0.03,0.08,0.09,Losartan Potassium 25 MG Oral Tablet - https://data.medicaid.gov/Drug-Pricing-and-Payment/NADAC-National-Average-Drug-Acquisition-Cost-/a4y5-998d
-993452,816.12,1014.45,1237.68,1 ML denosumab 60 MG/ML Prefilled Syringe (Prolia) - https://data.medicaid.gov/d/a4y5-998d/visualization
+854228,0.0,46.52,141.28,0.3 ML enoxaparin sodium 100 MG/ML Prefilled Syringe
+856980,0.0,52.95,108.8,acetaminophen 300 MG / hydrocodone bitartrate 10 MG Oral Tablet
+860975,0.0,10.72,18.32,24 HR metformin hydrochloride 500 MG Extended Release Oral Tablet
+864706,0.0,20.63,38.18,methadone hydrochloride 10 MG Oral Tablet
+883826,101.16,108.98,116.81,tranexamic acid 650 MG Oral Tablet
+993770,0.0,4.88,8.93,acetaminophen 300 MG / codeine phosphate 15 MG Oral Tablet
+1043400,0.0,0.0,0.0,acetaminophen 21.7 MG/ML / dextromethorphan hydrobromide 1 MG/ML / doxylamine succinate 0.417 MG/ML Oral Solution
+1049635,0.0,36.01,60.16,acetaminophen 325 MG / oxycodone hydrochloride 2.5 MG Oral Tablet
+1116758,145.74,161.6,177.46,chloroquine phosphate 500 MG Oral Tablet
+1191222,0.0,10.54,73.8,naloxone hydrochloride 0.4 MG/ML Injectable Solution
+1363309,0.0,0.6,3.02,chlorpheniramine maleate 4 MG Oral Tablet
+1659263,0.0,28.42,50.49,"1 ML heparin sodium, porcine 5000 UNT/ML Injection"
+311989,0.0,838.82,2516.46,nitrofurantoin 5 MG/ML Oral Suspension
+2123111,0.0,15.02,30.04,NDA020503 200 ACTUAT albuterol 0.09 MG/ACTUAT Metered Dose Inhaler
+311372,0.0,2.38,12.64,loratadine 10 MG Oral Tablet
+360110,869.05,944.5,1027.96,sirolimus 2 MG Oral Tablet
+835603,0.0,4.71,9.45,tramadol hydrochloride 50 MG Oral Tablet
+849574,0.0,2.37,12.89,naproxen sodium 220 MG Oral Tablet
+312961,0.0,6.21,13.59,simvastatin 20 MG Oral Tablet
+313782,0.0,2.64,15.98,acetaminophen 325 MG Oral Tablet
+596926,0.0,23.4,46.98,duloxetine 20 MG Delayed Release Oral Capsule
+198240,20.32,22.28,25.2,tamoxifen 10 MG Oral Tablet
+748962,0.0,14.79,29.59,{28 (norethindrone 0.35 MG Oral Tablet) } Pack [Camila 28 Day]
+197591,4.1,5.43,9.38,diazepam 5 MG Oral Tablet
+199224,0.0,21.93,43.69,anastrozole 1 MG Oral Tablet
+727762,0.0,521.16,1283.32,5 ML fulvestrant 50 MG/ML Prefilled Syringe
+597195,0.0,42.7,75.05,carboplatin 10 MG/ML Injectable Solution
+313572,25.0,103.43,177.74,vancomycin 50 MG/ML Injectable Solution
+241834,0.0,140.25,246.3,"cyclosporine, modified 100 MG Oral Capsule"
+243670,0.0,0.0,0.0,aspirin 81 MG Oral Tablet
+308460,0.0,8.63,16.64,azithromycin 250 MG Oral Tablet
+313096,0.0,9.39,12.95,spironolactone 25 MG Oral Tablet
+831533,0.0,15.0,30.0,{28 (norethindrone 0.35 MG Oral Tablet) } Pack [Errin 28 Day]
+1719286,0.0,15.67,47.93,10 ML furosemide 10 MG/ML Injection
+1737449,0.0,23.8,47.6,10 ML pamidronate disodium 3 MG/ML Injection
+1740467,0.0,6.41,16.26,2 ML ondansetron 2 MG/ML Injection
+857005,0.0,16.33,33.58,acetaminophen 325 MG / hydrocodone bitartrate 7.5 MG Oral Tablet
+856987,0.0,20.74,37.69,acetaminophen 300 MG / hydrocodone bitartrate 5 MG Oral Tablet
+855332,0.0,10.86,25.01,warfarin sodium 5 MG Oral Tablet
+861467,712.97,1425.93,2851.86,meperidine hydrochloride 50 MG Oral Tablet
+865098,133.76,495.5,857.25,insulin lispro 100 UNT/ML Injectable Solution [Humalog]
+966222,0.0,12.85,19.41,levothyroxine sodium 0.075 MG Oral Tablet
+997223,0.0,7.89,19.7,donepezil hydrochloride 10 MG Oral Tablet
+1000126,0.0,33.83,65.43,1 ML medroxyprogesterone acetate 150 MG/ML Injection
+1049630,0.0,1.1,6.79,diphenhydramine hydrochloride 25 MG Oral Tablet
+1114085,0.0,64.04,150.98,100 ML zoledronic acid 0.04 MG/ML Injection
+1791701,0.0,14.74,63.38,10 ML fluorouracil 50 MG/ML Injection
+1483744,0.0,43.99,61.7,naltrexone hydrochloride 50 MG Oral Tablet
+1659149,0.0,121.45,281.74,piperacillin 4000 MG / tazobactam 500 MG Injection
+310325,0.0,0.89,4.89,ferrous sulfate 325 MG Oral Tablet
+198014,0.0,6.34,11.75,naproxen 500 MG Oral Tablet
+310965,0.0,0.74,6.9,ibuprofen 200 MG Oral Tablet
+106258,0.0,7.87,48.51,hydrocortisone 10 MG/ML Topical Cream
+312617,0.0,6.11,10.85,prednisone 5 MG Oral Tablet
+311995,0.0,24.82,41.24,"nitrofurantoin, macrocrystals 50 MG Oral Capsule"
+314231,0.0,6.66,12.16,Simvastatin 10 MG Oral Tablet
+308182,0.0,3.66,4.62,amoxicillin 250 MG Oral Capsule
+309045,32.7,65.4,130.8,cefaclor 250 MG Oral Capsule
+200064,0.0,30.67,52.88,letrozole 2.5 MG Oral Tablet
+309362,0.0,11.33,43.82,clopidogrel 75 MG Oral Tablet
+834102,0.0,6.92,9.14,penicillin V potassium 500 MG Oral Tablet
+313988,4.27,6.52,8.92,furosemide 40 MG Oral Tablet
+245134,0.0,45.23,62.72,72 HR fentanyl 0.025 MG/HR Transdermal System
+1870230,98.55,197.09,394.18,NDA020800 0.3 ML epinephrine 1 MG/ML Auto-Injector
+198031,0.0,20.06,47.35,24 HR nicotine 0.292 MG/HR Transdermal System
+205923,0.0,140.41,280.82,1 ML epoetin alfa 4000 UNT/ML Injection [Epogen]
+206905,4.36,4.89,5.42,ibuprofen 400 MG Oral Tablet [Ibu]
+308136,0.0,6.0,9.62,amlodipine 2.5 MG Oral Tablet
+309845,0.0,46.99,71.5,diazepam 5 MG/ML Injectable Solution
+310436,0.0,47.53,85.94,galantamine 4 MG Oral Tablet
+789980,0.0,125.31,315.09,ampicillin 100 MG/ML Injectable Solution
+1734919,0.0,496.56,989.95,cyclophosphamide 1000 MG Injection
+864718,0.0,9.83,16.09,methadone hydrochloride 5 MG Oral Tablet
+896209,269.07,298.89,328.72,60 ACTUAT fluticasone propionate 0.25 MG/ACTUAT / salmeterol 0.05 MG/ACTUAT Dry Powder Inhaler
+904419,0.0,15.57,23.3,alendronic acid 10 MG Oral Tablet
+905269,0.0,8.28,14.71,trihexyphenidyl hydrochloride 2 MG Oral Tablet
+979092,0.0,46.9,95.7,hydroxychloroquine sulfate 200 MG Oral Tablet
+979485,0.0,9.32,16.22,losartan potassium 25 MG Oral Tablet
+978950,0.0,256.66,513.32,{5 (dienogest 2 MG / estradiol valerate 2 MG Oral Tablet) / 17 (dienogest 3 MG / estradiol valerate 2 MG Oral Tablet) / 2 (estradiol valerate 1 MG Oral Tablet) / 2 (estradiol valerate 3 MG Oral Tablet) / 2 (inert ingredients 1 MG Oral Tablet) } Pack [N...
+996740,362.12,381.56,407.33,memantine hydrochloride 2 MG/ML Oral Solution
+997501,0.0,1.63,7.57,fexofenadine hydrochloride 60 MG Oral Tablet
+1014676,0.0,25.68,46.91,cetirizine hydrochloride 5 MG Oral Tablet
+1049625,2002.61,4005.22,8010.44,acetaminophen 325 MG / oxycodone hydrochloride 10 MG Oral Tablet [Percocet]
+1049221,0.0,10.51,17.53,acetaminophen 325 MG / oxycodone hydrochloride 5 MG Oral Tablet
+1049683,0.0,18.92,61.53,oxycodone hydrochloride 10 MG Oral Tablet
+1091392,0.0,24.52,36.9,methylphenidate hydrochloride 20 MG Oral Tablet
+1652673,36.59,39.05,43.39,doxycycline monohydrate 50 MG Oral Tablet
+1659131,0.0,55.66,137.53,piperacillin 2000 MG / tazobactam 250 MG Injection
+197604,0.0,22.25,30.69,digoxin 0.125 MG Oral Tablet
+314076,0.0,5.36,10.74,lisinopril 10 MG Oral Tablet
+197541,0.0,54.49,96.9,colchicine 0.6 MG Oral Tablet
+198440,0.0,2.19,14.65,acetaminophen 500 MG Oral Tablet
+312938,0.0,8.48,16.2,sertraline 100 MG Oral Tablet
+665078,0.0,7.89,15.79,loratadine 5 MG Chewable Tablet
+672149,2497.51,4995.02,9990.04,lapatinib 250 MG Oral Tablet
+309097,0.0,13.13,16.79,cefuroxime 250 MG Oral Tablet
+310798,0.0,3.19,4.69,hydrochlorothiazide 25 MG Oral Tablet
+314077,0.0,5.91,13.22,lisinopril 20 MG Oral Tablet
+351875,65.77,164.61,223.78,72 HR scopolamine 0.0139 MG/HR Transdermal System [Transderm Scop]
+245314,17.91,31.06,44.21,albuterol 5 MG/ML Inhalation Solution
+200033,0.0,9.75,16.02,carvedilol 25 MG Oral Tablet
+312615,0.0,2.69,5.92,prednisone 20 MG Oral Tablet
+483438,0.0,37.22,46.76,pregabalin 100 MG Oral Capsule
+351266,61.34,75.05,133.79,buprenorphine 2 MG / naloxone 0.5 MG Sublingual Tablet
+242969,0.0,0.0,0.0,4 ML norepinephrine 1 MG/ML Injection
+1856546,581.13,1162.26,2324.52,levonorgestrel 0.000729 MG/HR Intrauterine System [Kyleena]
+1860480,0.0,71.36,277.73,1 ML docetaxel 20 MG/ML Injection
+106892,243.47,345.95,448.44,"insulin isophane, human 70 UNT/ML / insulin, regular, human 30 UNT/ML Injectable Suspension [Humulin]"
+205532,2834.16,5668.32,11336.64,dornase alfa 1 MG/ML Inhalation Solution [Pulmozyme]
+209387,0.0,0.0,0.0,acetaminophen 325 MG Oral Tablet [Tylenol]
+311700,0.0,1.84,3.57,midazolam 1 MG/ML Injectable Solution
+608139,143.5,162.07,184.19,atomoxetine 100 MG Oral Capsule
+705129,0.0,135.76,255.63,nitroglycerin 0.4 MG/ACTUAT Mucosal Spray
+749762,245.56,491.11,982.22,{7 (ethinyl estradiol 0.01 MG Oral Tablet) / 84 (ethinyl estradiol 0.03 MG / levonorgestrel 0.15 MG Oral Tablet) } Pack [Seasonique]
+834061,0.0,7.6,10.9,penicillin V potassium 250 MG Oral Tablet
+854235,0.0,52.42,151.07,0.4 ML enoxaparin sodium 100 MG/ML Prefilled Syringe
+854252,0.0,180.49,470.15,1 ML enoxaparin sodium 150 MG/ML Prefilled Syringe
+885219,0.0,10.03,15.28,benztropine mesylate 0.5 MG Oral Tablet
+979492,0.0,12.45,18.86,losartan potassium 50 MG Oral Tablet
+1803932,0.0,120.83,165.61,leucovorin 100 MG Injection
+1807510,45.57,58.71,74.94,150 ML vancomycin 5 MG/ML Injection
+1807513,0.0,48.77,113.7,vancomycin 1000 MG Injection
+1014678,0.0,4.73,61.02,cetirizine hydrochloride 10 MG Oral Tablet
+1049504,257.04,260.51,263.99,Abuse-Deterrent 12 HR oxycodone hydrochloride 10 MG Extended Release Oral Tablet [Oxycontin]
+1094107,0.0,8.08,15.12,phenazopyridine hydrochloride 100 MG Oral Tablet
+1100184,73.63,107.76,138.11,donepezil hydrochloride 23 MG Oral Tablet
+1789958,0.0,503.07,1006.14,abobotulinumtoxinA 300 UNT Injection [Dysport]
+1790099,0.0,33.66,67.32,10 ML doxorubicin hydrochloride 2 MG/ML Injection
+1243052,13468.67,26937.35,53874.7,ivacaftor 150 MG Oral Tablet [Kalydeco]
+1605257,436.0,871.99,1743.98,levonorgestrel 0.000813 MG/HR Intrauterine System [Liletta]
+1650142,0.0,14.68,23.11,doxycycline monohydrate 100 MG Oral Tablet
+748879,13.29,26.58,53.16,{21 (ethinyl estradiol 0.03 MG / levonorgestrel 0.15 MG Oral Tablet) / 7 (inert ingredients 1 MG Oral Tablet) } Pack [Levora 0.15/30 28 Day]
+105585,0.0,32.63,57.27,methotrexate 2.5 MG Oral Tablet
+1736776,0.0,130.26,508.59,10 ML oxaliplatin 5 MG/ML Injection
+197319,0.0,12.12,17.74,allopurinol 100 MG Oral Tablet
+310261,162.17,236.92,301.76,exemestane 25 MG Oral Tablet
+310385,0.0,7.46,13.05,fluoxetine 20 MG Oral Capsule
+1946840,7452.99,14905.99,29811.98,abemaciclib 100 MG Oral Tablet [Verzenio]
+259255,0.0,17.27,27.39,atorvastatin 80 MG Oral Tablet
+562251,48.47,55.34,61.93,amoxicillin 250 MG / clavulanate 125 MG Oral Tablet
+1860491,185.12,370.23,740.46,12 HR hydrocodone bitartrate 10 MG Extended Release Oral Capsule
+238100,0.0,8.66,19.54,lorazepam 2 MG/ML Injectable Solution
+308192,0.0,4.05,5.8,amoxicillin 500 MG Oral Tablet
+308971,291.09,582.18,1164.36,carbamazepine 20 MG/ML Oral Suspension [Tegretol]
+309043,135.04,270.08,540.16,12 HR cefaclor 500 MG Extended Release Oral Tablet
+313820,0.0,0.0,0.0,acetaminophen 160 MG Chewable Tablet
+748856,209.6,419.2,838.4,{24 (drospirenone 3 MG / ethinyl estradiol 0.02 MG Oral Tablet) / 4 (inert ingredients 1 MG Oral Tablet) } Pack [Yaz 28 Day]
+807283,594.35,1188.69,2377.38,levonorgestrel 0.000833 MG/HR Intrauterine System [Mirena]
+1860154,103.14,206.27,412.54,Abuse-Deterrent 12 HR oxycodone hydrochloride 15 MG Extended Release Oral Tablet
+108515,45.2,90.4,180.8,1 ML tacrolimus 5 MG/ML Injection [Prograf]
+197379,0.0,10.62,12.84,atenolol 100 MG Oral Tablet
+197380,0.0,7.67,11.38,atenolol 25 MG Oral Tablet
+197381,6.35,9.84,12.39,atenolol 50 MG Oral Tablet
+197517,0.0,20.88,33.82,clarithromycin 500 MG Oral Tablet
+197558,0.0,68.89,105.5,dapsone 25 MG Oral Tablet
+197862,0.0,245.3,426.66,leucovorin 25 MG Oral Tablet
+197884,0.0,7.1,15.63,lisinopril 40 MG Oral Tablet
+197885,0.0,8.3,11.23,hydrochlorothiazide 12.5 MG / lisinopril 10 MG Oral Tablet
+197886,0.0,11.69,15.22,hydrochlorothiazide 12.5 MG / lisinopril 20 MG Oral Tablet
+197887,0.0,10.78,14.64,hydrochlorothiazide 25 MG / lisinopril 20 MG Oral Tablet
+197903,0.0,8.79,14.66,lovastatin 10 MG Oral Tablet
+197904,0.0,7.8,13.28,lovastatin 20 MG Oral Tablet
+197905,0.0,11.34,20.42,lovastatin 40 MG Oral Tablet
+198039,0.0,19.28,32.61,nitroglycerin 0.4 MG Sublingual Tablet
+198182,0.0,7022.67,18288.19,pyrimethamine 25 MG Oral Tablet
+198188,0.0,8.72,22.44,ramipril 2.5 MG Oral Capsule
+198189,0.0,10.25,15.8,ramipril 5 MG Oral Capsule
+198211,0.0,8.61,18.71,simvastatin 40 MG Oral Tablet
+198334,0.0,6.32,10.06,sulfamethoxazole 400 MG / trimethoprim 80 MG Oral Tablet
+198335,0.0,4.75,6.58,sulfamethoxazole 800 MG / trimethoprim 160 MG Oral Tablet
+199663,0.0,31.43,62.87,zidovudine 300 MG Oral Tablet
+199885,0.0,5.18,8.16,levofloxacin 500 MG Oral Tablet
+200031,0.0,7.29,13.36,carvedilol 6.25 MG Oral Tablet
+200032,0.0,9.16,14.98,carvedilol 12.5 MG Oral Tablet
+200082,0.0,168.81,383.07,lamivudine 150 MG / zidovudine 300 MG Oral Tablet
+200094,0.0,24.38,51.85,irbesartan 75 MG Oral Tablet
+200095,0.0,22.11,49.41,irbesartan 150 MG Oral Tablet
+200096,0.0,35.25,73.69,irbesartan 300 MG Oral Tablet
+200284,0.0,42.79,83.08,hydrochlorothiazide 12.5 MG / valsartan 80 MG Oral Tablet
+200285,28.21,46.09,83.9,hydrochlorothiazide 12.5 MG / valsartan 160 MG Oral Tablet
+200345,0.0,12.73,28.24,simvastatin 80 MG Oral Tablet
+200346,17.3,20.66,22.61,cefdinir 300 MG Oral Capsule
+204844,0.0,15.1,28.44,azithromycin 600 MG Oral Tablet
+205304,0.0,45.1,79.08,telmisartan 40 MG Oral Tablet
+205305,0.0,42.15,89.17,telmisartan 80 MG Oral Tablet
+205326,0.0,7.08,13.01,lisinopril 30 MG Oral Tablet
+212033,0.0,0.58,3.28,aspirin 325 MG Oral Tablet
+212388,385.96,771.93,1543.86,carvedilol 6.25 MG Oral Tablet [Coreg]
+212389,342.68,685.36,1370.72,carvedilol 12.5 MG Oral Tablet [Coreg]
+212390,360.71,721.42,1442.84,carvedilol 25 MG Oral Tablet [Coreg]
+212446,0.0,13.06,39.19,azithromycin 250 MG Oral Tablet [Zithromax]
+213432,148.82,297.64,595.28,telmisartan 80 MG Oral Tablet [Micardis]
+226719,0.0,0.0,0.0,etoposide 100 MG Injection [Etopophos]
+242754,0.0,55.4,87.67,levalbuterol 0.417 MG/ML Inhalation Solution
+252559,0.0,286.87,587.79,budesonide 0.5 MG/ML Inhalation Suspension
+261962,0.0,12.24,19.36,ramipril 10 MG Oral Capsule
+282755,0.0,34.26,87.3,telmisartan 20 MG Oral Tablet
+284215,0.0,9.92,13.68,clindamycin 300 MG Oral Capsule
+284531,178.63,357.26,714.52,telmisartan 20 MG Oral Tablet [Micardis]
+308429,0.0,289.65,854.51,atovaquone 150 MG/ML Oral Suspension
+311353,0.0,4.41,7.96,lisinopril 2.5 MG Oral Tablet
+311354,0.0,4.12,11.3,lisinopril 5 MG Oral Tablet
+312748,11.85,15.12,18.88,quinapril 10 MG Oral Tablet
+312749,0.0,15.77,23.46,quinapril 20 MG Oral Tablet
+312750,0.0,13.57,18.58,quinapril 5 MG Oral Tablet
+312962,0.0,7.04,12.38,simvastatin 5 MG Oral Tablet
+314203,14.58,20.28,25.6,quinapril 40 MG Oral Tablet
+349094,0.0,123.7,218.85,budesonide 0.125 MG/ML Inhalation Suspension
+349199,0.0,23.88,36.58,valsartan 80 MG Oral Tablet
+349200,0.0,35.89,52.66,valsartan 320 MG Oral Tablet
+349201,0.0,33.96,47.58,valsartan 160 MG Oral Tablet
+349251,0.0,200.79,334.21,tenofovir disoproxil fumarate 300 MG Oral Tablet
+349353,0.0,42.5,76.86,hydrochlorothiazide 25 MG / valsartan 160 MG Oral Tablet
+349477,0.0,446.2,637.23,efavirenz 600 MG Oral Tablet
+349483,0.0,26.1,39.41,valsartan 40 MG Oral Tablet
+349491,0.0,149.42,195.49,lamivudine 300 MG Oral Tablet
+351109,0.0,120.25,228.2,budesonide 0.25 MG/ML Inhalation Suspension
+351136,0.0,37.18,80.89,albuterol 0.417 MG/ML Inhalation Solution
+351137,0.0,34.83,68.52,albuterol 0.21 MG/ML Inhalation Solution
+352001,421.15,842.31,1684.62,valsartan 320 MG Oral Tablet [Diovan]
+402109,1221.0,1221.18,1221.37,fosamprenavir 700 MG Oral Tablet
+403875,210.34,420.67,841.34,emtricitabine 200 MG Oral Capsule
+476349,0.0,128.35,221.28,ezetimibe 10 MG / simvastatin 20 MG Oral Tablet
+476350,0.0,154.81,268.13,ezetimibe 10 MG / simvastatin 40 MG Oral Tablet
+476351,0.0,128.0,219.12,ezetimibe 10 MG / simvastatin 80 MG Oral Tablet
+476556,0.0,305.84,572.18,emtricitabine 200 MG / tenofovir disoproxil fumarate 300 MG Oral Tablet
+616830,150.38,300.76,601.52,budesonide 0.125 MG/ML Inhalation Suspension [Pulmicort]
+617310,0.0,11.68,20.56,atorvastatin 20 MG Oral Tablet
+617311,0.0,13.68,24.29,atorvastatin 40 MG Oral Tablet
+617312,0.0,10.58,19.74,atorvastatin 10 MG Oral Tablet
+617314,436.51,873.03,1746.06,atorvastatin 10 MG Oral Tablet [Lipitor]
+617320,1205.63,1245.72,1285.81,atorvastatin 40 MG Oral Tablet [Lipitor]
+630208,0.0,14.31,20.11,albuterol 0.83 MG/ML Inhalation Solution
+636042,35.96,61.43,106.26,hydrochlorothiazide 12.5 MG / valsartan 320 MG Oral Tablet
+636045,43.89,64.5,102.53,hydrochlorothiazide 25 MG / valsartan 320 MG Oral Tablet
+643066,545.46,946.98,1176.83,efavirenz 600 MG / emtricitabine 200 MG / tenofovir disoproxil fumarate 300 MG Oral Tablet
+664741,469.68,574.99,708.94,atazanavir 300 MG Oral Capsule
+686924,0.0,8.58,31.87,carvedilol 3.125 MG Oral Tablet
+745752,44.98,89.97,179.94,NDA021457 200 ACTUAT albuterol 0.09 MG/ACTUAT Metered Dose Inhaler [ProAir]
+745791,35.15,70.3,140.6,200 ACTUAT levalbuterol 0.045 MG/ACTUAT Metered Dose Inhaler
+746466,52.92,105.84,211.68,200 ACTUAT levalbuterol 0.045 MG/ACTUAT Metered Dose Inhaler [Xopenex]
+746763,52.47,104.94,209.88,NDA020503 200 ACTUAT albuterol 0.09 MG/ACTUAT Metered Dose Inhaler [Proventil]
+746804,245.53,491.06,982.12,120 ACTUAT mometasone furoate 0.22 MG/ACTUAT Dry Powder Inhaler [Asmanex]
+746811,50.61,101.22,202.44,14 ACTUAT mometasone furoate 0.22 MG/ACTUAT Dry Powder Inhaler [Asmanex]
+746815,192.33,384.66,769.32,60 ACTUAT mometasone furoate 0.22 MG/ACTUAT Dry Powder Inhaler [Asmanex]
+749196,0.0,35.6,93.01,clopidogrel 300 MG Oral Tablet
+751616,272.83,285.73,298.62,nebivolol 10 MG Oral Tablet [Bystolic]
+751620,0.0,142.26,284.53,nebivolol 2.5 MG Oral Tablet [Bystolic]
+751623,261.2,293.72,327.55,nebivolol 5 MG Oral Tablet [Bystolic]
+801095,14.65,29.31,58.62,NDA020983 60 ACTUAT albuterol 0.09 MG/ACTUAT Metered Dose Inhaler [Ventolin]
+827075,283.93,305.75,327.56,nebivolol 20 MG Oral Tablet [Bystolic]
+845488,0.0,11.14,29.79,ramipril 1.25 MG Oral Capsule
+854255,0.0,188.72,373.44,enoxaparin sodium 100 MG/ML Injectable Solution
+854901,0.0,50.41,72.19,bisoprolol fumarate 10 MG Oral Tablet
+854905,0.0,40.11,55.13,bisoprolol fumarate 5 MG Oral Tablet
+854908,0.0,37.73,58.94,bisoprolol fumarate 10 MG / hydrochlorothiazide 6.25 MG Oral Tablet
+854916,0.0,34.72,52.05,bisoprolol fumarate 2.5 MG / hydrochlorothiazide 6.25 MG Oral Tablet
+854919,13.7,39.24,56.76,bisoprolol fumarate 5 MG / hydrochlorothiazide 6.25 MG Oral Tablet
+855812,0.0,79.2,126.28,prasugrel 10 MG Oral Tablet
+856448,0.0,16.36,24.89,propranolol hydrochloride 10 MG Oral Tablet
+856457,0.0,20.19,28.41,propranolol hydrochloride 20 MG Oral Tablet
+856460,0.0,69.16,92.31,24 HR propranolol hydrochloride 120 MG Extended Release Oral Capsule
+856481,86.86,108.44,150.27,24 HR propranolol hydrochloride 160 MG Extended Release Oral Capsule
+856519,0.0,24.36,37.35,propranolol hydrochloride 40 MG Oral Tablet
+856535,0.0,39.17,68.92,24 HR propranolol hydrochloride 60 MG Extended Release Oral Capsule
+856556,40.17,54.56,68.11,propranolol hydrochloride 60 MG Oral Tablet
+856569,0.0,52.43,79.02,24 HR propranolol hydrochloride 80 MG Extended Release Oral Capsule
+856578,11.81,37.83,54.72,propranolol hydrochloride 80 MG Oral Tablet
+858804,0.0,16.2,21.44,enalapril maleate 2.5 MG Oral Tablet
+858810,0.0,26.77,36.36,enalapril maleate 20 MG Oral Tablet
+858813,0.0,19.78,26.33,enalapril maleate 5 MG Oral Tablet
+858817,0.0,21.03,29.33,enalapril maleate 10 MG Oral Tablet
+859088,36.81,73.62,147.24,NDA020983 200 ACTUAT albuterol 0.09 MG/ACTUAT Metered Dose Inhaler [Ventolin]
+859419,0.0,28.66,62.8,rosuvastatin calcium 40 MG Oral Tablet
+859421,440.57,525.46,610.34,rosuvastatin calcium 40 MG Oral Tablet [Crestor]
+859424,0.0,17.34,27.59,rosuvastatin calcium 5 MG Oral Tablet
+859426,481.86,552.58,623.29,rosuvastatin calcium 5 MG Oral Tablet [Crestor]
+859747,0.0,21.39,35.89,rosuvastatin calcium 10 MG Oral Tablet
+859749,456.45,546.8,637.15,rosuvastatin calcium 10 MG Oral Tablet [Crestor]
+859751,0.0,19.14,28.1,rosuvastatin calcium 20 MG Oral Tablet
+859753,476.97,557.39,637.81,rosuvastatin calcium 20 MG Oral Tablet [Crestor]
+860510,288.06,364.95,462.27,24 HR carvedilol phosphate 10 MG Extended Release Oral Capsule
+860516,0.0,331.29,533.6,24 HR carvedilol phosphate 20 MG Extended Release Oral Capsule
+860518,0.0,652.11,1350.58,24 HR carvedilol phosphate 20 MG Extended Release Oral Capsule [Coreg]
+861356,0.0,931.67,2120.08,0.8 ML fondaparinux sodium 12.5 MG/ML Prefilled Syringe
+861646,330.49,660.98,1321.96,pitavastatin calcium 1 MG Oral Tablet [Livalo]
+861650,331.85,663.7,1327.4,pitavastatin calcium 2 MG Oral Tablet [Livalo]
+861654,336.93,673.86,1347.72,pitavastatin calcium 4 MG Oral Tablet [Livalo]
+866412,0.0,23.01,36.14,24 HR metoprolol succinate 100 MG Extended Release Oral Tablet
+866419,0.0,32.68,49.77,24 HR metoprolol succinate 200 MG Extended Release Oral Tablet
+866427,0.0,12.63,23.53,24 HR metoprolol succinate 25 MG Extended Release Oral Tablet
+866429,120.7,136.69,152.69,24 HR metoprolol succinate 25 MG Extended Release Oral Tablet [Toprol]
+866436,0.0,14.62,25.53,24 HR metoprolol succinate 50 MG Extended Release Oral Tablet
+866438,118.99,127.13,135.28,24 HR metoprolol succinate 50 MG Extended Release Oral Tablet [Toprol]
+866508,0.0,0.0,0.0,5 ML metoprolol tartrate 1 MG/ML Injection
+866511,0.0,8.77,12.56,metoprolol tartrate 100 MG Oral Tablet
+866514,0.0,6.51,11.52,metoprolol tartrate 50 MG Oral Tablet
+866516,172.87,345.73,691.46,metoprolol tartrate 50 MG Oral Tablet [Lopressor]
+866924,0.0,5.8,9.49,metoprolol tartrate 25 MG Oral Tablet
+895996,135.59,271.17,542.34,120 ACTUAT fluticasone propionate 0.044 MG/ACTUAT Metered Dose Inhaler [Flovent]
+896001,183.69,367.39,734.78,120 ACTUAT fluticasone propionate 0.11 MG/ACTUAT Metered Dose Inhaler [Flovent]
+896006,291.17,582.34,1164.68,120 ACTUAT fluticasone propionate 0.22 MG/ACTUAT Metered Dose Inhaler [Flovent]
+896019,135.75,271.51,543.02,60 ACTUAT fluticasone propionate 0.05 MG/ACTUAT Dry Powder Inhaler [Flovent]
+896023,146.37,292.74,585.48,60 ACTUAT fluticasone propionate 0.1 MG/ACTUAT Dry Powder Inhaler [Flovent]
+896027,206.72,413.45,826.9,60 ACTUAT fluticasone propionate 0.25 MG/ACTUAT Dry Powder Inhaler [Flovent]
+896758,0.0,22.47,37.1,labetalol hydrochloride 100 MG Oral Tablet
+896762,0.0,39.41,60.82,labetalol hydrochloride 200 MG Oral Tablet
+896766,0.0,47.31,71.17,labetalol hydrochloride 300 MG Oral Tablet
+898342,0.0,21.79,29.08,amlodipine 10 MG / benazepril hydrochloride 20 MG Oral Capsule
+898346,0.0,23.37,30.97,amlodipine 10 MG / benazepril hydrochloride 40 MG Oral Capsule
+898350,25.64,26.89,28.38,amlodipine 2.5 MG / benazepril hydrochloride 10 MG Oral Capsule
+898353,0.0,17.84,21.68,amlodipine 5 MG / benazepril hydrochloride 10 MG Oral Capsule
+898356,15.57,25.38,34.37,amlodipine 5 MG / benazepril hydrochloride 20 MG Oral Capsule
+898359,0.0,20.86,33.64,amlodipine 5 MG / benazepril hydrochloride 40 MG Oral Capsule
+898362,42.2,52.3,58.93,benazepril hydrochloride 10 MG / hydrochlorothiazide 12.5 MG Oral Tablet
+898367,48.5,54.73,59.49,benazepril hydrochloride 20 MG / hydrochlorothiazide 12.5 MG Oral Tablet
+898372,44.07,55.8,69.38,benazepril hydrochloride 20 MG / hydrochlorothiazide 25 MG Oral Tablet
+898687,0.0,13.11,23.87,benazepril hydrochloride 10 MG Oral Tablet
+898690,0.0,15.04,23.41,benazepril hydrochloride 20 MG Oral Tablet
+898719,0.0,13.45,22.26,benazepril hydrochloride 40 MG Oral Tablet
+898723,4.77,13.19,16.93,benazepril hydrochloride 5 MG Oral Tablet
+904458,0.0,10.59,22.15,pravastatin sodium 10 MG Oral Tablet
+904467,0.0,12.91,35.85,pravastatin sodium 20 MG Oral Tablet
+904475,0.0,16.15,29.61,pravastatin sodium 40 MG Oral Tablet
+904481,0.0,27.03,46.02,pravastatin sodium 80 MG Oral Tablet
+905377,279.9,353.54,420.4,hydralazine hydrochloride 37.5 MG / isosorbide dinitrate 20 MG Oral Tablet
+966524,191.97,383.93,767.86,120 ACTUAT budesonide 0.18 MG/ACTUAT Dry Powder Inhaler [Pulmicort]
+966529,150.31,300.63,601.26,60 ACTUAT budesonide 0.09 MG/ACTUAT Dry Powder Inhaler [Pulmicort]
+979464,0.0,24.32,35.74,hydrochlorothiazide 12.5 MG / losartan potassium 100 MG Oral Tablet
+979466,315.74,408.24,500.73,hydrochlorothiazide 12.5 MG / losartan potassium 100 MG Oral Tablet [Hyzaar]
+979468,0.0,19.91,30.45,hydrochlorothiazide 12.5 MG / losartan potassium 50 MG Oral Tablet
+979470,261.12,327.21,393.29,hydrochlorothiazide 12.5 MG / losartan potassium 50 MG Oral Tablet [Hyzaar]
+979471,0.0,27.39,42.66,hydrochlorothiazide 25 MG / losartan potassium 100 MG Oral Tablet
+979473,369.57,429.47,489.36,hydrochlorothiazide 25 MG / losartan potassium 100 MG Oral Tablet [Hyzaar]
+979480,0.0,14.17,49.62,losartan potassium 100 MG Oral Tablet
+979487,146.25,292.5,585.0,losartan potassium 25 MG Oral Tablet [Cozaar]
+979494,328.29,373.42,418.54,losartan potassium 50 MG Oral Tablet [Cozaar]
+1245441,701.07,858.45,1015.82,ezetimibe 10 MG / simvastatin 40 MG Oral Tablet [Vytorin]
+1361226,0.0,2.27,46.2,"heparin sodium, porcine 1000 UNT/ML Injectable Solution"
+1431987,665.95,1331.89,2663.78,24 HR tacrolimus 5 MG Extended Release Oral Capsule [Astagraf]
+1435630,622.08,1244.16,2488.32,enalapril maleate 1 MG/ML Oral Solution [Epaned]
+1536144,126.28,252.55,505.1,120 ACTUAT mometasone furoate 0.1 MG/ACTUAT Metered Dose Inhaler [Asmanex]
+1536148,159.97,319.93,639.86,120 ACTUAT mometasone furoate 0.2 MG/ACTUAT Metered Dose Inhaler [Asmanex]
+1547660,149.5,299.0,598.0,30 ACTUAT fluticasone furoate 0.1 MG/ACTUAT Dry Powder Inhaler [Arnuity]
+1547672,206.72,413.44,826.88,30 ACTUAT fluticasone furoate 0.2 MG/ACTUAT Dry Powder Inhaler [Arnuity]
+1656346,988.18,1150.94,1313.7,sacubitril 24 MG / valsartan 26 MG Oral Tablet [Entresto]
+1656351,1082.69,1280.47,1478.26,sacubitril 49 MG / valsartan 51 MG Oral Tablet [Entresto]
+1656356,1149.95,1381.57,1613.18,sacubitril 97 MG / valsartan 103 MG Oral Tablet [Entresto]
+1664463,719.92,724.07,728.22,24 HR tacrolimus 1 MG Extended Release Oral Tablet [Envarsus]
+1664986,0.0,472.09,980.14,aztreonam 2000 MG Injection
+1665060,86.35,113.26,161.9,cefazolin 2000 MG Injection
+1806890,848.24,1696.48,3392.96,lisinopril 1 MG/ML Oral Solution [Qbrelis]
+1998772,188.07,376.15,752.3,Breath-Actuated 120 ACTUAT beclomethasone dipropionate 0.08 MG/ACTUAT Metered Dose Inhaler [Qvar]
+1998774,132.29,264.59,529.18,Breath-Actuated 120 ACTUAT beclomethasone dipropionate 0.04 MG/ACTUAT Metered Dose Inhaler [Qvar]
+2563431,0.0,11.57,23.14,aspirin 81 MG Oral Capsule [Vazalore]

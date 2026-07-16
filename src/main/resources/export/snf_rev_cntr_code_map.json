@@ -1,0 +1,167 @@
+{
+  "63332003": [
+    {
+      "code": "0120",
+      "description": "Semi-private 2 bed (medical or general) general classification"
+    }
+  ],
+  "315639002": [
+    {
+      "code": "0120",
+      "description": "Semi-private 2 bed (medical or general) general classification"
+    }
+  ],
+  "370789001": [
+    {
+      "code": "0420",
+      "description": "Physical therapy-general classification"
+    }
+  ],
+  "410401003": [
+    {
+      "code": "0120",
+      "description": "Semi-private 2 bed (medical or general) general classification",
+      "weight": "50"
+    },
+    {
+      "code": "0250",
+      "description": "Pharmacy-general classification",
+      "weight": "25"
+    },
+    {
+      "code": "0300",
+      "description": "Laboratory-general classification",
+      "weight": "12"
+    },
+    {
+      "code": "0270",
+      "description": "Medical/surgical supplies-general classification",
+      "weight": "6"
+    },
+    {
+      "code": "0320",
+      "description": "Radiology diagnostic-general classification",
+      "weight": "4"
+    },
+    {
+      "code": "0257",
+      "description": "Pharmacy-non-prescription",
+      "weight": "1"
+    },
+    {
+      "code": "0260",
+      "description": "IV therapy-general classification",
+      "weight": "1"
+    },
+    {
+      "code": "0301",
+      "description": "Laboratory-chemistry",
+      "weight": "1"
+    },
+    {
+      "code": "0305",
+      "description": "Laboratory-hematology ",
+      "weight": "1"
+    }
+  ],
+  "91251008": [
+    {
+      "code": "0420",
+      "description": "Physical therapy-general classification"
+    }
+  ],
+  "84478008": [
+    {
+      "code": "0430",
+      "description": "Occupational therapy-general classification"
+    }
+  ],
+  "311555007": [
+    {
+      "code": "0440",
+      "description": "Speech language pathology-general classification"
+    }
+  ],
+  "409023009": [
+    {
+      "code": "0250",
+      "description": "Pharmacy-general classification",
+      "weight": "49"
+    },
+    {
+      "code": "0300",
+      "description": "Laboratory-general classification",
+      "weight": "25"
+    },
+    {
+      "code": "0270",
+      "description": "Medical/surgical supplies-general classification",
+      "weight": "11"
+    },
+    {
+      "code": "0320",
+      "description": "Radiology diagnostic-general classification",
+      "weight": "8"
+    },
+    {
+      "code": "0257",
+      "description": "Pharmacy-non-prescription",
+      "weight": "2"
+    },
+    {
+      "code": "0260",
+      "description": "IV therapy-general classification",
+      "weight": "2"
+    },
+    {
+      "code": "0301",
+      "description": "Laboratory-chemistry",
+      "weight": "2"
+    },
+    {
+      "code": "0305",
+      "description": "Laboratory-hematology ",
+      "weight": "1"
+    }
+  ],
+  "392091000": [
+    {
+      "code": "0424",
+      "description": "Physical therapy-evaluation or re-evaluation",
+      "weight": "40"
+    },
+    {
+      "code": "0434",
+      "description": "Occupational therapy-evaluation or re-evaluation",
+      "weight": "40"
+    },
+    {
+      "code": "0444",
+      "description": "Speech language pathology-evaluation or re-evaluation",
+      "weight": "20"
+    }
+  ],
+  "225386006": [
+    {
+      "code": "0424",
+      "description": "Physical therapy-evaluation or re-evaluation",
+      "weight": "40"
+    },
+    {
+      "code": "0434",
+      "description": "Occupational therapy-evaluation or re-evaluation",
+      "weight": "40"
+    },
+    {
+      "code": "0444",
+      "description": "Speech language pathology-evaluation or re-evaluation",
+      "weight": "20"
+    }
+  ],
+  "449381000124108": [
+    {
+      "code": "0120",
+      "description": "Semi-private 2 bed (medical or general) general classification"
+    }
+  ]
+}

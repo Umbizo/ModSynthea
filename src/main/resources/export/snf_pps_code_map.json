@@ -1,0 +1,212 @@
+{
+  "63332003": [
+    {
+      "code": "AAA00",
+      "description": "History AND physical examination (procedure)"
+    },
+    {
+      "code": "RUB10",
+      "description": "History AND physical examination (procedure)"
+    },
+    {
+      "code": "RUC10",
+      "description": "History AND physical examination (procedure)"
+    },
+    {
+      "code": "RUB20",
+      "description": "History AND physical examination (procedure)"
+    },
+    {
+      "code": "RUA10",
+      "description": "History AND physical examination (procedure)"
+    },
+    {
+      "code": "RUC20",
+      "description": "History AND physical examination (procedure)"
+    },
+    {
+      "code": "RUA20",
+      "description": "History AND physical examination (procedure)"
+    },
+    {
+      "code": "RUB30",
+      "description": "History AND physical examination (procedure)"
+    },
+    {
+      "code": "RVB10",
+      "description": "History AND physical examination (procedure)"
+    },
+    {
+      "code": "RVC10",
+      "description": "History AND physical examination (procedure)"
+    }
+  ],
+  "315639002": [
+    {
+      "code": "AAA00",
+      "description": "Initial patient assessment (procedure)"
+    },
+    {
+      "code": "RUB10",
+      "description": "Initial patient assessment (procedure)"
+    },
+    {
+      "code": "RUC10",
+      "description": "Initial patient assessment (procedure)"
+    },
+    {
+      "code": "RUB20",
+      "description": "Initial patient assessment (procedure)"
+    },
+    {
+      "code": "RUA10",
+      "description": "Initial patient assessment (procedure)"
+    },
+    {
+      "code": "RUC20",
+      "description": "Initial patient assessment (procedure)"
+    },
+    {
+      "code": "RUA20",
+      "description": "Initial patient assessment (procedure)"
+    },
+    {
+      "code": "RUB30",
+      "description": "Initial patient assessment (procedure)"
+    },
+    {
+      "code": "RVB10",
+      "description": "Initial patient assessment (procedure)"
+    },
+    {
+      "code": "RVC10",
+      "description": "Initial patient assessment (procedure)"
+    }
+  ],
+  "370789001": [
+    {
+      "code": "",
+      "description": "Development of individualized plan of care (procedure)"
+    }
+  ],
+  "410401003": [
+    {
+      "code": "",
+      "description": "Nursing care/supplementary surveillance (regime/therapy)"
+    }
+  ],
+  "91251008": [
+    {
+      "code": "PC110",
+      "description": "Physical therapy procedure (regime/therapy)"
+    },
+    {
+      "code": "PB110",
+      "description": "Physical therapy procedure (regime/therapy)"
+    },
+    {
+      "code": "PA110",
+      "description": "Physical therapy procedure (regime/therapy)"
+    },
+    {
+      "code": "97001",
+      "description": "Physical therapy procedure (regime/therapy)"
+    }
+  ],
+  "84478008": [
+    {
+      "code": "97003",
+      "description": "Occupational therapy (regime/therapy)"
+    },
+    {
+      "code": "AAA00",
+      "description": "Occupational therapy (regime/therapy)"
+    },
+    {
+      "code": "RUB10",
+      "description": "Occupational therapy (regime/therapy)"
+    },
+    {
+      "code": "RUC10",
+      "description": "Occupational therapy (regime/therapy)"
+    },
+    {
+      "code": "RUB20",
+      "description": "Occupational therapy (regime/therapy)"
+    },
+    {
+      "code": "RUA10",
+      "description": "Occupational therapy (regime/therapy)"
+    }
+  ],
+  "311555007": [
+    {
+      "code": "AAA00",
+      "description": "Speech and language therapy regime (regime/therapy)"
+    },
+    {
+      "code": "RUB10",
+      "description": "Speech and language therapy regime (regime/therapy)"
+    },
+    {
+      "code": "RUC10",
+      "description": "Speech and language therapy regime (regime/therapy)"
+    },
+    {
+      "code": "RUB20",
+      "description": "Speech and language therapy regime (regime/therapy)"
+    },
+    {
+      "code": "RUA10",
+      "description": "Speech and language therapy regime (regime/therapy)"
+    }
+  ],
+  "409023009": [
+    {
+      "code": "CA110",
+      "description": "Professional / ancillary services care (regime/therapy)"
+    },
+    {
+      "code": "CC110",
+      "description": "Professional / ancillary services care (regime/therapy)"
+    },
+    {
+      "code": "CB110",
+      "description": "Professional / ancillary services care (regime/therapy)"
+    },
+    {
+      "code": "RUX10",
+      "description": "Professional / ancillary services care (regime/therapy)"
+    },
+    {
+      "code": "HD110",
+      "description": "Professional / ancillary services care (regime/therapy)"
+    },
+    {
+      "code": "LC110",
+      "description": "Professional / ancillary services care (regime/therapy)"
+    },
+    {
+      "code": "HC110",
+      "description": "Professional / ancillary services care (regime/therapy)"
+    }
+  ],
+  "392091000": [
+    {
+      "code": "AAA00",
+      "description": "Care regimes assessment (procedure)"
+    }
+  ],
+  "225386006": [
+    {
+      "code": "AAA00",
+      "description": "Pre-discharge assessment (procedure)"
+    }
+  ],
+  "449381000124108": [
+    {
+      "code": "",
+      "description": "Discharge from skilled nursing facility (procedure)"
+    }
+  ]
+}

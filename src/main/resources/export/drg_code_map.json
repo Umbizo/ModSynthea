@@ -1,0 +1,7376 @@
+{
+  "A4101": [
+    {
+      "code": "791",
+      "description": "Sepsis due to Methicillin susceptible Staphylococcus aureus"
+    },
+    {
+      "code": "793",
+      "description": "Sepsis due to Methicillin susceptible Staphylococcus aureus"
+    },
+    {
+      "code": "870",
+      "description": "Sepsis due to Methicillin susceptible Staphylococcus aureus"
+    },
+    {
+      "code": "871",
+      "description": "Sepsis due to Methicillin susceptible Staphylococcus aureus"
+    },
+    {
+      "code": "872",
+      "description": "Sepsis due to Methicillin susceptible Staphylococcus aureus"
+    },
+    {
+      "code": "974",
+      "description": "Sepsis due to Methicillin susceptible Staphylococcus aureus"
+    },
+    {
+      "code": "975",
+      "description": "Sepsis due to Methicillin susceptible Staphylococcus aureus"
+    },
+    {
+      "code": "976",
+      "description": "Sepsis due to Methicillin susceptible Staphylococcus aureus"
+    }
+  ],
+  "A4102": [
+    {
+      "code": "791",
+      "description": "Sepsis due to Methicillin resistant Staphylococcus aureus"
+    },
+    {
+      "code": "793",
+      "description": "Sepsis due to Methicillin resistant Staphylococcus aureus"
+    },
+    {
+      "code": "870",
+      "description": "Sepsis due to Methicillin resistant Staphylococcus aureus"
+    },
+    {
+      "code": "871",
+      "description": "Sepsis due to Methicillin resistant Staphylococcus aureus"
+    },
+    {
+      "code": "872",
+      "description": "Sepsis due to Methicillin resistant Staphylococcus aureus"
+    },
+    {
+      "code": "974",
+      "description": "Sepsis due to Methicillin resistant Staphylococcus aureus"
+    },
+    {
+      "code": "975",
+      "description": "Sepsis due to Methicillin resistant Staphylococcus aureus"
+    },
+    {
+      "code": "976",
+      "description": "Sepsis due to Methicillin resistant Staphylococcus aureus"
+    }
+  ],
+  "A4152": [
+    {
+      "code": "791",
+      "description": "Sepsis due to Pseudomonas"
+    },
+    {
+      "code": "793",
+      "description": "Sepsis due to Pseudomonas"
+    },
+    {
+      "code": "870",
+      "description": "Sepsis due to Pseudomonas"
+    },
+    {
+      "code": "871",
+      "description": "Sepsis due to Pseudomonas"
+    },
+    {
+      "code": "872",
+      "description": "Sepsis due to Pseudomonas"
+    },
+    {
+      "code": "974",
+      "description": "Sepsis due to Pseudomonas"
+    },
+    {
+      "code": "975",
+      "description": "Sepsis due to Pseudomonas"
+    },
+    {
+      "code": "976",
+      "description": "Sepsis due to Pseudomonas"
+    }
+  ],
+  "A4189": [
+    {
+      "code": "791",
+      "description": "Other specified sepsis"
+    },
+    {
+      "code": "793",
+      "description": "Other specified sepsis"
+    },
+    {
+      "code": "870",
+      "description": "Other specified sepsis"
+    },
+    {
+      "code": "871",
+      "description": "Other specified sepsis"
+    },
+    {
+      "code": "872",
+      "description": "Other specified sepsis"
+    },
+    {
+      "code": "974",
+      "description": "Other specified sepsis"
+    },
+    {
+      "code": "975",
+      "description": "Other specified sepsis"
+    },
+    {
+      "code": "976",
+      "description": "Other specified sepsis"
+    }
+  ],
+  "A419": [
+    {
+      "code": "791",
+      "description": "Sepsis, unspecified organism"
+    },
+    {
+      "code": "793",
+      "description": "Sepsis, unspecified organism"
+    },
+    {
+      "code": "870",
+      "description": "Sepsis, unspecified organism"
+    },
+    {
+      "code": "871",
+      "description": "Sepsis, unspecified organism"
+    },
+    {
+      "code": "872",
+      "description": "Sepsis, unspecified organism"
+    },
+    {
+      "code": "974",
+      "description": "Sepsis, unspecified organism"
+    },
+    {
+      "code": "975",
+      "description": "Sepsis, unspecified organism"
+    },
+    {
+      "code": "976",
+      "description": "Sepsis, unspecified organism"
+    }
+  ],
+  "A499": [
+    {
+      "code": "867",
+      "description": "Bacterial infection, unspecified"
+    },
+    {
+      "code": "868",
+      "description": "Bacterial infection, unspecified"
+    },
+    {
+      "code": "869",
+      "description": "Bacterial infection, unspecified"
+    }
+  ],
+  "B002": [
+    {
+      "code": "011",
+      "description": "Herpesviral gingivostomatitis and pharyngotonsillitis"
+    },
+    {
+      "code": "012",
+      "description": "Herpesviral gingivostomatitis and pharyngotonsillitis"
+    },
+    {
+      "code": "013",
+      "description": "Herpesviral gingivostomatitis and pharyngotonsillitis"
+    },
+    {
+      "code": "157",
+      "description": "Herpesviral gingivostomatitis and pharyngotonsillitis"
+    },
+    {
+      "code": "158",
+      "description": "Herpesviral gingivostomatitis and pharyngotonsillitis"
+    },
+    {
+      "code": "159",
+      "description": "Herpesviral gingivostomatitis and pharyngotonsillitis"
+    },
+    {
+      "code": "791",
+      "description": "Herpesviral gingivostomatitis and pharyngotonsillitis"
+    },
+    {
+      "code": "793",
+      "description": "Herpesviral gingivostomatitis and pharyngotonsillitis"
+    },
+    {
+      "code": "974",
+      "description": "Herpesviral gingivostomatitis and pharyngotonsillitis"
+    },
+    {
+      "code": "975",
+      "description": "Herpesviral gingivostomatitis and pharyngotonsillitis"
+    },
+    {
+      "code": "976",
+      "description": "Herpesviral gingivostomatitis and pharyngotonsillitis"
+    }
+  ],
+  "B007": [
+    {
+      "code": "791",
+      "description": "Disseminated herpesviral disease"
+    },
+    {
+      "code": "793",
+      "description": "Disseminated herpesviral disease"
+    },
+    {
+      "code": "870",
+      "description": "Disseminated herpesviral disease"
+    },
+    {
+      "code": "871",
+      "description": "Disseminated herpesviral disease"
+    },
+    {
+      "code": "872",
+      "description": "Disseminated herpesviral disease"
+    },
+    {
+      "code": "974",
+      "description": "Disseminated herpesviral disease"
+    },
+    {
+      "code": "975",
+      "description": "Disseminated herpesviral disease"
+    },
+    {
+      "code": "976",
+      "description": "Disseminated herpesviral disease"
+    }
+  ],
+  "B085": [
+    {
+      "code": "011",
+      "description": "Enteroviral vesicular pharyngitis"
+    },
+    {
+      "code": "012",
+      "description": "Enteroviral vesicular pharyngitis"
+    },
+    {
+      "code": "013",
+      "description": "Enteroviral vesicular pharyngitis"
+    },
+    {
+      "code": "152",
+      "description": "Enteroviral vesicular pharyngitis"
+    },
+    {
+      "code": "153",
+      "description": "Enteroviral vesicular pharyngitis"
+    }
+  ],
+  "B180": [
+    {
+      "code": "441",
+      "description": "Chronic viral hepatitis B with delta-agent"
+    },
+    {
+      "code": "442",
+      "description": "Chronic viral hepatitis B with delta-agent"
+    },
+    {
+      "code": "443",
+      "description": "Chronic viral hepatitis B with delta-agent"
+    },
+    {
+      "code": "791",
+      "description": "Chronic viral hepatitis B with delta-agent"
+    },
+    {
+      "code": "793",
+      "description": "Chronic viral hepatitis B with delta-agent"
+    }
+  ],
+  "B181": [
+    {
+      "code": "441",
+      "description": "Chronic viral hepatitis B without delta-agent"
+    },
+    {
+      "code": "442",
+      "description": "Chronic viral hepatitis B without delta-agent"
+    },
+    {
+      "code": "443",
+      "description": "Chronic viral hepatitis B without delta-agent"
+    },
+    {
+      "code": "791",
+      "description": "Chronic viral hepatitis B without delta-agent"
+    },
+    {
+      "code": "793",
+      "description": "Chronic viral hepatitis B without delta-agent"
+    }
+  ],
+  "B182": [
+    {
+      "code": "441",
+      "description": "Chronic viral hepatitis C"
+    },
+    {
+      "code": "442",
+      "description": "Chronic viral hepatitis C"
+    },
+    {
+      "code": "443",
+      "description": "Chronic viral hepatitis C"
+    },
+    {
+      "code": "791",
+      "description": "Chronic viral hepatitis C"
+    },
+    {
+      "code": "793",
+      "description": "Chronic viral hepatitis C"
+    }
+  ],
+  "B20": [
+    {
+      "code": "969",
+      "description": "Human immunodeficiency virus [HIV] disease"
+    },
+    {
+      "code": "970",
+      "description": "Human immunodeficiency virus [HIV] disease"
+    },
+    {
+      "code": "971",
+      "description": "Human immunodeficiency virus [HIV] disease"
+    },
+    {
+      "code": "972",
+      "description": "Human immunodeficiency virus [HIV] disease"
+    },
+    {
+      "code": "973",
+      "description": "Human immunodeficiency virus [HIV] disease"
+    },
+    {
+      "code": "974",
+      "description": "Human immunodeficiency virus [HIV] disease"
+    },
+    {
+      "code": "975",
+      "description": "Human immunodeficiency virus [HIV] disease"
+    },
+    {
+      "code": "976",
+      "description": "Human immunodeficiency virus [HIV] disease"
+    },
+    {
+      "code": "977",
+      "description": "Human immunodeficiency virus [HIV] disease"
+    }
+  ],
+  "B349": [
+    {
+      "code": "865",
+      "description": "Viral infection, unspecified"
+    },
+    {
+      "code": "866",
+      "description": "Viral infection, unspecified"
+    }
+  ],
+  "B953": [
+    {
+      "code": "867",
+      "description": "Streptococcus pneumoniae as the cause of diseases classified elsewhere"
+    },
+    {
+      "code": "868",
+      "description": "Streptococcus pneumoniae as the cause of diseases classified elsewhere"
+    },
+    {
+      "code": "869",
+      "description": "Streptococcus pneumoniae as the cause of diseases classified elsewhere"
+    }
+  ],
+  "B9561": [
+    {
+      "code": "867",
+      "description": "Methicillin susceptible Staphylococcus aureus infection as the cause of diseases classified elsewhere"
+    },
+    {
+      "code": "868",
+      "description": "Methicillin susceptible Staphylococcus aureus infection as the cause of diseases classified elsewhere"
+    },
+    {
+      "code": "869",
+      "description": "Methicillin susceptible Staphylococcus aureus infection as the cause of diseases classified elsewhere"
+    }
+  ],
+  "B9620": [
+    {
+      "code": "867",
+      "description": "Unspecified Escherichia coli [E. coli] as the cause of diseases classified elsewhere"
+    },
+    {
+      "code": "868",
+      "description": "Unspecified Escherichia coli [E. coli] as the cause of diseases classified elsewhere"
+    },
+    {
+      "code": "869",
+      "description": "Unspecified Escherichia coli [E. coli] as the cause of diseases classified elsewhere"
+    }
+  ],
+  "B965": [
+    {
+      "code": "867",
+      "description": "Pseudomonas (aeruginosa) (mallei) (pseudomallei) as the cause of diseases classified elsewhere"
+    },
+    {
+      "code": "868",
+      "description": "Pseudomonas (aeruginosa) (mallei) (pseudomallei) as the cause of diseases classified elsewhere"
+    },
+    {
+      "code": "869",
+      "description": "Pseudomonas (aeruginosa) (mallei) (pseudomallei) as the cause of diseases classified elsewhere"
+    }
+  ],
+  "B9789": [
+    {
+      "code": "865",
+      "description": "Other viral agents as the cause of diseases classified elsewhere"
+    },
+    {
+      "code": "866",
+      "description": "Other viral agents as the cause of diseases classified elsewhere"
+    }
+  ],
+  "C188": [
+    {
+      "code": "374",
+      "description": "Malignant neoplasm of overlapping sites of colon"
+    },
+    {
+      "code": "375",
+      "description": "Malignant neoplasm of overlapping sites of colon"
+    },
+    {
+      "code": "376",
+      "description": "Malignant neoplasm of overlapping sites of colon"
+    }
+  ],
+  "C189": [
+    {
+      "code": "374",
+      "description": "Malignant neoplasm of colon, unspecified"
+    },
+    {
+      "code": "375",
+      "description": "Malignant neoplasm of colon, unspecified"
+    },
+    {
+      "code": "376",
+      "description": "Malignant neoplasm of colon, unspecified"
+    }
+  ],
+  "C20": [
+    {
+      "code": "374",
+      "description": "Malignant neoplasm of rectum"
+    },
+    {
+      "code": "375",
+      "description": "Malignant neoplasm of rectum"
+    },
+    {
+      "code": "376",
+      "description": "Malignant neoplasm of rectum"
+    }
+  ],
+  "C3490": [
+    {
+      "code": "180",
+      "description": "Malignant neoplasm of unspecified part of unspecified bronchus or lung"
+    },
+    {
+      "code": "181",
+      "description": "Malignant neoplasm of unspecified part of unspecified bronchus or lung"
+    },
+    {
+      "code": "182",
+      "description": "Malignant neoplasm of unspecified part of unspecified bronchus or lung"
+    }
+  ],
+  "C50919": [
+    {
+      "code": "582",
+      "description": "Malignant neoplasm of unspecified site of unspecified female breast"
+    },
+    {
+      "code": "583",
+      "description": "Malignant neoplasm of unspecified site of unspecified female breast"
+    },
+    {
+      "code": "597",
+      "description": "Malignant neoplasm of unspecified site of unspecified female breast"
+    },
+    {
+      "code": "598",
+      "description": "Malignant neoplasm of unspecified site of unspecified female breast"
+    },
+    {
+      "code": "599",
+      "description": "Malignant neoplasm of unspecified site of unspecified female breast"
+    }
+  ],
+  "C50929": [
+    {
+      "code": "582",
+      "description": "Malignant neoplasm of unspecified site of unspecified male breast"
+    },
+    {
+      "code": "583",
+      "description": "Malignant neoplasm of unspecified site of unspecified male breast"
+    },
+    {
+      "code": "597",
+      "description": "Malignant neoplasm of unspecified site of unspecified male breast"
+    },
+    {
+      "code": "598",
+      "description": "Malignant neoplasm of unspecified site of unspecified male breast"
+    },
+    {
+      "code": "599",
+      "description": "Malignant neoplasm of unspecified site of unspecified male breast"
+    }
+  ],
+  "C61": [
+    {
+      "code": "715",
+      "description": "Malignant neoplasm of prostate"
+    },
+    {
+      "code": "716",
+      "description": "Malignant neoplasm of prostate"
+    },
+    {
+      "code": "722",
+      "description": "Malignant neoplasm of prostate"
+    },
+    {
+      "code": "723",
+      "description": "Malignant neoplasm of prostate"
+    },
+    {
+      "code": "724",
+      "description": "Malignant neoplasm of prostate"
+    }
+  ],
+  "C779": [
+    {
+      "code": "820",
+      "description": "Secondary and unspecified malignant neoplasm of lymph node, unspecified"
+    },
+    {
+      "code": "821",
+      "description": "Secondary and unspecified malignant neoplasm of lymph node, unspecified"
+    },
+    {
+      "code": "822",
+      "description": "Secondary and unspecified malignant neoplasm of lymph node, unspecified"
+    },
+    {
+      "code": "823",
+      "description": "Secondary and unspecified malignant neoplasm of lymph node, unspecified"
+    },
+    {
+      "code": "824",
+      "description": "Secondary and unspecified malignant neoplasm of lymph node, unspecified"
+    },
+    {
+      "code": "825",
+      "description": "Secondary and unspecified malignant neoplasm of lymph node, unspecified"
+    },
+    {
+      "code": "840",
+      "description": "Secondary and unspecified malignant neoplasm of lymph node, unspecified"
+    },
+    {
+      "code": "841",
+      "description": "Secondary and unspecified malignant neoplasm of lymph node, unspecified"
+    },
+    {
+      "code": "842",
+      "description": "Secondary and unspecified malignant neoplasm of lymph node, unspecified"
+    }
+  ],
+  "C785": [
+    {
+      "code": "374",
+      "description": "Secondary malignant neoplasm of large intestine and rectum"
+    },
+    {
+      "code": "375",
+      "description": "Secondary malignant neoplasm of large intestine and rectum"
+    },
+    {
+      "code": "376",
+      "description": "Secondary malignant neoplasm of large intestine and rectum"
+    }
+  ],
+  "C799": [
+    {
+      "code": "826",
+      "description": "Secondary malignant neoplasm of unspecified site"
+    },
+    {
+      "code": "827",
+      "description": "Secondary malignant neoplasm of unspecified site"
+    },
+    {
+      "code": "828",
+      "description": "Secondary malignant neoplasm of unspecified site"
+    },
+    {
+      "code": "829",
+      "description": "Secondary malignant neoplasm of unspecified site"
+    },
+    {
+      "code": "830",
+      "description": "Secondary malignant neoplasm of unspecified site"
+    },
+    {
+      "code": "843",
+      "description": "Secondary malignant neoplasm of unspecified site"
+    },
+    {
+      "code": "844",
+      "description": "Secondary malignant neoplasm of unspecified site"
+    },
+    {
+      "code": "845",
+      "description": "Secondary malignant neoplasm of unspecified site"
+    }
+  ],
+  "C9200": [
+    {
+      "code": "820",
+      "description": "Acute myeloblastic leukemia, not having achieved remission"
+    },
+    {
+      "code": "821",
+      "description": "Acute myeloblastic leukemia, not having achieved remission"
+    },
+    {
+      "code": "822",
+      "description": "Acute myeloblastic leukemia, not having achieved remission"
+    },
+    {
+      "code": "834",
+      "description": "Acute myeloblastic leukemia, not having achieved remission"
+    },
+    {
+      "code": "835",
+      "description": "Acute myeloblastic leukemia, not having achieved remission"
+    },
+    {
+      "code": "836",
+      "description": "Acute myeloblastic leukemia, not having achieved remission"
+    },
+    {
+      "code": "837",
+      "description": "Acute myeloblastic leukemia, not having achieved remission"
+    },
+    {
+      "code": "838",
+      "description": "Acute myeloblastic leukemia, not having achieved remission"
+    },
+    {
+      "code": "839",
+      "description": "Acute myeloblastic leukemia, not having achieved remission"
+    }
+  ],
+  "D075": [
+    {
+      "code": "715",
+      "description": "Carcinoma in situ of prostate"
+    },
+    {
+      "code": "716",
+      "description": "Carcinoma in situ of prostate"
+    },
+    {
+      "code": "722",
+      "description": "Carcinoma in situ of prostate"
+    },
+    {
+      "code": "723",
+      "description": "Carcinoma in situ of prostate"
+    },
+    {
+      "code": "724",
+      "description": "Carcinoma in situ of prostate"
+    }
+  ],
+  "D4959": [
+    {
+      "code": "656",
+      "description": "Neoplasm of unspecified behavior of other genitourinary organ"
+    },
+    {
+      "code": "657",
+      "description": "Neoplasm of unspecified behavior of other genitourinary organ"
+    },
+    {
+      "code": "658",
+      "description": "Neoplasm of unspecified behavior of other genitourinary organ"
+    },
+    {
+      "code": "686",
+      "description": "Neoplasm of unspecified behavior of other genitourinary organ"
+    },
+    {
+      "code": "687",
+      "description": "Neoplasm of unspecified behavior of other genitourinary organ"
+    },
+    {
+      "code": "688",
+      "description": "Neoplasm of unspecified behavior of other genitourinary organ"
+    }
+  ],
+  "D649": [
+    {
+      "code": "811",
+      "description": "Anemia, unspecified"
+    },
+    {
+      "code": "812",
+      "description": "Anemia, unspecified"
+    }
+  ],
+  "D6832": [
+    {
+      "code": "813",
+      "description": "Hemorrhagic disorder due to extrinsic circulating anticoagulants"
+    }
+  ],
+  "D688": [
+    {
+      "code": "813",
+      "description": "Other specified coagulation defects"
+    }
+  ],
+  "D702": [
+    {
+      "code": "808",
+      "description": "Other drug-induced agranulocytosis"
+    },
+    {
+      "code": "809",
+      "description": "Other drug-induced agranulocytosis"
+    },
+    {
+      "code": "810",
+      "description": "Other drug-induced agranulocytosis"
+    }
+  ],
+  "D708": [
+    {
+      "code": "808",
+      "description": "Other neutropenia"
+    },
+    {
+      "code": "809",
+      "description": "Other neutropenia"
+    },
+    {
+      "code": "810",
+      "description": "Other neutropenia"
+    }
+  ],
+  "E034": [
+    {
+      "code": "011",
+      "description": "Atrophy of thyroid (acquired)"
+    },
+    {
+      "code": "012",
+      "description": "Atrophy of thyroid (acquired)"
+    },
+    {
+      "code": "013",
+      "description": "Atrophy of thyroid (acquired)"
+    },
+    {
+      "code": "643",
+      "description": "Atrophy of thyroid (acquired)"
+    },
+    {
+      "code": "644",
+      "description": "Atrophy of thyroid (acquired)"
+    },
+    {
+      "code": "645",
+      "description": "Atrophy of thyroid (acquired)"
+    }
+  ],
+  "E089": [
+    {
+      "code": "008",
+      "description": "Diabetes mellitus due to underlying condition without complications"
+    },
+    {
+      "code": "010",
+      "description": "Diabetes mellitus due to underlying condition without complications"
+    },
+    {
+      "code": "019",
+      "description": "Diabetes mellitus due to underlying condition without complications"
+    },
+    {
+      "code": "637",
+      "description": "Diabetes mellitus due to underlying condition without complications"
+    },
+    {
+      "code": "638",
+      "description": "Diabetes mellitus due to underlying condition without complications"
+    },
+    {
+      "code": "639",
+      "description": "Diabetes mellitus due to underlying condition without complications"
+    }
+  ],
+  "E0922": [
+    {
+      "code": "008",
+      "description": "Drug or chemical induced diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "010",
+      "description": "Drug or chemical induced diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "019",
+      "description": "Drug or chemical induced diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "673",
+      "description": "Drug or chemical induced diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "674",
+      "description": "Drug or chemical induced diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "675",
+      "description": "Drug or chemical induced diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "698",
+      "description": "Drug or chemical induced diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "699",
+      "description": "Drug or chemical induced diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "700",
+      "description": "Drug or chemical induced diabetes mellitus with diabetic chronic kidney disease"
+    }
+  ],
+  "E1022": [
+    {
+      "code": "008",
+      "description": "Type 1 diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "010",
+      "description": "Type 1 diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "019",
+      "description": "Type 1 diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "673",
+      "description": "Type 1 diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "674",
+      "description": "Type 1 diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "675",
+      "description": "Type 1 diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "698",
+      "description": "Type 1 diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "699",
+      "description": "Type 1 diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "700",
+      "description": "Type 1 diabetes mellitus with diabetic chronic kidney disease"
+    }
+  ],
+  "E1121": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with diabetic nephropathy"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with diabetic nephropathy"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with diabetic nephropathy"
+    },
+    {
+      "code": "698",
+      "description": "Type 2 diabetes mellitus with diabetic nephropathy"
+    },
+    {
+      "code": "699",
+      "description": "Type 2 diabetes mellitus with diabetic nephropathy"
+    },
+    {
+      "code": "700",
+      "description": "Type 2 diabetes mellitus with diabetic nephropathy"
+    }
+  ],
+  "E1122": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "673",
+      "description": "Type 2 diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "674",
+      "description": "Type 2 diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "675",
+      "description": "Type 2 diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "698",
+      "description": "Type 2 diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "699",
+      "description": "Type 2 diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "700",
+      "description": "Type 2 diabetes mellitus with diabetic chronic kidney disease"
+    }
+  ],
+  "E1129": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with other diabetic kidney complication"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with other diabetic kidney complication"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with other diabetic kidney complication"
+    },
+    {
+      "code": "698",
+      "description": "Type 2 diabetes mellitus with other diabetic kidney complication"
+    },
+    {
+      "code": "699",
+      "description": "Type 2 diabetes mellitus with other diabetic kidney complication"
+    },
+    {
+      "code": "700",
+      "description": "Type 2 diabetes mellitus with other diabetic kidney complication"
+    }
+  ],
+  "E11311": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with unspecified diabetic retinopathy with macular edema"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with unspecified diabetic retinopathy with macular edema"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with unspecified diabetic retinopathy with macular edema"
+    },
+    {
+      "code": "124",
+      "description": "Type 2 diabetes mellitus with unspecified diabetic retinopathy with macular edema"
+    },
+    {
+      "code": "125",
+      "description": "Type 2 diabetes mellitus with unspecified diabetic retinopathy with macular edema"
+    }
+  ],
+  "E11319": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with unspecified diabetic retinopathy without macular edema"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with unspecified diabetic retinopathy without macular edema"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with unspecified diabetic retinopathy without macular edema"
+    },
+    {
+      "code": "124",
+      "description": "Type 2 diabetes mellitus with unspecified diabetic retinopathy without macular edema"
+    },
+    {
+      "code": "125",
+      "description": "Type 2 diabetes mellitus with unspecified diabetic retinopathy without macular edema"
+    }
+  ],
+  "E113299": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with mild nonproliferative diabetic retinopathy without macular edema, unspecified eye"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with mild nonproliferative diabetic retinopathy without macular edema, unspecified eye"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with mild nonproliferative diabetic retinopathy without macular edema, unspecified eye"
+    },
+    {
+      "code": "124",
+      "description": "Type 2 diabetes mellitus with mild nonproliferative diabetic retinopathy without macular edema, unspecified eye"
+    },
+    {
+      "code": "125",
+      "description": "Type 2 diabetes mellitus with mild nonproliferative diabetic retinopathy without macular edema, unspecified eye"
+    }
+  ],
+  "E113519": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with macular edema, unspecified eye"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with macular edema, unspecified eye"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with macular edema, unspecified eye"
+    },
+    {
+      "code": "124",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with macular edema, unspecified eye"
+    },
+    {
+      "code": "125",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with macular edema, unspecified eye"
+    }
+  ],
+  "E113591": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, right eye"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, right eye"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, right eye"
+    },
+    {
+      "code": "124",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, right eye"
+    },
+    {
+      "code": "125",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, right eye"
+    }
+  ],
+  "E113592": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, left eye"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, left eye"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, left eye"
+    },
+    {
+      "code": "124",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, left eye"
+    },
+    {
+      "code": "125",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, left eye"
+    }
+  ],
+  "E113593": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, bilateral"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, bilateral"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, bilateral"
+    },
+    {
+      "code": "124",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, bilateral"
+    },
+    {
+      "code": "125",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, bilateral"
+    }
+  ],
+  "E113599": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, unspecified eye"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, unspecified eye"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, unspecified eye"
+    },
+    {
+      "code": "124",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, unspecified eye"
+    },
+    {
+      "code": "125",
+      "description": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, unspecified eye"
+    }
+  ],
+  "E1139": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with other diabetic ophthalmic complication"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with other diabetic ophthalmic complication"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with other diabetic ophthalmic complication"
+    },
+    {
+      "code": "124",
+      "description": "Type 2 diabetes mellitus with other diabetic ophthalmic complication"
+    },
+    {
+      "code": "125",
+      "description": "Type 2 diabetes mellitus with other diabetic ophthalmic complication"
+    }
+  ],
+  "E1140": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with diabetic neuropathy, unspecified"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with diabetic neuropathy, unspecified"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with diabetic neuropathy, unspecified"
+    },
+    {
+      "code": "073",
+      "description": "Type 2 diabetes mellitus with diabetic neuropathy, unspecified"
+    },
+    {
+      "code": "074",
+      "description": "Type 2 diabetes mellitus with diabetic neuropathy, unspecified"
+    }
+  ],
+  "E1141": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with diabetic mononeuropathy"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with diabetic mononeuropathy"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with diabetic mononeuropathy"
+    },
+    {
+      "code": "073",
+      "description": "Type 2 diabetes mellitus with diabetic mononeuropathy"
+    },
+    {
+      "code": "074",
+      "description": "Type 2 diabetes mellitus with diabetic mononeuropathy"
+    }
+  ],
+  "E1142": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with diabetic polyneuropathy"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with diabetic polyneuropathy"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with diabetic polyneuropathy"
+    },
+    {
+      "code": "073",
+      "description": "Type 2 diabetes mellitus with diabetic polyneuropathy"
+    },
+    {
+      "code": "074",
+      "description": "Type 2 diabetes mellitus with diabetic polyneuropathy"
+    }
+  ],
+  "E1143": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with diabetic autonomic (poly)neuropathy"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with diabetic autonomic (poly)neuropathy"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with diabetic autonomic (poly)neuropathy"
+    },
+    {
+      "code": "073",
+      "description": "Type 2 diabetes mellitus with diabetic autonomic (poly)neuropathy"
+    },
+    {
+      "code": "074",
+      "description": "Type 2 diabetes mellitus with diabetic autonomic (poly)neuropathy"
+    }
+  ],
+  "E1144": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with diabetic amyotrophy"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with diabetic amyotrophy"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with diabetic amyotrophy"
+    },
+    {
+      "code": "073",
+      "description": "Type 2 diabetes mellitus with diabetic amyotrophy"
+    },
+    {
+      "code": "074",
+      "description": "Type 2 diabetes mellitus with diabetic amyotrophy"
+    }
+  ],
+  "E1149": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with other diabetic neurological complication"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with other diabetic neurological complication"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with other diabetic neurological complication"
+    },
+    {
+      "code": "073",
+      "description": "Type 2 diabetes mellitus with other diabetic neurological complication"
+    },
+    {
+      "code": "074",
+      "description": "Type 2 diabetes mellitus with other diabetic neurological complication"
+    }
+  ],
+  "E11610": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus with diabetic neuropathic arthropathy"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus with diabetic neuropathic arthropathy"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus with diabetic neuropathic arthropathy"
+    },
+    {
+      "code": "073",
+      "description": "Type 2 diabetes mellitus with diabetic neuropathic arthropathy"
+    },
+    {
+      "code": "074",
+      "description": "Type 2 diabetes mellitus with diabetic neuropathic arthropathy"
+    }
+  ],
+  "E119": [
+    {
+      "code": "008",
+      "description": "Type 2 diabetes mellitus without complications"
+    },
+    {
+      "code": "010",
+      "description": "Type 2 diabetes mellitus without complications"
+    },
+    {
+      "code": "019",
+      "description": "Type 2 diabetes mellitus without complications"
+    },
+    {
+      "code": "637",
+      "description": "Type 2 diabetes mellitus without complications"
+    },
+    {
+      "code": "638",
+      "description": "Type 2 diabetes mellitus without complications"
+    },
+    {
+      "code": "639",
+      "description": "Type 2 diabetes mellitus without complications"
+    }
+  ],
+  "E669": [
+    {
+      "code": "640",
+      "description": "Obesity, unspecified"
+    },
+    {
+      "code": "641",
+      "description": "Obesity, unspecified"
+    }
+  ],
+  "E781": [
+    {
+      "code": "642",
+      "description": "Pure hyperglyceridemia"
+    }
+  ],
+  "E785": [
+    {
+      "code": "642",
+      "description": "Hyperlipidemia, unspecified"
+    }
+  ],
+  "E8411": [
+    {
+      "code": "791",
+      "description": "Meconium ileus in cystic fibrosis"
+    },
+    {
+      "code": "793",
+      "description": "Meconium ileus in cystic fibrosis"
+    }
+  ],
+  "E848": [
+    {
+      "code": "640",
+      "description": "Cystic fibrosis with other manifestations"
+    },
+    {
+      "code": "641",
+      "description": "Cystic fibrosis with other manifestations"
+    }
+  ],
+  "E849": [
+    {
+      "code": "640",
+      "description": "Cystic fibrosis, unspecified"
+    },
+    {
+      "code": "641",
+      "description": "Cystic fibrosis, unspecified"
+    }
+  ],
+  "E8881": [
+    {
+      "code": "642",
+      "description": "Metabolic syndrome"
+    }
+  ],
+  "E8889": [
+    {
+      "code": "642",
+      "description": "Other specified metabolic disorders"
+    }
+  ],
+  "F0280": [
+    {
+      "code": "884",
+      "description": "Dementia in other diseases classified elsewhere, unspecified severity, without behavioral disturbance, psychotic disturbance, mood disturbance, and anxiety"
+    }
+  ],
+  "F1010": [
+    {
+      "code": "894",
+      "description": "Alcohol abuse, uncomplicated"
+    },
+    {
+      "code": "895",
+      "description": "Alcohol abuse, uncomplicated"
+    },
+    {
+      "code": "896",
+      "description": "Alcohol abuse, uncomplicated"
+    },
+    {
+      "code": "897",
+      "description": "Alcohol abuse, uncomplicated"
+    }
+  ],
+  "F1020": [
+    {
+      "code": "894",
+      "description": "Alcohol dependence, uncomplicated"
+    },
+    {
+      "code": "895",
+      "description": "Alcohol dependence, uncomplicated"
+    },
+    {
+      "code": "896",
+      "description": "Alcohol dependence, uncomplicated"
+    },
+    {
+      "code": "897",
+      "description": "Alcohol dependence, uncomplicated"
+    }
+  ],
+  "F1021": [
+    {
+      "code": "894",
+      "description": "Alcohol dependence, in remission"
+    },
+    {
+      "code": "895",
+      "description": "Alcohol dependence, in remission"
+    },
+    {
+      "code": "896",
+      "description": "Alcohol dependence, in remission"
+    },
+    {
+      "code": "897",
+      "description": "Alcohol dependence, in remission"
+    }
+  ],
+  "F1110": [
+    {
+      "code": "894",
+      "description": "Opioid abuse, uncomplicated"
+    },
+    {
+      "code": "895",
+      "description": "Opioid abuse, uncomplicated"
+    },
+    {
+      "code": "896",
+      "description": "Opioid abuse, uncomplicated"
+    },
+    {
+      "code": "897",
+      "description": "Opioid abuse, uncomplicated"
+    }
+  ],
+  "F1910": [
+    {
+      "code": "894",
+      "description": "Other psychoactive substance abuse, uncomplicated"
+    },
+    {
+      "code": "895",
+      "description": "Other psychoactive substance abuse, uncomplicated"
+    },
+    {
+      "code": "896",
+      "description": "Other psychoactive substance abuse, uncomplicated"
+    },
+    {
+      "code": "897",
+      "description": "Other psychoactive substance abuse, uncomplicated"
+    }
+  ],
+  "F1990": [
+    {
+      "code": "894",
+      "description": "Other psychoactive substance use, unspecified, uncomplicated"
+    },
+    {
+      "code": "895",
+      "description": "Other psychoactive substance use, unspecified, uncomplicated"
+    },
+    {
+      "code": "896",
+      "description": "Other psychoactive substance use, unspecified, uncomplicated"
+    },
+    {
+      "code": "897",
+      "description": "Other psychoactive substance use, unspecified, uncomplicated"
+    }
+  ],
+  "F329": [
+    {
+      "code": "881",
+      "description": "Major depressive disorder, single episode, unspecified"
+    }
+  ],
+  "F410": [
+    {
+      "code": "880",
+      "description": "Panic disorder [episodic paroxysmal anxiety]"
+    }
+  ],
+  "F419": [
+    {
+      "code": "880",
+      "description": "Anxiety disorder, unspecified"
+    }
+  ],
+  "F4310": [
+    {
+      "code": "882",
+      "description": "Post-traumatic stress disorder, unspecified"
+    }
+  ],
+  "F4311": [
+    {
+      "code": "882",
+      "description": "Post-traumatic stress disorder, acute"
+    }
+  ],
+  "F4312": [
+    {
+      "code": "882",
+      "description": "Post-traumatic stress disorder, chronic"
+    }
+  ],
+  "F79": [
+    {
+      "code": "884",
+      "description": "Unspecified intellectual disabilities"
+    }
+  ],
+  "F909": [
+    {
+      "code": "886",
+      "description": "Attention-deficit hyperactivity disorder, unspecified type"
+    }
+  ],
+  "G249": [
+    {
+      "code": "091",
+      "description": "Dystonia, unspecified"
+    },
+    {
+      "code": "092",
+      "description": "Dystonia, unspecified"
+    },
+    {
+      "code": "093",
+      "description": "Dystonia, unspecified"
+    }
+  ],
+  "G300": [
+    {
+      "code": "056",
+      "description": "Alzheimer's disease with early onset"
+    },
+    {
+      "code": "057",
+      "description": "Alzheimer's disease with early onset"
+    }
+  ],
+  "G309": [
+    {
+      "code": "056",
+      "description": "Alzheimer's disease, unspecified"
+    },
+    {
+      "code": "057",
+      "description": "Alzheimer's disease, unspecified"
+    }
+  ],
+  "G40909": [
+    {
+      "code": "023",
+      "description": "Epilepsy, unspecified, not intractable, without status epilepticus"
+    },
+    {
+      "code": "100",
+      "description": "Epilepsy, unspecified, not intractable, without status epilepticus"
+    },
+    {
+      "code": "101",
+      "description": "Epilepsy, unspecified, not intractable, without status epilepticus"
+    }
+  ],
+  "G43701": [
+    {
+      "code": "102",
+      "description": "Chronic migraine without aura, not intractable, with status migrainosus"
+    },
+    {
+      "code": "103",
+      "description": "Chronic migraine without aura, not intractable, with status migrainosus"
+    }
+  ],
+  "G43709": [
+    {
+      "code": "102",
+      "description": "Chronic migraine without aura, not intractable, without status migrainosus"
+    },
+    {
+      "code": "103",
+      "description": "Chronic migraine without aura, not intractable, without status migrainosus"
+    }
+  ],
+  "G43719": [
+    {
+      "code": "102",
+      "description": "Chronic migraine without aura, intractable, without status migrainosus"
+    },
+    {
+      "code": "103",
+      "description": "Chronic migraine without aura, intractable, without status migrainosus"
+    }
+  ],
+  "G43C1": [
+    {
+      "code": "102",
+      "description": "Periodic headache syndromes in child or adult, intractable"
+    },
+    {
+      "code": "103",
+      "description": "Periodic headache syndromes in child or adult, intractable"
+    }
+  ],
+  "G4730": [
+    {
+      "code": "011",
+      "description": "Sleep apnea, unspecified"
+    },
+    {
+      "code": "012",
+      "description": "Sleep apnea, unspecified"
+    },
+    {
+      "code": "013",
+      "description": "Sleep apnea, unspecified"
+    },
+    {
+      "code": "154",
+      "description": "Sleep apnea, unspecified"
+    },
+    {
+      "code": "155",
+      "description": "Sleep apnea, unspecified"
+    },
+    {
+      "code": "156",
+      "description": "Sleep apnea, unspecified"
+    }
+  ],
+  "G4733": [
+    {
+      "code": "011",
+      "description": "Obstructive sleep apnea (adult) (pediatric)"
+    },
+    {
+      "code": "012",
+      "description": "Obstructive sleep apnea (adult) (pediatric)"
+    },
+    {
+      "code": "013",
+      "description": "Obstructive sleep apnea (adult) (pediatric)"
+    },
+    {
+      "code": "154",
+      "description": "Obstructive sleep apnea (adult) (pediatric)"
+    },
+    {
+      "code": "155",
+      "description": "Obstructive sleep apnea (adult) (pediatric)"
+    },
+    {
+      "code": "156",
+      "description": "Obstructive sleep apnea (adult) (pediatric)"
+    }
+  ],
+  "G4739": [
+    {
+      "code": "011",
+      "description": "Other sleep apnea"
+    },
+    {
+      "code": "012",
+      "description": "Other sleep apnea"
+    },
+    {
+      "code": "013",
+      "description": "Other sleep apnea"
+    },
+    {
+      "code": "154",
+      "description": "Other sleep apnea"
+    },
+    {
+      "code": "155",
+      "description": "Other sleep apnea"
+    },
+    {
+      "code": "156",
+      "description": "Other sleep apnea"
+    }
+  ],
+  "G4754": [
+    {
+      "code": "011",
+      "description": "Parasomnia in conditions classified elsewhere"
+    },
+    {
+      "code": "012",
+      "description": "Parasomnia in conditions classified elsewhere"
+    },
+    {
+      "code": "013",
+      "description": "Parasomnia in conditions classified elsewhere"
+    },
+    {
+      "code": "154",
+      "description": "Parasomnia in conditions classified elsewhere"
+    },
+    {
+      "code": "155",
+      "description": "Parasomnia in conditions classified elsewhere"
+    },
+    {
+      "code": "156",
+      "description": "Parasomnia in conditions classified elsewhere"
+    }
+  ],
+  "G479": [
+    {
+      "code": "887",
+      "description": "Sleep disorder, unspecified"
+    }
+  ],
+  "G53": [
+    {
+      "code": "073",
+      "description": "Cranial nerve disorders in diseases classified elsewhere"
+    },
+    {
+      "code": "074",
+      "description": "Cranial nerve disorders in diseases classified elsewhere"
+    }
+  ],
+  "G809": [
+    {
+      "code": "091",
+      "description": "Cerebral palsy, unspecified"
+    },
+    {
+      "code": "092",
+      "description": "Cerebral palsy, unspecified"
+    },
+    {
+      "code": "093",
+      "description": "Cerebral palsy, unspecified"
+    }
+  ],
+  "G8252": [
+    {
+      "code": "052",
+      "description": "Quadriplegia, C1-C4 incomplete"
+    },
+    {
+      "code": "053",
+      "description": "Quadriplegia, C1-C4 incomplete"
+    }
+  ],
+  "G8254": [
+    {
+      "code": "052",
+      "description": "Quadriplegia, C5-C7 incomplete"
+    },
+    {
+      "code": "053",
+      "description": "Quadriplegia, C5-C7 incomplete"
+    }
+  ],
+  "G839": [
+    {
+      "code": "091",
+      "description": "Paralytic syndrome, unspecified"
+    },
+    {
+      "code": "092",
+      "description": "Paralytic syndrome, unspecified"
+    },
+    {
+      "code": "093",
+      "description": "Paralytic syndrome, unspecified"
+    }
+  ],
+  "G8929": [
+    {
+      "code": "091",
+      "description": "Other chronic pain"
+    },
+    {
+      "code": "092",
+      "description": "Other chronic pain"
+    },
+    {
+      "code": "093",
+      "description": "Other chronic pain"
+    }
+  ],
+  "G919": [
+    {
+      "code": "056",
+      "description": "Hydrocephalus, unspecified"
+    },
+    {
+      "code": "057",
+      "description": "Hydrocephalus, unspecified"
+    }
+  ],
+  "G9349": [
+    {
+      "code": "070",
+      "description": "Other encephalopathy"
+    },
+    {
+      "code": "071",
+      "description": "Other encephalopathy"
+    },
+    {
+      "code": "072",
+      "description": "Other encephalopathy"
+    },
+    {
+      "code": "974",
+      "description": "Other encephalopathy"
+    },
+    {
+      "code": "975",
+      "description": "Other encephalopathy"
+    },
+    {
+      "code": "976",
+      "description": "Other encephalopathy"
+    }
+  ],
+  "G9589": [
+    {
+      "code": "091",
+      "description": "Other specified diseases of spinal cord"
+    },
+    {
+      "code": "092",
+      "description": "Other specified diseases of spinal cord"
+    },
+    {
+      "code": "093",
+      "description": "Other specified diseases of spinal cord"
+    }
+  ],
+  "G959": [
+    {
+      "code": "091",
+      "description": "Disease of spinal cord, unspecified"
+    },
+    {
+      "code": "092",
+      "description": "Disease of spinal cord, unspecified"
+    },
+    {
+      "code": "093",
+      "description": "Disease of spinal cord, unspecified"
+    },
+    {
+      "code": "974",
+      "description": "Disease of spinal cord, unspecified"
+    },
+    {
+      "code": "975",
+      "description": "Disease of spinal cord, unspecified"
+    },
+    {
+      "code": "976",
+      "description": "Disease of spinal cord, unspecified"
+    }
+  ],
+  "H1189": [
+    {
+      "code": "124",
+      "description": "Other specified disorders of conjunctiva"
+    },
+    {
+      "code": "125",
+      "description": "Other specified disorders of conjunctiva"
+    }
+  ],
+  "H543": [
+    {
+      "code": "124",
+      "description": "Unqualified visual loss, both eyes"
+    },
+    {
+      "code": "125",
+      "description": "Unqualified visual loss, both eyes"
+    }
+  ],
+  "H6690": [
+    {
+      "code": "152",
+      "description": "Otitis media, unspecified, unspecified ear"
+    },
+    {
+      "code": "153",
+      "description": "Otitis media, unspecified, unspecified ear"
+    }
+  ],
+  "I050": [
+    {
+      "code": "306",
+      "description": "Rheumatic mitral stenosis"
+    },
+    {
+      "code": "307",
+      "description": "Rheumatic mitral stenosis"
+    }
+  ],
+  "I070": [
+    {
+      "code": "306",
+      "description": "Rheumatic tricuspid stenosis"
+    },
+    {
+      "code": "307",
+      "description": "Rheumatic tricuspid stenosis"
+    }
+  ],
+  "I071": [
+    {
+      "code": "306",
+      "description": "Rheumatic tricuspid insufficiency"
+    },
+    {
+      "code": "307",
+      "description": "Rheumatic tricuspid insufficiency"
+    }
+  ],
+  "I0981": [
+    {
+      "code": "222",
+      "description": "Rheumatic heart failure"
+    },
+    {
+      "code": "223",
+      "description": "Rheumatic heart failure"
+    },
+    {
+      "code": "291",
+      "description": "Rheumatic heart failure"
+    },
+    {
+      "code": "292",
+      "description": "Rheumatic heart failure"
+    },
+    {
+      "code": "293",
+      "description": "Rheumatic heart failure"
+    },
+    {
+      "code": "791",
+      "description": "Rheumatic heart failure"
+    },
+    {
+      "code": "793",
+      "description": "Rheumatic heart failure"
+    }
+  ],
+  "I10": [
+    {
+      "code": "304",
+      "description": "Essential (primary) hypertension"
+    },
+    {
+      "code": "305",
+      "description": "Essential (primary) hypertension"
+    }
+  ],
+  "I129": [
+    {
+      "code": "682",
+      "description": "Hypertensive chronic kidney disease with stage 1 through stage 4 chronic kidney disease, or unspecified chronic kidney disease"
+    },
+    {
+      "code": "683",
+      "description": "Hypertensive chronic kidney disease with stage 1 through stage 4 chronic kidney disease, or unspecified chronic kidney disease"
+    },
+    {
+      "code": "684",
+      "description": "Hypertensive chronic kidney disease with stage 1 through stage 4 chronic kidney disease, or unspecified chronic kidney disease"
+    }
+  ],
+  "I1310": [
+    {
+      "code": "682",
+      "description": "Hypertensive heart and chronic kidney disease without heart failure, with stage 1 through stage 4 chronic kidney disease, or unspecified chronic kidney disease"
+    },
+    {
+      "code": "683",
+      "description": "Hypertensive heart and chronic kidney disease without heart failure, with stage 1 through stage 4 chronic kidney disease, or unspecified chronic kidney disease"
+    },
+    {
+      "code": "684",
+      "description": "Hypertensive heart and chronic kidney disease without heart failure, with stage 1 through stage 4 chronic kidney disease, or unspecified chronic kidney disease"
+    }
+  ],
+  "I151": [
+    {
+      "code": "304",
+      "description": "Hypertension secondary to other renal disorders"
+    },
+    {
+      "code": "305",
+      "description": "Hypertension secondary to other renal disorders"
+    }
+  ],
+  "I200": [
+    {
+      "code": "311",
+      "description": "Unstable angina"
+    }
+  ],
+  "I2109": [
+    {
+      "code": "222",
+      "description": "ST elevation (STEMI) myocardial infarction involving other coronary artery of anterior wall"
+    },
+    {
+      "code": "223",
+      "description": "ST elevation (STEMI) myocardial infarction involving other coronary artery of anterior wall"
+    },
+    {
+      "code": "280",
+      "description": "ST elevation (STEMI) myocardial infarction involving other coronary artery of anterior wall"
+    },
+    {
+      "code": "281",
+      "description": "ST elevation (STEMI) myocardial infarction involving other coronary artery of anterior wall"
+    },
+    {
+      "code": "282",
+      "description": "ST elevation (STEMI) myocardial infarction involving other coronary artery of anterior wall"
+    },
+    {
+      "code": "283",
+      "description": "ST elevation (STEMI) myocardial infarction involving other coronary artery of anterior wall"
+    },
+    {
+      "code": "284",
+      "description": "ST elevation (STEMI) myocardial infarction involving other coronary artery of anterior wall"
+    },
+    {
+      "code": "285",
+      "description": "ST elevation (STEMI) myocardial infarction involving other coronary artery of anterior wall"
+    }
+  ],
+  "I2119": [
+    {
+      "code": "222",
+      "description": "ST elevation (STEMI) myocardial infarction involving other coronary artery of inferior wall"
+    },
+    {
+      "code": "223",
+      "description": "ST elevation (STEMI) myocardial infarction involving other coronary artery of inferior wall"
+    },
+    {
+      "code": "280",
+      "description": "ST elevation (STEMI) myocardial infarction involving other coronary artery of inferior wall"
+    },
+    {
+      "code": "281",
+      "description": "ST elevation (STEMI) myocardial infarction involving other coronary artery of inferior wall"
+    },
+    {
+      "code": "282",
+      "description": "ST elevation (STEMI) myocardial infarction involving other coronary artery of inferior wall"
+    },
+    {
+      "code": "283",
+      "description": "ST elevation (STEMI) myocardial infarction involving other coronary artery of inferior wall"
+    },
+    {
+      "code": "284",
+      "description": "ST elevation (STEMI) myocardial infarction involving other coronary artery of inferior wall"
+    },
+    {
+      "code": "285",
+      "description": "ST elevation (STEMI) myocardial infarction involving other coronary artery of inferior wall"
+    }
+  ],
+  "I213": [
+    {
+      "code": "222",
+      "description": "ST elevation (STEMI) myocardial infarction of unspecified site"
+    },
+    {
+      "code": "223",
+      "description": "ST elevation (STEMI) myocardial infarction of unspecified site"
+    },
+    {
+      "code": "280",
+      "description": "ST elevation (STEMI) myocardial infarction of unspecified site"
+    },
+    {
+      "code": "281",
+      "description": "ST elevation (STEMI) myocardial infarction of unspecified site"
+    },
+    {
+      "code": "282",
+      "description": "ST elevation (STEMI) myocardial infarction of unspecified site"
+    },
+    {
+      "code": "283",
+      "description": "ST elevation (STEMI) myocardial infarction of unspecified site"
+    },
+    {
+      "code": "284",
+      "description": "ST elevation (STEMI) myocardial infarction of unspecified site"
+    },
+    {
+      "code": "285",
+      "description": "ST elevation (STEMI) myocardial infarction of unspecified site"
+    }
+  ],
+  "I214": [
+    {
+      "code": "222",
+      "description": "Non-ST elevation (NSTEMI) myocardial infarction"
+    },
+    {
+      "code": "223",
+      "description": "Non-ST elevation (NSTEMI) myocardial infarction"
+    },
+    {
+      "code": "280",
+      "description": "Non-ST elevation (NSTEMI) myocardial infarction"
+    },
+    {
+      "code": "281",
+      "description": "Non-ST elevation (NSTEMI) myocardial infarction"
+    },
+    {
+      "code": "282",
+      "description": "Non-ST elevation (NSTEMI) myocardial infarction"
+    },
+    {
+      "code": "283",
+      "description": "Non-ST elevation (NSTEMI) myocardial infarction"
+    },
+    {
+      "code": "284",
+      "description": "Non-ST elevation (NSTEMI) myocardial infarction"
+    },
+    {
+      "code": "285",
+      "description": "Non-ST elevation (NSTEMI) myocardial infarction"
+    }
+  ],
+  "I219": [
+    {
+      "code": "222",
+      "description": "Acute myocardial infarction, unspecified"
+    },
+    {
+      "code": "223",
+      "description": "Acute myocardial infarction, unspecified"
+    },
+    {
+      "code": "280",
+      "description": "Acute myocardial infarction, unspecified"
+    },
+    {
+      "code": "281",
+      "description": "Acute myocardial infarction, unspecified"
+    },
+    {
+      "code": "282",
+      "description": "Acute myocardial infarction, unspecified"
+    },
+    {
+      "code": "283",
+      "description": "Acute myocardial infarction, unspecified"
+    },
+    {
+      "code": "284",
+      "description": "Acute myocardial infarction, unspecified"
+    },
+    {
+      "code": "285",
+      "description": "Acute myocardial infarction, unspecified"
+    }
+  ],
+  "I248": [
+    {
+      "code": "311",
+      "description": "Other forms of acute ischemic heart disease"
+    }
+  ],
+  "I25110": [
+    {
+      "code": "302",
+      "description": "Atherosclerotic heart disease of native coronary artery with unstable angina pectoris"
+    },
+    {
+      "code": "303",
+      "description": "Atherosclerotic heart disease of native coronary artery with unstable angina pectoris"
+    }
+  ],
+  "I252": [
+    {
+      "code": "302",
+      "description": "Old myocardial infarction"
+    },
+    {
+      "code": "303",
+      "description": "Old myocardial infarction"
+    }
+  ],
+  "I25700": [
+    {
+      "code": "302",
+      "description": "Atherosclerosis of coronary artery bypass graft(s), unspecified, with unstable angina pectoris"
+    },
+    {
+      "code": "303",
+      "description": "Atherosclerosis of coronary artery bypass graft(s), unspecified, with unstable angina pectoris"
+    }
+  ],
+  "I25710": [
+    {
+      "code": "302",
+      "description": "Atherosclerosis of autologous vein coronary artery bypass graft(s) with unstable angina pectoris"
+    },
+    {
+      "code": "303",
+      "description": "Atherosclerosis of autologous vein coronary artery bypass graft(s) with unstable angina pectoris"
+    }
+  ],
+  "I25720": [
+    {
+      "code": "302",
+      "description": "Atherosclerosis of autologous artery coronary artery bypass graft(s) with unstable angina pectoris"
+    },
+    {
+      "code": "303",
+      "description": "Atherosclerosis of autologous artery coronary artery bypass graft(s) with unstable angina pectoris"
+    }
+  ],
+  "I25760": [
+    {
+      "code": "302",
+      "description": "Atherosclerosis of bypass graft of coronary artery of transplanted heart with unstable angina"
+    },
+    {
+      "code": "303",
+      "description": "Atherosclerosis of bypass graft of coronary artery of transplanted heart with unstable angina"
+    }
+  ],
+  "I259": [
+    {
+      "code": "302",
+      "description": "Chronic ischemic heart disease, unspecified"
+    },
+    {
+      "code": "303",
+      "description": "Chronic ischemic heart disease, unspecified"
+    }
+  ],
+  "I2601": [
+    {
+      "code": "175",
+      "description": "Septic pulmonary embolism with acute cor pulmonale"
+    },
+    {
+      "code": "176",
+      "description": "Septic pulmonary embolism with acute cor pulmonale"
+    },
+    {
+      "code": "791",
+      "description": "Septic pulmonary embolism with acute cor pulmonale"
+    },
+    {
+      "code": "793",
+      "description": "Septic pulmonary embolism with acute cor pulmonale"
+    }
+  ],
+  "I2602": [
+    {
+      "code": "175",
+      "description": "Saddle embolus of pulmonary artery with acute cor pulmonale"
+    },
+    {
+      "code": "176",
+      "description": "Saddle embolus of pulmonary artery with acute cor pulmonale"
+    },
+    {
+      "code": "791",
+      "description": "Saddle embolus of pulmonary artery with acute cor pulmonale"
+    },
+    {
+      "code": "793",
+      "description": "Saddle embolus of pulmonary artery with acute cor pulmonale"
+    }
+  ],
+  "I2699": [
+    {
+      "code": "175",
+      "description": "Other pulmonary embolism without acute cor pulmonale"
+    },
+    {
+      "code": "176",
+      "description": "Other pulmonary embolism without acute cor pulmonale"
+    },
+    {
+      "code": "791",
+      "description": "Other pulmonary embolism without acute cor pulmonale"
+    },
+    {
+      "code": "793",
+      "description": "Other pulmonary embolism without acute cor pulmonale"
+    }
+  ],
+  "I289": [
+    {
+      "code": "314",
+      "description": "Disease of pulmonary vessels, unspecified"
+    },
+    {
+      "code": "315",
+      "description": "Disease of pulmonary vessels, unspecified"
+    },
+    {
+      "code": "316",
+      "description": "Disease of pulmonary vessels, unspecified"
+    }
+  ],
+  "I340": [
+    {
+      "code": "306",
+      "description": "Nonrheumatic mitral (valve) insufficiency"
+    },
+    {
+      "code": "307",
+      "description": "Nonrheumatic mitral (valve) insufficiency"
+    }
+  ],
+  "I350": [
+    {
+      "code": "306",
+      "description": "Nonrheumatic aortic (valve) stenosis"
+    },
+    {
+      "code": "307",
+      "description": "Nonrheumatic aortic (valve) stenosis"
+    }
+  ],
+  "I351": [
+    {
+      "code": "306",
+      "description": "Nonrheumatic aortic (valve) insufficiency"
+    },
+    {
+      "code": "307",
+      "description": "Nonrheumatic aortic (valve) insufficiency"
+    }
+  ],
+  "I370": [
+    {
+      "code": "306",
+      "description": "Nonrheumatic pulmonary valve stenosis"
+    },
+    {
+      "code": "307",
+      "description": "Nonrheumatic pulmonary valve stenosis"
+    }
+  ],
+  "I371": [
+    {
+      "code": "306",
+      "description": "Nonrheumatic pulmonary valve insufficiency"
+    },
+    {
+      "code": "307",
+      "description": "Nonrheumatic pulmonary valve insufficiency"
+    }
+  ],
+  "I469": [
+    {
+      "code": "296",
+      "description": "Cardiac arrest, cause unspecified"
+    },
+    {
+      "code": "297",
+      "description": "Cardiac arrest, cause unspecified"
+    },
+    {
+      "code": "298",
+      "description": "Cardiac arrest, cause unspecified"
+    },
+    {
+      "code": "791",
+      "description": "Cardiac arrest, cause unspecified"
+    },
+    {
+      "code": "793",
+      "description": "Cardiac arrest, cause unspecified"
+    }
+  ],
+  "I4891": [
+    {
+      "code": "308",
+      "description": "Unspecified atrial fibrillation"
+    },
+    {
+      "code": "309",
+      "description": "Unspecified atrial fibrillation"
+    },
+    {
+      "code": "310",
+      "description": "Unspecified atrial fibrillation"
+    },
+    {
+      "code": "791",
+      "description": "Unspecified atrial fibrillation"
+    },
+    {
+      "code": "793",
+      "description": "Unspecified atrial fibrillation"
+    }
+  ],
+  "I499": [
+    {
+      "code": "308",
+      "description": "Cardiac arrhythmia, unspecified"
+    },
+    {
+      "code": "309",
+      "description": "Cardiac arrhythmia, unspecified"
+    },
+    {
+      "code": "310",
+      "description": "Cardiac arrhythmia, unspecified"
+    }
+  ],
+  "I501": [
+    {
+      "code": "222",
+      "description": "Left ventricular failure, unspecified"
+    },
+    {
+      "code": "223",
+      "description": "Left ventricular failure, unspecified"
+    },
+    {
+      "code": "291",
+      "description": "Left ventricular failure, unspecified"
+    },
+    {
+      "code": "292",
+      "description": "Left ventricular failure, unspecified"
+    },
+    {
+      "code": "293",
+      "description": "Left ventricular failure, unspecified"
+    },
+    {
+      "code": "791",
+      "description": "Left ventricular failure, unspecified"
+    },
+    {
+      "code": "793",
+      "description": "Left ventricular failure, unspecified"
+    }
+  ],
+  "I50810": [
+    {
+      "code": "222",
+      "description": "Right heart failure, unspecified"
+    },
+    {
+      "code": "223",
+      "description": "Right heart failure, unspecified"
+    },
+    {
+      "code": "291",
+      "description": "Right heart failure, unspecified"
+    },
+    {
+      "code": "292",
+      "description": "Right heart failure, unspecified"
+    },
+    {
+      "code": "293",
+      "description": "Right heart failure, unspecified"
+    },
+    {
+      "code": "791",
+      "description": "Right heart failure, unspecified"
+    },
+    {
+      "code": "793",
+      "description": "Right heart failure, unspecified"
+    }
+  ],
+  "I50813": [
+    {
+      "code": "222",
+      "description": "Acute on chronic right heart failure"
+    },
+    {
+      "code": "223",
+      "description": "Acute on chronic right heart failure"
+    },
+    {
+      "code": "291",
+      "description": "Acute on chronic right heart failure"
+    },
+    {
+      "code": "292",
+      "description": "Acute on chronic right heart failure"
+    },
+    {
+      "code": "293",
+      "description": "Acute on chronic right heart failure"
+    },
+    {
+      "code": "791",
+      "description": "Acute on chronic right heart failure"
+    },
+    {
+      "code": "793",
+      "description": "Acute on chronic right heart failure"
+    }
+  ],
+  "I509": [
+    {
+      "code": "222",
+      "description": "Heart failure, unspecified"
+    },
+    {
+      "code": "223",
+      "description": "Heart failure, unspecified"
+    },
+    {
+      "code": "291",
+      "description": "Heart failure, unspecified"
+    },
+    {
+      "code": "292",
+      "description": "Heart failure, unspecified"
+    },
+    {
+      "code": "293",
+      "description": "Heart failure, unspecified"
+    },
+    {
+      "code": "791",
+      "description": "Heart failure, unspecified"
+    },
+    {
+      "code": "793",
+      "description": "Heart failure, unspecified"
+    }
+  ],
+  "I639": [
+    {
+      "code": "023",
+      "description": "Cerebral infarction, unspecified"
+    },
+    {
+      "code": "024",
+      "description": "Cerebral infarction, unspecified"
+    },
+    {
+      "code": "061",
+      "description": "Cerebral infarction, unspecified"
+    },
+    {
+      "code": "062",
+      "description": "Cerebral infarction, unspecified"
+    },
+    {
+      "code": "063",
+      "description": "Cerebral infarction, unspecified"
+    },
+    {
+      "code": "064",
+      "description": "Cerebral infarction, unspecified"
+    },
+    {
+      "code": "065",
+      "description": "Cerebral infarction, unspecified"
+    },
+    {
+      "code": "066",
+      "description": "Cerebral infarction, unspecified"
+    },
+    {
+      "code": "791",
+      "description": "Cerebral infarction, unspecified"
+    },
+    {
+      "code": "793",
+      "description": "Cerebral infarction, unspecified"
+    }
+  ],
+  "I8290": [
+    {
+      "code": "299",
+      "description": "Acute embolism and thrombosis of unspecified vein"
+    },
+    {
+      "code": "300",
+      "description": "Acute embolism and thrombosis of unspecified vein"
+    },
+    {
+      "code": "301",
+      "description": "Acute embolism and thrombosis of unspecified vein"
+    }
+  ],
+  "I97111": [
+    {
+      "code": "314",
+      "description": "Postprocedural cardiac insufficiency following other surgery"
+    },
+    {
+      "code": "315",
+      "description": "Postprocedural cardiac insufficiency following other surgery"
+    },
+    {
+      "code": "316",
+      "description": "Postprocedural cardiac insufficiency following other surgery"
+    },
+    {
+      "code": "791",
+      "description": "Postprocedural cardiac insufficiency following other surgery"
+    },
+    {
+      "code": "793",
+      "description": "Postprocedural cardiac insufficiency following other surgery"
+    }
+  ],
+  "I97191": [
+    {
+      "code": "314",
+      "description": "Other postprocedural cardiac functional disturbances following other surgery"
+    },
+    {
+      "code": "315",
+      "description": "Other postprocedural cardiac functional disturbances following other surgery"
+    },
+    {
+      "code": "316",
+      "description": "Other postprocedural cardiac functional disturbances following other surgery"
+    },
+    {
+      "code": "791",
+      "description": "Other postprocedural cardiac functional disturbances following other surgery"
+    },
+    {
+      "code": "793",
+      "description": "Other postprocedural cardiac functional disturbances following other surgery"
+    }
+  ],
+  "J0190": [
+    {
+      "code": "152",
+      "description": "Acute sinusitis, unspecified"
+    },
+    {
+      "code": "153",
+      "description": "Acute sinusitis, unspecified"
+    }
+  ],
+  "J020": [
+    {
+      "code": "011",
+      "description": "Streptococcal pharyngitis"
+    },
+    {
+      "code": "012",
+      "description": "Streptococcal pharyngitis"
+    },
+    {
+      "code": "013",
+      "description": "Streptococcal pharyngitis"
+    },
+    {
+      "code": "152",
+      "description": "Streptococcal pharyngitis"
+    },
+    {
+      "code": "153",
+      "description": "Streptococcal pharyngitis"
+    }
+  ],
+  "J029": [
+    {
+      "code": "011",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "012",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "013",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "152",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "153",
+      "description": "Acute pharyngitis, unspecified"
+    }
+  ],
+  "J0300": [
+    {
+      "code": "011",
+      "description": "Acute streptococcal tonsillitis, unspecified"
+    },
+    {
+      "code": "012",
+      "description": "Acute streptococcal tonsillitis, unspecified"
+    },
+    {
+      "code": "013",
+      "description": "Acute streptococcal tonsillitis, unspecified"
+    },
+    {
+      "code": "152",
+      "description": "Acute streptococcal tonsillitis, unspecified"
+    },
+    {
+      "code": "153",
+      "description": "Acute streptococcal tonsillitis, unspecified"
+    }
+  ],
+  "J0301": [
+    {
+      "code": "011",
+      "description": "Acute recurrent streptococcal tonsillitis"
+    },
+    {
+      "code": "012",
+      "description": "Acute recurrent streptococcal tonsillitis"
+    },
+    {
+      "code": "013",
+      "description": "Acute recurrent streptococcal tonsillitis"
+    },
+    {
+      "code": "152",
+      "description": "Acute recurrent streptococcal tonsillitis"
+    },
+    {
+      "code": "153",
+      "description": "Acute recurrent streptococcal tonsillitis"
+    }
+  ],
+  "J0380": [
+    {
+      "code": "011",
+      "description": "Acute tonsillitis due to other specified organisms"
+    },
+    {
+      "code": "012",
+      "description": "Acute tonsillitis due to other specified organisms"
+    },
+    {
+      "code": "013",
+      "description": "Acute tonsillitis due to other specified organisms"
+    },
+    {
+      "code": "152",
+      "description": "Acute tonsillitis due to other specified organisms"
+    },
+    {
+      "code": "153",
+      "description": "Acute tonsillitis due to other specified organisms"
+    }
+  ],
+  "J0390": [
+    {
+      "code": "011",
+      "description": "Acute tonsillitis, unspecified"
+    },
+    {
+      "code": "012",
+      "description": "Acute tonsillitis, unspecified"
+    },
+    {
+      "code": "013",
+      "description": "Acute tonsillitis, unspecified"
+    },
+    {
+      "code": "152",
+      "description": "Acute tonsillitis, unspecified"
+    },
+    {
+      "code": "153",
+      "description": "Acute tonsillitis, unspecified"
+    }
+  ],
+  "J069": [
+    {
+      "code": "011",
+      "description": "Acute upper respiratory infection, unspecified"
+    },
+    {
+      "code": "012",
+      "description": "Acute upper respiratory infection, unspecified"
+    },
+    {
+      "code": "013",
+      "description": "Acute upper respiratory infection, unspecified"
+    },
+    {
+      "code": "152",
+      "description": "Acute upper respiratory infection, unspecified"
+    },
+    {
+      "code": "153",
+      "description": "Acute upper respiratory infection, unspecified"
+    }
+  ],
+  "J1282": [
+    {
+      "code": "193",
+      "description": "Pneumonia due to coronavirus disease 2019"
+    },
+    {
+      "code": "194",
+      "description": "Pneumonia due to coronavirus disease 2019"
+    },
+    {
+      "code": "195",
+      "description": "Pneumonia due to coronavirus disease 2019"
+    },
+    {
+      "code": "974",
+      "description": "Pneumonia due to coronavirus disease 2019"
+    },
+    {
+      "code": "975",
+      "description": "Pneumonia due to coronavirus disease 2019"
+    },
+    {
+      "code": "976",
+      "description": "Pneumonia due to coronavirus disease 2019"
+    }
+  ],
+  "J189": [
+    {
+      "code": "193",
+      "description": "Pneumonia, unspecified organism"
+    },
+    {
+      "code": "194",
+      "description": "Pneumonia, unspecified organism"
+    },
+    {
+      "code": "195",
+      "description": "Pneumonia, unspecified organism"
+    },
+    {
+      "code": "791",
+      "description": "Pneumonia, unspecified organism"
+    },
+    {
+      "code": "793",
+      "description": "Pneumonia, unspecified organism"
+    },
+    {
+      "code": "974",
+      "description": "Pneumonia, unspecified organism"
+    },
+    {
+      "code": "975",
+      "description": "Pneumonia, unspecified organism"
+    },
+    {
+      "code": "976",
+      "description": "Pneumonia, unspecified organism"
+    }
+  ],
+  "J208": [
+    {
+      "code": "202",
+      "description": "Acute bronchitis due to other specified organisms"
+    },
+    {
+      "code": "203",
+      "description": "Acute bronchitis due to other specified organisms"
+    }
+  ],
+  "J209": [
+    {
+      "code": "202",
+      "description": "Acute bronchitis, unspecified"
+    },
+    {
+      "code": "203",
+      "description": "Acute bronchitis, unspecified"
+    }
+  ],
+  "J22": [
+    {
+      "code": "205",
+      "description": "Unspecified acute lower respiratory infection"
+    },
+    {
+      "code": "206",
+      "description": "Unspecified acute lower respiratory infection"
+    }
+  ],
+  "J301": [
+    {
+      "code": "152",
+      "description": "Allergic rhinitis due to pollen"
+    },
+    {
+      "code": "153",
+      "description": "Allergic rhinitis due to pollen"
+    }
+  ],
+  "J302": [
+    {
+      "code": "152",
+      "description": "Other seasonal allergic rhinitis"
+    },
+    {
+      "code": "153",
+      "description": "Other seasonal allergic rhinitis"
+    }
+  ],
+  "J3089": [
+    {
+      "code": "152",
+      "description": "Other allergic rhinitis"
+    },
+    {
+      "code": "153",
+      "description": "Other allergic rhinitis"
+    }
+  ],
+  "J312": [
+    {
+      "code": "011",
+      "description": "Chronic pharyngitis"
+    },
+    {
+      "code": "012",
+      "description": "Chronic pharyngitis"
+    },
+    {
+      "code": "013",
+      "description": "Chronic pharyngitis"
+    },
+    {
+      "code": "152",
+      "description": "Chronic pharyngitis"
+    },
+    {
+      "code": "153",
+      "description": "Chronic pharyngitis"
+    }
+  ],
+  "J329": [
+    {
+      "code": "152",
+      "description": "Chronic sinusitis, unspecified"
+    },
+    {
+      "code": "153",
+      "description": "Chronic sinusitis, unspecified"
+    }
+  ],
+  "J439": [
+    {
+      "code": "190",
+      "description": "Emphysema, unspecified"
+    },
+    {
+      "code": "191",
+      "description": "Emphysema, unspecified"
+    },
+    {
+      "code": "192",
+      "description": "Emphysema, unspecified"
+    }
+  ],
+  "J441": [
+    {
+      "code": "190",
+      "description": "Chronic obstructive pulmonary disease with (acute) exacerbation"
+    },
+    {
+      "code": "191",
+      "description": "Chronic obstructive pulmonary disease with (acute) exacerbation"
+    },
+    {
+      "code": "192",
+      "description": "Chronic obstructive pulmonary disease with (acute) exacerbation"
+    }
+  ],
+  "J449": [
+    {
+      "code": "190",
+      "description": "Chronic obstructive pulmonary disease, unspecified"
+    },
+    {
+      "code": "191",
+      "description": "Chronic obstructive pulmonary disease, unspecified"
+    },
+    {
+      "code": "192",
+      "description": "Chronic obstructive pulmonary disease, unspecified"
+    }
+  ],
+  "J45909": [
+    {
+      "code": "202",
+      "description": "Unspecified asthma, uncomplicated"
+    },
+    {
+      "code": "203",
+      "description": "Unspecified asthma, uncomplicated"
+    }
+  ],
+  "J80": [
+    {
+      "code": "204",
+      "description": "Acute respiratory distress syndrome"
+    }
+  ],
+  "J8483": [
+    {
+      "code": "196",
+      "description": "Surfactant mutations of the lung"
+    },
+    {
+      "code": "197",
+      "description": "Surfactant mutations of the lung"
+    },
+    {
+      "code": "198",
+      "description": "Surfactant mutations of the lung"
+    },
+    {
+      "code": "791",
+      "description": "Surfactant mutations of the lung"
+    },
+    {
+      "code": "793",
+      "description": "Surfactant mutations of the lung"
+    }
+  ],
+  "J9600": [
+    {
+      "code": "189",
+      "description": "Acute respiratory failure, unspecified whether with hypoxia or hypercapnia"
+    },
+    {
+      "code": "928",
+      "description": "Acute respiratory failure, unspecified whether with hypoxia or hypercapnia"
+    },
+    {
+      "code": "929",
+      "description": "Acute respiratory failure, unspecified whether with hypoxia or hypercapnia"
+    },
+    {
+      "code": "934",
+      "description": "Acute respiratory failure, unspecified whether with hypoxia or hypercapnia"
+    }
+  ],
+  "J9851": [
+    {
+      "code": "177",
+      "description": "Mediastinitis"
+    },
+    {
+      "code": "178",
+      "description": "Mediastinitis"
+    },
+    {
+      "code": "179",
+      "description": "Mediastinitis"
+    },
+    {
+      "code": "791",
+      "description": "Mediastinitis"
+    },
+    {
+      "code": "793",
+      "description": "Mediastinitis"
+    }
+  ],
+  "K011": [
+    {
+      "code": "011",
+      "description": "Impacted teeth"
+    },
+    {
+      "code": "012",
+      "description": "Impacted teeth"
+    },
+    {
+      "code": "013",
+      "description": "Impacted teeth"
+    },
+    {
+      "code": "157",
+      "description": "Impacted teeth"
+    },
+    {
+      "code": "158",
+      "description": "Impacted teeth"
+    },
+    {
+      "code": "159",
+      "description": "Impacted teeth"
+    },
+    {
+      "code": "795",
+      "description": "Impacted teeth"
+    }
+  ],
+  "K117": [
+    {
+      "code": "011",
+      "description": "Disturbances of salivary secretion"
+    },
+    {
+      "code": "012",
+      "description": "Disturbances of salivary secretion"
+    },
+    {
+      "code": "013",
+      "description": "Disturbances of salivary secretion"
+    },
+    {
+      "code": "154",
+      "description": "Disturbances of salivary secretion"
+    },
+    {
+      "code": "155",
+      "description": "Disturbances of salivary secretion"
+    },
+    {
+      "code": "156",
+      "description": "Disturbances of salivary secretion"
+    }
+  ],
+  "K219": [
+    {
+      "code": "391",
+      "description": "Gastro-esophageal reflux disease without esophagitis"
+    },
+    {
+      "code": "392",
+      "description": "Gastro-esophageal reflux disease without esophagitis"
+    }
+  ],
+  "K3532": [
+    {
+      "code": "338",
+      "description": "Acute appendicitis with perforation, localized peritonitis, and gangrene, without abscess"
+    },
+    {
+      "code": "339",
+      "description": "Acute appendicitis with perforation, localized peritonitis, and gangrene, without abscess"
+    },
+    {
+      "code": "340",
+      "description": "Acute appendicitis with perforation, localized peritonitis, and gangrene, without abscess"
+    },
+    {
+      "code": "371",
+      "description": "Acute appendicitis with perforation, localized peritonitis, and gangrene, without abscess"
+    },
+    {
+      "code": "372",
+      "description": "Acute appendicitis with perforation, localized peritonitis, and gangrene, without abscess"
+    },
+    {
+      "code": "373",
+      "description": "Acute appendicitis with perforation, localized peritonitis, and gangrene, without abscess"
+    }
+  ],
+  "K3533": [
+    {
+      "code": "338",
+      "description": "Acute appendicitis with perforation, localized peritonitis, and gangrene, with abscess"
+    },
+    {
+      "code": "339",
+      "description": "Acute appendicitis with perforation, localized peritonitis, and gangrene, with abscess"
+    },
+    {
+      "code": "340",
+      "description": "Acute appendicitis with perforation, localized peritonitis, and gangrene, with abscess"
+    },
+    {
+      "code": "371",
+      "description": "Acute appendicitis with perforation, localized peritonitis, and gangrene, with abscess"
+    },
+    {
+      "code": "372",
+      "description": "Acute appendicitis with perforation, localized peritonitis, and gangrene, with abscess"
+    },
+    {
+      "code": "373",
+      "description": "Acute appendicitis with perforation, localized peritonitis, and gangrene, with abscess"
+    }
+  ],
+  "K37": [
+    {
+      "code": "393",
+      "description": "Unspecified appendicitis"
+    },
+    {
+      "code": "394",
+      "description": "Unspecified appendicitis"
+    },
+    {
+      "code": "395",
+      "description": "Unspecified appendicitis"
+    }
+  ],
+  "K5900": [
+    {
+      "code": "391",
+      "description": "Constipation, unspecified"
+    },
+    {
+      "code": "392",
+      "description": "Constipation, unspecified"
+    }
+  ],
+  "K621": [
+    {
+      "code": "393",
+      "description": "Rectal polyp"
+    },
+    {
+      "code": "394",
+      "description": "Rectal polyp"
+    },
+    {
+      "code": "395",
+      "description": "Rectal polyp"
+    }
+  ],
+  "K625": [
+    {
+      "code": "377",
+      "description": "Hemorrhage of anus and rectum"
+    },
+    {
+      "code": "378",
+      "description": "Hemorrhage of anus and rectum"
+    },
+    {
+      "code": "379",
+      "description": "Hemorrhage of anus and rectum"
+    },
+    {
+      "code": "791",
+      "description": "Hemorrhage of anus and rectum"
+    },
+    {
+      "code": "793",
+      "description": "Hemorrhage of anus and rectum"
+    }
+  ],
+  "K635": [
+    {
+      "code": "393",
+      "description": "Polyp of colon"
+    },
+    {
+      "code": "394",
+      "description": "Polyp of colon"
+    },
+    {
+      "code": "395",
+      "description": "Polyp of colon"
+    }
+  ],
+  "K8020": [
+    {
+      "code": "444",
+      "description": "Calculus of gallbladder without cholecystitis without obstruction"
+    },
+    {
+      "code": "445",
+      "description": "Calculus of gallbladder without cholecystitis without obstruction"
+    },
+    {
+      "code": "446",
+      "description": "Calculus of gallbladder without cholecystitis without obstruction"
+    }
+  ],
+  "K810": [
+    {
+      "code": "444",
+      "description": "Acute cholecystitis"
+    },
+    {
+      "code": "445",
+      "description": "Acute cholecystitis"
+    },
+    {
+      "code": "446",
+      "description": "Acute cholecystitis"
+    }
+  ],
+  "L209": [
+    {
+      "code": "606",
+      "description": "Atopic dermatitis, unspecified"
+    },
+    {
+      "code": "607",
+      "description": "Atopic dermatitis, unspecified"
+    }
+  ],
+  "L259": [
+    {
+      "code": "606",
+      "description": "Unspecified contact dermatitis, unspecified cause"
+    },
+    {
+      "code": "607",
+      "description": "Unspecified contact dermatitis, unspecified cause"
+    }
+  ],
+  "L930": [
+    {
+      "code": "595",
+      "description": "Discoid lupus erythematosus"
+    },
+    {
+      "code": "596",
+      "description": "Discoid lupus erythematosus"
+    }
+  ],
+  "M069": [
+    {
+      "code": "545",
+      "description": "Rheumatoid arthritis, unspecified"
+    },
+    {
+      "code": "546",
+      "description": "Rheumatoid arthritis, unspecified"
+    },
+    {
+      "code": "547",
+      "description": "Rheumatoid arthritis, unspecified"
+    }
+  ],
+  "M0800": [
+    {
+      "code": "545",
+      "description": "Unspecified juvenile rheumatoid arthritis of unspecified site"
+    },
+    {
+      "code": "546",
+      "description": "Unspecified juvenile rheumatoid arthritis of unspecified site"
+    },
+    {
+      "code": "547",
+      "description": "Unspecified juvenile rheumatoid arthritis of unspecified site"
+    }
+  ],
+  "M109": [
+    {
+      "code": "553",
+      "description": "Gout, unspecified"
+    },
+    {
+      "code": "554",
+      "description": "Gout, unspecified"
+    }
+  ],
+  "M169": [
+    {
+      "code": "553",
+      "description": "Osteoarthritis of hip, unspecified"
+    },
+    {
+      "code": "554",
+      "description": "Osteoarthritis of hip, unspecified"
+    }
+  ],
+  "M179": [
+    {
+      "code": "553",
+      "description": "Osteoarthritis of knee, unspecified"
+    },
+    {
+      "code": "554",
+      "description": "Osteoarthritis of knee, unspecified"
+    }
+  ],
+  "M19049": [
+    {
+      "code": "553",
+      "description": "Primary osteoarthritis, unspecified hand"
+    },
+    {
+      "code": "554",
+      "description": "Primary osteoarthritis, unspecified hand"
+    }
+  ],
+  "M2550": [
+    {
+      "code": "555",
+      "description": "Pain in unspecified joint"
+    },
+    {
+      "code": "556",
+      "description": "Pain in unspecified joint"
+    }
+  ],
+  "M4000": [
+    {
+      "code": "456",
+      "description": "Postural kyphosis, site unspecified"
+    },
+    {
+      "code": "457",
+      "description": "Postural kyphosis, site unspecified"
+    },
+    {
+      "code": "458",
+      "description": "Postural kyphosis, site unspecified"
+    },
+    {
+      "code": "551",
+      "description": "Postural kyphosis, site unspecified"
+    },
+    {
+      "code": "552",
+      "description": "Postural kyphosis, site unspecified"
+    }
+  ],
+  "M40209": [
+    {
+      "code": "456",
+      "description": "Unspecified kyphosis, site unspecified"
+    },
+    {
+      "code": "457",
+      "description": "Unspecified kyphosis, site unspecified"
+    },
+    {
+      "code": "458",
+      "description": "Unspecified kyphosis, site unspecified"
+    },
+    {
+      "code": "551",
+      "description": "Unspecified kyphosis, site unspecified"
+    },
+    {
+      "code": "552",
+      "description": "Unspecified kyphosis, site unspecified"
+    }
+  ],
+  "M41129": [
+    {
+      "code": "456",
+      "description": "Adolescent idiopathic scoliosis, site unspecified"
+    },
+    {
+      "code": "457",
+      "description": "Adolescent idiopathic scoliosis, site unspecified"
+    },
+    {
+      "code": "458",
+      "description": "Adolescent idiopathic scoliosis, site unspecified"
+    },
+    {
+      "code": "551",
+      "description": "Adolescent idiopathic scoliosis, site unspecified"
+    },
+    {
+      "code": "552",
+      "description": "Adolescent idiopathic scoliosis, site unspecified"
+    }
+  ],
+  "M419": [
+    {
+      "code": "456",
+      "description": "Scoliosis, unspecified"
+    },
+    {
+      "code": "457",
+      "description": "Scoliosis, unspecified"
+    },
+    {
+      "code": "458",
+      "description": "Scoliosis, unspecified"
+    },
+    {
+      "code": "551",
+      "description": "Scoliosis, unspecified"
+    },
+    {
+      "code": "552",
+      "description": "Scoliosis, unspecified"
+    }
+  ],
+  "M542": [
+    {
+      "code": "551",
+      "description": "Cervicalgia"
+    },
+    {
+      "code": "552",
+      "description": "Cervicalgia"
+    }
+  ],
+  "M66861": [
+    {
+      "code": "557",
+      "description": "Spontaneous rupture of other tendons, right lower leg"
+    },
+    {
+      "code": "558",
+      "description": "Spontaneous rupture of other tendons, right lower leg"
+    }
+  ],
+  "M66862": [
+    {
+      "code": "557",
+      "description": "Spontaneous rupture of other tendons, left lower leg"
+    },
+    {
+      "code": "558",
+      "description": "Spontaneous rupture of other tendons, left lower leg"
+    }
+  ],
+  "M6688": [
+    {
+      "code": "557",
+      "description": "Spontaneous rupture of other tendons, other sites"
+    },
+    {
+      "code": "558",
+      "description": "Spontaneous rupture of other tendons, other sites"
+    }
+  ],
+  "M7910": [
+    {
+      "code": "555",
+      "description": "Myalgia, unspecified site"
+    },
+    {
+      "code": "556",
+      "description": "Myalgia, unspecified site"
+    }
+  ],
+  "M7918": [
+    {
+      "code": "555",
+      "description": "Myalgia, other site"
+    },
+    {
+      "code": "556",
+      "description": "Myalgia, other site"
+    }
+  ],
+  "M797": [
+    {
+      "code": "555",
+      "description": "Fibromyalgia"
+    },
+    {
+      "code": "556",
+      "description": "Fibromyalgia"
+    }
+  ],
+  "M8000X": [
+    {
+      "code": "542",
+      "description": "Age-related osteoporosis with current pathological fracture, unspecified site, episode of care unspecified"
+    },
+    {
+      "code": "543",
+      "description": "Age-related osteoporosis with current pathological fracture, unspecified site, episode of care unspecified"
+    },
+    {
+      "code": "544",
+      "description": "Age-related osteoporosis with current pathological fracture, unspecified site, episode of care unspecified"
+    },
+    {
+      "code": "791",
+      "description": "Age-related osteoporosis with current pathological fracture, unspecified site, episode of care unspecified"
+    },
+    {
+      "code": "793",
+      "description": "Age-related osteoporosis with current pathological fracture, unspecified site, episode of care unspecified"
+    },
+    {
+      "code": "559",
+      "description": "Age-related osteoporosis with current pathological fracture, unspecified site, episode of care unspecified"
+    },
+    {
+      "code": "560",
+      "description": "Age-related osteoporosis with current pathological fracture, unspecified site, episode of care unspecified"
+    },
+    {
+      "code": "561",
+      "description": "Age-related osteoporosis with current pathological fracture, unspecified site, episode of care unspecified"
+    },
+    {
+      "code": "564",
+      "description": "Age-related osteoporosis with current pathological fracture, unspecified site, episode of care unspecified"
+    },
+    {
+      "code": "565",
+      "description": "Age-related osteoporosis with current pathological fracture, unspecified site, episode of care unspecified"
+    },
+    {
+      "code": "566",
+      "description": "Age-related osteoporosis with current pathological fracture, unspecified site, episode of care unspecified"
+    }
+  ],
+  "M810": [
+    {
+      "code": "553",
+      "description": "Age-related osteoporosis without current pathological fracture"
+    },
+    {
+      "code": "554",
+      "description": "Age-related osteoporosis without current pathological fracture"
+    }
+  ],
+  "M859": [
+    {
+      "code": "564",
+      "description": "Disorder of bone density and structure, unspecified"
+    },
+    {
+      "code": "565",
+      "description": "Disorder of bone density and structure, unspecified"
+    },
+    {
+      "code": "566",
+      "description": "Disorder of bone density and structure, unspecified"
+    }
+  ],
+  "N12": [
+    {
+      "code": "689",
+      "description": "Tubulo-interstitial nephritis, not specified as acute or chronic"
+    },
+    {
+      "code": "690",
+      "description": "Tubulo-interstitial nephritis, not specified as acute or chronic"
+    },
+    {
+      "code": "791",
+      "description": "Tubulo-interstitial nephritis, not specified as acute or chronic"
+    },
+    {
+      "code": "793",
+      "description": "Tubulo-interstitial nephritis, not specified as acute or chronic"
+    }
+  ],
+  "N136": [
+    {
+      "code": "689",
+      "description": "Pyonephrosis"
+    },
+    {
+      "code": "690",
+      "description": "Pyonephrosis"
+    },
+    {
+      "code": "791",
+      "description": "Pyonephrosis"
+    },
+    {
+      "code": "793",
+      "description": "Pyonephrosis"
+    }
+  ],
+  "N179": [
+    {
+      "code": "673",
+      "description": "Acute kidney failure, unspecified"
+    },
+    {
+      "code": "674",
+      "description": "Acute kidney failure, unspecified"
+    },
+    {
+      "code": "675",
+      "description": "Acute kidney failure, unspecified"
+    },
+    {
+      "code": "682",
+      "description": "Acute kidney failure, unspecified"
+    },
+    {
+      "code": "683",
+      "description": "Acute kidney failure, unspecified"
+    },
+    {
+      "code": "684",
+      "description": "Acute kidney failure, unspecified"
+    },
+    {
+      "code": "791",
+      "description": "Acute kidney failure, unspecified"
+    },
+    {
+      "code": "793",
+      "description": "Acute kidney failure, unspecified"
+    }
+  ],
+  "N181": [
+    {
+      "code": "008",
+      "description": "Chronic kidney disease, stage 1"
+    },
+    {
+      "code": "019",
+      "description": "Chronic kidney disease, stage 1"
+    },
+    {
+      "code": "682",
+      "description": "Chronic kidney disease, stage 1"
+    },
+    {
+      "code": "683",
+      "description": "Chronic kidney disease, stage 1"
+    },
+    {
+      "code": "684",
+      "description": "Chronic kidney disease, stage 1"
+    }
+  ],
+  "N182": [
+    {
+      "code": "008",
+      "description": "Chronic kidney disease, stage 2 (mild)"
+    },
+    {
+      "code": "019",
+      "description": "Chronic kidney disease, stage 2 (mild)"
+    },
+    {
+      "code": "682",
+      "description": "Chronic kidney disease, stage 2 (mild)"
+    },
+    {
+      "code": "683",
+      "description": "Chronic kidney disease, stage 2 (mild)"
+    },
+    {
+      "code": "684",
+      "description": "Chronic kidney disease, stage 2 (mild)"
+    }
+  ],
+  "N1830": [
+    {
+      "code": "008",
+      "description": "Chronic kidney disease, stage 3 unspecified"
+    },
+    {
+      "code": "019",
+      "description": "Chronic kidney disease, stage 3 unspecified"
+    },
+    {
+      "code": "682",
+      "description": "Chronic kidney disease, stage 3 unspecified"
+    },
+    {
+      "code": "683",
+      "description": "Chronic kidney disease, stage 3 unspecified"
+    },
+    {
+      "code": "684",
+      "description": "Chronic kidney disease, stage 3 unspecified"
+    }
+  ],
+  "N184": [
+    {
+      "code": "008",
+      "description": "Chronic kidney disease, stage 4 (severe)"
+    },
+    {
+      "code": "019",
+      "description": "Chronic kidney disease, stage 4 (severe)"
+    },
+    {
+      "code": "682",
+      "description": "Chronic kidney disease, stage 4 (severe)"
+    },
+    {
+      "code": "683",
+      "description": "Chronic kidney disease, stage 4 (severe)"
+    },
+    {
+      "code": "684",
+      "description": "Chronic kidney disease, stage 4 (severe)"
+    }
+  ],
+  "N186": [
+    {
+      "code": "008",
+      "description": "End stage renal disease"
+    },
+    {
+      "code": "019",
+      "description": "End stage renal disease"
+    },
+    {
+      "code": "673",
+      "description": "End stage renal disease"
+    },
+    {
+      "code": "674",
+      "description": "End stage renal disease"
+    },
+    {
+      "code": "675",
+      "description": "End stage renal disease"
+    },
+    {
+      "code": "682",
+      "description": "End stage renal disease"
+    },
+    {
+      "code": "683",
+      "description": "End stage renal disease"
+    },
+    {
+      "code": "684",
+      "description": "End stage renal disease"
+    }
+  ],
+  "N289": [
+    {
+      "code": "698",
+      "description": "Disorder of kidney and ureter, unspecified"
+    },
+    {
+      "code": "699",
+      "description": "Disorder of kidney and ureter, unspecified"
+    },
+    {
+      "code": "700",
+      "description": "Disorder of kidney and ureter, unspecified"
+    }
+  ],
+  "N3020": [
+    {
+      "code": "689",
+      "description": "Other chronic cystitis without hematuria"
+    },
+    {
+      "code": "690",
+      "description": "Other chronic cystitis without hematuria"
+    }
+  ],
+  "N3080": [
+    {
+      "code": "689",
+      "description": "Other cystitis without hematuria"
+    },
+    {
+      "code": "690",
+      "description": "Other cystitis without hematuria"
+    },
+    {
+      "code": "791",
+      "description": "Other cystitis without hematuria"
+    },
+    {
+      "code": "793",
+      "description": "Other cystitis without hematuria"
+    }
+  ],
+  "N3090": [
+    {
+      "code": "689",
+      "description": "Cystitis, unspecified without hematuria"
+    },
+    {
+      "code": "690",
+      "description": "Cystitis, unspecified without hematuria"
+    },
+    {
+      "code": "791",
+      "description": "Cystitis, unspecified without hematuria"
+    },
+    {
+      "code": "793",
+      "description": "Cystitis, unspecified without hematuria"
+    }
+  ],
+  "N390": [
+    {
+      "code": "689",
+      "description": "Urinary tract infection, site not specified"
+    },
+    {
+      "code": "690",
+      "description": "Urinary tract infection, site not specified"
+    },
+    {
+      "code": "791",
+      "description": "Urinary tract infection, site not specified"
+    },
+    {
+      "code": "793",
+      "description": "Urinary tract infection, site not specified"
+    }
+  ],
+  "N469": [
+    {
+      "code": "729",
+      "description": "Male infertility, unspecified"
+    },
+    {
+      "code": "730",
+      "description": "Male infertility, unspecified"
+    }
+  ],
+  "N978": [
+    {
+      "code": "742",
+      "description": "Female infertility of other origin"
+    },
+    {
+      "code": "743",
+      "description": "Female infertility of other origin"
+    },
+    {
+      "code": "760",
+      "description": "Female infertility of other origin"
+    },
+    {
+      "code": "761",
+      "description": "Female infertility of other origin"
+    }
+  ],
+  "N990": [
+    {
+      "code": "698",
+      "description": "Postprocedural (acute) (chronic) kidney failure"
+    },
+    {
+      "code": "699",
+      "description": "Postprocedural (acute) (chronic) kidney failure"
+    },
+    {
+      "code": "700",
+      "description": "Postprocedural (acute) (chronic) kidney failure"
+    },
+    {
+      "code": "791",
+      "description": "Postprocedural (acute) (chronic) kidney failure"
+    },
+    {
+      "code": "793",
+      "description": "Postprocedural (acute) (chronic) kidney failure"
+    }
+  ],
+  "O00109": [
+    {
+      "code": "817",
+      "description": "Unspecified tubal pregnancy without intrauterine pregnancy"
+    },
+    {
+      "code": "818",
+      "description": "Unspecified tubal pregnancy without intrauterine pregnancy"
+    },
+    {
+      "code": "819",
+      "description": "Unspecified tubal pregnancy without intrauterine pregnancy"
+    },
+    {
+      "code": "831",
+      "description": "Unspecified tubal pregnancy without intrauterine pregnancy"
+    },
+    {
+      "code": "832",
+      "description": "Unspecified tubal pregnancy without intrauterine pregnancy"
+    },
+    {
+      "code": "833",
+      "description": "Unspecified tubal pregnancy without intrauterine pregnancy"
+    }
+  ],
+  "O020": [
+    {
+      "code": "817",
+      "description": "Blighted ovum and nonhydatidiform mole"
+    },
+    {
+      "code": "818",
+      "description": "Blighted ovum and nonhydatidiform mole"
+    },
+    {
+      "code": "819",
+      "description": "Blighted ovum and nonhydatidiform mole"
+    },
+    {
+      "code": "831",
+      "description": "Blighted ovum and nonhydatidiform mole"
+    },
+    {
+      "code": "832",
+      "description": "Blighted ovum and nonhydatidiform mole"
+    },
+    {
+      "code": "833",
+      "description": "Blighted ovum and nonhydatidiform mole"
+    }
+  ],
+  "O035": [
+    {
+      "code": "770",
+      "description": "Genital tract and pelvic infection following complete or unspecified spontaneous abortion"
+    },
+    {
+      "code": "779",
+      "description": "Genital tract and pelvic infection following complete or unspecified spontaneous abortion"
+    }
+  ],
+  "O036": [
+    {
+      "code": "770",
+      "description": "Delayed or excessive hemorrhage following complete or unspecified spontaneous abortion"
+    },
+    {
+      "code": "779",
+      "description": "Delayed or excessive hemorrhage following complete or unspecified spontaneous abortion"
+    }
+  ],
+  "O037": [
+    {
+      "code": "770",
+      "description": "Embolism following complete or unspecified spontaneous abortion"
+    },
+    {
+      "code": "779",
+      "description": "Embolism following complete or unspecified spontaneous abortion"
+    }
+  ],
+  "O0381": [
+    {
+      "code": "770",
+      "description": "Shock following complete or unspecified spontaneous abortion"
+    },
+    {
+      "code": "779",
+      "description": "Shock following complete or unspecified spontaneous abortion"
+    }
+  ],
+  "O0382": [
+    {
+      "code": "770",
+      "description": "Renal failure following complete or unspecified spontaneous abortion"
+    },
+    {
+      "code": "779",
+      "description": "Renal failure following complete or unspecified spontaneous abortion"
+    }
+  ],
+  "O0383": [
+    {
+      "code": "770",
+      "description": "Metabolic disorder following complete or unspecified spontaneous abortion"
+    },
+    {
+      "code": "779",
+      "description": "Metabolic disorder following complete or unspecified spontaneous abortion"
+    }
+  ],
+  "O0384": [
+    {
+      "code": "770",
+      "description": "Damage to pelvic organs following complete or unspecified spontaneous abortion"
+    },
+    {
+      "code": "779",
+      "description": "Damage to pelvic organs following complete or unspecified spontaneous abortion"
+    }
+  ],
+  "O039": [
+    {
+      "code": "770",
+      "description": "Complete or unspecified spontaneous abortion without complication"
+    },
+    {
+      "code": "779",
+      "description": "Complete or unspecified spontaneous abortion without complication"
+    }
+  ],
+  "O09219": [
+    {
+      "code": "998",
+      "description": "Supervision of pregnancy with history of pre-term labor, unspecified trimester"
+    }
+  ],
+  "O0990": [
+    {
+      "code": "998",
+      "description": "Supervision of high risk pregnancy, unspecified, unspecified trimester"
+    }
+  ],
+  "O119": [
+    {
+      "code": "817",
+      "description": "Pre-existing hypertension with pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "818",
+      "description": "Pre-existing hypertension with pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "819",
+      "description": "Pre-existing hypertension with pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "831",
+      "description": "Pre-existing hypertension with pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "832",
+      "description": "Pre-existing hypertension with pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "833",
+      "description": "Pre-existing hypertension with pre-eclampsia, unspecified trimester"
+    }
+  ],
+  "O1400": [
+    {
+      "code": "817",
+      "description": "Mild to moderate pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "818",
+      "description": "Mild to moderate pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "819",
+      "description": "Mild to moderate pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "831",
+      "description": "Mild to moderate pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "832",
+      "description": "Mild to moderate pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "833",
+      "description": "Mild to moderate pre-eclampsia, unspecified trimester"
+    }
+  ],
+  "O1410": [
+    {
+      "code": "817",
+      "description": "Severe pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "818",
+      "description": "Severe pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "819",
+      "description": "Severe pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "831",
+      "description": "Severe pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "832",
+      "description": "Severe pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "833",
+      "description": "Severe pre-eclampsia, unspecified trimester"
+    }
+  ],
+  "O1420": [
+    {
+      "code": "817",
+      "description": "HELLP syndrome (HELLP), unspecified trimester"
+    },
+    {
+      "code": "818",
+      "description": "HELLP syndrome (HELLP), unspecified trimester"
+    },
+    {
+      "code": "819",
+      "description": "HELLP syndrome (HELLP), unspecified trimester"
+    },
+    {
+      "code": "831",
+      "description": "HELLP syndrome (HELLP), unspecified trimester"
+    },
+    {
+      "code": "832",
+      "description": "HELLP syndrome (HELLP), unspecified trimester"
+    },
+    {
+      "code": "833",
+      "description": "HELLP syndrome (HELLP), unspecified trimester"
+    }
+  ],
+  "O1490": [
+    {
+      "code": "817",
+      "description": "Unspecified pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "818",
+      "description": "Unspecified pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "819",
+      "description": "Unspecified pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "831",
+      "description": "Unspecified pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "832",
+      "description": "Unspecified pre-eclampsia, unspecified trimester"
+    },
+    {
+      "code": "833",
+      "description": "Unspecified pre-eclampsia, unspecified trimester"
+    }
+  ],
+  "O1495": [
+    {
+      "code": "769",
+      "description": "Unspecified pre-eclampsia, complicating the puerperium"
+    },
+    {
+      "code": "776",
+      "description": "Unspecified pre-eclampsia, complicating the puerperium"
+    }
+  ],
+  "O1500": [
+    {
+      "code": "817",
+      "description": "Eclampsia complicating pregnancy, unspecified trimester"
+    },
+    {
+      "code": "818",
+      "description": "Eclampsia complicating pregnancy, unspecified trimester"
+    },
+    {
+      "code": "819",
+      "description": "Eclampsia complicating pregnancy, unspecified trimester"
+    },
+    {
+      "code": "831",
+      "description": "Eclampsia complicating pregnancy, unspecified trimester"
+    },
+    {
+      "code": "832",
+      "description": "Eclampsia complicating pregnancy, unspecified trimester"
+    },
+    {
+      "code": "833",
+      "description": "Eclampsia complicating pregnancy, unspecified trimester"
+    }
+  ],
+  "O2620": [
+    {
+      "code": "817",
+      "description": "Pregnancy care for patient with recurrent pregnancy loss, unspecified trimester"
+    },
+    {
+      "code": "818",
+      "description": "Pregnancy care for patient with recurrent pregnancy loss, unspecified trimester"
+    },
+    {
+      "code": "819",
+      "description": "Pregnancy care for patient with recurrent pregnancy loss, unspecified trimester"
+    },
+    {
+      "code": "831",
+      "description": "Pregnancy care for patient with recurrent pregnancy loss, unspecified trimester"
+    },
+    {
+      "code": "832",
+      "description": "Pregnancy care for patient with recurrent pregnancy loss, unspecified trimester"
+    },
+    {
+      "code": "833",
+      "description": "Pregnancy care for patient with recurrent pregnancy loss, unspecified trimester"
+    }
+  ],
+  "O2690": [
+    {
+      "code": "817",
+      "description": "Pregnancy related conditions, unspecified, unspecified trimester"
+    },
+    {
+      "code": "818",
+      "description": "Pregnancy related conditions, unspecified, unspecified trimester"
+    },
+    {
+      "code": "819",
+      "description": "Pregnancy related conditions, unspecified, unspecified trimester"
+    },
+    {
+      "code": "831",
+      "description": "Pregnancy related conditions, unspecified, unspecified trimester"
+    },
+    {
+      "code": "832",
+      "description": "Pregnancy related conditions, unspecified, unspecified trimester"
+    },
+    {
+      "code": "833",
+      "description": "Pregnancy related conditions, unspecified, unspecified trimester"
+    }
+  ],
+  "O99893": [
+    {
+      "code": "769",
+      "description": "Other specified diseases and conditions complicating puerperium"
+    },
+    {
+      "code": "776",
+      "description": "Other specified diseases and conditions complicating puerperium"
+    }
+  ],
+  "P0730": [
+    {
+      "code": "791",
+      "description": "Preterm newborn, unspecified weeks of gestation"
+    },
+    {
+      "code": "792",
+      "description": "Preterm newborn, unspecified weeks of gestation"
+    }
+  ],
+  "P220": [
+    {
+      "code": "790",
+      "description": "Respiratory distress syndrome of newborn"
+    }
+  ],
+  "P228": [
+    {
+      "code": "794",
+      "description": "Other respiratory distress of newborn"
+    }
+  ],
+  "P229": [
+    {
+      "code": "794",
+      "description": "Respiratory distress of newborn, unspecified"
+    }
+  ],
+  "P258": [
+    {
+      "code": "791",
+      "description": "Other conditions related to interstitial emphysema originating in the perinatal period"
+    },
+    {
+      "code": "793",
+      "description": "Other conditions related to interstitial emphysema originating in the perinatal period"
+    }
+  ],
+  "P269": [
+    {
+      "code": "791",
+      "description": "Unspecified pulmonary hemorrhage originating in the perinatal period"
+    },
+    {
+      "code": "793",
+      "description": "Unspecified pulmonary hemorrhage originating in the perinatal period"
+    }
+  ],
+  "P2889": [
+    {
+      "code": "794",
+      "description": "Other specified respiratory conditions of newborn"
+    }
+  ],
+  "P290": [
+    {
+      "code": "794",
+      "description": "Neonatal cardiac failure"
+    }
+  ],
+  "P292": [
+    {
+      "code": "794",
+      "description": "Neonatal hypertension"
+    }
+  ],
+  "P2981": [
+    {
+      "code": "791",
+      "description": "Cardiac arrest of newborn"
+    },
+    {
+      "code": "793",
+      "description": "Cardiac arrest of newborn"
+    }
+  ],
+  "P2989": [
+    {
+      "code": "794",
+      "description": "Other cardiovascular disorders originating in the perinatal period"
+    }
+  ],
+  "P362": [
+    {
+      "code": "791",
+      "description": "Sepsis of newborn due to Staphylococcus aureus"
+    },
+    {
+      "code": "793",
+      "description": "Sepsis of newborn due to Staphylococcus aureus"
+    }
+  ],
+  "P369": [
+    {
+      "code": "791",
+      "description": "Bacterial sepsis of newborn, unspecified"
+    },
+    {
+      "code": "793",
+      "description": "Bacterial sepsis of newborn, unspecified"
+    }
+  ],
+  "P393": [
+    {
+      "code": "791",
+      "description": "Neonatal urinary tract infection"
+    },
+    {
+      "code": "793",
+      "description": "Neonatal urinary tract infection"
+    }
+  ],
+  "P542": [
+    {
+      "code": "791",
+      "description": "Neonatal rectal hemorrhage"
+    },
+    {
+      "code": "793",
+      "description": "Neonatal rectal hemorrhage"
+    }
+  ],
+  "P615": [
+    {
+      "code": "794",
+      "description": "Transient neonatal neutropenia"
+    }
+  ],
+  "P760": [
+    {
+      "code": "791",
+      "description": "Meconium plug syndrome"
+    },
+    {
+      "code": "793",
+      "description": "Meconium plug syndrome"
+    }
+  ],
+  "P768": [
+    {
+      "code": "794",
+      "description": "Other specified intestinal obstruction of newborn"
+    }
+  ],
+  "P780": [
+    {
+      "code": "791",
+      "description": "Perinatal intestinal perforation"
+    },
+    {
+      "code": "793",
+      "description": "Perinatal intestinal perforation"
+    }
+  ],
+  "P783": [
+    {
+      "code": "794",
+      "description": "Noninfective neonatal diarrhea"
+    }
+  ],
+  "P7883": [
+    {
+      "code": "794",
+      "description": "Newborn esophageal reflux"
+    }
+  ],
+  "P819": [
+    {
+      "code": "794",
+      "description": "Disturbance of temperature regulation of newborn, unspecified"
+    }
+  ],
+  "P84": [
+    {
+      "code": "794",
+      "description": "Other problems with newborn"
+    }
+  ],
+  "P90": [
+    {
+      "code": "791",
+      "description": "Convulsions of newborn"
+    },
+    {
+      "code": "793",
+      "description": "Convulsions of newborn"
+    }
+  ],
+  "P9209": [
+    {
+      "code": "795",
+      "description": "Other vomiting of newborn"
+    }
+  ],
+  "Q039": [
+    {
+      "code": "091",
+      "description": "Congenital hydrocephalus, unspecified"
+    },
+    {
+      "code": "092",
+      "description": "Congenital hydrocephalus, unspecified"
+    },
+    {
+      "code": "093",
+      "description": "Congenital hydrocephalus, unspecified"
+    },
+    {
+      "code": "791",
+      "description": "Congenital hydrocephalus, unspecified"
+    },
+    {
+      "code": "793",
+      "description": "Congenital hydrocephalus, unspecified"
+    }
+  ],
+  "Q054": [
+    {
+      "code": "091",
+      "description": "Unspecified spina bifida with hydrocephalus"
+    },
+    {
+      "code": "092",
+      "description": "Unspecified spina bifida with hydrocephalus"
+    },
+    {
+      "code": "093",
+      "description": "Unspecified spina bifida with hydrocephalus"
+    },
+    {
+      "code": "791",
+      "description": "Unspecified spina bifida with hydrocephalus"
+    },
+    {
+      "code": "793",
+      "description": "Unspecified spina bifida with hydrocephalus"
+    }
+  ],
+  "Q055": [
+    {
+      "code": "091",
+      "description": "Cervical spina bifida without hydrocephalus"
+    },
+    {
+      "code": "092",
+      "description": "Cervical spina bifida without hydrocephalus"
+    },
+    {
+      "code": "093",
+      "description": "Cervical spina bifida without hydrocephalus"
+    },
+    {
+      "code": "791",
+      "description": "Cervical spina bifida without hydrocephalus"
+    },
+    {
+      "code": "793",
+      "description": "Cervical spina bifida without hydrocephalus"
+    }
+  ],
+  "Q056": [
+    {
+      "code": "091",
+      "description": "Thoracic spina bifida without hydrocephalus"
+    },
+    {
+      "code": "092",
+      "description": "Thoracic spina bifida without hydrocephalus"
+    },
+    {
+      "code": "093",
+      "description": "Thoracic spina bifida without hydrocephalus"
+    },
+    {
+      "code": "791",
+      "description": "Thoracic spina bifida without hydrocephalus"
+    },
+    {
+      "code": "793",
+      "description": "Thoracic spina bifida without hydrocephalus"
+    }
+  ],
+  "Q057": [
+    {
+      "code": "091",
+      "description": "Lumbar spina bifida without hydrocephalus"
+    },
+    {
+      "code": "092",
+      "description": "Lumbar spina bifida without hydrocephalus"
+    },
+    {
+      "code": "093",
+      "description": "Lumbar spina bifida without hydrocephalus"
+    },
+    {
+      "code": "791",
+      "description": "Lumbar spina bifida without hydrocephalus"
+    },
+    {
+      "code": "793",
+      "description": "Lumbar spina bifida without hydrocephalus"
+    }
+  ],
+  "Q058": [
+    {
+      "code": "091",
+      "description": "Sacral spina bifida without hydrocephalus"
+    },
+    {
+      "code": "092",
+      "description": "Sacral spina bifida without hydrocephalus"
+    },
+    {
+      "code": "093",
+      "description": "Sacral spina bifida without hydrocephalus"
+    },
+    {
+      "code": "791",
+      "description": "Sacral spina bifida without hydrocephalus"
+    },
+    {
+      "code": "793",
+      "description": "Sacral spina bifida without hydrocephalus"
+    }
+  ],
+  "Q059": [
+    {
+      "code": "091",
+      "description": "Spina bifida, unspecified"
+    },
+    {
+      "code": "092",
+      "description": "Spina bifida, unspecified"
+    },
+    {
+      "code": "093",
+      "description": "Spina bifida, unspecified"
+    },
+    {
+      "code": "791",
+      "description": "Spina bifida, unspecified"
+    },
+    {
+      "code": "793",
+      "description": "Spina bifida, unspecified"
+    }
+  ],
+  "Q0700": [
+    {
+      "code": "091",
+      "description": "Arnold-Chiari syndrome without spina bifida or hydrocephalus"
+    },
+    {
+      "code": "092",
+      "description": "Arnold-Chiari syndrome without spina bifida or hydrocephalus"
+    },
+    {
+      "code": "093",
+      "description": "Arnold-Chiari syndrome without spina bifida or hydrocephalus"
+    },
+    {
+      "code": "791",
+      "description": "Arnold-Chiari syndrome without spina bifida or hydrocephalus"
+    },
+    {
+      "code": "793",
+      "description": "Arnold-Chiari syndrome without spina bifida or hydrocephalus"
+    }
+  ],
+  "Q0702": [
+    {
+      "code": "091",
+      "description": "Arnold-Chiari syndrome with hydrocephalus"
+    },
+    {
+      "code": "092",
+      "description": "Arnold-Chiari syndrome with hydrocephalus"
+    },
+    {
+      "code": "093",
+      "description": "Arnold-Chiari syndrome with hydrocephalus"
+    },
+    {
+      "code": "791",
+      "description": "Arnold-Chiari syndrome with hydrocephalus"
+    },
+    {
+      "code": "793",
+      "description": "Arnold-Chiari syndrome with hydrocephalus"
+    }
+  ],
+  "Q519": [
+    {
+      "code": "742",
+      "description": "Congenital malformation of uterus and cervix, unspecified"
+    },
+    {
+      "code": "743",
+      "description": "Congenital malformation of uterus and cervix, unspecified"
+    },
+    {
+      "code": "760",
+      "description": "Congenital malformation of uterus and cervix, unspecified"
+    },
+    {
+      "code": "761",
+      "description": "Congenital malformation of uterus and cervix, unspecified"
+    }
+  ],
+  "Q6690": [
+    {
+      "code": "564",
+      "description": "Congenital deformity of feet, unspecified, unspecified foot"
+    },
+    {
+      "code": "565",
+      "description": "Congenital deformity of feet, unspecified, unspecified foot"
+    },
+    {
+      "code": "566",
+      "description": "Congenital deformity of feet, unspecified, unspecified foot"
+    }
+  ],
+  "Q760": [
+    {
+      "code": "091",
+      "description": "Spina bifida occulta"
+    },
+    {
+      "code": "092",
+      "description": "Spina bifida occulta"
+    },
+    {
+      "code": "093",
+      "description": "Spina bifida occulta"
+    }
+  ],
+  "Q870": [
+    {
+      "code": "564",
+      "description": "Congenital malformation syndromes predominantly affecting facial appearance"
+    },
+    {
+      "code": "565",
+      "description": "Congenital malformation syndromes predominantly affecting facial appearance"
+    },
+    {
+      "code": "566",
+      "description": "Congenital malformation syndromes predominantly affecting facial appearance"
+    }
+  ],
+  "R042": [
+    {
+      "code": "204",
+      "description": "Hemoptysis"
+    }
+  ],
+  "R0600": [
+    {
+      "code": "204",
+      "description": "Dyspnea, unspecified"
+    }
+  ],
+  "R0603": [
+    {
+      "code": "204",
+      "description": "Acute respiratory distress"
+    }
+  ],
+  "R0609": [
+    {
+      "code": "204",
+      "description": "Other forms of dyspnea"
+    }
+  ],
+  "R062": [
+    {
+      "code": "204",
+      "description": "Wheezing"
+    }
+  ],
+  "R070": [
+    {
+      "code": "154",
+      "description": "Pain in throat"
+    },
+    {
+      "code": "155",
+      "description": "Pain in throat"
+    },
+    {
+      "code": "156",
+      "description": "Pain in throat"
+    }
+  ],
+  "R0902": [
+    {
+      "code": "205",
+      "description": "Hypoxemia"
+    },
+    {
+      "code": "206",
+      "description": "Hypoxemia"
+    }
+  ],
+  "R093": [
+    {
+      "code": "204",
+      "description": "Abnormal sputum"
+    }
+  ],
+  "R0981": [
+    {
+      "code": "154",
+      "description": "Nasal congestion"
+    },
+    {
+      "code": "155",
+      "description": "Nasal congestion"
+    },
+    {
+      "code": "156",
+      "description": "Nasal congestion"
+    },
+    {
+      "code": "795",
+      "description": "Nasal congestion"
+    }
+  ],
+  "R110": [
+    {
+      "code": "391",
+      "description": "Nausea"
+    },
+    {
+      "code": "392",
+      "description": "Nausea"
+    }
+  ],
+  "R1110": [
+    {
+      "code": "391",
+      "description": "Vomiting, unspecified"
+    },
+    {
+      "code": "392",
+      "description": "Vomiting, unspecified"
+    }
+  ],
+  "R130": [
+    {
+      "code": "391",
+      "description": "Aphagia"
+    },
+    {
+      "code": "392",
+      "description": "Aphagia"
+    }
+  ],
+  "R197": [
+    {
+      "code": "391",
+      "description": "Diarrhea, unspecified"
+    },
+    {
+      "code": "392",
+      "description": "Diarrhea, unspecified"
+    }
+  ],
+  "R252": [
+    {
+      "code": "091",
+      "description": "Cramp and spasm"
+    },
+    {
+      "code": "092",
+      "description": "Cramp and spasm"
+    },
+    {
+      "code": "093",
+      "description": "Cramp and spasm"
+    }
+  ],
+  "R29898": [
+    {
+      "code": "555",
+      "description": "Other symptoms and signs involving the musculoskeletal system"
+    },
+    {
+      "code": "556",
+      "description": "Other symptoms and signs involving the musculoskeletal system"
+    }
+  ],
+  "R339": [
+    {
+      "code": "695",
+      "description": "Retention of urine, unspecified"
+    },
+    {
+      "code": "696",
+      "description": "Retention of urine, unspecified"
+    },
+    {
+      "code": "791",
+      "description": "Retention of urine, unspecified"
+    },
+    {
+      "code": "793",
+      "description": "Retention of urine, unspecified"
+    }
+  ],
+  "R410": [
+    {
+      "code": "947",
+      "description": "Disorientation, unspecified"
+    },
+    {
+      "code": "948",
+      "description": "Disorientation, unspecified"
+    }
+  ],
+  "R42": [
+    {
+      "code": "149",
+      "description": "Dizziness and giddiness"
+    }
+  ],
+  "R432": [
+    {
+      "code": "091",
+      "description": "Parageusia"
+    },
+    {
+      "code": "092",
+      "description": "Parageusia"
+    },
+    {
+      "code": "093",
+      "description": "Parageusia"
+    }
+  ],
+  "R438": [
+    {
+      "code": "091",
+      "description": "Other disturbances of smell and taste"
+    },
+    {
+      "code": "092",
+      "description": "Other disturbances of smell and taste"
+    },
+    {
+      "code": "093",
+      "description": "Other disturbances of smell and taste"
+    }
+  ],
+  "R45851": [
+    {
+      "code": "880",
+      "description": "Suicidal ideations"
+    }
+  ],
+  "R4689": [
+    {
+      "code": "951",
+      "description": "Other symptoms and signs involving appearance and behavior"
+    }
+  ],
+  "R479": [
+    {
+      "code": "091",
+      "description": "Unspecified speech disturbances"
+    },
+    {
+      "code": "092",
+      "description": "Unspecified speech disturbances"
+    },
+    {
+      "code": "093",
+      "description": "Unspecified speech disturbances"
+    }
+  ],
+  "R5081": [
+    {
+      "code": "864",
+      "description": "Fever presenting with conditions classified elsewhere"
+    }
+  ],
+  "R509": [
+    {
+      "code": "864",
+      "description": "Fever, unspecified"
+    }
+  ],
+  "R519": [
+    {
+      "code": "102",
+      "description": "Headache, unspecified"
+    },
+    {
+      "code": "103",
+      "description": "Headache, unspecified"
+    }
+  ],
+  "R52": [
+    {
+      "code": "947",
+      "description": "Pain, unspecified"
+    },
+    {
+      "code": "948",
+      "description": "Pain, unspecified"
+    }
+  ],
+  "R5383": [
+    {
+      "code": "947",
+      "description": "Other fatigue"
+    },
+    {
+      "code": "948",
+      "description": "Other fatigue"
+    }
+  ],
+  "R54": [
+    {
+      "code": "884",
+      "description": "Age-related physical debility"
+    }
+  ],
+  "R569": [
+    {
+      "code": "100",
+      "description": "Unspecified convulsions"
+    },
+    {
+      "code": "101",
+      "description": "Unspecified convulsions"
+    },
+    {
+      "code": "791",
+      "description": "Unspecified convulsions"
+    },
+    {
+      "code": "793",
+      "description": "Unspecified convulsions"
+    }
+  ],
+  "R579": [
+    {
+      "code": "222",
+      "description": "Shock, unspecified"
+    },
+    {
+      "code": "223",
+      "description": "Shock, unspecified"
+    },
+    {
+      "code": "291",
+      "description": "Shock, unspecified"
+    },
+    {
+      "code": "292",
+      "description": "Shock, unspecified"
+    },
+    {
+      "code": "293",
+      "description": "Shock, unspecified"
+    },
+    {
+      "code": "791",
+      "description": "Shock, unspecified"
+    },
+    {
+      "code": "793",
+      "description": "Shock, unspecified"
+    }
+  ],
+  "R6521": [
+    {
+      "code": "870",
+      "description": "Severe sepsis with septic shock"
+    },
+    {
+      "code": "871",
+      "description": "Severe sepsis with septic shock"
+    },
+    {
+      "code": "872",
+      "description": "Severe sepsis with septic shock"
+    }
+  ],
+  "R6883": [
+    {
+      "code": "947",
+      "description": "Chills (without fever)"
+    },
+    {
+      "code": "948",
+      "description": "Chills (without fever)"
+    }
+  ],
+  "R7303": [
+    {
+      "code": "640",
+      "description": "Prediabetes"
+    },
+    {
+      "code": "641",
+      "description": "Prediabetes"
+    }
+  ],
+  "R739": [
+    {
+      "code": "640",
+      "description": "Hyperglycemia, unspecified"
+    },
+    {
+      "code": "641",
+      "description": "Hyperglycemia, unspecified"
+    }
+  ],
+  "R760": [
+    {
+      "code": "814",
+      "description": "Raised antibody titer"
+    },
+    {
+      "code": "815",
+      "description": "Raised antibody titer"
+    },
+    {
+      "code": "816",
+      "description": "Raised antibody titer"
+    }
+  ],
+  "R7881": [
+    {
+      "code": "791",
+      "description": "Bacteremia"
+    },
+    {
+      "code": "793",
+      "description": "Bacteremia"
+    },
+    {
+      "code": "870",
+      "description": "Bacteremia"
+    },
+    {
+      "code": "871",
+      "description": "Bacteremia"
+    },
+    {
+      "code": "872",
+      "description": "Bacteremia"
+    }
+  ],
+  "R801": [
+    {
+      "code": "695",
+      "description": "Persistent proteinuria, unspecified"
+    },
+    {
+      "code": "696",
+      "description": "Persistent proteinuria, unspecified"
+    }
+  ],
+  "R809": [
+    {
+      "code": "695",
+      "description": "Proteinuria, unspecified"
+    },
+    {
+      "code": "696",
+      "description": "Proteinuria, unspecified"
+    }
+  ],
+  "R931": [
+    {
+      "code": "302",
+      "description": "Abnormal findings on diagnostic imaging of heart and coronary circulation"
+    },
+    {
+      "code": "303",
+      "description": "Abnormal findings on diagnostic imaging of heart and coronary circulation"
+    }
+  ],
+  "R99": [
+    {
+      "code": "951",
+      "description": "Ill-defined and unknown cause of mortality"
+    }
+  ],
+  "S0181X": [
+    {
+      "code": "604",
+      "description": "Laceration without foreign body of other part of head, episode of care unspecified"
+    },
+    {
+      "code": "605",
+      "description": "Laceration without foreign body of other part of head, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Laceration without foreign body of other part of head, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Laceration without foreign body of other part of head, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Laceration without foreign body of other part of head, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Laceration without foreign body of other part of head, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Laceration without foreign body of other part of head, episode of care unspecified"
+    }
+  ],
+  "S060X0": [
+    {
+      "code": "088",
+      "description": "Concussion without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "089",
+      "description": "Concussion without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "090",
+      "description": "Concussion without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Concussion without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Concussion without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Concussion without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Concussion without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Concussion without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "091",
+      "description": "Concussion without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "092",
+      "description": "Concussion without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "093",
+      "description": "Concussion without loss of consciousness, episode of care unspecified"
+    }
+  ],
+  "S060X9": [
+    {
+      "code": "088",
+      "description": "Concussion with loss of consciousness of unspecified duration, episode of care unspecified"
+    },
+    {
+      "code": "089",
+      "description": "Concussion with loss of consciousness of unspecified duration, episode of care unspecified"
+    },
+    {
+      "code": "090",
+      "description": "Concussion with loss of consciousness of unspecified duration, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Concussion with loss of consciousness of unspecified duration, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Concussion with loss of consciousness of unspecified duration, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Concussion with loss of consciousness of unspecified duration, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Concussion with loss of consciousness of unspecified duration, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Concussion with loss of consciousness of unspecified duration, episode of care unspecified"
+    },
+    {
+      "code": "091",
+      "description": "Concussion with loss of consciousness of unspecified duration, episode of care unspecified"
+    },
+    {
+      "code": "092",
+      "description": "Concussion with loss of consciousness of unspecified duration, episode of care unspecified"
+    },
+    {
+      "code": "093",
+      "description": "Concussion with loss of consciousness of unspecified duration, episode of care unspecified"
+    }
+  ],
+  "S069X0": [
+    {
+      "code": "082",
+      "description": "Unspecified intracranial injury without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "083",
+      "description": "Unspecified intracranial injury without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "084",
+      "description": "Unspecified intracranial injury without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "085",
+      "description": "Unspecified intracranial injury without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "086",
+      "description": "Unspecified intracranial injury without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "087",
+      "description": "Unspecified intracranial injury without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Unspecified intracranial injury without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Unspecified intracranial injury without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Unspecified intracranial injury without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Unspecified intracranial injury without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Unspecified intracranial injury without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "091",
+      "description": "Unspecified intracranial injury without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "092",
+      "description": "Unspecified intracranial injury without loss of consciousness, episode of care unspecified"
+    },
+    {
+      "code": "093",
+      "description": "Unspecified intracranial injury without loss of consciousness, episode of care unspecified"
+    }
+  ],
+  "S134XX": [
+    {
+      "code": "551",
+      "description": "Sprain of ligaments of cervical spine, episode of care unspecified"
+    },
+    {
+      "code": "552",
+      "description": "Sprain of ligaments of cervical spine, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Sprain of ligaments of cervical spine, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Sprain of ligaments of cervical spine, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Sprain of ligaments of cervical spine, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Sprain of ligaments of cervical spine, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Sprain of ligaments of cervical spine, episode of care unspecified"
+    },
+    {
+      "code": "562",
+      "description": "Sprain of ligaments of cervical spine, episode of care unspecified"
+    },
+    {
+      "code": "563",
+      "description": "Sprain of ligaments of cervical spine, episode of care unspecified"
+    }
+  ],
+  "S2239X": [
+    {
+      "code": "205",
+      "description": "Fracture of one rib, unspecified side, episode of care unspecified"
+    },
+    {
+      "code": "206",
+      "description": "Fracture of one rib, unspecified side, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Fracture of one rib, unspecified side, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Fracture of one rib, unspecified side, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Fracture of one rib, unspecified side, episode of care unspecified"
+    },
+    {
+      "code": "183",
+      "description": "Fracture of one rib, unspecified side, episode of care unspecified"
+    },
+    {
+      "code": "184",
+      "description": "Fracture of one rib, unspecified side, episode of care unspecified"
+    },
+    {
+      "code": "185",
+      "description": "Fracture of one rib, unspecified side, episode of care unspecified"
+    },
+    {
+      "code": "559",
+      "description": "Fracture of one rib, unspecified side, episode of care unspecified"
+    },
+    {
+      "code": "560",
+      "description": "Fracture of one rib, unspecified side, episode of care unspecified"
+    },
+    {
+      "code": "561",
+      "description": "Fracture of one rib, unspecified side, episode of care unspecified"
+    },
+    {
+      "code": "564",
+      "description": "Fracture of one rib, unspecified side, episode of care unspecified"
+    },
+    {
+      "code": "565",
+      "description": "Fracture of one rib, unspecified side, episode of care unspecified"
+    },
+    {
+      "code": "566",
+      "description": "Fracture of one rib, unspecified side, episode of care unspecified"
+    },
+    {
+      "code": "551",
+      "description": "Fracture of one rib, unspecified side, episode of care unspecified"
+    },
+    {
+      "code": "552",
+      "description": "Fracture of one rib, unspecified side, episode of care unspecified"
+    }
+  ],
+  "S2690X": [
+    {
+      "code": "314",
+      "description": "Unspecified injury of heart, unspecified with or without hemopericardium, episode of care unspecified"
+    },
+    {
+      "code": "315",
+      "description": "Unspecified injury of heart, unspecified with or without hemopericardium, episode of care unspecified"
+    },
+    {
+      "code": "316",
+      "description": "Unspecified injury of heart, unspecified with or without hemopericardium, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Unspecified injury of heart, unspecified with or without hemopericardium, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Unspecified injury of heart, unspecified with or without hemopericardium, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Unspecified injury of heart, unspecified with or without hemopericardium, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Unspecified injury of heart, unspecified with or without hemopericardium, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Unspecified injury of heart, unspecified with or without hemopericardium, episode of care unspecified"
+    },
+    {
+      "code": "205",
+      "description": "Unspecified injury of heart, unspecified with or without hemopericardium, episode of care unspecified"
+    },
+    {
+      "code": "206",
+      "description": "Unspecified injury of heart, unspecified with or without hemopericardium, episode of care unspecified"
+    }
+  ],
+  "S37009": [
+    {
+      "code": "698",
+      "description": "Unspecified injury of unspecified kidney, episode of care unspecified"
+    },
+    {
+      "code": "699",
+      "description": "Unspecified injury of unspecified kidney, episode of care unspecified"
+    },
+    {
+      "code": "700",
+      "description": "Unspecified injury of unspecified kidney, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Unspecified injury of unspecified kidney, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Unspecified injury of unspecified kidney, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Unspecified injury of unspecified kidney, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Unspecified injury of unspecified kidney, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Unspecified injury of unspecified kidney, episode of care unspecified"
+    },
+    {
+      "code": "393",
+      "description": "Unspecified injury of unspecified kidney, episode of care unspecified"
+    },
+    {
+      "code": "394",
+      "description": "Unspecified injury of unspecified kidney, episode of care unspecified"
+    },
+    {
+      "code": "395",
+      "description": "Unspecified injury of unspecified kidney, episode of care unspecified"
+    }
+  ],
+  "S42009": [
+    {
+      "code": "562",
+      "description": "Fracture of unspecified part of unspecified clavicle, episode of care unspecified"
+    },
+    {
+      "code": "563",
+      "description": "Fracture of unspecified part of unspecified clavicle, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Fracture of unspecified part of unspecified clavicle, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Fracture of unspecified part of unspecified clavicle, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Fracture of unspecified part of unspecified clavicle, episode of care unspecified"
+    },
+    {
+      "code": "559",
+      "description": "Fracture of unspecified part of unspecified clavicle, episode of care unspecified"
+    },
+    {
+      "code": "560",
+      "description": "Fracture of unspecified part of unspecified clavicle, episode of care unspecified"
+    },
+    {
+      "code": "561",
+      "description": "Fracture of unspecified part of unspecified clavicle, episode of care unspecified"
+    },
+    {
+      "code": "564",
+      "description": "Fracture of unspecified part of unspecified clavicle, episode of care unspecified"
+    },
+    {
+      "code": "565",
+      "description": "Fracture of unspecified part of unspecified clavicle, episode of care unspecified"
+    },
+    {
+      "code": "566",
+      "description": "Fracture of unspecified part of unspecified clavicle, episode of care unspecified"
+    }
+  ],
+  "S46009": [
+    {
+      "code": "913",
+      "description": "Unspecified injury of muscle(s) and tendon(s) of the rotator cuff of unspecified shoulder, episode of care unspecified"
+    },
+    {
+      "code": "914",
+      "description": "Unspecified injury of muscle(s) and tendon(s) of the rotator cuff of unspecified shoulder, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Unspecified injury of muscle(s) and tendon(s) of the rotator cuff of unspecified shoulder, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Unspecified injury of muscle(s) and tendon(s) of the rotator cuff of unspecified shoulder, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Unspecified injury of muscle(s) and tendon(s) of the rotator cuff of unspecified shoulder, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Unspecified injury of muscle(s) and tendon(s) of the rotator cuff of unspecified shoulder, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Unspecified injury of muscle(s) and tendon(s) of the rotator cuff of unspecified shoulder, episode of care unspecified"
+    }
+  ],
+  "S51819": [
+    {
+      "code": "604",
+      "description": "Laceration without foreign body of unspecified forearm, episode of care unspecified"
+    },
+    {
+      "code": "605",
+      "description": "Laceration without foreign body of unspecified forearm, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Laceration without foreign body of unspecified forearm, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Laceration without foreign body of unspecified forearm, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Laceration without foreign body of unspecified forearm, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Laceration without foreign body of unspecified forearm, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Laceration without foreign body of unspecified forearm, episode of care unspecified"
+    }
+  ],
+  "S5290X": [
+    {
+      "code": "562",
+      "description": "Unspecified fracture of unspecified forearm, episode of care unspecified"
+    },
+    {
+      "code": "563",
+      "description": "Unspecified fracture of unspecified forearm, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Unspecified fracture of unspecified forearm, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Unspecified fracture of unspecified forearm, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Unspecified fracture of unspecified forearm, episode of care unspecified"
+    },
+    {
+      "code": "559",
+      "description": "Unspecified fracture of unspecified forearm, episode of care unspecified"
+    },
+    {
+      "code": "560",
+      "description": "Unspecified fracture of unspecified forearm, episode of care unspecified"
+    },
+    {
+      "code": "561",
+      "description": "Unspecified fracture of unspecified forearm, episode of care unspecified"
+    },
+    {
+      "code": "564",
+      "description": "Unspecified fracture of unspecified forearm, episode of care unspecified"
+    },
+    {
+      "code": "565",
+      "description": "Unspecified fracture of unspecified forearm, episode of care unspecified"
+    },
+    {
+      "code": "566",
+      "description": "Unspecified fracture of unspecified forearm, episode of care unspecified"
+    }
+  ],
+  "S61419": [
+    {
+      "code": "604",
+      "description": "Laceration without foreign body of unspecified hand, episode of care unspecified"
+    },
+    {
+      "code": "605",
+      "description": "Laceration without foreign body of unspecified hand, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Laceration without foreign body of unspecified hand, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Laceration without foreign body of unspecified hand, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Laceration without foreign body of unspecified hand, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Laceration without foreign body of unspecified hand, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Laceration without foreign body of unspecified hand, episode of care unspecified"
+    }
+  ],
+  "S61519": [
+    {
+      "code": "604",
+      "description": "Laceration without foreign body of unspecified wrist, episode of care unspecified"
+    },
+    {
+      "code": "605",
+      "description": "Laceration without foreign body of unspecified wrist, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Laceration without foreign body of unspecified wrist, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Laceration without foreign body of unspecified wrist, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Laceration without foreign body of unspecified wrist, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Laceration without foreign body of unspecified wrist, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Laceration without foreign body of unspecified wrist, episode of care unspecified"
+    }
+  ],
+  "S6290X": [
+    {
+      "code": "562",
+      "description": "Unspecified fracture of unspecified wrist and hand, episode of care unspecified"
+    },
+    {
+      "code": "563",
+      "description": "Unspecified fracture of unspecified wrist and hand, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Unspecified fracture of unspecified wrist and hand, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Unspecified fracture of unspecified wrist and hand, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Unspecified fracture of unspecified wrist and hand, episode of care unspecified"
+    },
+    {
+      "code": "559",
+      "description": "Unspecified fracture of unspecified wrist and hand, episode of care unspecified"
+    },
+    {
+      "code": "560",
+      "description": "Unspecified fracture of unspecified wrist and hand, episode of care unspecified"
+    },
+    {
+      "code": "561",
+      "description": "Unspecified fracture of unspecified wrist and hand, episode of care unspecified"
+    },
+    {
+      "code": "564",
+      "description": "Unspecified fracture of unspecified wrist and hand, episode of care unspecified"
+    },
+    {
+      "code": "565",
+      "description": "Unspecified fracture of unspecified wrist and hand, episode of care unspecified"
+    },
+    {
+      "code": "566",
+      "description": "Unspecified fracture of unspecified wrist and hand, episode of care unspecified"
+    }
+  ],
+  "S63003": [
+    {
+      "code": "562",
+      "description": "Unspecified subluxation of unspecified wrist and hand, episode of care unspecified"
+    },
+    {
+      "code": "563",
+      "description": "Unspecified subluxation of unspecified wrist and hand, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Unspecified subluxation of unspecified wrist and hand, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Unspecified subluxation of unspecified wrist and hand, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Unspecified subluxation of unspecified wrist and hand, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Unspecified subluxation of unspecified wrist and hand, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Unspecified subluxation of unspecified wrist and hand, episode of care unspecified"
+    }
+  ],
+  "S63509": [
+    {
+      "code": "562",
+      "description": "Unspecified sprain of unspecified wrist, episode of care unspecified"
+    },
+    {
+      "code": "563",
+      "description": "Unspecified sprain of unspecified wrist, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Unspecified sprain of unspecified wrist, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Unspecified sprain of unspecified wrist, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Unspecified sprain of unspecified wrist, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Unspecified sprain of unspecified wrist, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Unspecified sprain of unspecified wrist, episode of care unspecified"
+    }
+  ],
+  "S71119": [
+    {
+      "code": "604",
+      "description": "Laceration without foreign body, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "605",
+      "description": "Laceration without foreign body, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Laceration without foreign body, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Laceration without foreign body, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Laceration without foreign body, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Laceration without foreign body, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Laceration without foreign body, unspecified thigh, episode of care unspecified"
+    }
+  ],
+  "S71129": [
+    {
+      "code": "913",
+      "description": "Laceration with foreign body, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "914",
+      "description": "Laceration with foreign body, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Laceration with foreign body, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Laceration with foreign body, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Laceration with foreign body, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Laceration with foreign body, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Laceration with foreign body, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "604",
+      "description": "Laceration with foreign body, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "605",
+      "description": "Laceration with foreign body, unspecified thigh, episode of care unspecified"
+    }
+  ],
+  "S72009": [
+    {
+      "code": "521",
+      "description": "Fracture of unspecified part of neck of unspecified femur, episode of care unspecified"
+    },
+    {
+      "code": "522",
+      "description": "Fracture of unspecified part of neck of unspecified femur, episode of care unspecified"
+    },
+    {
+      "code": "535",
+      "description": "Fracture of unspecified part of neck of unspecified femur, episode of care unspecified"
+    },
+    {
+      "code": "536",
+      "description": "Fracture of unspecified part of neck of unspecified femur, episode of care unspecified"
+    },
+    {
+      "code": "791",
+      "description": "Fracture of unspecified part of neck of unspecified femur, episode of care unspecified"
+    },
+    {
+      "code": "793",
+      "description": "Fracture of unspecified part of neck of unspecified femur, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Fracture of unspecified part of neck of unspecified femur, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Fracture of unspecified part of neck of unspecified femur, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Fracture of unspecified part of neck of unspecified femur, episode of care unspecified"
+    },
+    {
+      "code": "559",
+      "description": "Fracture of unspecified part of neck of unspecified femur, episode of care unspecified"
+    },
+    {
+      "code": "560",
+      "description": "Fracture of unspecified part of neck of unspecified femur, episode of care unspecified"
+    },
+    {
+      "code": "561",
+      "description": "Fracture of unspecified part of neck of unspecified femur, episode of care unspecified"
+    },
+    {
+      "code": "564",
+      "description": "Fracture of unspecified part of neck of unspecified femur, episode of care unspecified"
+    },
+    {
+      "code": "565",
+      "description": "Fracture of unspecified part of neck of unspecified femur, episode of care unspecified"
+    },
+    {
+      "code": "566",
+      "description": "Fracture of unspecified part of neck of unspecified femur, episode of care unspecified"
+    }
+  ],
+  "S73006": [
+    {
+      "code": "537",
+      "description": "Unspecified dislocation of unspecified hip, episode of care unspecified"
+    },
+    {
+      "code": "538",
+      "description": "Unspecified dislocation of unspecified hip, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Unspecified dislocation of unspecified hip, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Unspecified dislocation of unspecified hip, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Unspecified dislocation of unspecified hip, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Unspecified dislocation of unspecified hip, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Unspecified dislocation of unspecified hip, episode of care unspecified"
+    },
+    {
+      "code": "562",
+      "description": "Unspecified dislocation of unspecified hip, episode of care unspecified"
+    },
+    {
+      "code": "563",
+      "description": "Unspecified dislocation of unspecified hip, episode of care unspecified"
+    }
+  ],
+  "S76111": [
+    {
+      "code": "537",
+      "description": "Strain of right quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "538",
+      "description": "Strain of right quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Strain of right quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Strain of right quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Strain of right quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Strain of right quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Strain of right quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "562",
+      "description": "Strain of right quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "563",
+      "description": "Strain of right quadriceps muscle, fascia and tendon, episode of care unspecified"
+    }
+  ],
+  "S76112": [
+    {
+      "code": "537",
+      "description": "Strain of left quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "538",
+      "description": "Strain of left quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Strain of left quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Strain of left quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Strain of left quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Strain of left quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Strain of left quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "562",
+      "description": "Strain of left quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "563",
+      "description": "Strain of left quadriceps muscle, fascia and tendon, episode of care unspecified"
+    }
+  ],
+  "S76119": [
+    {
+      "code": "537",
+      "description": "Strain of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "538",
+      "description": "Strain of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Strain of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Strain of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Strain of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Strain of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Strain of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "562",
+      "description": "Strain of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "563",
+      "description": "Strain of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    }
+  ],
+  "S76129": [
+    {
+      "code": "564",
+      "description": "Laceration of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "565",
+      "description": "Laceration of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "566",
+      "description": "Laceration of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Laceration of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Laceration of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Laceration of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Laceration of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Laceration of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "604",
+      "description": "Laceration of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    },
+    {
+      "code": "605",
+      "description": "Laceration of unspecified quadriceps muscle, fascia and tendon, episode of care unspecified"
+    }
+  ],
+  "S76329": [
+    {
+      "code": "564",
+      "description": "Laceration of muscle, fascia and tendon of the posterior muscle group at thigh level, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "565",
+      "description": "Laceration of muscle, fascia and tendon of the posterior muscle group at thigh level, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "566",
+      "description": "Laceration of muscle, fascia and tendon of the posterior muscle group at thigh level, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Laceration of muscle, fascia and tendon of the posterior muscle group at thigh level, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Laceration of muscle, fascia and tendon of the posterior muscle group at thigh level, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Laceration of muscle, fascia and tendon of the posterior muscle group at thigh level, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Laceration of muscle, fascia and tendon of the posterior muscle group at thigh level, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Laceration of muscle, fascia and tendon of the posterior muscle group at thigh level, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "604",
+      "description": "Laceration of muscle, fascia and tendon of the posterior muscle group at thigh level, unspecified thigh, episode of care unspecified"
+    },
+    {
+      "code": "605",
+      "description": "Laceration of muscle, fascia and tendon of the posterior muscle group at thigh level, unspecified thigh, episode of care unspecified"
+    }
+  ],
+  "S8290X": [
+    {
+      "code": "562",
+      "description": "Unspecified fracture of unspecified lower leg, episode of care unspecified"
+    },
+    {
+      "code": "563",
+      "description": "Unspecified fracture of unspecified lower leg, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Unspecified fracture of unspecified lower leg, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Unspecified fracture of unspecified lower leg, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Unspecified fracture of unspecified lower leg, episode of care unspecified"
+    },
+    {
+      "code": "559",
+      "description": "Unspecified fracture of unspecified lower leg, episode of care unspecified"
+    },
+    {
+      "code": "560",
+      "description": "Unspecified fracture of unspecified lower leg, episode of care unspecified"
+    },
+    {
+      "code": "561",
+      "description": "Unspecified fracture of unspecified lower leg, episode of care unspecified"
+    },
+    {
+      "code": "564",
+      "description": "Unspecified fracture of unspecified lower leg, episode of care unspecified"
+    },
+    {
+      "code": "565",
+      "description": "Unspecified fracture of unspecified lower leg, episode of care unspecified"
+    },
+    {
+      "code": "566",
+      "description": "Unspecified fracture of unspecified lower leg, episode of care unspecified"
+    }
+  ],
+  "S83209": [
+    {
+      "code": "562",
+      "description": "Unspecified tear of unspecified meniscus, current injury, unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "563",
+      "description": "Unspecified tear of unspecified meniscus, current injury, unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Unspecified tear of unspecified meniscus, current injury, unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Unspecified tear of unspecified meniscus, current injury, unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Unspecified tear of unspecified meniscus, current injury, unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Unspecified tear of unspecified meniscus, current injury, unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Unspecified tear of unspecified meniscus, current injury, unspecified knee, episode of care unspecified"
+    }
+  ],
+  "S83419": [
+    {
+      "code": "562",
+      "description": "Sprain of medial collateral ligament of unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "563",
+      "description": "Sprain of medial collateral ligament of unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Sprain of medial collateral ligament of unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Sprain of medial collateral ligament of unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Sprain of medial collateral ligament of unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Sprain of medial collateral ligament of unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Sprain of medial collateral ligament of unspecified knee, episode of care unspecified"
+    }
+  ],
+  "S83519": [
+    {
+      "code": "562",
+      "description": "Sprain of anterior cruciate ligament of unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "563",
+      "description": "Sprain of anterior cruciate ligament of unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Sprain of anterior cruciate ligament of unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Sprain of anterior cruciate ligament of unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Sprain of anterior cruciate ligament of unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Sprain of anterior cruciate ligament of unspecified knee, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Sprain of anterior cruciate ligament of unspecified knee, episode of care unspecified"
+    }
+  ],
+  "S91319": [
+    {
+      "code": "604",
+      "description": "Laceration without foreign body, unspecified foot, episode of care unspecified"
+    },
+    {
+      "code": "605",
+      "description": "Laceration without foreign body, unspecified foot, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Laceration without foreign body, unspecified foot, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Laceration without foreign body, unspecified foot, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Laceration without foreign body, unspecified foot, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Laceration without foreign body, unspecified foot, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Laceration without foreign body, unspecified foot, episode of care unspecified"
+    }
+  ],
+  "S93409": [
+    {
+      "code": "562",
+      "description": "Sprain of unspecified ligament of unspecified ankle, episode of care unspecified"
+    },
+    {
+      "code": "563",
+      "description": "Sprain of unspecified ligament of unspecified ankle, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Sprain of unspecified ligament of unspecified ankle, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Sprain of unspecified ligament of unspecified ankle, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Sprain of unspecified ligament of unspecified ankle, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Sprain of unspecified ligament of unspecified ankle, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Sprain of unspecified ligament of unspecified ankle, episode of care unspecified"
+    }
+  ],
+  "T148XX": [
+    {
+      "code": "913",
+      "description": "Other injury of unspecified body region, episode of care unspecified"
+    },
+    {
+      "code": "914",
+      "description": "Other injury of unspecified body region, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Other injury of unspecified body region, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Other injury of unspecified body region, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Other injury of unspecified body region, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Other injury of unspecified body region, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Other injury of unspecified body region, episode of care unspecified"
+    }
+  ],
+  "T1491X": [
+    {
+      "code": "913",
+      "description": "Suicide attempt, episode of care unspecified"
+    },
+    {
+      "code": "914",
+      "description": "Suicide attempt, episode of care unspecified"
+    },
+    {
+      "code": "963",
+      "description": "Suicide attempt, episode of care unspecified"
+    },
+    {
+      "code": "964",
+      "description": "Suicide attempt, episode of care unspecified"
+    },
+    {
+      "code": "965",
+      "description": "Suicide attempt, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Suicide attempt, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Suicide attempt, episode of care unspecified"
+    }
+  ],
+  "T362X5": [
+    {
+      "code": "791",
+      "description": "Adverse effect of chloramphenicol group, episode of care unspecified"
+    },
+    {
+      "code": "793",
+      "description": "Adverse effect of chloramphenicol group, episode of care unspecified"
+    },
+    {
+      "code": "917",
+      "description": "Adverse effect of chloramphenicol group, episode of care unspecified"
+    },
+    {
+      "code": "918",
+      "description": "Adverse effect of chloramphenicol group, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Adverse effect of chloramphenicol group, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Adverse effect of chloramphenicol group, episode of care unspecified"
+    },
+    {
+      "code": "922",
+      "description": "Adverse effect of chloramphenicol group, episode of care unspecified"
+    },
+    {
+      "code": "923",
+      "description": "Adverse effect of chloramphenicol group, episode of care unspecified"
+    }
+  ],
+  "T50902": [
+    {
+      "code": "917",
+      "description": "Poisoning by unspecified drugs, medicaments and biological substances, intentional self-harm, episode of care unspecified"
+    },
+    {
+      "code": "918",
+      "description": "Poisoning by unspecified drugs, medicaments and biological substances, intentional self-harm, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Poisoning by unspecified drugs, medicaments and biological substances, intentional self-harm, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Poisoning by unspecified drugs, medicaments and biological substances, intentional self-harm, episode of care unspecified"
+    },
+    {
+      "code": "922",
+      "description": "Poisoning by unspecified drugs, medicaments and biological substances, intentional self-harm, episode of care unspecified"
+    },
+    {
+      "code": "923",
+      "description": "Poisoning by unspecified drugs, medicaments and biological substances, intentional self-harm, episode of care unspecified"
+    }
+  ],
+  "T50905": [
+    {
+      "code": "791",
+      "description": "Adverse effect of unspecified drugs, medicaments and biological substances, episode of care unspecified"
+    },
+    {
+      "code": "793",
+      "description": "Adverse effect of unspecified drugs, medicaments and biological substances, episode of care unspecified"
+    },
+    {
+      "code": "917",
+      "description": "Adverse effect of unspecified drugs, medicaments and biological substances, episode of care unspecified"
+    },
+    {
+      "code": "918",
+      "description": "Adverse effect of unspecified drugs, medicaments and biological substances, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Adverse effect of unspecified drugs, medicaments and biological substances, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Adverse effect of unspecified drugs, medicaments and biological substances, episode of care unspecified"
+    },
+    {
+      "code": "922",
+      "description": "Adverse effect of unspecified drugs, medicaments and biological substances, episode of care unspecified"
+    },
+    {
+      "code": "923",
+      "description": "Adverse effect of unspecified drugs, medicaments and biological substances, episode of care unspecified"
+    }
+  ],
+  "T7411X": [
+    {
+      "code": "922",
+      "description": "Adult physical abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "923",
+      "description": "Adult physical abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Adult physical abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Adult physical abuse, confirmed, episode of care unspecified"
+    }
+  ],
+  "T7412X": [
+    {
+      "code": "922",
+      "description": "Child physical abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "923",
+      "description": "Child physical abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Child physical abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Child physical abuse, confirmed, episode of care unspecified"
+    }
+  ],
+  "T7421X": [
+    {
+      "code": "922",
+      "description": "Adult sexual abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "923",
+      "description": "Adult sexual abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Adult sexual abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Adult sexual abuse, confirmed, episode of care unspecified"
+    }
+  ],
+  "T7422X": [
+    {
+      "code": "922",
+      "description": "Child sexual abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "923",
+      "description": "Child sexual abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Child sexual abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Child sexual abuse, confirmed, episode of care unspecified"
+    }
+  ],
+  "T7431X": [
+    {
+      "code": "922",
+      "description": "Adult psychological abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "923",
+      "description": "Adult psychological abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Adult psychological abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Adult psychological abuse, confirmed, episode of care unspecified"
+    }
+  ],
+  "T7432X": [
+    {
+      "code": "922",
+      "description": "Child psychological abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "923",
+      "description": "Child psychological abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Child psychological abuse, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Child psychological abuse, confirmed, episode of care unspecified"
+    }
+  ],
+  "T7491X": [
+    {
+      "code": "922",
+      "description": "Unspecified adult maltreatment, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "923",
+      "description": "Unspecified adult maltreatment, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Unspecified adult maltreatment, confirmed, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Unspecified adult maltreatment, confirmed, episode of care unspecified"
+    }
+  ],
+  "T751XX": [
+    {
+      "code": "922",
+      "description": "Unspecified effects of drowning and nonfatal submersion, episode of care unspecified"
+    },
+    {
+      "code": "923",
+      "description": "Unspecified effects of drowning and nonfatal submersion, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Unspecified effects of drowning and nonfatal submersion, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Unspecified effects of drowning and nonfatal submersion, episode of care unspecified"
+    }
+  ],
+  "T7840X": [
+    {
+      "code": "915",
+      "description": "Allergy, unspecified, episode of care unspecified"
+    },
+    {
+      "code": "916",
+      "description": "Allergy, unspecified, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Allergy, unspecified, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Allergy, unspecified, episode of care unspecified"
+    },
+    {
+      "code": "922",
+      "description": "Allergy, unspecified, episode of care unspecified"
+    },
+    {
+      "code": "923",
+      "description": "Allergy, unspecified, episode of care unspecified"
+    }
+  ],
+  "T8144X": [
+    {
+      "code": "791",
+      "description": "Sepsis following a procedure, episode of care unspecified"
+    },
+    {
+      "code": "793",
+      "description": "Sepsis following a procedure, episode of care unspecified"
+    },
+    {
+      "code": "856",
+      "description": "Sepsis following a procedure, episode of care unspecified"
+    },
+    {
+      "code": "857",
+      "description": "Sepsis following a procedure, episode of care unspecified"
+    },
+    {
+      "code": "858",
+      "description": "Sepsis following a procedure, episode of care unspecified"
+    },
+    {
+      "code": "862",
+      "description": "Sepsis following a procedure, episode of care unspecified"
+    },
+    {
+      "code": "863",
+      "description": "Sepsis following a procedure, episode of care unspecified"
+    },
+    {
+      "code": "949",
+      "description": "Sepsis following a procedure, episode of care unspecified"
+    },
+    {
+      "code": "950",
+      "description": "Sepsis following a procedure, episode of care unspecified"
+    },
+    {
+      "code": "922",
+      "description": "Sepsis following a procedure, episode of care unspecified"
+    },
+    {
+      "code": "923",
+      "description": "Sepsis following a procedure, episode of care unspecified"
+    }
+  ],
+  "U071": [
+    {
+      "code": "177",
+      "description": "COVID-19"
+    },
+    {
+      "code": "178",
+      "description": "COVID-19"
+    },
+    {
+      "code": "179",
+      "description": "COVID-19"
+    },
+    {
+      "code": "791",
+      "description": "COVID-19"
+    },
+    {
+      "code": "793",
+      "description": "COVID-19"
+    },
+    {
+      "code": "974",
+      "description": "COVID-19"
+    },
+    {
+      "code": "975",
+      "description": "COVID-19"
+    },
+    {
+      "code": "976",
+      "description": "COVID-19"
+    }
+  ],
+  "Z008": [
+    {
+      "code": "951",
+      "description": "Encounter for other general examination"
+    }
+  ],
+  "Z049": [
+    {
+      "code": "951",
+      "description": "Encounter for examination and observation for unspecified reason"
+    }
+  ],
+  "Z09": [
+    {
+      "code": "951",
+      "description": "Encounter for follow-up examination after completed treatment for conditions other than malignant neoplasm"
+    }
+  ],
+  "Z1211": [
+    {
+      "code": "951",
+      "description": "Encounter for screening for malignant neoplasm of colon"
+    }
+  ],
+  "Z1231": [
+    {
+      "code": "951",
+      "description": "Encounter for screening mammogram for malignant neoplasm of breast"
+    }
+  ],
+  "Z1239": [
+    {
+      "code": "951",
+      "description": "Screening for neoplasm (malignant) of breast"
+    }
+  ],
+  "Z1331": [
+    {
+      "code": "951",
+      "description": "Encounter for screening for depression"
+    }
+  ],
+  "Z13811": [
+    {
+      "code": "951",
+      "description": "Encounter for screening for lower gastrointestinal disorder"
+    }
+  ],
+  "Z139": [
+    {
+      "code": "951",
+      "description": "Encounter for screening, unspecified"
+    }
+  ],
+  "Z20822": [
+    {
+      "code": "951",
+      "description": "Contact with and (suspected) exposure to COVID-19"
+    }
+  ],
+  "Z23": [
+    {
+      "code": "795",
+      "description": "Encounter for immunization"
+    },
+    {
+      "code": "951",
+      "description": "Encounter for immunization"
+    }
+  ],
+  "Z3400": [
+    {
+      "code": "951",
+      "description": "Encounter for supervision of normal first pregnancy, unspecified trimester"
+    }
+  ],
+  "Z3480": [
+    {
+      "code": "951",
+      "description": "Encounter for supervision of other normal pregnancy, unspecified trimester"
+    }
+  ],
+  "Z379": [
+    {
+      "code": "768",
+      "description": "Outcome of delivery, unspecified"
+    },
+    {
+      "code": "796",
+      "description": "Outcome of delivery, unspecified"
+    },
+    {
+      "code": "797",
+      "description": "Outcome of delivery, unspecified"
+    },
+    {
+      "code": "798",
+      "description": "Outcome of delivery, unspecified"
+    },
+    {
+      "code": "805",
+      "description": "Outcome of delivery, unspecified"
+    },
+    {
+      "code": "806",
+      "description": "Outcome of delivery, unspecified"
+    },
+    {
+      "code": "807",
+      "description": "Outcome of delivery, unspecified"
+    },
+    {
+      "code": "951",
+      "description": "Outcome of delivery, unspecified"
+    }
+  ],
+  "Z5189": [
+    {
+      "code": "949",
+      "description": "Encounter for other specified aftercare"
+    },
+    {
+      "code": "950",
+      "description": "Encounter for other specified aftercare"
+    }
+  ],
+  "Z5320": [
+    {
+      "code": "795",
+      "description": "Procedure and treatment not carried out because of patient's decision for unspecified reasons"
+    },
+    {
+      "code": "951",
+      "description": "Procedure and treatment not carried out because of patient's decision for unspecified reasons"
+    }
+  ],
+  "Z538": [
+    {
+      "code": "795",
+      "description": "Procedure and treatment not carried out for other reasons"
+    },
+    {
+      "code": "951",
+      "description": "Procedure and treatment not carried out for other reasons"
+    }
+  ],
+  "Z558": [
+    {
+      "code": "951",
+      "description": "Other problems related to education and literacy"
+    }
+  ],
+  "Z560": [
+    {
+      "code": "951",
+      "description": "Unemployment, unspecified"
+    }
+  ],
+  "Z591": [
+    {
+      "code": "951",
+      "description": "Inadequate housing"
+    }
+  ],
+  "Z604": [
+    {
+      "code": "951",
+      "description": "Social exclusion and rejection"
+    }
+  ],
+  "Z608": [
+    {
+      "code": "951",
+      "description": "Other problems related to social environment"
+    }
+  ],
+  "Z653": [
+    {
+      "code": "951",
+      "description": "Problems related to other legal circumstances"
+    }
+  ],
+  "Z6841": [
+    {
+      "code": "640",
+      "description": "Body mass index [BMI] 40.0-44.9, adult"
+    },
+    {
+      "code": "641",
+      "description": "Body mass index [BMI] 40.0-44.9, adult"
+    }
+  ],
+  "Z720": [
+    {
+      "code": "951",
+      "description": "Tobacco use"
+    }
+  ],
+  "Z7289": [
+    {
+      "code": "951",
+      "description": "Other problems related to lifestyle"
+    }
+  ],
+  "Z733": [
+    {
+      "code": "951",
+      "description": "Stress, not elsewhere classified"
+    }
+  ],
+  "Z741": [
+    {
+      "code": "951",
+      "description": "Need for assistance with personal care"
+    }
+  ],
+  "Z7682": [
+    {
+      "code": "951",
+      "description": "Awaiting organ transplant status"
+    }
+  ],
+  "Z7689": [
+    {
+      "code": "951",
+      "description": "Persons encountering health services in other specified circumstances"
+    }
+  ],
+  "Z8616": [
+    {
+      "code": "951",
+      "description": "COVID-19"
+    }
+  ],
+  "Z8669": [
+    {
+      "code": "951",
+      "description": "Personal history of other diseases of the nervous system and sense organs"
+    }
+  ],
+  "Z888": [
+    {
+      "code": "951",
+      "description": "Allergy status to other drugs, medicaments and biological substances"
+    }
+  ],
+  "Z89121": [
+    {
+      "code": "951",
+      "description": "Acquired absence of right wrist"
+    }
+  ],
+  "Z89122": [
+    {
+      "code": "951",
+      "description": "Acquired absence of left wrist"
+    }
+  ],
+  "Z89129": [
+    {
+      "code": "951",
+      "description": "Acquired absence of unspecified wrist"
+    }
+  ],
+  "Z89209": [
+    {
+      "code": "951",
+      "description": "Acquired absence of unspecified upper limb, unspecified level"
+    }
+  ],
+  "Z89439": [
+    {
+      "code": "951",
+      "description": "Acquired absence of unspecified foot"
+    }
+  ],
+  "Z899": [
+    {
+      "code": "951",
+      "description": "Acquired absence of limb, unspecified"
+    }
+  ],
+  "Z9049": [
+    {
+      "code": "951",
+      "description": "Acquired absence of other specified parts of digestive tract"
+    }
+  ],
+  "Z91018": [
+    {
+      "code": "951",
+      "description": "Allergy to other foods"
+    }
+  ],
+  "Z9109": [
+    {
+      "code": "951",
+      "description": "Other allergy status, other than to drugs and biological substances"
+    }
+  ],
+  "Z9181": [
+    {
+      "code": "951",
+      "description": "History of falling"
+    }
+  ],
+  "Z9189": [
+    {
+      "code": "951",
+      "description": "Other specified personal risk factors, not elsewhere classified"
+    }
+  ],
+  "Z951": [
+    {
+      "code": "951",
+      "description": "Presence of aortocoronary bypass graft"
+    }
+  ],
+  "Z952": [
+    {
+      "code": "314",
+      "description": "Presence of prosthetic heart valve"
+    },
+    {
+      "code": "315",
+      "description": "Presence of prosthetic heart valve"
+    },
+    {
+      "code": "316",
+      "description": "Presence of prosthetic heart valve"
+    }
+  ],
+  "Z954": [
+    {
+      "code": "314",
+      "description": "Presence of other heart-valve replacement"
+    },
+    {
+      "code": "315",
+      "description": "Presence of other heart-valve replacement"
+    },
+    {
+      "code": "316",
+      "description": "Presence of other heart-valve replacement"
+    }
+  ],
+  "Z95818": [
+    {
+      "code": "951",
+      "description": "Presence of other cardiac implants and grafts"
+    }
+  ],
+  "Z98871": [
+    {
+      "code": "951",
+      "description": "Personal history of in utero procedure while a fetus"
+    }
+  ],
+  "Z98890": [
+    {
+      "code": "951",
+      "description": "Other specified postprocedural states"
+    }
+  ],
+  "Z992": [
+    {
+      "code": "951",
+      "description": "Dependence on renal dialysis"
+    }
+  ],
+  "Z9981": [
+    {
+      "code": "951",
+      "description": "Dependence on supplemental oxygen"
+    }
+  ]
+}

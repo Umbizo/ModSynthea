@@ -1,0 +1,325 @@
+{
+  "36965003": [
+    {
+      "code": "E1590",
+      "description": "Hemodialysis machine, device (physical object)",
+      "line_cms_type_srvc_cd": "L"
+    }
+  ],
+  "337388004": [
+    {
+      "description": "Blood glucose testing strips",
+      "code": "A4253",
+      "line_cms_type_srvc_cd": "P"
+    }
+  ],
+  "337414009": [
+    {
+      "description": "Blood glucose meters",
+      "code": "E0607",
+      "line_cms_type_srvc_cd": "P"
+    }
+  ],
+  "1137596000": [
+    {
+      "description": "Blood lancet (physical object)",
+      "code": "A4259",
+      "line_cms_type_srvc_cd": "P"
+    }
+  ],
+  "8537005": [
+    {
+      "description": "Blood glucose meter calibrator solution",
+      "code": "A4256",
+      "line_cms_type_srvc_cd": "P"
+    }
+  ],
+  "170615005": [
+    {
+      "description": "Home nebulizer",
+      "code": "E0570",
+      "line_cms_type_srvc_cd": "R"
+    }
+  ],
+  "72506001": [
+    {
+      "description": "Cardioverter-defibrillator, dual chamber (implantable)",
+      "code": "C1721",
+      "line_cms_type_srvc_cd": "P"
+    },
+    {
+      "description": "Cardioverter-defibrillator, single chamber (implantable)",
+      "code": "C1722",
+      "line_cms_type_srvc_cd": "P"
+    },
+    {
+      "description": "Cardioverter-defibrillator, other than single or dual chamber (implantable)",
+      "code": "C1882",
+      "line_cms_type_srvc_cd": "P"
+    }
+  ],
+  "705643001": [
+    {
+      "description": "Stent, coated/covered, with delivery system",
+      "code": "C1874",
+      "line_cms_type_srvc_cd": "P"
+    },
+    {
+      "description": "Stent, coated/covered, without delivery system",
+      "code": "C1875",
+      "line_cms_type_srvc_cd": "P"
+    },
+    {
+      "description": "Stent, non-coated/non-covered, with delivery system",
+      "code": "C1876",
+      "line_cms_type_srvc_cd": "P"
+    },
+    {
+      "description": "Stent, non-coated/non-covered, without delivery system",
+      "code": "C1877",
+      "line_cms_type_srvc_cd": "P"
+    }    
+  ],
+  "706004007": [
+    {
+      "description": "Pacemaker monitor",
+      "code": "E0610",
+      "line_cms_type_srvc_cd": "R"
+    }
+  ],
+  "336621006": [
+    {
+      "description": "Oxygen concentrator, single delivery port, capable of delivering 85 percent or greater oxygen concentration at the prescribed flow rate",
+      "code": "E1390",
+      "line_cms_type_srvc_cd": "R"
+    }
+  ],
+  "464173000": [
+    {
+      "description": "Portable oxygen concentrator, rental",
+      "code": "E1392",
+      "line_cms_type_srvc_cd": "R"
+    }
+  ],
+  "261323006": [
+    {
+      "description": "Portable gaseous oxygen system, rental; home compressor used to fill portable oxygen cylinders; includes portable containers, regulator, flowmeter, humidifier, cannula or mask, and tubing",
+      "code": "K0738",
+      "line_cms_type_srvc_cd": "R"
+    },
+    {
+      "description": "Portable gaseous oxygen system, rental; includes portable container, regulator, flowmeter, humidifier, cannula or mask, and tubing",
+      "code": "E0431",
+      "line_cms_type_srvc_cd": "R"
+    },
+    {
+      "description": "Portable gaseous oxygen system, rental; includes portable container, regulator, flowmeter, humidifier, cannula or mask, and tubing",
+      "code": "E0431",
+      "line_cms_type_srvc_cd": "R"
+    }
+  ],
+  "272265001": [
+    {
+      "description": "Oral device/appliance used to reduce upper airway collapsibility, adjustable or non-adjustable, prefabricated, includes fitting and adjustment",
+      "code": "E0485",
+      "line_cms_type_srvc_cd": "P"
+    }
+  ],
+  "320917000": [
+    {
+      "description": "Portable oxygen contents, gaseous, 1 month's supply = 1 unit",
+      "code": "E0443",
+      "line_cms_type_srvc_cd": "P"
+    }    
+  ],
+  "702172008": [
+    {
+      "description": "Continuous positive airway pressure (cpap) device",
+      "code": "E0601",
+      "line_cms_type_srvc_cd": "P"
+    }    
+  ],
+  "467645007": [
+    {
+      "description": "Nasal interface (mask or cannula type) used with positive airway pressure device, with or without head strap",
+      "code": "A7034",
+      "line_cms_type_srvc_cd": "P"
+    }
+  ],
+  "706180003": [
+    {
+      "description": "Humidifier, heated, used with positive airway pressure device",
+      "code": "E0562",
+      "line_cms_type_srvc_cd": "P"
+    },
+    {
+      "description": "Water chamber for humidifier, used with positive airway pressure device, replacement, each",
+      "code": "A7046",
+      "line_cms_type_srvc_cd": "P"
+    }
+  ],
+  "972002": [
+    {
+      "description": "Filter, disposable, used with positive airway pressure device",
+      "code": "A7038",
+      "line_cms_type_srvc_cd": "P"
+    }
+  ],
+  "463659001": [
+    {
+      "description": "Tubing used with positive airway pressure device",
+      "code": "A7037",
+      "line_cms_type_srvc_cd": "P"
+    },
+    {
+      "description": "Tubing with integrated heating element for use with positive airway pressure device",
+      "code": "A4604",
+      "line_cms_type_srvc_cd": "P"
+    }
+  ],
+  "706226000": [
+    {
+      "description": "Headgear used with positive airway pressure device",
+      "code": "A7035",
+      "line_cms_type_srvc_cd": "P"
+    }
+  ],
+  "704718009": [
+    {
+      "description": "Full face mask used with positive airway pressure device, each",
+      "code": "A7030",
+      "line_cms_type_srvc_cd": "P"
+    },
+    {
+      "description": "Face mask interface, replacement for full face mask, each",
+      "code": "A7031",
+      "line_cms_type_srvc_cd": "P"
+    }
+  ],
+  "228869008": [
+    {
+      "description": "Standard wheelchair",
+      "code": "K0001",
+      "line_cms_type_srvc_cd": "R"
+    },
+    {
+      "description": "Standard wheelchair",
+      "code": "K0001",
+      "line_cms_type_srvc_cd": "R"
+    },
+    {
+      "description": "Standard wheelchair",
+      "code": "K0001",
+      "line_cms_type_srvc_cd": "R"
+    },
+    {
+      "description": "Standard wheelchair",
+      "code": "K0001",
+      "line_cms_type_srvc_cd": "R"
+    },
+    {
+      "description": "Standard hemi (low seat) wheelchair",
+      "code": "K0002",
+      "line_cms_type_srvc_cd": "R"
+    },
+    {
+      "description": "Lightweight wheelchair",
+      "code": "K0003",
+      "line_cms_type_srvc_cd": "R"
+    },
+    {
+      "description": "High strength, lightweight wheelchair",
+      "code": "K0004",
+      "line_cms_type_srvc_cd": "R"
+    },
+    {
+      "description": "Transport chair, adult size, patient weight capacity up to and including 300 pounds",
+      "code": "E1038",
+      "line_cms_type_srvc_cd": "R"
+    }
+  ],
+  "705427004": [
+    {
+      "description": "Power wheelchair, group 2 standard, captains chair, patient weight capacity up to and including 300 pounds",
+      "code": "K0823",
+      "line_cms_type_srvc_cd": "R"
+    }
+  ],
+  "705417005": [
+    {
+      "description": "Elevating leg rests, pair (for use with capped rental wheelchair base)",
+      "code": "K0195",
+      "line_cms_type_srvc_cd": "R"
+    },
+    {
+      "description": "Manual wheelchair accessory, anti-tipping device, each",
+      "code": "E0971",
+      "line_cms_type_srvc_cd": "R"
+    },
+    {
+      "description": "Wheelchair accessory, manual swingaway, retractable or removable mounting hardware for joystick, other control interface or positioning accessory",
+      "code": "E1028",
+      "line_cms_type_srvc_cd": "R"
+    },
+    {
+      "description": "Wheelchair accessory, adjustable height, detachable armrest, complete assembly, each",
+      "code": "E0973",
+      "line_cms_type_srvc_cd": "R"
+    },
+    {
+      "description": "General use wheelchair seat cushion, width less than 22 inches, any depth",
+      "code": "E2601",
+      "line_cms_type_srvc_cd": "R"
+    },
+    {
+      "description": "Wheelchair component or accessory, not otherwise specified",
+      "code": "K0108",
+      "line_cms_type_srvc_cd": "R"
+    }
+  ],
+  "363753007": [
+    {
+      "description": "Crutches",
+      "code": "E0110",
+      "line_cms_type_srvc_cd": "A"
+    }
+  ],
+  "705406009": [
+    {
+      "description": "Walker, folding, wheeled, adjustable or fixed height",
+      "code": "E0143",
+      "line_cms_type_srvc_cd": "A"
+    }
+  ],
+  "91537007": [
+    {
+      "description": "Hospital bed, semi-electric (head and foot adjustment), with any type side rails, with mattress",
+      "code": "E0260",
+      "line_cms_type_srvc_cd": "R"
+    },
+    {
+      "description": "Hospital bed, semi-electric (head and foot adjustment), with any type side rails, with mattress",
+      "code": "E0260",
+      "line_cms_type_srvc_cd": "R"
+    },
+    {
+      "description": "Hospital bed, semi-electric (head and foot adjustment), with any type side rails, without mattress",
+      "code": "E0261",
+      "line_cms_type_srvc_cd": "R"
+    }
+  ],
+  "706112002": [
+    {
+      "description": "Patient lift, hydraulic or mechanical, includes any seat, sling, strap(s) or pad(s)",
+      "code": "E0630",
+      "line_cms_type_srvc_cd": "R"
+    }
+  ],
+  "360008003": [
+    {
+      "description": "Commode chair, mobile or stationary, with fixed arms",
+      "code": "E0163",
+      "line_cms_type_srvc_cd": "P"
+    }
+  ]
+}

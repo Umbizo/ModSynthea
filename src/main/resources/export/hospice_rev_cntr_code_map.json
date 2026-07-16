@@ -1,0 +1,2680 @@
+{
+  "99202": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "99203": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "3"
+    }
+  ],
+  "99205": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "4"
+    }
+  ],
+  "99211": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "99212": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "99213": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "19"
+    }
+  ],
+  "99214": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "21"
+    }
+  ],
+  "99215": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "3"
+    }
+  ],
+  "99217": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "8"
+    }
+  ],
+  "99219": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "3"
+    }
+  ],
+  "99220": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "5"
+    }
+  ],
+  "99221": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "120"
+    }
+  ],
+  "99222": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "367"
+    }
+  ],
+  "99223": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "586"
+    }
+  ],
+  "99226": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "99231": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "586"
+    }
+  ],
+  "99232": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1572"
+    }
+  ],
+  "99233": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1215"
+    }
+  ],
+  "99234": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "10"
+    }
+  ],
+  "99235": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "99236": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "99238": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "64"
+    }
+  ],
+  "99239": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "31"
+    }
+  ],
+  "99242": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "99244": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "99253": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "99255": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "99281": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "99282": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "99283": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "9"
+    }
+  ],
+  "99284": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "10"
+    }
+  ],
+  "99285": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "31"
+    }
+  ],
+  "99291": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "5"
+    }
+  ],
+  "99304": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "10"
+    }
+  ],
+  "99305": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "30"
+    }
+  ],
+  "99306": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "77"
+    }
+  ],
+  "99307": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "29"
+    }
+  ],
+  "99308": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "102"
+    }
+  ],
+  "99309": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "180"
+    }
+  ],
+  "99310": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "124"
+    }
+  ],
+  "99315": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "99316": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "99324": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "8"
+    }
+  ],
+  "99325": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "27"
+    }
+  ],
+  "99326": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "37"
+    }
+  ],
+  "99327": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "60"
+    }
+  ],
+  "99328": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "39"
+    }
+  ],
+  "99334": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "58"
+    }
+  ],
+  "99335": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "111"
+    }
+  ],
+  "99336": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "197"
+    }
+  ],
+  "99337": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "147"
+    }
+  ],
+  "99341": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "18"
+    }
+  ],
+  "99342": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "64"
+    }
+  ],
+  "99343": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "96"
+    }
+  ],
+  "99344": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "216"
+    }
+  ],
+  "99345": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "232"
+    }
+  ],
+  "99347": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "66"
+    }
+  ],
+  "99348": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "236"
+    }
+  ],
+  "99349": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "500"
+    }
+  ],
+  "99350": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "461"
+    }
+  ],
+  "99354": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "52"
+    }
+  ],
+  "99355": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "6"
+    }
+  ],
+  "99356": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "37"
+    }
+  ],
+  "99357": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "6"
+    }
+  ],
+  "99358": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "41"
+    }
+  ],
+  "99359": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "3"
+    }
+  ],
+  "99407": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "99441": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "99442": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "4"
+    }
+  ],
+  "99443": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "11"
+    }
+  ],
+  "99495": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "99497": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "41"
+    }
+  ],
+  "99498": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "5"
+    }
+  ],
+  "90630": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "90653": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "90656": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "90673": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "90674": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "90686": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "3"
+    }
+  ],
+  "90688": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "2"
+    }
+  ],
+  "90694": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "90756": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "92950": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "93005": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "93010": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "25"
+    }
+  ],
+  "93280": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "3"
+    }
+  ],
+  "93283": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "93294": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "93296": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "93306": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "93308": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "93321": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "93793": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "93970": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "93971": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "3"
+    }
+  ],
+  "96372": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "96375": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "97597": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "99070": [
+    {
+      "code": "0623",
+      "description": "Medical/surgical supplies - surgical dressings - extension of 027X",
+      "weight": "16"
+    }
+  ],
+  "99152": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "3"
+    }
+  ],
+  "70450": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "20"
+    }
+  ],
+  "70486": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "70553": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "71010": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "8"
+    }
+  ],
+  "71020": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "6"
+    }
+  ],
+  "71045": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "29"
+    }
+  ],
+  "71046": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "3"
+    }
+  ],
+  "71250": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "71260": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "3"
+    }
+  ],
+  "71275": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "4"
+    }
+  ],
+  "72072": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "72100": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "72125": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "10"
+    }
+  ],
+  "72128": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "72192": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "72195": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "73020": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "73030": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "73060": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "3"
+    }
+  ],
+  "73070": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "73090": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "73110": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "73120": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "73130": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "73501": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "73502": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "4"
+    }
+  ],
+  "73521": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "73522": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "73552": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "73560": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "73590": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "73600": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "73620": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "73700": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "74018": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "8"
+    }
+  ],
+  "74022": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "74176": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "10"
+    }
+  ],
+  "74177": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "5"
+    }
+  ],
+  "75726": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "76380": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "76770": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "76775": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "76937": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "3"
+    }
+  ],
+  "76942": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "77001": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "77334": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "77427": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "78278": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "78582": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "11042": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "11043": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "11402": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "12001": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "12004": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "24516": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "29130": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "32555": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "3"
+    }
+  ],
+  "36556": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "36569": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "36590": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "36600": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "43235": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "43246": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "43760": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "43763": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "44186": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "47490": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "49082": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "3"
+    }
+  ],
+  "49083": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "9"
+    }
+  ],
+  "49418": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "3"
+    }
+  ],
+  "49653": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "50432": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "64530": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "69209": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "69210": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "A4216": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "16"
+    }
+  ],
+  "A4218": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "2"
+    }
+  ],
+  "A4222": [
+    {
+      "code": "0291",
+      "description": "DME (other than renal) - rental",
+      "weight": "2"
+    },
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "5"
+    }
+  ],
+  "A4306": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "A6212": [
+    {
+      "code": "0272",
+      "description": "Medical/surgical supplies - sterile supply",
+      "weight": "2"
+    }
+  ],
+  "A9270": [
+    {
+      "code": "0250",
+      "description": "Pharmacy - general classification",
+      "weight": "17"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    },
+    {
+      "code": "0637",
+      "description": "Self-administered drugs administered in an emergency situation - not requiring detailed coding",
+      "weight": "9"
+    },
+    {
+      "code": "0659",
+      "description": "Hospice services - other",
+      "weight": "68"
+    }
+  ],
+  "A9900": [
+    {
+      "code": "0290",
+      "description": "DME (other than renal) - general classification",
+      "weight": "5"
+    }
+  ],
+  "E0776": [
+    {
+      "code": "0291",
+      "description": "DME (other than renal) - rental",
+      "weight": "1"
+    }
+  ],
+  "E0779": [
+    {
+      "code": "0290",
+      "description": "DME (other than renal) - general classification",
+      "weight": "1"
+    },
+    {
+      "code": "0291",
+      "description": "DME (other than renal) - rental",
+      "weight": "12"
+    },
+    {
+      "code": "0299",
+      "description": "DME (other than renal) - other",
+      "weight": "3"
+    }
+  ],
+  "E0780": [
+    {
+      "code": "0290",
+      "description": "DME (other than renal) - general classification",
+      "weight": "1"
+    }
+  ],
+  "E0781": [
+    {
+      "code": "0290",
+      "description": "DME (other than renal) - general classification",
+      "weight": "4"
+    },
+    {
+      "code": "0291",
+      "description": "DME (other than renal) - rental",
+      "weight": "24"
+    },
+    {
+      "code": "0292",
+      "description": "DME (other than renal) - purchase of new DME",
+      "weight": "1"
+    },
+    {
+      "code": "0293",
+      "description": "DME (other than renal) - purchase of used DME",
+      "weight": "2"
+    },
+    {
+      "code": "0299",
+      "description": "DME (other than renal) - other",
+      "weight": "1"
+    }
+  ],
+  "E0782": [
+    {
+      "code": "0293",
+      "description": "DME (other than renal) - purchase of used DME",
+      "weight": "15"
+    }
+  ],
+  "E0783": [
+    {
+      "code": "0291",
+      "description": "DME (other than renal) - rental",
+      "weight": "8"
+    }
+  ],
+  "G0008": [
+    {
+      "code": "0771",
+      "description": "Preventative care services - vaccine administration",
+      "weight": "12"
+    }
+  ],
+  "G0126": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "G0151": [
+    {
+      "code": "0420",
+      "description": "Physical therapy - general classification",
+      "weight": "19"
+    },
+    {
+      "code": "0421",
+      "description": "Physical therapy - visit charge",
+      "weight": "433"
+    },
+    {
+      "code": "0422",
+      "description": "Physical therapy - hourly charge",
+      "weight": "70"
+    },
+    {
+      "code": "0424",
+      "description": "Physical therapy - evaluation or re-evaluation",
+      "weight": "7"
+    },
+    {
+      "code": "0429",
+      "description": "Physical therapy - other",
+      "weight": "3"
+    }
+  ],
+  "G0152": [
+    {
+      "code": "0430",
+      "description": "Occupational therapy - general classification",
+      "weight": "13"
+    },
+    {
+      "code": "0431",
+      "description": "Occupational therapy - visit charge",
+      "weight": "114"
+    },
+    {
+      "code": "0432",
+      "description": "Occupational therapy - hourly charge",
+      "weight": "7"
+    },
+    {
+      "code": "0434",
+      "description": "Occupational therapy - evaluation or re-evaluation",
+      "weight": "1"
+    }
+  ],
+  "G0153": [
+    {
+      "code": "0440",
+      "description": "Speech language pathology - general classification",
+      "weight": "2"
+    },
+    {
+      "code": "0441",
+      "description": "Speech language pathology - visit charge",
+      "weight": "45"
+    },
+    {
+      "code": "0442",
+      "description": "Speech language pathology - hourly charge",
+      "weight": "1"
+    },
+    {
+      "code": "0444",
+      "description": "Speech language pathology - evaluation or re-evaluation",
+      "weight": "1"
+    },
+    {
+      "code": "0449",
+      "description": "Speech language pathology - other",
+      "weight": "1"
+    }
+  ],
+  "G0154": [
+    {
+      "code": "0550",
+      "description": "Skilled nursing - general classification",
+      "weight": "673"
+    },
+    {
+      "code": "0551",
+      "description": "Skilled nursing - visit charge",
+      "weight": "13328"
+    },
+    {
+      "code": "0552",
+      "description": "Skilled nursing - hourly charge",
+      "weight": "1015"
+    },
+    {
+      "code": "0559",
+      "description": "Skilled nursing - other",
+      "weight": "26"
+    }
+  ],
+  "G0155": [
+    {
+      "code": "0551",
+      "description": "Skilled nursing - visit charge",
+      "weight": "1"
+    },
+    {
+      "code": "0560",
+      "description": "Medical social services - general classification",
+      "weight": "1257"
+    },
+    {
+      "code": "0561",
+      "description": "Medical social services - visit charge",
+      "weight": "37221"
+    },
+    {
+      "code": "0562",
+      "description": "Medical social services - hourly charges",
+      "weight": "2173"
+    },
+    {
+      "code": "0569",
+      "description": "Medical social services - other",
+      "weight": "6239"
+    },
+    {
+      "code": "0571",
+      "description": "Home health aid (home health) - visit charge",
+      "weight": "1"
+    },
+    {
+      "code": "0650",
+      "description": "Hospice services - general classification",
+      "weight": "9"
+    }
+  ],
+  "G0156": [
+    {
+      "code": "0570",
+      "description": "Home health aid (home health) - general classification",
+      "weight": "5681"
+    },
+    {
+      "code": "0571",
+      "description": "Home health aid (home health) - visit charge",
+      "weight": "243636"
+    },
+    {
+      "code": "0572",
+      "description": "Home health aid (home health) - hourly charge",
+      "weight": "23596"
+    },
+    {
+      "code": "0579",
+      "description": "Home health aid (home health) - other",
+      "weight": "470"
+    },
+    {
+      "code": "0650",
+      "description": "Hospice services - general classification",
+      "weight": "7"
+    }
+  ],
+  "G0163": [
+    {
+      "code": "0550",
+      "description": "Skilled nursing - general classification",
+      "weight": "8"
+    },
+    {
+      "code": "0551",
+      "description": "Skilled nursing - visit charge",
+      "weight": "13"
+    }
+  ],
+  "G0180": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "G0182": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "5"
+    }
+  ],
+  "G0299": [
+    {
+      "code": "0550",
+      "description": "Skilled nursing - general classification",
+      "weight": "4861"
+    },
+    {
+      "code": "0551",
+      "description": "Skilled nursing - visit charge",
+      "weight": "179115"
+    },
+    {
+      "code": "0552",
+      "description": "Skilled nursing - hourly charge",
+      "weight": "12907"
+    },
+    {
+      "code": "0559",
+      "description": "Skilled nursing - other",
+      "weight": "454"
+    },
+    {
+      "code": "0561",
+      "description": "Medical social services - visit charge",
+      "weight": "2"
+    },
+    {
+      "code": "0650",
+      "description": "Hospice services - general classification",
+      "weight": "9"
+    }
+  ],
+  "G0300": [
+    {
+      "code": "0550",
+      "description": "Skilled nursing - general classification",
+      "weight": "742"
+    },
+    {
+      "code": "0551",
+      "description": "Skilled nursing - visit charge",
+      "weight": "31770"
+    },
+    {
+      "code": "0552",
+      "description": "Skilled nursing - hourly charge",
+      "weight": "4495"
+    },
+    {
+      "code": "0559",
+      "description": "Skilled nursing - other",
+      "weight": "76"
+    },
+    {
+      "code": "0561",
+      "description": "Medical social services - visit charge",
+      "weight": "1"
+    }
+  ],
+  "G0337": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "G0402": [
+    {
+      "code": "0650",
+      "description": "Hospice services - general classification",
+      "weight": "1"
+    }
+  ],
+  "G0407": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "G0493": [
+    {
+      "code": "0551",
+      "description": "Skilled nursing - visit charge",
+      "weight": "2"
+    }
+  ],
+  "G0495": [
+    {
+      "code": "0551",
+      "description": "Skilled nursing - visit charge",
+      "weight": "1"
+    }
+  ],
+  "G6002": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "1"
+    }
+  ],
+  "G9473": [
+    {
+      "code": "0650",
+      "description": "Hospice services - general classification",
+      "weight": "14"
+    },
+    {
+      "code": "0659",
+      "description": "Hospice services - other",
+      "weight": "17"
+    }
+  ],
+  "G9475": [
+    {
+      "code": "0659",
+      "description": "Hospice services - other",
+      "weight": "2"
+    }
+  ],
+  "G9477": [
+    {
+      "code": "0659",
+      "description": "Hospice services - other",
+      "weight": "96"
+    }
+  ],
+  "G9480": [
+    {
+      "code": "0659",
+      "description": "Hospice services - other",
+      "weight": "6"
+    }
+  ],
+  "G9857": [
+    {
+      "code": "0650",
+      "description": "Hospice services - general classification",
+      "weight": "13"
+    }
+  ],
+  "G9858": [
+    {
+      "code": "0650",
+      "description": "Hospice services - general classification",
+      "weight": "12"
+    }
+  ],
+  "J0131": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J0278": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "2"
+    }
+  ],
+  "J0360": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J0461": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "9"
+    }
+  ],
+  "J0690": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "3"
+    }
+  ],
+  "J0692": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "10"
+    }
+  ],
+  "J0696": [
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "1"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "28"
+    }
+  ],
+  "J0715": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "4"
+    }
+  ],
+  "J0744": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J0878": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "6"
+    }
+  ],
+  "J1030": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "2"
+    }
+  ],
+  "J1094": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "4"
+    }
+  ],
+  "J1100": [
+    {
+      "code": "0250",
+      "description": "Pharmacy - general classification",
+      "weight": "1"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "87"
+    }
+  ],
+  "J1110": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "2"
+    }
+  ],
+  "J1170": [
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "35"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "456"
+    }
+  ],
+  "J1200": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "33"
+    }
+  ],
+  "J1250": [
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "1"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "3"
+    }
+  ],
+  "J1580": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "3"
+    }
+  ],
+  "J1595": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J1610": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J1630": [
+    {
+      "code": "0250",
+      "description": "Pharmacy - general classification",
+      "weight": "1"
+    },
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "1"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "270"
+    }
+  ],
+  "J1631": [
+    {
+      "code": "0250",
+      "description": "Pharmacy - general classification",
+      "weight": "1"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "11"
+    }
+  ],
+  "J1642": [
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "4"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "43"
+    }
+  ],
+  "J1644": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "9"
+    }
+  ],
+  "J1650": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "34"
+    }
+  ],
+  "J1720": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J1750": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J1815": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "51"
+    }
+  ],
+  "J1817": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J1885": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "18"
+    }
+  ],
+  "J1940": [
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "1"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "58"
+    }
+  ],
+  "J1953": [
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "1"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "19"
+    }
+  ],
+  "J1956": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "4"
+    }
+  ],
+  "J2001": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "14"
+    }
+  ],
+  "J2020": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J2060": [
+    {
+      "code": "0250",
+      "description": "Pharmacy - general classification",
+      "weight": "5"
+    },
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "3"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "827"
+    }
+  ],
+  "J2212": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J2250": [
+    {
+      "code": "0250",
+      "description": "Pharmacy - general classification",
+      "weight": "1"
+    },
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "2"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "34"
+    }
+  ],
+  "J2260": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "6"
+    }
+  ],
+  "J2270": [
+    {
+      "code": "0250",
+      "description": "Pharmacy - general classification",
+      "weight": "7"
+    },
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "73"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "702"
+    }
+  ],
+  "J2274": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "46"
+    }
+  ],
+  "J2353": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "3"
+    }
+  ],
+  "J2354": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "3"
+    }
+  ],
+  "J2405": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "35"
+    }
+  ],
+  "J2426": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J2543": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "2"
+    }
+  ],
+  "J2550": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "15"
+    }
+  ],
+  "J2560": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "21"
+    }
+  ],
+  "J2704": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J2765": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "11"
+    }
+  ],
+  "J2770": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "2"
+    }
+  ],
+  "J2780": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J2794": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "5"
+    }
+  ],
+  "J2920": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "3"
+    }
+  ],
+  "J2930": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "15"
+    }
+  ],
+  "J2997": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J3010": [
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "5"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "43"
+    }
+  ],
+  "J3230": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "3"
+    }
+  ],
+  "J3250": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J3301": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J3357": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "3"
+    }
+  ],
+  "J3360": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "25"
+    }
+  ],
+  "J3370": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "19"
+    }
+  ],
+  "J3420": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "3"
+    }
+  ],
+  "J3430": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J3475": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "2"
+    }
+  ],
+  "J3490": [
+    {
+      "code": "0250",
+      "description": "Pharmacy - general classification",
+      "weight": "106"
+    },
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "4"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "166"
+    }
+  ],
+  "J7030": [
+    {
+      "code": "0250",
+      "description": "Pharmacy - general classification",
+      "weight": "4"
+    },
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "5"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "30"
+    }
+  ],
+  "J7040": [
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "3"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "11"
+    }
+  ],
+  "J7050": [
+    {
+      "code": "0250",
+      "description": "Pharmacy - general classification",
+      "weight": "1"
+    },
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "7"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "12"
+    }
+  ],
+  "J7060": [
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "3"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "3"
+    }
+  ],
+  "J7070": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "4"
+    }
+  ],
+  "J7120": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J7506": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "15"
+    }
+  ],
+  "J7507": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "9"
+    }
+  ],
+  "J7512": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "14"
+    }
+  ],
+  "J7620": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "6"
+    }
+  ],
+  "J7642": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "J7643": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "3"
+    }
+  ],
+  "J8499": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "3"
+    }
+  ],
+  "J8540": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "29"
+    }
+  ],
+  "J8597": [
+    {
+      "code": "0250",
+      "description": "Pharmacy - general classification",
+      "weight": "1"
+    }
+  ],
+  "0011A": [
+    {
+      "code": "0771",
+      "description": "Preventative care services - vaccine administration",
+      "weight": "1"
+    }
+  ],
+  "Q0092": [
+    {
+      "code": "0657",
+      "description": "Hospice services - physician services",
+      "weight": "2"
+    }
+  ],
+  "Q0162": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "4"
+    }
+  ],
+  "Q0164": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "Q2009": [
+    {
+      "code": "0294",
+      "description": "DME (other than renal) - related to and listed as DME",
+      "weight": "1"
+    },
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "Q2035": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "Q2037": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "Q5001": [
+    {
+      "code": "0001",
+      "description": "Total charge",
+      "weight": "1"
+    },
+    {
+      "code": "0250",
+      "description": "Pharmacy - general classification",
+      "weight": "64"
+    },
+    {
+      "code": "0651",
+      "description": "Hospice services - routine home care",
+      "weight": "46258"
+    },
+    {
+      "code": "0652",
+      "description": "Hospice services - continuous home care-1/2",
+      "weight": "1212"
+    }
+  ],
+  "Q5002": [
+    {
+      "code": "0001",
+      "description": "Total charge",
+      "weight": "1"
+    },
+    {
+      "code": "0250",
+      "description": "Pharmacy - general classification",
+      "weight": "15"
+    },
+    {
+      "code": "0651",
+      "description": "Hospice services - routine home care",
+      "weight": "16946"
+    },
+    {
+      "code": "0652",
+      "description": "Hospice services - continuous home care-1/2",
+      "weight": "484"
+    }
+  ],
+  "Q5003": [
+    {
+      "code": "0250",
+      "description": "Pharmacy - general classification",
+      "weight": "11"
+    },
+    {
+      "code": "0651",
+      "description": "Hospice services - routine home care",
+      "weight": "13547"
+    },
+    {
+      "code": "0652",
+      "description": "Hospice services - continuous home care-1/2",
+      "weight": "252"
+    },
+    {
+      "code": "0655",
+      "description": "Hospice services - inpatient care",
+      "weight": "169"
+    }
+  ],
+  "Q5004": [
+    {
+      "code": "0651",
+      "description": "Hospice services - routine home care",
+      "weight": "4913"
+    },
+    {
+      "code": "0655",
+      "description": "Hospice services - inpatient care",
+      "weight": "260"
+    },
+    {
+      "code": "0656",
+      "description": "Hospice services - general inpatient care (non-respite)",
+      "weight": "79"
+    },
+    {
+      "code": "0659",
+      "description": "Hospice services - other",
+      "weight": "28"
+    }
+  ],
+  "Q5005": [
+    {
+      "code": "0651",
+      "description": "Hospice services - routine home care",
+      "weight": "156"
+    },
+    {
+      "code": "0655",
+      "description": "Hospice services - inpatient care",
+      "weight": "46"
+    },
+    {
+      "code": "0656",
+      "description": "Hospice services - general inpatient care (non-respite)",
+      "weight": "1091"
+    }
+  ],
+  "Q5006": [
+    {
+      "code": "0551",
+      "description": "Skilled nursing - visit charge",
+      "weight": "4"
+    },
+    {
+      "code": "0552",
+      "description": "Skilled nursing - hourly charge",
+      "weight": "2"
+    },
+    {
+      "code": "0561",
+      "description": "Medical social services - visit charge",
+      "weight": "2"
+    },
+    {
+      "code": "0571",
+      "description": "Home health aid (home health) - visit charge",
+      "weight": "3"
+    },
+    {
+      "code": "0651",
+      "description": "Hospice services - routine home care",
+      "weight": "212"
+    },
+    {
+      "code": "0655",
+      "description": "Hospice services - inpatient care",
+      "weight": "289"
+    },
+    {
+      "code": "0656",
+      "description": "Hospice services - general inpatient care (non-respite)",
+      "weight": "1705"
+    }
+  ],
+  "Q5007": [
+    {
+      "code": "0651",
+      "description": "Hospice services - routine home care",
+      "weight": "46"
+    },
+    {
+      "code": "0655",
+      "description": "Hospice services - inpatient care",
+      "weight": "1"
+    },
+    {
+      "code": "0656",
+      "description": "Hospice services - general inpatient care (non-respite)",
+      "weight": "5"
+    }
+  ],
+  "Q5009": [
+    {
+      "code": "0651",
+      "description": "Hospice services - routine home care",
+      "weight": "404"
+    },
+    {
+      "code": "0652",
+      "description": "Hospice services - continuous home care-1/2",
+      "weight": "2"
+    },
+    {
+      "code": "0655",
+      "description": "Hospice services - inpatient care",
+      "weight": "1"
+    },
+    {
+      "code": "0656",
+      "description": "Hospice services - general inpatient care (non-respite)",
+      "weight": "2"
+    }
+  ],
+  "Q5010": [
+    {
+      "code": "0651",
+      "description": "Hospice services - routine home care",
+      "weight": "422"
+    }
+  ],
+  "S0028": [
+    {
+      "code": "0636",
+      "description": "Drugs requiring specific identification - detailed coding",
+      "weight": "1"
+    }
+  ],
+  "S9123": [
+    {
+      "code": "0551",
+      "description": "Skilled nursing - visit charge",
+      "weight": "3"
+    }
+  ],
+  "S9126": [
+    {
+      "code": "0650",
+      "description": "Hospice services - general classification",
+      "weight": "14"
+    }
+  ]
+}

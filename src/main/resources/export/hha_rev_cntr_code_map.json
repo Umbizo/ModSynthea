@@ -1,0 +1,74 @@
+{
+  "439708006": [
+    {
+      "code": "0421",
+      "description": "Home visit (procedure)"
+    }
+  ],
+  "315639002": [
+    {
+      "code": "0583",
+      "description": "Initial patient assessment (procedure)"
+    }
+  ],
+  "200619008": [
+    {
+      "code": "0583",
+      "description": "Comprehensive interview and evaluation (procedure)"
+    }
+  ],
+  "370789001": [
+    {
+      "code": "0583",
+      "description": "Development of individualized plan of care (procedure)"
+    }
+  ],
+  "711069006": [
+    {
+      "code": "0583",
+      "description": "Coordination of care plan (procedure)"
+    }
+  ],
+  "91251008": [
+    {
+      "code": "0421",
+      "description": "Physical therapy procedure (regime/therapy)"
+    }
+  ],
+  "84478008": [
+    {
+      "code": "0431",
+      "description": "Occupational therapy (regime/therapy)"
+    }
+  ],
+  "311555007": [
+    {
+      "code": "0441",
+      "description": "Speech and language therapy regime (regime/therapy)"
+    }
+  ],
+  "410401003": [
+    {
+      "code": "0550",
+      "description": "Nursing care/supplementary surveillance (regime/therapy)"
+    }
+  ],
+  "385781007": [
+    {
+      "code": "0571",
+      "description": "Home health aide service (regime/therapy)"
+    }
+  ],
+  "183418007": [
+    {
+      "code": "0561",
+      "description": "Social case work (regime/therapy)"
+    }
+  ],
+  "58000006": [
+    {
+      "code": "0581",
+      "description": "Patient discharge (procedure)"
+    }
+  ]
+}

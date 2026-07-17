@@ -250476,5 +250476,1053 @@
       "code": "50090-0079-03",
       "description": "cephalexin 500 MG oral tablet"
     }
-  ]
+  ],
+  "402243": [
+    {
+      "code": "25021-262",
+      "description": "Bortezomib"
+    }
+  ],
+  "342369": [
+    {
+      "code": "00378194201",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "70377005311",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "70710103408",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "00480124521",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "47781048701",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "63304004501",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "43598051401",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "76282070047",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "70771168008",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "31722026121",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "47781048777",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "69097038481",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "59651034621",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "60219171802",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "43598051421",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "59651034607",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "60505453602",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "00378194221",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "31722026101",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "70771168001",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "63304004522",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "70377005312",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "59651034601",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "60219171801",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    },
+    {
+      "code": "70710103401",
+      "description": "Lenalidomide 20 MG Oral Capsule"
+    }
+  ],
+
+  "197583": [
+    {
+      "code": "0904-7267",
+      "description": "Dexamethasone"
+    }
+  ],
+  "314077": [
+    {
+      "code": "143971301",
+      "description": "lisinopril 20 MG Oral Tablet"
+    },
+    {
+      "code": "23155087901",
+      "description": "lisinopril 20 MG Oral Tablet"
+    },
+    {
+      "code": "31722017801",
+      "description": "lisinopril 20 MG Oral Tablet"
+    },
+    {
+      "code": "43063000730",
+      "description": "lisinopril 20 MG Oral Tablet"
+    },
+    {
+      "code": "50090472501",
+      "description": "lisinopril 20 MG Oral Tablet"
+    }
+  ],
+  "310964": [
+    {
+      "code": "113029806",
+      "description": "Entacapone 200 MG Oral Tablet"
+    },
+    {
+      "code": "113450106",
+      "description": "Entacapone 200 MG Oral Tablet"
+    },
+    {
+      "code": "363012020",
+      "description": "Entacapone 200 MG Oral Tablet"
+    },
+    {
+      "code": "11673019703",
+      "description": "Entacapone 200 MG Oral Tablet"
+    },
+    {
+      "code": "11822023101",
+      "description": "Entacapone 200 MG Oral Tablet"
+    },
+    {
+      "code": "21130003212",
+      "description": "Entacapone 200 MG Oral Tablet"
+    },
+    {
+      "code": "25000006201",
+      "description": "Entacapone 200 MG Oral Tablet"
+    },
+    {
+      "code": "41163018501",
+      "description": "Entacapone 200 MG Oral Tablet"
+    },
+    {
+      "code": "53345001401",
+      "description": "Entacapone 200 MG Oral Tablet"
+    },
+    {
+      "code": "70677004601",
+      "description": "Entacapone 200 MG Oral Tablet"
+    }
+  ],
+  "860975": [
+    {
+      "code": "185441605",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "378035205",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "615828928",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "615828939",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "781550301",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "10135082305",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "10135082330",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "10135082332",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "10135082333",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "10135082360",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    }
+  ],
+  "311975": [
+    {
+      "code": "113005306",
+      "description": "Apomorphine 10 MG/ML Injectable Solution"
+    },
+    {
+      "code": "113017025",
+      "description": "Apomorphine 10 MG/ML Injectable Solution"
+    },
+    {
+      "code": "363042113",
+      "description": "Apomorphine 10 MG/ML Injectable Solution"
+    },
+    {
+      "code": "11673017002",
+      "description": "Apomorphine 10 MG/ML Injectable Solution"
+    },
+    {
+      "code": "11822017001",
+      "description": "Apomorphine 10 MG/ML Injectable Solution"
+    },
+    {
+      "code": "30142017025",
+      "description": "Apomorphine 10 MG/ML Injectable Solution"
+    },
+    {
+      "code": "50090624000",
+      "description": "Apomorphine 10 MG/ML Injectable Solution"
+    },
+    {
+      "code": "57237032301",
+      "description": "Apomorphine 10 MG/ML Injectable Solution"
+    },
+    {
+      "code": "70677017001",
+      "description": "Apomorphine 10 MG/ML Injectable Solution"
+    },
+    {
+      "code": "87494000301",
+      "description": "Apomorphine 10 MG/ML Injectable Solution"
+    }
+  ],
+  "351264": [
+    {
+      "code": "54017613",
+      "description": "bevacizumab 25 MG/ML Injection [Avastin]"
+    },
+    {
+      "code": "121101930",
+      "description": "bevacizumab 25 MG/ML Injection [Avastin]"
+    },
+    {
+      "code": "31722087030",
+      "description": "bevacizumab 25 MG/ML Injection [Avastin]"
+    },
+    {
+      "code": "42858050103",
+      "description": "bevacizumab 25 MG/ML Injection [Avastin]"
+    },
+    {
+      "code": "50268012811",
+      "description": "bevacizumab 25 MG/ML Injection [Avastin]"
+    },
+    {
+      "code": "58118050108",
+      "description": "bevacizumab 25 MG/ML Injection [Avastin]"
+    },
+    {
+      "code": "60687048111",
+      "description": "bevacizumab 25 MG/ML Injection [Avastin]"
+    },
+    {
+      "code": "63629947501",
+      "description": "bevacizumab 25 MG/ML Injection [Avastin]"
+    },
+    {
+      "code": "70518222601",
+      "description": "bevacizumab 25 MG/ML Injection [Avastin]"
+    },
+    {
+      "code": "71335095001",
+      "description": "bevacizumab 25 MG/ML Injection [Avastin]"
+    }
+  ],
+  "313521": [
+    {
+      "code": "24208059064",
+      "description": "tropicamide 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "51394022220",
+      "description": "tropicamide 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "61314035401",
+      "description": "tropicamide 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "68071133705",
+      "description": "tropicamide 5 MG/ML Ophthalmic Solution"
+    }
+  ],
+  "1649485": [
+    {
+      "code": "31722005360",
+      "description": "ivabradine 5 MG Oral Tablet"
+    },
+    {
+      "code": "46708067945",
+      "description": "ivabradine 5 MG Oral Tablet"
+    },
+    {
+      "code": "46708067960",
+      "description": "ivabradine 5 MG Oral Tablet"
+    },
+    {
+      "code": "50742036260",
+      "description": "ivabradine 5 MG Oral Tablet"
+    },
+    {
+      "code": "51407059260",
+      "description": "ivabradine 5 MG Oral Tablet"
+    },
+    {
+      "code": "60687086211",
+      "description": "ivabradine 5 MG Oral Tablet"
+    },
+    {
+      "code": "60687086221",
+      "description": "ivabradine 5 MG Oral Tablet"
+    },
+    {
+      "code": "62332067945",
+      "description": "ivabradine 5 MG Oral Tablet"
+    },
+    {
+      "code": "62332067960",
+      "description": "ivabradine 5 MG Oral Tablet"
+    },
+    {
+      "code": "69452019017",
+      "description": "ivabradine 5 MG Oral Tablet"
+    },
+    {
+      "code": "69452019030",
+      "description": "ivabradine 5 MG Oral Tablet"
+    },
+    {
+      "code": "70710147106",
+      "description": "ivabradine 5 MG Oral Tablet"
+    },
+    {
+      "code": "70710147108",
+      "description": "ivabradine 5 MG Oral Tablet"
+    },
+    {
+      "code": "70771186306",
+      "description": "ivabradine 5 MG Oral Tablet"
+    },
+    {
+      "code": "70771186308",
+      "description": "ivabradine 5 MG Oral Tablet"
+    },
+    {
+      "code": "72205033618",
+      "description": "ivabradine 5 MG Oral Tablet"
+    },
+    {
+      "code": "72205033660",
+      "description": "ivabradine 5 MG Oral Tablet"
+    },
+    {
+      "code": "72603093401",
+      "description": "ivabradine 5 MG Oral Tablet"
+    }
+  ],
+  "197931": [
+    {
+      "code": "54458111",
+      "description": "Mercaptopurine 50 MG Oral Tablet"
+    },
+    {
+      "code": "54458127",
+      "description": "Mercaptopurine 50 MG Oral Tablet"
+    },
+    {
+      "code": "378354725",
+      "description": "Mercaptopurine 50 MG Oral Tablet"
+    },
+    {
+      "code": "378354752",
+      "description": "Mercaptopurine 50 MG Oral Tablet"
+    },
+    {
+      "code": "51407098325",
+      "description": "Mercaptopurine 50 MG Oral Tablet"
+    },
+    {
+      "code": "69076091302",
+      "description": "Mercaptopurine 50 MG Oral Tablet"
+    },
+    {
+      "code": "69076091325",
+      "description": "Mercaptopurine 50 MG Oral Tablet"
+    },
+    {
+      "code": "71921015002",
+      "description": "Mercaptopurine 50 MG Oral Tablet"
+    },
+    {
+      "code": "71921015025",
+      "description": "Mercaptopurine 50 MG Oral Tablet"
+    }
+  ],
+  "197361": [
+    {
+      "code": "378520905",
+      "description": "Lisinopril 10 MG Oral Tablet"
+    },
+    {
+      "code": "10135052503",
+      "description": "Lisinopril 10 MG Oral Tablet"
+    },
+    {
+      "code": "29300024205",
+      "description": "Lisinopril 10 MG Oral Tablet"
+    },
+    {
+      "code": "31722023810",
+      "description": "Lisinopril 10 MG Oral Tablet"
+    },
+    {
+      "code": "43063056430",
+      "description": "Lisinopril 10 MG Oral Tablet"
+    },
+    {
+      "code": "50090152700",
+      "description": "Lisinopril 10 MG Oral Tablet"
+    },
+    {
+      "code": "51407095010",
+      "description": "Lisinopril 10 MG Oral Tablet"
+    },
+    {
+      "code": "60687048801",
+      "description": "Lisinopril 10 MG Oral Tablet"
+    },
+    {
+      "code": "68382012201",
+      "description": "Lisinopril 10 MG Oral Tablet"
+    },
+    {
+      "code": "70518298101",
+      "description": "Lisinopril 10 MG Oral Tablet"
+    },
+    {
+      "code": "71335047301",
+      "description": "Lisinopril 10 MG Oral Tablet"
+    },
+    {
+      "code": "71610068730",
+      "description": "Lisinopril 10 MG Oral Tablet"
+    },
+    {
+      "code": "72189052030",
+      "description": "Lisinopril 10 MG Oral Tablet"
+    },
+    {
+      "code": "76282023810",
+      "description": "Lisinopril 10 MG Oral Tablet"
+    },
+    {
+      "code": "87441001701",
+      "description": "Lisinopril 10 MG Oral Tablet"
+    }
+  ],
+  "577033": [
+    {
+      "code": "93551798",
+      "description": "Sildenafil 20 MG Oral Tablet"
+    },
+    {
+      "code": "13668018505",
+      "description": "Sildenafil 20 MG Oral Tablet"
+    },
+    {
+      "code": "31722077605",
+      "description": "Sildenafil 20 MG Oral Tablet"
+    },
+    {
+      "code": "33342012110",
+      "description": "Sildenafil 20 MG Oral Tablet"
+    },
+    {
+      "code": "43063055030",
+      "description": "Sildenafil 20 MG Oral Tablet"
+    },
+    {
+      "code": "50090308200",
+      "description": "Sildenafil 20 MG Oral Tablet"
+    },
+    {
+      "code": "55700039805",
+      "description": "Sildenafil 20 MG Oral Tablet"
+    },
+    {
+      "code": "60687041611",
+      "description": "Sildenafil 20 MG Oral Tablet"
+    },
+    {
+      "code": "63187061910",
+      "description": "Sildenafil 20 MG Oral Tablet"
+    },
+    {
+      "code": "68071207201",
+      "description": "Sildenafil 20 MG Oral Tablet"
+    },
+    {
+      "code": "70518343301",
+      "description": "Sildenafil 20 MG Oral Tablet"
+    },
+    {
+      "code": "71205030530",
+      "description": "Sildenafil 20 MG Oral Tablet"
+    },
+    {
+      "code": "71335100501",
+      "description": "Sildenafil 20 MG Oral Tablet"
+    },
+    {
+      "code": "72189029830",
+      "description": "Sildenafil 20 MG Oral Tablet"
+    },
+    {
+      "code": "80425030401",
+      "description": "Sildenafil 20 MG Oral Tablet"
+    }
+  ],
+  "1191013": [
+    {
+      "code": "404719901",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "24208073006",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "42571049757",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "50090025900",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "50090192300",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "50090193100",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "51394023912",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "52959070501",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "61314001601",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "68071133205",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "68071436805",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "68071513905",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70069060101",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70518340800",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70756019335",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70756019395",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "85766003915",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "85766005615",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "85766005715",
+      "description": "proparacaine hydrochloride 5 MG/ML Ophthalmic Solution"
+    }
+  ],
+  "1809414": [
+    {
+      "code": "944271605",
+      "description": "immunoglobulin G, human 10 % in 50 ML Injection"
+    }
+  ],
+  "312635": [
+    {
+      "code": "247082505",
+      "description": "Prochlorperazine 10 MG Oral Tablet"
+    },
+    {
+      "code": "10135036701",
+      "description": "Prochlorperazine 10 MG Oral Tablet"
+    },
+    {
+      "code": "33358029920",
+      "description": "Prochlorperazine 10 MG Oral Tablet"
+    },
+    {
+      "code": "43063035306",
+      "description": "Prochlorperazine 10 MG Oral Tablet"
+    },
+    {
+      "code": "50090714700",
+      "description": "Prochlorperazine 10 MG Oral Tablet"
+    },
+    {
+      "code": "51079054101",
+      "description": "Prochlorperazine 10 MG Oral Tablet"
+    },
+    {
+      "code": "60687081411",
+      "description": "Prochlorperazine 10 MG Oral Tablet"
+    },
+    {
+      "code": "67296209901",
+      "description": "Prochlorperazine 10 MG Oral Tablet"
+    },
+    {
+      "code": "70518449800",
+      "description": "Prochlorperazine 10 MG Oral Tablet"
+    },
+    {
+      "code": "72789026501",
+      "description": "Prochlorperazine 10 MG Oral Tablet"
+    }
+  ],
+  "314228": [
+    {
+      "code": "93534156",
+      "description": "Medroxyprogesterone 10 MG Oral Tablet"
+    },
+    {
+      "code": "13668018601",
+      "description": "Medroxyprogesterone 10 MG Oral Tablet"
+    },
+    {
+      "code": "31722070905",
+      "description": "Medroxyprogesterone 10 MG Oral Tablet"
+    },
+    {
+      "code": "33342004107",
+      "description": "Medroxyprogesterone 10 MG Oral Tablet"
+    },
+    {
+      "code": "50090464400",
+      "description": "Medroxyprogesterone 10 MG Oral Tablet"
+    },
+    {
+      "code": "55801033801",
+      "description": "Medroxyprogesterone 10 MG Oral Tablet"
+    },
+    {
+      "code": "60219175101",
+      "description": "Medroxyprogesterone 10 MG Oral Tablet"
+    },
+    {
+      "code": "68071359201",
+      "description": "Medroxyprogesterone 10 MG Oral Tablet"
+    },
+    {
+      "code": "71209010601",
+      "description": "Medroxyprogesterone 10 MG Oral Tablet"
+    },
+    {
+      "code": "76420056330",
+      "description": "Medroxyprogesterone 10 MG Oral Tablet"
+    }
+  ],
+  "1747567": [
+    {
+      "code": "74057611",
+      "description": "Venetoclax Oral Tablet"
+    },
+    {
+      "code": "74057622",
+      "description": "Venetoclax Oral Tablet"
+    },
+    {
+      "code": "74057630",
+      "description": "Venetoclax Oral Tablet"
+    },
+    {
+      "code": "74057634",
+      "description": "Venetoclax Oral Tablet"
+    }
+  ],
+  "403969": [
+    {
+      "code": "93550456",
+      "description": "Hydroxychloroquine 200 MG Oral Tablet"
+    },
+    {
+      "code": "781219131",
+      "description": "Hydroxychloroquine 200 MG Oral Tablet"
+    },
+    {
+      "code": "42291065330",
+      "description": "Hydroxychloroquine 200 MG Oral Tablet"
+    },
+    {
+      "code": "49884025011",
+      "description": "Hydroxychloroquine 200 MG Oral Tablet"
+    }
+  ],
+	"1043543": [
+  {
+    "code": "00004110020",
+    "description": "Capecitabine 150 MG Oral Tablet"
+  },
+  {
+    "code": "00004110150",
+    "description": "Capecitabine 500 MG Oral Tablet"
+  },
+  {
+    "code": "61269047060",
+    "description": "Capecitabine 150 MG Oral Tablet"
+  },
+  {
+    "code": "61269047512",
+    "description": "Capecitabine 500 MG Oral Tablet"
+  },
+  {
+    "code": "51079051001",
+    "description": "Capecitabine 150 MG Oral Tablet"
+  },
+  {
+    "code": "51079051005",
+    "description": "Capecitabine 500 MG Oral Tablet"
+  }
+],
+"197391": [
+  {
+    "code": "64842102001",
+    "description": "Lonsurf (trifluridine and tipiracil)"
+  },
+  {
+    "code": "64842102002",
+    "description": "Lonsurf (trifluridine and tipiracil)"
+  },
+  {
+    "code": "64842102003",
+    "description": "Lonsurf (trifluridine and tipiracil)"
+  },
+  {
+    "code": "64842102501",
+    "description": "Lonsurf (trifluridine and tipiracil)"
+  },
+  {
+    "code": "64842102502",
+    "description": "Lonsurf (trifluridine and tipiracil)"
+  }
+],
+"1804248": [
+  {
+    "code": "63020040002",
+    "description": "Ixazomib 3 MG Oral Capsule"
+  },
+  {
+    "code": "63020040003",
+    "description": "Ixazomib 4 MG Oral Capsule"
+  },
+  {
+    "code": "63020040001",
+    "description": "Ixazomib 2.3 MG Oral Capsule"
+  }
+],
+"2367763": [
+  {
+    "code": "72237010111",
+    "description": "Selinexor 20 MG Oral Tablet"
+  },
+  {
+    "code": "72237010211",
+    "description": "Selinexor 40 MG Oral Tablet"
+  }
+],
+"1433216": [
+  {
+    "code": "59572050121",
+    "description": "Panobinostat 10 MG Oral Capsule"
+  },
+  {
+    "code": "59572050221",
+    "description": "Panobinostat 15 MG Oral Capsule"
+  },
+  {
+    "code": "59572050321",
+    "description": "Panobinostat 20 MG Oral Capsule"
+  }
+],
+"3002": [
+  {
+    "code": "54868500500",
+    "description": "Cyclophosphamide 25 MG Oral Tablet"
+  },
+  {
+    "code": "54868500600",
+    "description": "Cyclophosphamide 50 MG Oral Tablet"
+  }
+],
+"3264": [
+  {
+    "code": "00054317625",
+    "description": "Dexamethasone 4 MG Oral Tablet"
+  },
+  {
+    "code": "00172368360",
+    "description": "Dexamethasone 4 MG Oral Tablet"
+  }
+],
+"8640": [
+  {
+    "code": "00054001825",
+    "description": "Prednisone 20 MG Oral Tablet"
+  },
+  {
+    "code": "00054001725",
+    "description": "Prednisone 10 MG Oral Tablet"
+  }
+],
+"8638": [
+  {
+    "code": "00054331925",
+    "description": "Prednisolone 5 MG Oral Tablet"
+  }
+],
+"1369718": [
+  {
+    "code": "59572501001",
+    "description": "Pomalidomide 1 MG Oral Capsule"
+  },
+  {
+    "code": "59572502001",
+    "description": "Pomalidomide 1 MG Oral Capsule [Pomalyst]"
+  },
+  {
+    "code": "04802601001",
+    "description": "Pomalidomide 1 MG Oral Capsule"
+  }
+],
+
+"1369726": [
+  {
+    "code": "59572501002",
+    "description": "Pomalidomide 2 MG Oral Capsule"
+  },
+  {
+    "code": "59572502002",
+    "description": "Pomalidomide 2 MG Oral Capsule [Pomalyst]"
+  },
+  {
+    "code": "04802601002",
+    "description": "Pomalidomide 2 MG Oral Capsule"
+  }
+],
+
+"1369730": [
+  {
+    "code": "59572501003",
+    "description": "Pomalidomide 3 MG Oral Capsule"
+  },
+  {
+    "code": "59572502003",
+    "description": "Pomalidomide 3 MG Oral Capsule [Pomalyst]"
+  },
+  {
+    "code": "04802601003",
+    "description": "Pomalidomide 3 MG Oral Capsule"
+  }
+],
+
+"1369734": [
+  {
+    "code": "59572501004",
+    "description": "Pomalidomide 4 MG Oral Capsule"
+  },
+  {
+    "code": "59572502004",
+    "description": "Pomalidomide 4 MG Oral Capsule [Pomalyst]"
+  },
+  {
+    "code": "04802601004",
+    "description": "Pomalidomide 4 MG Oral Capsule"
+  }
+],
+"200390": [
+  {
+    "code": "59572205001",
+    "description": "Thalidomide 50 MG Oral Capsule"
+  },
+  {
+    "code": "59572210001",
+    "description": "Thalidomide 50 MG Oral Capsule [Thalomid]"
+  },
+  {
+    "code": "59572215001",
+    "description": "Thalidomide 50 MG Oral Capsule"
+  }
+],
+
+"360176": [
+  {
+    "code": "59572205002",
+    "description": "Thalidomide 100 MG Oral Capsule"
+  },
+  {
+    "code": "59572210002",
+    "description": "Thalidomide 100 MG Oral Capsule [Thalomid]"
+  },
+  {
+    "code": "59572215002",
+    "description": "Thalidomide 100 MG Oral Capsule"
+  }
+],
+
+"700416": [
+  {
+    "code": "59572205003",
+    "description": "Thalidomide 150 MG Oral Capsule"
+  },
+  {
+    "code": "59572210003",
+    "description": "Thalidomide 150 MG Oral Capsule [Thalomid]"
+  },
+  {
+    "code": "59572215003",
+    "description": "Thalidomide 150 MG Oral Capsule"
+  }
+],
+
+"360177": [
+  {
+    "code": "59572205004",
+    "description": "Thalidomide 200 MG Oral Capsule"
+  },
+  {
+    "code": "59572210004",
+    "description": "Thalidomide 200 MG Oral Capsule [Thalomid]"
+  },
+  {
+    "code": "59572215004",
+    "description": "Thalidomide 200 MG Oral Capsule"
+  }
+],
+"1723757": [
+  {
+    "code": "63020230001",
+    "description": "Ixazomib 2.3 MG Oral Capsule"
+  },
+  {
+    "code": "63020390001",
+    "description": "Ixazomib 2.3 MG Oral Capsule [Ninlaro]"
+  },
+  {
+    "code": "63020400001",
+    "description": "Ixazomib 2.3 MG Oral Capsule"
+  }
+],
+
+"1723765": [
+  {
+    "code": "63020230002",
+    "description": "Ixazomib 3 MG Oral Capsule"
+  },
+  {
+    "code": "63020390002",
+    "description": "Ixazomib 3 MG Oral Capsule [Ninlaro]"
+  },
+  {
+    "code": "63020400002",
+    "description": "Ixazomib 3 MG Oral Capsule"
+  }
+],
+
+"1723770": [
+  {
+    "code": "63020230003",
+    "description": "Ixazomib 4 MG Oral Capsule"
+  },
+  {
+    "code": "63020390003",
+    "description": "Ixazomib 4 MG Oral Capsule [Ninlaro]"
+  },
+  {
+    "code": "63020400003",
+    "description": "Ixazomib 4 MG Oral Capsule"
+  }
+]
+
 }

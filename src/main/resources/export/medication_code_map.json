@@ -2931,6 +2931,46 @@
     {
       "code": "70934030990",
       "description": "24 HR metformin hydrochloride 500 MG Extended Release Oral Tablet"
+    },
+    {
+      "code": "185441605",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "378035205",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "615828928",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "615828939",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "781550301",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "10135082305",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "10135082330",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "10135082332",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "10135082333",
+      "description": "amoxicillin 500 MG Oral Capsule"
+    },
+    {
+      "code": "10135082360",
+      "description": "amoxicillin 500 MG Oral Capsule"
     }
   ],
   "864706": [
@@ -156857,6 +156897,26 @@
     {
       "code": "00615791830",
       "description": "lisinopril 20 MG Oral Tablet"
+    },
+    {
+      "code": "143971301",
+      "description": "lisinopril 20 MG Oral Tablet"
+    },
+    {
+      "code": "23155087901",
+      "description": "lisinopril 20 MG Oral Tablet"
+    },
+    {
+      "code": "31722017801",
+      "description": "lisinopril 20 MG Oral Tablet"
+    },
+    {
+      "code": "43063000730",
+      "description": "lisinopril 20 MG Oral Tablet"
+    },
+    {
+      "code": "50090472501",
+      "description": "lisinopril 20 MG Oral Tablet"
     }
   ],
   "351875": [
@@ -250585,33 +250645,10 @@
       "description": "Lenalidomide 20 MG Oral Capsule"
     }
   ],
-
   "197583": [
     {
       "code": "0904-7267",
       "description": "Dexamethasone"
-    }
-  ],
-  "314077": [
-    {
-      "code": "143971301",
-      "description": "lisinopril 20 MG Oral Tablet"
-    },
-    {
-      "code": "23155087901",
-      "description": "lisinopril 20 MG Oral Tablet"
-    },
-    {
-      "code": "31722017801",
-      "description": "lisinopril 20 MG Oral Tablet"
-    },
-    {
-      "code": "43063000730",
-      "description": "lisinopril 20 MG Oral Tablet"
-    },
-    {
-      "code": "50090472501",
-      "description": "lisinopril 20 MG Oral Tablet"
     }
   ],
   "310964": [
@@ -250654,48 +250691,6 @@
     {
       "code": "70677004601",
       "description": "Entacapone 200 MG Oral Tablet"
-    }
-  ],
-  "860975": [
-    {
-      "code": "185441605",
-      "description": "amoxicillin 500 MG Oral Capsule"
-    },
-    {
-      "code": "378035205",
-      "description": "amoxicillin 500 MG Oral Capsule"
-    },
-    {
-      "code": "615828928",
-      "description": "amoxicillin 500 MG Oral Capsule"
-    },
-    {
-      "code": "615828939",
-      "description": "amoxicillin 500 MG Oral Capsule"
-    },
-    {
-      "code": "781550301",
-      "description": "amoxicillin 500 MG Oral Capsule"
-    },
-    {
-      "code": "10135082305",
-      "description": "amoxicillin 500 MG Oral Capsule"
-    },
-    {
-      "code": "10135082330",
-      "description": "amoxicillin 500 MG Oral Capsule"
-    },
-    {
-      "code": "10135082332",
-      "description": "amoxicillin 500 MG Oral Capsule"
-    },
-    {
-      "code": "10135082333",
-      "description": "amoxicillin 500 MG Oral Capsule"
-    },
-    {
-      "code": "10135082360",
-      "description": "amoxicillin 500 MG Oral Capsule"
     }
   ],
   "311975": [
@@ -251240,289 +251235,280 @@
       "description": "Hydroxychloroquine 200 MG Oral Tablet"
     }
   ],
-	"1043543": [
-  {
-    "code": "00004110020",
-    "description": "Capecitabine 150 MG Oral Tablet"
-  },
-  {
-    "code": "00004110150",
-    "description": "Capecitabine 500 MG Oral Tablet"
-  },
-  {
-    "code": "61269047060",
-    "description": "Capecitabine 150 MG Oral Tablet"
-  },
-  {
-    "code": "61269047512",
-    "description": "Capecitabine 500 MG Oral Tablet"
-  },
-  {
-    "code": "51079051001",
-    "description": "Capecitabine 150 MG Oral Tablet"
-  },
-  {
-    "code": "51079051005",
-    "description": "Capecitabine 500 MG Oral Tablet"
-  }
-],
-"197391": [
-  {
-    "code": "64842102001",
-    "description": "Lonsurf (trifluridine and tipiracil)"
-  },
-  {
-    "code": "64842102002",
-    "description": "Lonsurf (trifluridine and tipiracil)"
-  },
-  {
-    "code": "64842102003",
-    "description": "Lonsurf (trifluridine and tipiracil)"
-  },
-  {
-    "code": "64842102501",
-    "description": "Lonsurf (trifluridine and tipiracil)"
-  },
-  {
-    "code": "64842102502",
-    "description": "Lonsurf (trifluridine and tipiracil)"
-  }
-],
-"1804248": [
-  {
-    "code": "63020040002",
-    "description": "Ixazomib 3 MG Oral Capsule"
-  },
-  {
-    "code": "63020040003",
-    "description": "Ixazomib 4 MG Oral Capsule"
-  },
-  {
-    "code": "63020040001",
-    "description": "Ixazomib 2.3 MG Oral Capsule"
-  }
-],
-"2367763": [
-  {
-    "code": "72237010111",
-    "description": "Selinexor 20 MG Oral Tablet"
-  },
-  {
-    "code": "72237010211",
-    "description": "Selinexor 40 MG Oral Tablet"
-  }
-],
-"1433216": [
-  {
-    "code": "59572050121",
-    "description": "Panobinostat 10 MG Oral Capsule"
-  },
-  {
-    "code": "59572050221",
-    "description": "Panobinostat 15 MG Oral Capsule"
-  },
-  {
-    "code": "59572050321",
-    "description": "Panobinostat 20 MG Oral Capsule"
-  }
-],
-"3002": [
-  {
-    "code": "54868500500",
-    "description": "Cyclophosphamide 25 MG Oral Tablet"
-  },
-  {
-    "code": "54868500600",
-    "description": "Cyclophosphamide 50 MG Oral Tablet"
-  }
-],
-"3264": [
-  {
-    "code": "00054317625",
-    "description": "Dexamethasone 4 MG Oral Tablet"
-  },
-  {
-    "code": "00172368360",
-    "description": "Dexamethasone 4 MG Oral Tablet"
-  }
-],
-"8640": [
-  {
-    "code": "00054001825",
-    "description": "Prednisone 20 MG Oral Tablet"
-  },
-  {
-    "code": "00054001725",
-    "description": "Prednisone 10 MG Oral Tablet"
-  }
-],
-"8638": [
-  {
-    "code": "00054331925",
-    "description": "Prednisolone 5 MG Oral Tablet"
-  }
-],
-"1369718": [
-  {
-    "code": "59572501001",
-    "description": "Pomalidomide 1 MG Oral Capsule"
-  },
-  {
-    "code": "59572502001",
-    "description": "Pomalidomide 1 MG Oral Capsule [Pomalyst]"
-  },
-  {
-    "code": "04802601001",
-    "description": "Pomalidomide 1 MG Oral Capsule"
-  }
-],
-
-"1369726": [
-  {
-    "code": "59572501002",
-    "description": "Pomalidomide 2 MG Oral Capsule"
-  },
-  {
-    "code": "59572502002",
-    "description": "Pomalidomide 2 MG Oral Capsule [Pomalyst]"
-  },
-  {
-    "code": "04802601002",
-    "description": "Pomalidomide 2 MG Oral Capsule"
-  }
-],
-
-"1369730": [
-  {
-    "code": "59572501003",
-    "description": "Pomalidomide 3 MG Oral Capsule"
-  },
-  {
-    "code": "59572502003",
-    "description": "Pomalidomide 3 MG Oral Capsule [Pomalyst]"
-  },
-  {
-    "code": "04802601003",
-    "description": "Pomalidomide 3 MG Oral Capsule"
-  }
-],
-
-"1369734": [
-  {
-    "code": "59572501004",
-    "description": "Pomalidomide 4 MG Oral Capsule"
-  },
-  {
-    "code": "59572502004",
-    "description": "Pomalidomide 4 MG Oral Capsule [Pomalyst]"
-  },
-  {
-    "code": "04802601004",
-    "description": "Pomalidomide 4 MG Oral Capsule"
-  }
-],
-"200390": [
-  {
-    "code": "59572205001",
-    "description": "Thalidomide 50 MG Oral Capsule"
-  },
-  {
-    "code": "59572210001",
-    "description": "Thalidomide 50 MG Oral Capsule [Thalomid]"
-  },
-  {
-    "code": "59572215001",
-    "description": "Thalidomide 50 MG Oral Capsule"
-  }
-],
-
-"360176": [
-  {
-    "code": "59572205002",
-    "description": "Thalidomide 100 MG Oral Capsule"
-  },
-  {
-    "code": "59572210002",
-    "description": "Thalidomide 100 MG Oral Capsule [Thalomid]"
-  },
-  {
-    "code": "59572215002",
-    "description": "Thalidomide 100 MG Oral Capsule"
-  }
-],
-
-"700416": [
-  {
-    "code": "59572205003",
-    "description": "Thalidomide 150 MG Oral Capsule"
-  },
-  {
-    "code": "59572210003",
-    "description": "Thalidomide 150 MG Oral Capsule [Thalomid]"
-  },
-  {
-    "code": "59572215003",
-    "description": "Thalidomide 150 MG Oral Capsule"
-  }
-],
-
-"360177": [
-  {
-    "code": "59572205004",
-    "description": "Thalidomide 200 MG Oral Capsule"
-  },
-  {
-    "code": "59572210004",
-    "description": "Thalidomide 200 MG Oral Capsule [Thalomid]"
-  },
-  {
-    "code": "59572215004",
-    "description": "Thalidomide 200 MG Oral Capsule"
-  }
-],
-"1723757": [
-  {
-    "code": "63020230001",
-    "description": "Ixazomib 2.3 MG Oral Capsule"
-  },
-  {
-    "code": "63020390001",
-    "description": "Ixazomib 2.3 MG Oral Capsule [Ninlaro]"
-  },
-  {
-    "code": "63020400001",
-    "description": "Ixazomib 2.3 MG Oral Capsule"
-  }
-],
-
-"1723765": [
-  {
-    "code": "63020230002",
-    "description": "Ixazomib 3 MG Oral Capsule"
-  },
-  {
-    "code": "63020390002",
-    "description": "Ixazomib 3 MG Oral Capsule [Ninlaro]"
-  },
-  {
-    "code": "63020400002",
-    "description": "Ixazomib 3 MG Oral Capsule"
-  }
-],
-
-"1723770": [
-  {
-    "code": "63020230003",
-    "description": "Ixazomib 4 MG Oral Capsule"
-  },
-  {
-    "code": "63020390003",
-    "description": "Ixazomib 4 MG Oral Capsule [Ninlaro]"
-  },
-  {
-    "code": "63020400003",
-    "description": "Ixazomib 4 MG Oral Capsule"
-  }
-]
-
+  "1043543": [
+    {
+      "code": "00004110020",
+      "description": "Capecitabine 150 MG Oral Tablet"
+    },
+    {
+      "code": "00004110150",
+      "description": "Capecitabine 500 MG Oral Tablet"
+    },
+    {
+      "code": "61269047060",
+      "description": "Capecitabine 150 MG Oral Tablet"
+    },
+    {
+      "code": "61269047512",
+      "description": "Capecitabine 500 MG Oral Tablet"
+    },
+    {
+      "code": "51079051001",
+      "description": "Capecitabine 150 MG Oral Tablet"
+    },
+    {
+      "code": "51079051005",
+      "description": "Capecitabine 500 MG Oral Tablet"
+    }
+  ],
+  "197391": [
+    {
+      "code": "64842102001",
+      "description": "Lonsurf (trifluridine and tipiracil)"
+    },
+    {
+      "code": "64842102002",
+      "description": "Lonsurf (trifluridine and tipiracil)"
+    },
+    {
+      "code": "64842102003",
+      "description": "Lonsurf (trifluridine and tipiracil)"
+    },
+    {
+      "code": "64842102501",
+      "description": "Lonsurf (trifluridine and tipiracil)"
+    },
+    {
+      "code": "64842102502",
+      "description": "Lonsurf (trifluridine and tipiracil)"
+    }
+  ],
+  "1804248": [
+    {
+      "code": "63020040002",
+      "description": "Ixazomib 3 MG Oral Capsule"
+    },
+    {
+      "code": "63020040003",
+      "description": "Ixazomib 4 MG Oral Capsule"
+    },
+    {
+      "code": "63020040001",
+      "description": "Ixazomib 2.3 MG Oral Capsule"
+    }
+  ],
+  "2367763": [
+    {
+      "code": "72237010111",
+      "description": "Selinexor 20 MG Oral Tablet"
+    },
+    {
+      "code": "72237010211",
+      "description": "Selinexor 40 MG Oral Tablet"
+    }
+  ],
+  "1433216": [
+    {
+      "code": "59572050121",
+      "description": "Panobinostat 10 MG Oral Capsule"
+    },
+    {
+      "code": "59572050221",
+      "description": "Panobinostat 15 MG Oral Capsule"
+    },
+    {
+      "code": "59572050321",
+      "description": "Panobinostat 20 MG Oral Capsule"
+    }
+  ],
+  "3002": [
+    {
+      "code": "54868500500",
+      "description": "Cyclophosphamide 25 MG Oral Tablet"
+    },
+    {
+      "code": "54868500600",
+      "description": "Cyclophosphamide 50 MG Oral Tablet"
+    }
+  ],
+  "3264": [
+    {
+      "code": "00054317625",
+      "description": "Dexamethasone 4 MG Oral Tablet"
+    },
+    {
+      "code": "00172368360",
+      "description": "Dexamethasone 4 MG Oral Tablet"
+    }
+  ],
+  "8640": [
+    {
+      "code": "00054001825",
+      "description": "Prednisone 20 MG Oral Tablet"
+    },
+    {
+      "code": "00054001725",
+      "description": "Prednisone 10 MG Oral Tablet"
+    }
+  ],
+  "8638": [
+    {
+      "code": "00054331925",
+      "description": "Prednisolone 5 MG Oral Tablet"
+    }
+  ],
+  "1369718": [
+    {
+      "code": "59572501001",
+      "description": "Pomalidomide 1 MG Oral Capsule"
+    },
+    {
+      "code": "59572502001",
+      "description": "Pomalidomide 1 MG Oral Capsule [Pomalyst]"
+    },
+    {
+      "code": "04802601001",
+      "description": "Pomalidomide 1 MG Oral Capsule"
+    }
+  ],
+  "1369726": [
+    {
+      "code": "59572501002",
+      "description": "Pomalidomide 2 MG Oral Capsule"
+    },
+    {
+      "code": "59572502002",
+      "description": "Pomalidomide 2 MG Oral Capsule [Pomalyst]"
+    },
+    {
+      "code": "04802601002",
+      "description": "Pomalidomide 2 MG Oral Capsule"
+    }
+  ],
+  "1369730": [
+    {
+      "code": "59572501003",
+      "description": "Pomalidomide 3 MG Oral Capsule"
+    },
+    {
+      "code": "59572502003",
+      "description": "Pomalidomide 3 MG Oral Capsule [Pomalyst]"
+    },
+    {
+      "code": "04802601003",
+      "description": "Pomalidomide 3 MG Oral Capsule"
+    }
+  ],
+  "1369734": [
+    {
+      "code": "59572501004",
+      "description": "Pomalidomide 4 MG Oral Capsule"
+    },
+    {
+      "code": "59572502004",
+      "description": "Pomalidomide 4 MG Oral Capsule [Pomalyst]"
+    },
+    {
+      "code": "04802601004",
+      "description": "Pomalidomide 4 MG Oral Capsule"
+    }
+  ],
+  "200390": [
+    {
+      "code": "59572205001",
+      "description": "Thalidomide 50 MG Oral Capsule"
+    },
+    {
+      "code": "59572210001",
+      "description": "Thalidomide 50 MG Oral Capsule [Thalomid]"
+    },
+    {
+      "code": "59572215001",
+      "description": "Thalidomide 50 MG Oral Capsule"
+    }
+  ],
+  "360176": [
+    {
+      "code": "59572205002",
+      "description": "Thalidomide 100 MG Oral Capsule"
+    },
+    {
+      "code": "59572210002",
+      "description": "Thalidomide 100 MG Oral Capsule [Thalomid]"
+    },
+    {
+      "code": "59572215002",
+      "description": "Thalidomide 100 MG Oral Capsule"
+    }
+  ],
+  "700416": [
+    {
+      "code": "59572205003",
+      "description": "Thalidomide 150 MG Oral Capsule"
+    },
+    {
+      "code": "59572210003",
+      "description": "Thalidomide 150 MG Oral Capsule [Thalomid]"
+    },
+    {
+      "code": "59572215003",
+      "description": "Thalidomide 150 MG Oral Capsule"
+    }
+  ],
+  "360177": [
+    {
+      "code": "59572205004",
+      "description": "Thalidomide 200 MG Oral Capsule"
+    },
+    {
+      "code": "59572210004",
+      "description": "Thalidomide 200 MG Oral Capsule [Thalomid]"
+    },
+    {
+      "code": "59572215004",
+      "description": "Thalidomide 200 MG Oral Capsule"
+    }
+  ],
+  "1723757": [
+    {
+      "code": "63020230001",
+      "description": "Ixazomib 2.3 MG Oral Capsule"
+    },
+    {
+      "code": "63020390001",
+      "description": "Ixazomib 2.3 MG Oral Capsule [Ninlaro]"
+    },
+    {
+      "code": "63020400001",
+      "description": "Ixazomib 2.3 MG Oral Capsule"
+    }
+  ],
+  "1723765": [
+    {
+      "code": "63020230002",
+      "description": "Ixazomib 3 MG Oral Capsule"
+    },
+    {
+      "code": "63020390002",
+      "description": "Ixazomib 3 MG Oral Capsule [Ninlaro]"
+    },
+    {
+      "code": "63020400002",
+      "description": "Ixazomib 3 MG Oral Capsule"
+    }
+  ],
+  "1723770": [
+    {
+      "code": "63020230003",
+      "description": "Ixazomib 4 MG Oral Capsule"
+    },
+    {
+      "code": "63020390003",
+      "description": "Ixazomib 4 MG Oral Capsule [Ninlaro]"
+    },
+    {
+      "code": "63020400003",
+      "description": "Ixazomib 4 MG Oral Capsule"
+    }
+  ]
 }

@@ -8364,6 +8364,103 @@
       "code": "O99.891",
       "description": "Conditions complicating pregnancy"
     }
-  ]
+  ],
+"14669001": [
+  {
+    "code": "N17.9",
+    "description": "Acute kidney failure, unspecified"
+  }
+],
+
+"128823009": [
+  {
+    "code": "C91.00",
+    "description": "B-cell acute lymphoblastic leukemia not having achieved remission"
+  }
+],
+
+"128824003": [
+  {
+    "code": "C91.00",
+    "description": "T-cell acute lymphoblastic leukemia not having achieved remission"
+  }
+],
+
+"61301000119102": [
+  {
+    "code": "C91.00",
+    "description": "Acute lymphoblastic leukemia with central nervous system involvement"
+  }
+],
+
+"63986002": [
+  {
+    "code": "G93.5",
+    "description": "Compression of brain (brain herniation)"
+  }
+],
+
+"409622000": [
+  {
+    "code": "R68.89",
+    "description": "Other general symptoms and signs"
+  }
+],
+
+"85898001": [
+  {
+    "code": "I42.7",
+    "description": "Cardiomyopathy due to drug and external agent"
+  }
+],
+
+"386805003": [
+  {
+    "code": "G31.84",
+    "description": "Mild cognitive impairment"
+  }
+],
+
+"192071009": [
+  {
+    "code": "G31.84",
+    "description": "Mild cognitive impairment"
+  }
+],
+
+"109969005": [
+  {
+    "code": "C83.30",
+    "description": "Diffuse large B-cell lymphoma, unspecified site"
+  }
+],
+
+"277616008": [
+  {
+    "code": "C83.30",
+    "description": "Diffuse large B-cell lymphoma, unspecified site"
+  }
+],
+
+"277626001": [
+  {
+    "code": "C83.30",
+    "description": "Diffuse large B-cell lymphoma, unspecified site"
+  }
+],
+
+"763236005": [
+  {
+    "code": "C83.10",
+    "description": "Mantle cell lymphoma, unspecified site"
+  }
+],
+
+"302226006": [
+  {
+    "code": "T88.9XXA",
+    "description": "Complication of medical care, unspecified, initial encounter"
+  }
+]
   
 }

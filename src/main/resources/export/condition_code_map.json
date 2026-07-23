@@ -8599,6 +8599,61 @@
     "code": "E83.52",
     "description": "Hypercalcemia"
   }
+],
+      "230703006": [
+  {
+    "code": "R47.1",
+    "description": "Dysarthria and anarthria"
+  }
+],
+
+"412734009": [
+  {
+    "code": "Z15.01",
+    "description": "Genetic susceptibility to malignant neoplasm of breast"
+  }
+],
+
+"93934004": [
+  {
+    "code": "C56.9",
+    "description": "Malignant neoplasm of unspecified ovary"
+  }
+],
+
+"363418001": [
+  {
+    "code": "C25.9",
+    "description": "Malignant neoplasm of pancreas, unspecified"
+  }
+],
+
+"314964006": [
+  {
+    "code": "C25.9",
+    "description": "Recurrent malignant neoplasm of pancreas"
+  }
+],
+
+"26079004": [
+  {
+    "code": "G25.0",
+    "description": "Essential tremor"
+  }
+],
+
+"49049000": [
+  {
+    "code": "G20",
+    "description": "Parkinson's disease"
+  }
+],
+
+"52448006": [
+  {
+    "code": "G20.A1",
+    "description": "Parkinson's disease with dementia, without dyskinesia or fluctuations"
+  }
 ]
   
 }

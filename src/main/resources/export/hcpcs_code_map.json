@@ -6822,5 +6822,60 @@
       "code": "86780",
       "description": "Syphilis infection test"
     }
+  ],
+   "121191": [
+    {
+      "code": "J9312",
+      "description": "Injection, rituximab, 10 mg"
+    }
+  ],
+
+  "25463": [
+    {
+      "code": "J9211",
+      "description": "Injection, idarubicin hydrochloride, 5 mg"
+    }
+  ],
+
+  "278177": [
+    {
+      "code": "J9025",
+      "description": "Injection, azacitidine, 1 mg"
+    }
+  ],
+
+  "28648": [
+    {
+      "code": "J9100",
+      "description": "Injection, cytarabine, 100 mg"
+    }
+  ],
+
+  "351949": [
+    {
+      "code": "J9041",
+      "description": "Injection, bortezomib, 0.1 mg"
+    }
+  ],
+
+  "46509032": [
+    {
+      "code": "J9025",
+      "description": "Injection, azacitidine, 1 mg"
+    }
+  ],
+
+  "704258": [
+    {
+      "code": "J9034",
+      "description": "Injection, bendamustine hydrochloride, 1 mg"
+    }
+  ],
+
+  "2200671": [
+    {
+      "code": "J0896",
+      "description": "Injection, luspatercept-aamt, 0.25 mg"
+    }
   ]
 }

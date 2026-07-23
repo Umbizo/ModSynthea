@@ -8461,6 +8461,103 @@
     "code": "T88.9XXA",
     "description": "Complication of medical care, unspecified, initial encounter"
   }
+],
+      "255108000": [
+  {
+    "code": "C67.9",
+    "description": "Malignant neoplasm of bladder, unspecified"
+  }
+],
+
+"425231005": [
+  {
+    "code": "C67.9",
+    "description": "Non-muscle invasive bladder cancer (Ta)"
+  }
+],
+
+"1228957006": [
+  {
+    "code": "C67.9",
+    "description": "Stage T1 bladder cancer"
+  }
+],
+
+"1229852009": [
+  {
+    "code": "C67.9",
+    "description": "Muscle-invasive bladder cancer"
+  }
+],
+
+"425066001": [
+  {
+    "code": "C67.9",
+    "description": "Muscle-invasive bladder cancer"
+  }
+],
+
+"315269000": [
+  {
+    "code": "C67.9",
+    "description": "Localized bladder cancer"
+  }
+],
+
+"399326009": [
+  {
+    "code": "C67.9",
+    "description": "Locally advanced bladder cancer"
+  }
+],
+
+"94186002": [
+  {
+    "code": "C79.9",
+    "description": "Secondary malignant neoplasm, unspecified site"
+  }
+],
+
+"182840001": [
+  {
+    "code": "Z08",
+    "description": "Encounter for follow-up examination after treatment for malignant neoplasm"
+  }
+],
+
+"261004008": [
+  {
+    "code": "C67.9",
+    "description": "Residual bladder cancer"
+  }
+],
+
+"395100000": [
+  {
+    "code": "Z08",
+    "description": "Complete response following treatment for malignant neoplasm"
+  }
+],
+
+"263855007": [
+  {
+    "code": "C67.9",
+    "description": "Recurrent malignant neoplasm of bladder"
+  }
+],
+
+"1371415000": [
+  {
+    "code": "C67.9",
+    "description": "Progressive bladder cancer"
+  }
+],
+
+"128462008": [
+  {
+    "code": "C79.9",
+    "description": "Secondary malignant neoplasm, unspecified site"
+  }
 ]
   
 }

@@ -8654,6 +8654,75 @@
     "code": "G20.A1",
     "description": "Parkinson's disease with dementia, without dyskinesia or fluctuations"
   }
+],
+      "28770003": [
+  {
+    "code": "Q61.3",
+    "description": "Polycystic kidney, unspecified"
+  }
+],
+
+"16294009": [
+  {
+    "code": "R16.1",
+    "description": "Splenomegaly, not elsewhere classified"
+  }
+],
+
+"37151006": [
+  {
+    "code": "I73.81",
+    "description": "Erythromelalgia"
+  }
+],
+
+"131148009": [
+  {
+    "code": "R58",
+    "description": "Hemorrhage, not elsewhere classified"
+  }
+],
+
+"57054005": [
+  {
+    "code": "I21.9",
+    "description": "Acute myocardial infarction, unspecified"
+  }
+],
+
+"871540009": [
+  {
+    "code": "D47.4",
+    "description": "Post-polycythemia vera myelofibrosis"
+  }
+],
+
+"399068003": [
+  {
+    "code": "C61",
+    "description": "Malignant neoplasm of prostate"
+  }
+],
+
+"1268348008": [
+  {
+    "code": "C34.90",
+    "description": "Small cell carcinoma of lung"
+  }
+],
+
+"414173003": [
+  {
+    "code": "H35.3210",
+    "description": "Exudative age-related macular degeneration, unspecified eye"
+  }
+],
+
+"405722004": [
+  {
+    "code": "H35.3190",
+    "description": "Nonexudative age-related macular degeneration, unspecified eye"
+  }
 ]
   
 }

@@ -407,15 +407,11 @@
       }
     ],
     "128613002": [
-      {
-        "code": "P90",
-        "description": "Convulsions of newborn"
-      },
-      {
-        "code": "R56.9",
-        "description": "Unspecified convulsions"
-      }
-    ],
+        {
+          "code": "G90.3",
+          "description": "Multiple system degeneration of the autonomic nervous system"
+        }
+      ],
     "129574000": [
       {
         "code": "I21.4",

@@ -8558,6 +8558,47 @@
     "code": "C79.9",
     "description": "Secondary malignant neoplasm, unspecified site"
   }
+],
+      "1259237005": [
+  {
+    "code": "C83.30",
+    "description": "Diffuse large B-cell lymphoma, refractory or relapsed"
+  }
+],
+
+"237072009": [
+  {
+    "code": "N85.00",
+    "description": "Endometrial hyperplasia, unspecified"
+  }
+],
+
+"93781006": [
+  {
+    "code": "C54.1",
+    "description": "Malignant neoplasm of endometrium"
+  }
+],
+
+"405843009": [
+  {
+    "code": "C54.1",
+    "description": "Recurrent endometrial carcinoma"
+  }
+],
+
+"363346000": [
+  {
+    "code": "C79.9",
+    "description": "Secondary malignant neoplasm, unspecified site"
+  }
+],
+
+"66931009": [
+  {
+    "code": "E83.52",
+    "description": "Hypercalcemia"
+  }
 ]
   
 }

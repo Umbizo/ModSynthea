@@ -17,6 +17,12 @@
         "description": "Systematic Lupus Erythematosus"
       }
     ],
+   "190753003": [
+        {
+          "code": "Q61.19",
+          "description": "Autosomal recessive polycystic kidney disease"
+        }
+    ],
     "10335000": [
       {
         "code": "I50.810",

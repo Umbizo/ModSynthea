@@ -7,7 +7,7 @@
   "states": {
     "Initial": {
       "type": "Initial",
-      "direct_transition": "Initialize Check"
+      "direct_transition": "CHF_Medication_Encounter"
     },
     "Terminal": {
       "type": "Terminal"
@@ -27,6 +27,18 @@
           "transition": "Advance"
         }
       ]
+    },
+    "BNP_Monitoring": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "33762-6",
+          "display": "NT-proBNP"
+        }
+      ],
+      "direct_transition": "CHF_Medication_Encounter_End"
     },
     "Initialize": {
       "type": "SetAttribute",
@@ -93,7 +105,7 @@
       "type": "Simple",
       "conditional_transition": [
         {
-          "transition": "Diuretic",
+          "transition": "Empagliflozin",
           "condition": {
             "condition_type": "Attribute",
             "attribute": "chf_med_step",
@@ -102,9 +114,23 @@
           }
         },
         {
-          "transition": "Terminal"
+          "transition": "CHF_Medication_Encounter_End"
         }
       ]
+    },
+    "BB_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "BB_End"
+    },
+    "BB_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "carvedilol_25_mg_oral_tablet_rx",
+      "direct_transition": "ACE_ARB_ARNI_Choice"
     },
     "Diuretic": {
       "type": "MedicationOrder",
@@ -130,7 +156,8 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "Terminal"
+      "direct_transition": "Diuretic_Supply_Delay",
+      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx"
     },
     "HFrEF Branch": {
       "type": "Simple",
@@ -170,8 +197,38 @@
             "operator": "==",
             "value": 4
           }
+        },
+        {
+          "transition": "HFrEF NYHA 4"
         }
       ]
+    },
+    "Empagliflozin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": 1545653,
+          "display": "Empagliflozin 10 MG Oral Tablet"
+        }
+      ],
+      "reason": "chf",
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 1,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        },
+        "as_needed": true
+      },
+      "chronic": true,
+      "direct_transition": "Empagliflozin_Supply_Delay",
+      "assign_to_attribute": "empagliflozin_10_mg_oral_tablet_rx"
     },
     "HFrEF NYHA 1": {
       "type": "Simple",
@@ -229,6 +286,27 @@
         "as_needed": true
       },
       "chronic": true,
+      "direct_transition": "BB_Supply_Delay",
+      "assign_to_attribute": "carvedilol_25_mg_oral_tablet_rx"
+    },
+    "CHF_Medication_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185345009",
+          "display": "Encounter for medication review"
+        }
+      ],
+      "direct_transition": "Initialize Check"
+    },
+    "CHF_Medication_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Terminal"
+    },
+    "ACE_ARB_ARNI_Choice": {
+      "type": "Simple",
       "distributed_transition": [
         {
           "transition": "ACE",
@@ -239,10 +317,37 @@
           "distribution": 0.4
         },
         {
-          "transition": "Diuretic",
+          "transition": "ARNI",
           "distribution": 0.2
         }
       ]
+    },
+    "Spironolactone": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": 313096,
+          "display": "Spironolactone 25 MG Oral Tablet"
+        }
+      ],
+      "reason": "chf",
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 1,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        },
+        "as_needed": true
+      },
+      "chronic": true,
+      "direct_transition": "Spironolactone_Supply_Delay",
+      "assign_to_attribute": "spironolactone_25_mg_oral_tablet_rx"
     },
     "ACE": {
       "type": "MedicationOrder",
@@ -268,7 +373,35 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "Diuretic"
+      "direct_transition": "ACE_Supply_Delay",
+      "assign_to_attribute": "lisinopril_20_mg_oral_tablet_rx"
+    },
+    "ARNI": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1656356",
+          "display": "sacubitril 97 MG / valsartan 103 MG Oral Tablet [Entresto]"
+        }
+      ],
+      "reason": "chf",
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 2,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        },
+        "as_needed": true
+      },
+      "chronic": true,
+      "direct_transition": "ARNI_Supply_Delay",
+      "assign_to_attribute": "sacubitril_97_mg___valsartan_103_rx"
     },
     "ARB": {
       "type": "MedicationOrder",
@@ -294,7 +427,92 @@
         "as_needed": true
       },
       "chronic": true,
+      "direct_transition": "ARB_Supply_Delay",
+      "assign_to_attribute": "losartan_potassium_50_mg_oral_ta_rx"
+    },
+    "Diuretic_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Diuretic_End"
+    },
+    "Diuretic_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "furosemide_40_mg_oral_tablet_rx",
+      "direct_transition": "BNP_Monitoring"
+    },
+    "Empagliflozin_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Empagliflozin_End"
+    },
+    "Empagliflozin_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "empagliflozin_10_mg_oral_tablet_rx",
       "direct_transition": "Diuretic"
+    },
+    "Spironolactone_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Spironolactone_End"
+    },
+    "Spironolactone_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "spironolactone_25_mg_oral_tablet_rx",
+      "direct_transition": "Empagliflozin"
+    },
+    "ACE_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "ACE_End"
+    },
+    "ACE_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "lisinopril_20_mg_oral_tablet_rx",
+      "direct_transition": "Spironolactone"
+    },
+    "ARNI_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "ARNI_End"
+    },
+    "ARNI_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "sacubitril_97_mg___valsartan_103_rx",
+      "direct_transition": "Spironolactone"
+    },
+    "ARB_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "ARB_End"
+    },
+    "ARB_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "losartan_potassium_50_mg_oral_ta_rx",
+      "direct_transition": "Spironolactone"
     }
   },
   "gmf_version": 1

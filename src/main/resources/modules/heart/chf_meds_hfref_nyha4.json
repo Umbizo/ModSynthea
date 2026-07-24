@@ -35,8 +35,9 @@
         },
         "as_needed": true
       },
-      "direct_transition": "BB",
-      "chronic": true
+      "direct_transition": "Diuretic_Supply_Delay",
+      "chronic": true,
+      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx"
     },
     "BB": {
       "type": "MedicationOrder",
@@ -75,7 +76,8 @@
           "transition": "ARNI",
           "distribution": 0.1
         }
-      ]
+      ],
+      "assign_to_attribute": "carvedilol_25_mg_oral_tablet_rx"
     },
     "ACE": {
       "type": "MedicationOrder",
@@ -101,7 +103,8 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "Terminal"
+      "direct_transition": "ACE_Supply_Delay",
+      "assign_to_attribute": "lisinopril_20_mg_oral_tablet_rx"
     },
     "ARB": {
       "type": "MedicationOrder",
@@ -127,7 +130,8 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "Terminal"
+      "direct_transition": "ARB_Supply_Delay",
+      "assign_to_attribute": "losartan_potassium_50_mg_oral_ta_rx"
     },
     "ARNI": {
       "type": "MedicationOrder",
@@ -153,7 +157,8 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "Terminal"
+      "direct_transition": "ARNI_Supply_Delay",
+      "assign_to_attribute": "sacubitril_97_mg___valsartan_103_rx"
     },
     "Step 1": {
       "type": "Simple",
@@ -207,7 +212,7 @@
           }
         },
         {
-          "transition": "Terminal"
+          "transition": "Terminal_Delay"
         }
       ]
     },
@@ -233,7 +238,7 @@
           }
         },
         {
-          "transition": "Terminal"
+          "transition": "Terminal_Delay"
         }
       ]
     },
@@ -242,11 +247,11 @@
       "distributed_transition": [
         {
           "transition": "MRA",
-          "distribution": 0.1
+          "distribution": 0.5
         },
         {
-          "transition": "Terminal",
-          "distribution": 0.9
+          "transition": "Terminal_Delay",
+          "distribution": 0.5
         }
       ]
     },
@@ -274,7 +279,35 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "Terminal"
+      "direct_transition": "MRA_Supply_Delay",
+      "assign_to_attribute": "spironolactone_25_mg_oral_tablet_rx"
+    },
+    "Empagliflozin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1545653",
+          "display": "Empagliflozin 10 MG Oral Tablet"
+        }
+      ],
+      "reason": "chf",
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 1,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        },
+        "as_needed": true
+      },
+      "chronic": true,
+      "direct_transition": "Empagliflozin_Supply_Delay",
+      "assign_to_attribute": "empagliflozin_10_mg_oral_tablet_rx"
     },
     "BiDil": {
       "type": "MedicationOrder",
@@ -300,7 +333,8 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "Terminal"
+      "direct_transition": "Terminal_Delay",
+      "assign_to_attribute": "hydralazine_hydrochloride_375_mg_rx"
     },
     "Dig": {
       "type": "MedicationOrder",
@@ -326,7 +360,8 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "Terminal"
+      "direct_transition": "Terminal_Delay",
+      "assign_to_attribute": "digoxin_0125_mg_oral_tablet_rx"
     },
     "Other Step 3": {
       "type": "Simple",
@@ -339,7 +374,7 @@
           }
         },
         {
-          "transition": "Terminal"
+          "transition": "Terminal_Delay"
         }
       ]
     },
@@ -351,7 +386,7 @@
           "distribution": 0.05
         },
         {
-          "transition": "Terminal",
+          "transition": "Terminal_Delay",
           "distribution": 0.95
         }
       ]
@@ -364,7 +399,7 @@
           "distribution": 0.05
         },
         {
-          "transition": "Terminal",
+          "transition": "Terminal_Delay",
           "distribution": 0.95
         }
       ]
@@ -381,6 +416,99 @@
           "distribution": 0.01
         }
       ]
+    },
+    "Diuretic_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Diuretic_End"
+    },
+    "Diuretic_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "furosemide_40_mg_oral_tablet_rx",
+      "direct_transition": "BB"
+    },
+    "ACE_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "ACE_End"
+    },
+    "ACE_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "lisinopril_20_mg_oral_tablet_rx",
+      "direct_transition": "Empagliflozin"
+    },
+    "ARB_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "ARB_End"
+    },
+    "ARB_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "losartan_potassium_50_mg_oral_ta_rx",
+      "direct_transition": "Empagliflozin"
+    },
+    "ARNI_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "ARNI_End"
+    },
+    "ARNI_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "sacubitril_97_mg___valsartan_103_rx",
+      "direct_transition": "Empagliflozin"
+    },
+    "MRA_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "MRA_End"
+    },
+    "MRA_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "spironolactone_25_mg_oral_tablet_rx",
+      "direct_transition": "Empagliflozin"
+    },
+    "Empagliflozin_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Empagliflozin_End"
+    },
+    "Empagliflozin_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "empagliflozin_10_mg_oral_tablet_rx",
+      "direct_transition": "Terminal_Delay"
+    },
+    "Terminal_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 365,
+        "high": 365,
+        "unit": "days"
+      },
+      "direct_transition": "Terminal"
     }
   },
   "gmf_version": 1

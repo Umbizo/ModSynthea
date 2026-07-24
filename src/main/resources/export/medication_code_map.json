@@ -250647,8 +250647,16 @@
   ],
   "197583": [
     {
-      "code": "0904-7267",
-      "description": "Dexamethasone"
+      "code": "00054317644",
+      "description": "Dexamethasone Oral Tablet"
+    },
+    {
+      "code": "00054417925",
+      "description": "Dexamethasone Oral Tablet"
+    },
+    {
+      "code": "00054418025",
+      "description": "Dexamethasone Oral Tablet"
     }
   ],
   "310964": [
@@ -251401,16 +251409,12 @@
   ],
   "1369734": [
     {
-      "code": "59572501004",
-      "description": "Pomalidomide 4 MG Oral Capsule"
-    },
-    {
-      "code": "59572502004",
+      "code": "59572050400",
       "description": "Pomalidomide 4 MG Oral Capsule [Pomalyst]"
     },
     {
-      "code": "04802601004",
-      "description": "Pomalidomide 4 MG Oral Capsule"
+      "code": "59572050421",
+      "description": "Pomalidomide 4 MG Oral Capsule [Pomalyst]"
     }
   ],
   "200390": [
@@ -251499,16 +251503,30 @@
   ],
   "1723770": [
     {
-      "code": "63020230003",
-      "description": "Ixazomib 4 MG Oral Capsule"
-    },
-    {
-      "code": "63020390003",
+      "code": "63020040002",
       "description": "Ixazomib 4 MG Oral Capsule [Ninlaro]"
     },
     {
-      "code": "63020400003",
-      "description": "Ixazomib 4 MG Oral Capsule"
+      "code": "63020040003",
+      "description": "Ixazomib 4 MG Oral Capsule [Ninlaro]"
+    }
+  ],
+  "2178394": [
+    {
+      "code": "72237010101",
+      "description": "Selinexor Oral Tablet [Xpovio]"
+    },
+    {
+      "code": "72237010102",
+      "description": "Selinexor Oral Tablet [Xpovio]"
+    },
+    {
+      "code": "72237010103",
+      "description": "Selinexor Oral Tablet [Xpovio]"
+    },
+    {
+      "code": "72237010111",
+      "description": "Selinexor Oral Tablet [Xpovio]"
     }
   ]
 }

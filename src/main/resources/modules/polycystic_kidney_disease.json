@@ -1,0 +1,308 @@
+{
+  "name": "Polycystic_Kidney_Disease",
+  "remarks": [
+    "Simplified module for polycystic kidney disease (PKD) with hypertension, CKD progression, and ESRD management.",
+    "Codes: SNOMED CT, ICD-10-CM, RxNorm, LOINC."
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "PKD_Risk_Assessment"
+    },
+    "PKD_Risk_Assessment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 2e-05,
+          "transition": "ARPKD_Onset_Infant"
+        },
+        {
+          "distribution": 0.0015,
+          "transition": "ADPKD_Age_Window"
+        },
+        {
+          "distribution": 0.99848,
+          "transition": "No_PKD_Terminal"
+        }
+      ]
+    },
+    "ARPKD_Onset_Infant": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "28770003",
+          "display": "Autosomal recessive polycystic kidney disease"
+        }
+      ],
+      "direct_transition": "Acute_Care_Encounter",
+      "assign_to_attribute": "Autosomal Recessive Polycystic Kidney Disease"
+    },
+    "ADPKD_Age_Window": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 30,
+          "standardDeviation": 10
+        }
+      },
+      "unit": "years",
+      "direct_transition": "ADPKD_Onset"
+    },
+    "ADPKD_Onset": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "765330003",
+          "display": "Autosomal dominant polycystic kidney disease"
+        }
+      ],
+      "direct_transition": "PCP_Encounter",
+      "assign_to_attribute": "Autosomal Dominant Polycystic Kidney Disease"
+    },
+    "No_PKD_Terminal": {
+      "type": "Simple",
+      "direct_transition": "Terminal"
+    },
+    "Acute_Care_Encounter": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission"
+        }
+      ],
+      "direct_transition": "PKD_Screening_Labs"
+    },
+    "PCP_Encounter": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "Hypertension_Onset"
+    },
+    "Hypertension_Onset": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "59621000",
+          "display": "Essential hypertension"
+        }
+      ],
+      "direct_transition": "ACEi_Therapy",
+      "assign_to_attribute": "Hypertension"
+    },
+    "ACEi_Therapy": {
+      "type": "MedicationOrder",
+      "direct_transition": "PKD_Screening_Labs",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "29046",
+          "display": "Lisinopril"
+        }
+      ]
+    },
+    "PKD_Screening_Labs": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2160-0",
+          "display": "Creatinine"
+        }
+      ],
+      "direct_transition": "Initialize_CKD_Stage"
+    },
+    "Initialize_CKD_Stage": {
+      "type": "SetAttribute",
+      "attribute": "ckd_stage",
+      "value": 1,
+      "direct_transition": "CKD_Progression"
+    },
+    "CKD_Progression": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 2,
+          "standardDeviation": 1
+        }
+      },
+      "unit": "years",
+      "direct_transition": "CKD_Stage_Advancement"
+    },
+    "CKD_Stage_Advancement": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "Advance_CKD_Stage"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "ESRD_Onset"
+        }
+      ]
+    },
+    "Advance_CKD_Stage": {
+      "type": "SetAttribute",
+      "attribute": "ckd_stage",
+      "value": {
+        "type": "Integer",
+        "range": {
+          "low": 2,
+          "high": 4
+        }
+      },
+      "direct_transition": "CKD_Progression"
+    },
+    "ESRD_Onset": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "46177005",
+          "display": "End-stage renal disease"
+        }
+      ],
+      "direct_transition": "RRT_Choice",
+      "assign_to_attribute": "End Stage Renal Disease"
+    },
+    "RRT_Choice": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "Hemodialysis_Start"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Peritoneal_Dialysis_Start"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Transplant_List"
+        }
+      ]
+    },
+    "Hemodialysis_Start": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "302497006",
+          "display": "Hemodialysis"
+        }
+      ],
+      "direct_transition": "Dialysis_Monitoring"
+    },
+    "Peritoneal_Dialysis_Start": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "14684005",
+          "display": "Peritoneal dialysis"
+        }
+      ],
+      "direct_transition": "Dialysis_Monitoring"
+    },
+    "Transplant_List": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "698306007",
+          "display": "Awaiting kidney transplant"
+        }
+      ],
+      "direct_transition": "Wait_For_Transplant"
+    },
+    "Dialysis_Monitoring": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 0.75,
+          "standardDeviation": 0.25
+        }
+      },
+      "unit": "years",
+      "direct_transition": "Dialysis_Outcome"
+    },
+    "Dialysis_Outcome": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.11,
+          "transition": "Terminal"
+        },
+        {
+          "distribution": 0.89,
+          "transition": "Wait_For_Transplant"
+        }
+      ]
+    },
+    "Wait_For_Transplant": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 1.75,
+          "standardDeviation": 1.25
+        }
+      },
+      "unit": "years",
+      "direct_transition": "Transplant_Outcome"
+    },
+    "Transplant_Outcome": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.99,
+          "transition": "Kidney_Transplant"
+        },
+        {
+          "distribution": 0.01,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Kidney_Transplant": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "70536003",
+          "display": "Kidney transplant"
+        }
+      ],
+      "direct_transition": "Post_Transplant_Followup"
+    },
+    "Post_Transplant_Followup": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 5,
+          "standardDeviation": 3
+        }
+      },
+      "unit": "years",
+      "direct_transition": "Terminal"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    }
+  }
+}

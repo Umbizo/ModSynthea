@@ -1,0 +1,665 @@
+{
+  "name": "b_cell_lymphomas",
+  "remarks": [
+    "This module models B-Cell Non-Hodgkin Lymphomas (NHL), including:",
+    " - Diffuse Large B-Cell Lymphoma (DLBCL)",
+    " - Mantle Cell Lymphoma (MCL)",
+    "It includes realistic disease progression, staging, treatments, and outcomes."
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "Age_Check"
+    },
+    "Age_Check": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 40,
+        "unit": "years"
+      },
+      "direct_transition": "Risk_Assessment"
+    },
+    "Risk_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "Assess risk factors for B-Cell lymphoma development"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "High_Risk_Population",
+          "distribution": 0.15
+        },
+        {
+          "transition": "Standard_Risk_Population",
+          "distribution": 0.85
+        }
+      ]
+    },
+    "High_Risk_Population": {
+      "type": "Simple",
+      "remarks": [
+        "Patients with immunosuppression, autoimmune disease, or family history"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Develop_DLBCL",
+          "distribution": 0.0008
+        },
+        {
+          "transition": "Develop_MCL",
+          "distribution": 0.0002
+        },
+        {
+          "transition": "No_Lymphoma_Outcome",
+          "distribution": 0.999
+        }
+      ]
+    },
+    "Standard_Risk_Population": {
+      "type": "Simple",
+      "remarks": [
+        "General population risk"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Develop_DLBCL",
+          "distribution": 0.0003
+        },
+        {
+          "transition": "Develop_MCL",
+          "distribution": 0.0001
+        },
+        {
+          "transition": "No_Lymphoma_Outcome",
+          "distribution": 0.9996
+        }
+      ]
+    },
+    "Develop_DLBCL": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "118601006",
+          "display": "Diffuse large B-cell lymphoma"
+        }
+      ],
+      "direct_transition": "Set_Lymphoma_Type_DLBCL"
+    },
+    "Develop_MCL": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "74654000",
+          "display": "Mantle cell lymphoma"
+        }
+      ],
+      "direct_transition": "Set_Lymphoma_Type_MCL"
+    },
+    "No_Lymphoma_Outcome": {
+      "type": "Simple",
+      "remarks": [
+        "Patient does not develop lymphoma"
+      ],
+      "direct_transition": "Terminal"
+    },
+    "DLBCL_Initial_Symptoms": {
+      "type": "Simple",
+      "remarks": [
+        "Initial presentation of DLBCL symptoms"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Lymphadenopathy_Symptom",
+          "distribution": 0.85
+        },
+        {
+          "transition": "B_Symptoms_Onset",
+          "distribution": 0.15
+        }
+      ]
+    },
+    "MCL_Initial_Symptoms": {
+      "type": "Simple",
+      "remarks": [
+        "Initial presentation of MCL symptoms"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Lymphadenopathy_Symptom",
+          "distribution": 0.9
+        },
+        {
+          "transition": "GI_Symptoms_Onset",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "Lymphadenopathy_Symptom": {
+      "type": "Symptom",
+      "symptom": "Lymphadenopathy",
+      "cause": "",
+      "probability": 1,
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "Delay_Before_Diagnosis"
+    },
+    "B_Symptoms_Onset": {
+      "type": "Simple",
+      "remarks": [
+        "Constitutional B symptoms"
+      ],
+      "direct_transition": "Fever_Symptom"
+    },
+    "Fever_Symptom": {
+      "type": "Symptom",
+      "symptom": "Fever",
+      "cause": "",
+      "probability": 1,
+      "range": {
+        "low": 1,
+        "high": 3
+      },
+      "direct_transition": "Delay_Before_Diagnosis"
+    },
+    "GI_Symptoms_Onset": {
+      "type": "Symptom",
+      "symptom": "Abdominal pain",
+      "cause": "",
+      "probability": 1,
+      "range": {
+        "low": 1,
+        "high": 2
+      },
+      "direct_transition": "Delay_Before_Diagnosis"
+    },
+    "Delay_Before_Diagnosis": {
+      "type": "Delay",
+      "range": {
+        "low": 4,
+        "high": 16,
+        "unit": "weeks"
+      },
+      "direct_transition": "Initial_Workup"
+    },
+    "Initial_Workup": {
+      "type": "Simple",
+      "remarks": [
+        "Patient seeks medical care for symptoms"
+      ],
+      "direct_transition": "Physical_Exam"
+    },
+    "Physical_Exam": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "lymphadenopathy",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for symptom"
+        }
+      ],
+      "direct_transition": "CBC_Order"
+    },
+    "CBC_Order": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "58410-2",
+          "display": "Complete blood count (CBC) panel"
+        }
+      ],
+      "direct_transition": "LDH_Order"
+    },
+    "LDH_Order": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "14804-9",
+          "display": "Lactate dehydrogenase"
+        }
+      ],
+      "direct_transition": "CT_Scan_Order"
+    },
+    "CT_Scan_Order": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "77477000",
+          "display": "Computerized axial tomography"
+        }
+      ],
+      "direct_transition": "Lymph_Node_Biopsy"
+    },
+    "Lymph_Node_Biopsy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "122548005",
+          "display": "Biopsy of lymph node"
+        }
+      ],
+      "direct_transition": "Pathology_Results"
+    },
+    "Pathology_Results": {
+      "type": "Simple",
+      "remarks": [
+        "Determine specific lymphoma type based on pathology"
+      ],
+      "conditional_transition": [
+        {
+          "transition": "DLBCL_Confirmed",
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "lymphoma_type",
+            "operator": "==",
+            "value": "DLBCL"
+          }
+        },
+        {
+          "transition": "MCL_Confirmed"
+        }
+      ]
+    },
+    "DLBCL_Confirmed": {
+      "type": "Simple",
+      "remarks": [
+        "DLBCL diagnosis confirmed by pathology"
+      ],
+      "direct_transition": "DLBCL_Staging"
+    },
+    "MCL_Confirmed": {
+      "type": "Simple",
+      "remarks": [
+        "MCL diagnosis confirmed by pathology"
+      ],
+      "direct_transition": "MCL_Staging"
+    },
+    "DLBCL_Staging": {
+      "type": "Simple",
+      "remarks": [
+        "Stage DLBCL using Ann Arbor staging"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "DLBCL_Stage_I",
+          "distribution": 0.2
+        },
+        {
+          "transition": "DLBCL_Stage_II",
+          "distribution": 0.25
+        },
+        {
+          "transition": "DLBCL_Stage_III",
+          "distribution": 0.25
+        },
+        {
+          "transition": "DLBCL_Stage_IV",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "MCL_Staging": {
+      "type": "Simple",
+      "remarks": [
+        "Stage MCL - typically advanced at presentation"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "MCL_Stage_I",
+          "distribution": 0.05
+        },
+        {
+          "transition": "MCL_Stage_II",
+          "distribution": 0.15
+        },
+        {
+          "transition": "MCL_Stage_III",
+          "distribution": 0.3
+        },
+        {
+          "transition": "MCL_Stage_IV",
+          "distribution": 0.5
+        }
+      ]
+    },
+    "DLBCL_Stage_I": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "703969005",
+          "display": "Stage I diffuse large B-cell lymphoma"
+        }
+      ],
+      "direct_transition": "DLBCL_Treatment_Planning"
+    },
+    "DLBCL_Stage_II": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "703970006",
+          "display": "Stage II diffuse large B-cell lymphoma"
+        }
+      ],
+      "direct_transition": "DLBCL_Treatment_Planning"
+    },
+    "DLBCL_Stage_III": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "703971005",
+          "display": "Stage III diffuse large B-cell lymphoma"
+        }
+      ],
+      "direct_transition": "DLBCL_Treatment_Planning"
+    },
+    "DLBCL_Stage_IV": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "703972003",
+          "display": "Stage IV diffuse large B-cell lymphoma"
+        }
+      ],
+      "direct_transition": "DLBCL_Treatment_Planning"
+    },
+    "MCL_Stage_I": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "703973008",
+          "display": "Stage I mantle cell lymphoma"
+        }
+      ],
+      "direct_transition": "MCL_Treatment_Planning"
+    },
+    "MCL_Stage_II": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "703974002",
+          "display": "Stage II mantle cell lymphoma"
+        }
+      ],
+      "direct_transition": "MCL_Treatment_Planning"
+    },
+    "MCL_Stage_III": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "703975001",
+          "display": "Stage III mantle cell lymphoma"
+        }
+      ],
+      "direct_transition": "MCL_Treatment_Planning"
+    },
+    "MCL_Stage_IV": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "703976000",
+          "display": "Stage IV mantle cell lymphoma"
+        }
+      ],
+      "direct_transition": "MCL_Treatment_Planning"
+    },
+    "DLBCL_Treatment_Planning": {
+      "type": "Simple",
+      "remarks": [
+        "Plan treatment for DLBCL based on stage and fitness"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "DLBCL_RCHOP_Therapy",
+          "distribution": 0.85
+        },
+        {
+          "transition": "DLBCL_Palliative_Care",
+          "distribution": 0.15
+        }
+      ]
+    },
+    "DLBCL_RCHOP_Therapy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "367336001",
+          "display": "Chemotherapy regimen (R-CHOP)"
+        }
+      ],
+      "direct_transition": "DLBCL_Response_Assessment"
+    },
+    "DLBCL_Palliative_Care": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "103735009",
+          "display": "Palliative care"
+        }
+      ],
+      "direct_transition": "DLBCL_Outcome_Poor"
+    },
+    "DLBCL_Response_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "Assess response to chemotherapy"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "DLBCL_Remission",
+          "distribution": 0.6
+        },
+        {
+          "transition": "DLBCL_Partial_Response",
+          "distribution": 0.25
+        },
+        {
+          "transition": "DLBCL_Refractory",
+          "distribution": 0.15
+        }
+      ]
+    },
+    "DLBCL_Remission": {
+      "type": "ConditionEnd",
+      "remarks": [
+        "Complete remission achieved"
+      ],
+      "direct_transition": "Survivorship"
+    },
+    "DLBCL_Partial_Response": {
+      "type": "Simple",
+      "remarks": [
+        "Residual disease after treatment"
+      ],
+      "direct_transition": "DLBCL_Salvage_Therapy"
+    },
+    "DLBCL_Refractory": {
+      "type": "Simple",
+      "remarks": [
+        "No response to initial therapy"
+      ],
+      "direct_transition": "DLBCL_Salvage_Therapy"
+    },
+    "DLBCL_Salvage_Therapy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "257950002",
+          "display": "Salvage therapy"
+        }
+      ],
+      "direct_transition": "DLBCL_Outcome_Poor"
+    },
+    "DLBCL_Outcome_Poor": {
+      "type": "Simple",
+      "remarks": [
+        "Disease progression or death"
+      ],
+      "direct_transition": "Terminal"
+    },
+    "MCL_Treatment_Planning": {
+      "type": "Simple",
+      "remarks": [
+        "Plan treatment for Mantle Cell Lymphoma"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "MCL_Combination_Chemo",
+          "distribution": 0.7
+        },
+        {
+          "transition": "MCL_Targeted_Therapy",
+          "distribution": 0.2
+        },
+        {
+          "transition": "MCL_Palliative_Care",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "MCL_Combination_Chemo": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "367336001",
+          "display": "Combination chemotherapy"
+        }
+      ],
+      "direct_transition": "MCL_Response_Assessment"
+    },
+    "MCL_Targeted_Therapy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "410942007",
+          "display": "Targeted anticancer therapy"
+        }
+      ],
+      "direct_transition": "MCL_Response_Assessment"
+    },
+    "MCL_Palliative_Care": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "103735009",
+          "display": "Palliative care"
+        }
+      ],
+      "direct_transition": "MCL_Outcome_Poor"
+    },
+    "MCL_Response_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "Assess response in MCL (typically relapsing disease)"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "MCL_Remission",
+          "distribution": 0.4
+        },
+        {
+          "transition": "MCL_Relapsed",
+          "distribution": 0.4
+        },
+        {
+          "transition": "MCL_Refractory",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "MCL_Remission": {
+      "type": "ConditionEnd",
+      "remarks": [
+        "Temporary remission"
+      ],
+      "direct_transition": "MCL_Relapse_Loop"
+    },
+    "MCL_Relapse_Loop": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 36,
+        "unit": "months"
+      },
+      "direct_transition": "MCL_Relapsed"
+    },
+    "MCL_Relapsed": {
+      "type": "Simple",
+      "remarks": [
+        "Disease relapse"
+      ],
+      "direct_transition": "MCL_Salvage_Therapy"
+    },
+    "MCL_Refractory": {
+      "type": "Simple",
+      "remarks": [
+        "Resistant disease"
+      ],
+      "direct_transition": "MCL_Salvage_Therapy"
+    },
+    "MCL_Salvage_Therapy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "385763009",
+          "display": "Salvage chemotherapy"
+        }
+      ],
+      "direct_transition": "MCL_Outcome_Poor"
+    },
+    "MCL_Outcome_Poor": {
+      "type": "Simple",
+      "remarks": [
+        "Progressive disease or death"
+      ],
+      "direct_transition": "Terminal"
+    },
+    "Survivorship": {
+      "type": "Simple",
+      "remarks": [
+        "Patient enters surveillance after remission"
+      ],
+      "direct_transition": "Terminal"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "Set_Lymphoma_Type_DLBCL": {
+      "type": "SetAttribute",
+      "attribute": "lymphoma_type",
+      "value": "DLBCL",
+      "direct_transition": "DLBCL_Initial_Symptoms"
+    },
+    "Set_Lymphoma_Type_MCL": {
+      "type": "SetAttribute",
+      "attribute": "lymphoma_type",
+      "value": "MCL",
+      "direct_transition": "MCL_Initial_Symptoms"
+    }
+  },
+  "gmf_version": 2
+}

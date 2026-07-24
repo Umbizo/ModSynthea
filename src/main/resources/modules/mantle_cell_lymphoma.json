@@ -1,0 +1,2093 @@
+{
+  "name": "Mantle Cell Lymphoma",
+  "remarks": [
+    "This module simulates Mantle Cell Lymphoma (MCL), a rare and aggressive form of non-Hodgkin's lymphoma.",
+    "MCL represents about 6% of all non-Hodgkin's lymphomas and typically affects older adults (median age 60-65).",
+    "The module includes risk factors, symptom progression, diagnostic workup, staging, treatment protocols, and outcomes.",
+    "Treatment approaches include chemotherapy, immunotherapy, targeted therapy, and stem cell transplantation.",
+    "Prognosis varies significantly based on subtype (indolent vs. aggressive) and molecular markers."
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "Age_Guard"
+    },
+    "Age_Guard": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 45,
+        "unit": "years"
+      },
+      "direct_transition": "Risk_Assessment"
+    },
+    "Risk_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "MCL is more common in males (3:1 ratio) and Caucasians.",
+        "Risk factors include immunosuppression, autoimmune diseases, and family history."
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Gender",
+                "operator": "==",
+                "value": "M"
+              },
+              {
+                "condition_type": "Race",
+                "operator": "==",
+                "value": "white"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "transition": "Environmental_Exposure_Check",
+              "distribution": 8e-05
+            },
+            {
+              "transition": "Terminal",
+              "distribution": 0.99992
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Gender",
+            "operator": "==",
+            "value": "F"
+          },
+          "distributions": [
+            {
+              "transition": "Environmental_Exposure_Check",
+              "distribution": 3e-05
+            },
+            {
+              "transition": "Terminal",
+              "distribution": 0.99997
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "transition": "Environmental_Exposure_Check",
+              "distribution": 2e-05
+            },
+            {
+              "transition": "Terminal",
+              "distribution": 0.99998
+            }
+          ]
+        }
+      ]
+    },
+    "Environmental_Exposure_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Develop_MCL",
+          "distribution": 0.3
+        },
+        {
+          "transition": "Terminal",
+          "distribution": 0.7
+        }
+      ]
+    },
+    "Develop_MCL": {
+      "type": "ConditionOnset",
+      "remarks": [
+        "Mantle Cell Lymphoma onset - typically presents with advanced stage disease"
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 443487006,
+          "display": "Mantle cell lymphoma"
+        }
+      ],
+      "assign_to_attribute": "mcl_condition",
+      "direct_transition": "Initialize_Counters"
+    },
+    "Initialize_Counters": {
+      "type": "SetAttribute",
+      "attribute": "hypercvad_cycles",
+      "value": 0,
+      "direct_transition": "Initialize_BR_Counter"
+    },
+    "Initialize_BR_Counter": {
+      "type": "SetAttribute",
+      "attribute": "br_cycles",
+      "value": 0,
+      "direct_transition": "Initialize_RCHOP_Counter"
+    },
+    "Initialize_RCHOP_Counter": {
+      "type": "SetAttribute",
+      "attribute": "rchop_cycles",
+      "value": 0,
+      "direct_transition": "Determine_MCL_Subtype"
+    },
+    "Determine_MCL_Subtype": {
+      "type": "Simple",
+      "remarks": [
+        "MCL has different variants: conventional, blastoid, pleomorphic, and indolent"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Conventional_MCL",
+          "distribution": 0.85
+        },
+        {
+          "transition": "Blastoid_MCL",
+          "distribution": 0.1
+        },
+        {
+          "transition": "Pleomorphic_MCL",
+          "distribution": 0.03
+        },
+        {
+          "transition": "Indolent_MCL",
+          "distribution": 0.02
+        }
+      ]
+    },
+    "Conventional_MCL": {
+      "type": "SetAttribute",
+      "attribute": "mcl_subtype",
+      "value": "conventional",
+      "direct_transition": "Early_Symptom_Onset"
+    },
+    "Blastoid_MCL": {
+      "type": "SetAttribute",
+      "attribute": "mcl_subtype",
+      "value": "blastoid",
+      "direct_transition": "Aggressive_Symptom_Onset"
+    },
+    "Pleomorphic_MCL": {
+      "type": "SetAttribute",
+      "attribute": "mcl_subtype",
+      "value": "pleomorphic",
+      "direct_transition": "Aggressive_Symptom_Onset"
+    },
+    "Indolent_MCL": {
+      "type": "SetAttribute",
+      "attribute": "mcl_subtype",
+      "value": "indolent",
+      "direct_transition": "Minimal_Symptom_Onset"
+    },
+    "Early_Symptom_Onset": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 12,
+        "unit": "months"
+      },
+      "direct_transition": "Fatigue_Symptom"
+    },
+    "Aggressive_Symptom_Onset": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Severe_Fatigue_Symptom"
+    },
+    "Minimal_Symptom_Onset": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 24,
+        "unit": "months"
+      },
+      "direct_transition": "Mild_Fatigue_Symptom"
+    },
+    "Fatigue_Symptom": {
+      "type": "Symptom",
+      "symptom": "Fatigue",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 84229001,
+          "display": "Fatigue"
+        }
+      ],
+      "range": {
+        "low": 50,
+        "high": 80
+      },
+      "direct_transition": "Lymphadenopathy"
+    },
+    "Severe_Fatigue_Symptom": {
+      "type": "Symptom",
+      "symptom": "Fatigue",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 84229001,
+          "display": "Fatigue"
+        }
+      ],
+      "range": {
+        "low": 70,
+        "high": 100
+      },
+      "direct_transition": "Lymphadenopathy"
+    },
+    "Mild_Fatigue_Symptom": {
+      "type": "Symptom",
+      "symptom": "Fatigue",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 84229001,
+          "display": "Fatigue"
+        }
+      ],
+      "range": {
+        "low": 20,
+        "high": 50
+      },
+      "direct_transition": "Lymphadenopathy"
+    },
+    "Lymphadenopathy": {
+      "type": "Symptom",
+      "symptom": "Lymphadenopathy",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 30746006,
+          "display": "Lymphadenopathy"
+        }
+      ],
+      "range": {
+        "low": 60,
+        "high": 90
+      },
+      "direct_transition": "Weight_Loss"
+    },
+    "Weight_Loss": {
+      "type": "Symptom",
+      "symptom": "Weight loss",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 89362005,
+          "display": "Weight loss"
+        }
+      ],
+      "range": {
+        "low": 30,
+        "high": 70
+      },
+      "direct_transition": "Night_Sweats"
+    },
+    "Night_Sweats": {
+      "type": "Symptom",
+      "symptom": "Night sweats",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 42984000,
+          "display": "Night sweats"
+        }
+      ],
+      "range": {
+        "low": 40,
+        "high": 80
+      },
+      "direct_transition": "Splenomegaly_Check"
+    },
+    "Splenomegaly_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Splenomegaly",
+          "distribution": 0.75
+        },
+        {
+          "transition": "Initial_Medical_Encounter",
+          "distribution": 0.25
+        }
+      ]
+    },
+    "Splenomegaly": {
+      "type": "Symptom",
+      "symptom": "Splenomegaly",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 16294009,
+          "display": "Splenomegaly"
+        }
+      ],
+      "range": {
+        "low": 50,
+        "high": 85
+      },
+      "direct_transition": "Initial_Medical_Encounter"
+    },
+    "Initial_Medical_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "mcl_condition",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 185347001,
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "Initial_CBC"
+    },
+    "Initial_CBC": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "57021-8",
+          "display": "CBC W Auto Differential panel - Blood"
+        }
+      ],
+      "duration": {
+        "low": 15,
+        "high": 30,
+        "unit": "minutes"
+      },
+      "direct_transition": "CBC_Results"
+    },
+    "CBC_Results": {
+      "type": "MultiObservation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "57021-8",
+          "display": "CBC W Auto Differential panel - Blood"
+        }
+      ],
+      "observations": [
+        {
+          "category": "laboratory",
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "6690-2",
+              "display": "Leukocytes [#/volume] in Blood by Automated count"
+            }
+          ],
+          "range": {
+            "low": 12.0,
+            "high": 50.0
+          },
+          "unit": "10*3/uL"
+        },
+        {
+          "category": "laboratory",
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "789-8",
+              "display": "Erythrocytes [#/volume] in Blood by Automated count"
+            }
+          ],
+          "range": {
+            "low": 3.5,
+            "high": 4.2
+          },
+          "unit": "10*6/uL"
+        },
+        {
+          "category": "laboratory",
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "777-3",
+              "display": "Platelets [#/volume] in Blood by Automated count"
+            }
+          ],
+          "range": {
+            "low": 100.0,
+            "high": 300.0
+          },
+          "unit": "10*3/uL"
+        }
+      ],
+      "direct_transition": "Flow_Cytometry_Referral"
+    },
+    "Flow_Cytometry_Referral": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "708058007",
+          "display": "Flow cytometry"
+        }
+      ],
+      "duration": {
+        "low": 2,
+        "high": 4,
+        "unit": "hours"
+      },
+      "direct_transition": "Flow_Cytometry_Results"
+    },
+    "Flow_Cytometry_Results": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "33747-0",
+          "display": "Immunophenotyping by Flow cytometry (FC)"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": 116746008,
+        "display": "CD5+ B-cell lymphocytes present"
+      },
+      "direct_transition": "End_Initial_Encounter"
+    },
+    "End_Initial_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Hematology_Referral_Delay"
+    },
+    "Hematology_Referral_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 10,
+        "unit": "days"
+      },
+      "direct_transition": "Hematology_Encounter"
+    },
+    "Hematology_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "mcl_condition",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 185389009,
+          "display": "Follow-up encounter"
+        }
+      ],
+      "direct_transition": "Lymph_Node_Biopsy"
+    },
+    "Lymph_Node_Biopsy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "21911005",
+          "display": "Biopsy of lymph node"
+        }
+      ],
+      "duration": {
+        "low": 30,
+        "high": 60,
+        "unit": "minutes"
+      },
+      "direct_transition": "Pathology_Analysis"
+    },
+    "Pathology_Analysis": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 117617002,
+          "display": "Immunohistochemistry [procedure]"
+        }
+      ],
+      "duration": {
+        "low": 3,
+        "high": 7,
+        "unit": "days"
+      },
+      "direct_transition": "Immunohistochemistry_Results"
+    },
+    "Immunohistochemistry_Results": {
+      "type": "MultiObservation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "33743-9",
+          "display": "Immunohistochemistry study"
+        }
+      ],
+      "observations": [
+        {
+          "category": "laboratory",
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "29603-8",
+              "display": "CD5 Ag [Presence] in Tissue by Immune stain"
+            }
+          ],
+          "value_code": {
+            "system": "SNOMED-CT",
+            "code": 10828004,
+            "display": "Positive"
+          }
+        },
+        {
+          "category": "laboratory",
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "29617-8",
+              "display": "CD23 Ag [Presence] in Tissue by Immune stain"
+            }
+          ],
+          "value_code": {
+            "system": "SNOMED-CT",
+            "code": 260385009,
+            "display": "Negative"
+          }
+        },
+        {
+          "category": "laboratory",
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "33749-6",
+              "display": "Cyclin D1 [Presence] in Tissue by Immunohistochemistry"
+            }
+          ],
+          "value_code": {
+            "system": "SNOMED-CT",
+            "code": 10828004,
+            "display": "Positive"
+          }
+        }
+      ],
+      "direct_transition": "FISH_Analysis"
+    },
+    "FISH_Analysis": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 426329006,
+          "display": "Fluorescence in situ hybridization"
+        }
+      ],
+      "duration": {
+        "low": 2,
+        "high": 4,
+        "unit": "days"
+      },
+      "direct_transition": "FISH_Results"
+    },
+    "FISH_Results": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "77037-0",
+          "display": "t(11;14)(q13;q32)(CCND1,IGH) fusion transcript in Blood or Tissue by FISH"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": 10828004,
+        "display": "Positive for t(11;14) translocation"
+      },
+      "direct_transition": "End_Hematology_Encounter"
+    },
+    "End_Hematology_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Staging_Workup_Delay"
+    },
+    "Staging_Workup_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 5,
+        "high": 14,
+        "unit": "days"
+      },
+      "direct_transition": "Staging_Encounter"
+    },
+    "Staging_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "mcl_condition",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 185389009,
+          "display": "Follow-up encounter"
+        }
+      ],
+      "direct_transition": "CT_Chest_Abdomen_Pelvis"
+    },
+    "CT_Chest_Abdomen_Pelvis": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 418891003,
+          "display": "CT of chest and abdomen and pelvis"
+        }
+      ],
+      "duration": {
+        "low": 30,
+        "high": 45,
+        "unit": "minutes"
+      },
+      "direct_transition": "Bone_Marrow_Biopsy"
+    },
+    "Bone_Marrow_Biopsy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 396487001,
+          "display": "Bone marrow biopsy"
+        }
+      ],
+      "duration": {
+        "low": 20,
+        "high": 40,
+        "unit": "minutes"
+      },
+      "direct_transition": "LDH_Test"
+    },
+    "LDH_Test": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2532-0",
+          "display": "Lactate dehydrogenase [Enzymatic activity/volume] in Serum or Plasma"
+        }
+      ],
+      "direct_transition": "LDH_Results"
+    },
+    "LDH_Results": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2532-0",
+          "display": "Lactate dehydrogenase [Enzymatic activity/volume] in Serum or Plasma"
+        }
+      ],
+      "range": {
+        "low": 250,
+        "high": 800
+      },
+      "unit": "U/L",
+      "direct_transition": "Beta2_Microglobulin"
+    },
+    "Beta2_Microglobulin": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "1952-1",
+          "display": "Beta 2 microglobulin [Mass/volume] in Serum or Plasma"
+        }
+      ],
+      "direct_transition": "Beta2_Microglobulin_Results"
+    },
+    "Beta2_Microglobulin_Results": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "1952-1",
+          "display": "Beta 2 microglobulin [Mass/volume] in Serum or Plasma"
+        }
+      ],
+      "range": {
+        "low": 2.5,
+        "high": 8.0
+      },
+      "unit": "mg/L",
+      "direct_transition": "Determine_Stage"
+    },
+    "Determine_Stage": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Stage_I",
+          "distribution": 0.05
+        },
+        {
+          "transition": "Stage_II",
+          "distribution": 0.15
+        },
+        {
+          "transition": "Stage_III",
+          "distribution": 0.3
+        },
+        {
+          "transition": "Stage_IV",
+          "distribution": 0.5
+        }
+      ]
+    },
+    "Stage_I": {
+      "type": "Observation",
+      "category": "survey",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 30440004,
+          "display": "Stage I lymphoma"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": 30440004,
+        "display": "Stage I"
+      },
+      "direct_transition": "End_Staging_Encounter"
+    },
+    "Stage_II": {
+      "type": "Observation",
+      "category": "survey",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 76422004,
+          "display": "Stage II lymphoma"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": 76422004,
+        "display": "Stage II"
+      },
+      "direct_transition": "End_Staging_Encounter"
+    },
+    "Stage_III": {
+      "type": "Observation",
+      "category": "survey",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 56944001,
+          "display": "Stage III lymphoma"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": 56944001,
+        "display": "Stage III"
+      },
+      "direct_transition": "End_Staging_Encounter"
+    },
+    "Stage_IV": {
+      "type": "Observation",
+      "category": "survey",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 66445009,
+          "display": "Stage IV lymphoma"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": 66445009,
+        "display": "Stage IV"
+      },
+      "direct_transition": "End_Staging_Encounter"
+    },
+    "End_Staging_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Treatment_Planning_Delay"
+    },
+    "Treatment_Planning_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 2,
+        "unit": "weeks"
+      },
+      "direct_transition": "Treatment_Decision"
+    },
+    "Treatment_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "Treatment approach depends on age, performance status, stage, and subtype"
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Age",
+                "operator": "<",
+                "quantity": 65,
+                "unit": "years"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "mcl_subtype",
+                "operator": "!=",
+                "value": "indolent"
+              }
+            ]
+          },
+          "transition": "Intensive_Treatment_Path"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "mcl_subtype",
+            "operator": "==",
+            "value": "indolent"
+          },
+          "transition": "Watch_and_Wait"
+        },
+        {
+          "transition": "Standard_Treatment_Path"
+        }
+      ]
+    },
+    "Intensive_Treatment_Path": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "HyperCVAD_Treatment",
+          "distribution": 0.6
+        },
+        {
+          "transition": "BR_Treatment",
+          "distribution": 0.4
+        }
+      ]
+    },
+    "Standard_Treatment_Path": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "BR_Treatment",
+          "distribution": 0.5
+        },
+        {
+          "transition": "R_CHOP_Treatment",
+          "distribution": 0.3
+        },
+        {
+          "transition": "Ibrutinib_Treatment",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "Watch_and_Wait": {
+      "type": "Simple",
+      "direct_transition": "Monitor_Disease_Progression"
+    },
+    "HyperCVAD_Treatment": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "mcl_condition",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "25461003",
+          "display": "Chemotherapy treatment plan (regime/therapy)"
+        }
+      ],
+      "direct_transition": "HyperCVAD_Cycle_1"
+    },
+    "HyperCVAD_Cycle_1": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "reason": "mcl_condition",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 32485007,
+          "display": "Hospital admission"
+        }
+      ],
+      "direct_transition": "Cyclophosphamide_Admin"
+    },
+    "Cyclophosphamide_Admin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "3002",
+          "display": "cyclophosphamide"
+        }
+      ],
+      "direct_transition": "Vincristine_Admin"
+    },
+    "Vincristine_Admin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "11202",
+          "display": "vincristine"
+        }
+      ],
+      "direct_transition": "Doxorubicin_Admin"
+    },
+    "Doxorubicin_Admin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "3639",
+          "display": "Doxorubicin"
+        }
+      ],
+      "direct_transition": "Dexamethasone_Admin"
+    },
+    "Dexamethasone_Admin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "3264",
+          "display": "Dexamethasone"
+        }
+      ],
+      "direct_transition": "Rituximab_Admin"
+    },
+    "Rituximab_Admin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "121191",
+          "display": "Rituximab"
+        }
+      ],
+      "direct_transition": "End_HyperCVAD_Cycle"
+    },
+    "End_HyperCVAD_Cycle": {
+      "type": "EncounterEnd",
+      "direct_transition": "HyperCVAD_Recovery"
+    },
+    "HyperCVAD_Recovery": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 3,
+        "unit": "weeks"
+      },
+      "direct_transition": "Check_HyperCVAD_Cycles"
+    },
+    "Check_HyperCVAD_Cycles": {
+      "type": "Counter",
+      "attribute": "hypercvad_cycles",
+      "action": "increment",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "hypercvad_cycles",
+            "operator": "<",
+            "value": 6
+          },
+          "transition": "HyperCVAD_Cycle_1"
+        },
+        {
+          "transition": "Response_Assessment"
+        }
+      ]
+    },
+    "BR_Treatment": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "mcl_condition",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "183616001",
+          "display": "Chemotherapy treatment plan (regime/therapy)"
+        }
+      ],
+      "direct_transition": "BR_Cycle_1"
+    },
+    "BR_Cycle_1": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "mcl_condition",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 185347001,
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "Bendamustine_Admin"
+    },
+    "Bendamustine_Admin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "134547",
+          "display": "bendamustine"
+        }
+      ],
+      "direct_transition": "BR_Rituximab_Admin"
+    },
+    "BR_Rituximab_Admin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "121191",
+          "display": "Rituximab"
+        }
+      ],
+      "direct_transition": "End_BR_Cycle"
+    },
+    "End_BR_Cycle": {
+      "type": "EncounterEnd",
+      "direct_transition": "BR_Recovery"
+    },
+    "BR_Recovery": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 4,
+        "unit": "weeks"
+      },
+      "direct_transition": "Check_BR_Cycles"
+    },
+    "Check_BR_Cycles": {
+      "type": "Counter",
+      "attribute": "br_cycles",
+      "action": "increment",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "br_cycles",
+            "operator": "<",
+            "value": 6
+          },
+          "transition": "BR_Cycle_1"
+        },
+        {
+          "transition": "Response_Assessment"
+        }
+      ]
+    },
+    "R_CHOP_Treatment": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "mcl_condition",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "183616001",
+          "display": "Chemotherapy treatment plan (regime/therapy)"
+        }
+      ],
+      "direct_transition": "RCHOP_Cycle_1"
+    },
+    "RCHOP_Cycle_1": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "mcl_condition",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 185347001,
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "RCHOP_Rituximab_Admin"
+    },
+    "RCHOP_Rituximab_Admin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "121191",
+          "display": "Rituximab"
+        }
+      ],
+      "direct_transition": "RCHOP_Cyclophosphamide_Admin"
+    },
+    "RCHOP_Cyclophosphamide_Admin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "3002",
+          "display": "cyclophosphamide"
+        }
+      ],
+      "direct_transition": "RCHOP_Doxorubicin_Admin"
+    },
+    "RCHOP_Doxorubicin_Admin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "3639",
+          "display": "Doxorubicin"
+        }
+      ],
+      "direct_transition": "RCHOP_Vincristine_Admin"
+    },
+    "RCHOP_Vincristine_Admin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "11202",
+          "display": "vincristine"
+        }
+      ],
+      "direct_transition": "Prednisone_Admin"
+    },
+    "Prednisone_Admin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "8640",
+          "display": "Prednisone"
+        }
+      ],
+      "direct_transition": "End_RCHOP_Cycle"
+    },
+    "End_RCHOP_Cycle": {
+      "type": "EncounterEnd",
+      "direct_transition": "RCHOP_Recovery"
+    },
+    "RCHOP_Recovery": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 3,
+        "unit": "weeks"
+      },
+      "direct_transition": "Check_RCHOP_Cycles"
+    },
+    "Check_RCHOP_Cycles": {
+      "type": "Counter",
+      "attribute": "rchop_cycles",
+      "action": "increment",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "rchop_cycles",
+            "operator": "<",
+            "value": 6
+          },
+          "transition": "RCHOP_Cycle_1"
+        },
+        {
+          "transition": "Response_Assessment"
+        }
+      ]
+    },
+    "Ibrutinib_Treatment": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "mcl_condition",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "183616001",
+          "display": "Targeted therapy treatment plan"
+        }
+      ],
+      "direct_transition": "Start_Ibrutinib"
+    },
+    "Start_Ibrutinib": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1442981",
+          "display": "Ibrutinib"
+        }
+      ],
+      "direct_transition": "Ibrutinib_Monitoring"
+    },
+    "Ibrutinib_Monitoring": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 3,
+        "unit": "months"
+      },
+      "direct_transition": "Response_Assessment"
+    },
+    "Consider_Stem_Cell_Transplant": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Age",
+                "operator": "<",
+                "quantity": 70
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "mcl_subtype",
+                "operator": "!=",
+                "value": "indolent"
+              }
+            ]
+          },
+          "transition": "Autologous_SCT"
+        },
+        {
+          "transition": "Maintenance_Therapy"
+        }
+      ]
+    },
+    "Autologous_SCT": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 23719005,
+          "display": "Autologous bone marrow transplantation"
+        }
+      ],
+      "duration": {
+        "low": 3,
+        "high": 6,
+        "unit": "weeks"
+      },
+      "direct_transition": "Post_Transplant_Recovery"
+    },
+    "Post_Transplant_Recovery": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Response_Assessment"
+    },
+    "Maintenance_Therapy": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "121191",
+          "display": "Rituximab"
+        }
+      ],
+      "direct_transition": "Response_Assessment"
+    },
+    "Response_Assessment": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "mcl_condition",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 185389009,
+          "display": "Follow-up encounter"
+        }
+      ],
+      "direct_transition": "Response_Imaging"
+    },
+    "Response_Imaging": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 418891003,
+          "display": "CT of chest and abdomen and pelvis"
+        }
+      ],
+      "duration": {
+        "low": 30,
+        "high": 45,
+        "unit": "minutes"
+      },
+      "direct_transition": "Response_Labs"
+    },
+    "Response_Labs": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "57021-8",
+          "display": "CBC W Auto Differential panel - Blood"
+        }
+      ],
+      "direct_transition": "Determine_Response"
+    },
+    "Determine_Response": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Complete_Response",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Partial_Response",
+          "distribution": 0.35
+        },
+        {
+          "transition": "Stable_Disease",
+          "distribution": 0.15
+        },
+        {
+          "transition": "Progressive_Disease",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "Complete_Response": {
+      "type": "Observation",
+      "category": "survey",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 399056007,
+          "display": "Complete response to treatment"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": 399056007,
+        "display": "Complete response"
+      },
+      "direct_transition": "End_Response_Assessment"
+    },
+    "Partial_Response": {
+      "type": "Observation",
+      "category": "survey",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 399204005,
+          "display": "Partial response to treatment"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": 399204005,
+        "display": "Partial response"
+      },
+      "direct_transition": "End_Response_Assessment"
+    },
+    "Stable_Disease": {
+      "type": "Observation",
+      "category": "survey",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 58158008,
+          "display": "Stable disease"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": 58158008,
+        "display": "Stable disease"
+      },
+      "direct_transition": "End_Response_Assessment"
+    },
+    "Progressive_Disease": {
+      "type": "Observation",
+      "category": "survey",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 419835002,
+          "display": "Progression of Tumor"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": 419835002,
+        "display": "Progression of Tumor"
+      },
+      "direct_transition": "End_Response_Assessment"
+    },
+    "End_Response_Assessment": {
+      "type": "EncounterEnd",
+      "direct_transition": "Follow_Up_Period"
+    },
+    "Follow_Up_Period": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "PriorState",
+                "name": "Complete_Response"
+              },
+              {
+                "condition_type": "PriorState",
+                "name": "Partial_Response"
+              }
+            ]
+          },
+          "transition": "Remission_Monitoring"
+        },
+        {
+          "condition": {
+            "condition_type": "PriorState",
+            "name": "Progressive_Disease"
+          },
+          "transition": "Second_Line_Treatment"
+        },
+        {
+          "transition": "Continue_Current_Treatment"
+        }
+      ]
+    },
+    "Remission_Monitoring": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Surveillance_Visit"
+    },
+    "Surveillance_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "mcl_condition",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 185389009,
+          "display": "Follow-up encounter"
+        }
+      ],
+      "direct_transition": "Surveillance_CBC"
+    },
+    "Surveillance_CBC": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "57021-8",
+          "display": "CBC W Auto Differential panel - Blood"
+        }
+      ],
+      "direct_transition": "Check_Relapse"
+    },
+    "Check_Relapse": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Relapse_Detected",
+          "distribution": 0.15
+        },
+        {
+          "transition": "Continued_Remission",
+          "distribution": 0.85
+        }
+      ]
+    },
+    "Relapse_Detected": {
+      "type": "Observation",
+      "category": "survey",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 263855007,
+          "display": "Relapse phase"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": 25173007,
+        "display": "Recurrent neoplasm"
+      },
+      "direct_transition": "End_Surveillance_Visit_Relapse"
+    },
+    "Continued_Remission": {
+      "type": "Observation",
+      "category": "survey",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "260415000",
+          "display": "Not detected"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": "1259237005",
+        "display": "Recurrent malignant neoplasm"
+      },
+      "direct_transition": "End_Surveillance_Visit"
+    },
+    "End_Surveillance_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Long_Term_Surveillance"
+    },
+    "End_Surveillance_Visit_Relapse": {
+      "type": "EncounterEnd",
+      "direct_transition": "Second_Line_Treatment"
+    },
+    "Long_Term_Surveillance": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 12,
+        "unit": "months"
+      },
+      "direct_transition": "Long_Term_Outcome"
+    },
+    "Long_Term_Outcome": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Late_Relapse",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Secondary_Malignancy_Check",
+          "distribution": 0.05
+        },
+        {
+          "transition": "Continued_Long_Term_Remission",
+          "distribution": 0.75
+        }
+      ]
+    },
+    "Late_Relapse": {
+      "type": "Simple",
+      "direct_transition": "Second_Line_Treatment"
+    },
+    "Secondary_Malignancy_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Secondary_Malignancy",
+          "distribution": 0.3
+        },
+        {
+          "transition": "Continued_Long_Term_Remission",
+          "distribution": 0.7
+        }
+      ]
+    },
+    "Secondary_Malignancy": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 363346000,
+          "display": "Malignant neoplastic disease"
+        }
+      ],
+      "direct_transition": "Continued_Long_Term_Remission"
+    },
+    "Continued_Long_Term_Remission": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 3,
+        "unit": "years"
+      },
+      "direct_transition": "Long_Term_Surveillance"
+    },
+    "Second_Line_Treatment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "CAR_T_Therapy",
+          "distribution": 0.25
+        },
+        {
+          "transition": "BTK_Inhibitor_Therapy",
+          "distribution": 0.35
+        },
+        {
+          "transition": "Venetoclax_Treatment",
+          "distribution": 0.25
+        },
+        {
+          "transition": "Allogeneic_SCT",
+          "distribution": 0.15
+        }
+      ]
+    },
+    "CAR_T_Therapy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 1156961008,
+          "display": "Chimeric antigen receptor T-cell immunotherapy (procedure)"
+        }
+      ],
+      "duration": {
+        "low": 4,
+        "high": 8,
+        "unit": "weeks"
+      },
+      "direct_transition": "CAR_T_Recovery"
+    },
+    "CAR_T_Recovery": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Second_Line_Response_Assessment"
+    },
+    "BTK_Inhibitor_Therapy": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1986808",
+          "display": "acalabrutinib"
+        }
+      ],
+      "direct_transition": "BTK_Inhibitor_Monitoring"
+    },
+    "BTK_Inhibitor_Monitoring": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 3,
+        "unit": "months"
+      },
+      "direct_transition": "Second_Line_Response_Assessment"
+    },
+    "Venetoclax_Treatment": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1747556",
+          "display": "venetoclax"
+        }
+      ],
+      "direct_transition": "Venetoclax_Monitoring"
+    },
+    "Venetoclax_Monitoring": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 3,
+        "unit": "months"
+      },
+      "direct_transition": "Second_Line_Response_Assessment"
+    },
+    "Allogeneic_SCT": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "58390007",
+          "display": "Allogeneic bone marrow transplantation"
+        }
+      ],
+      "duration": {
+        "low": 4,
+        "high": 8,
+        "unit": "weeks"
+      },
+      "direct_transition": "Allo_SCT_Recovery"
+    },
+    "Allo_SCT_Recovery": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 12,
+        "unit": "months"
+      },
+      "direct_transition": "Second_Line_Response_Assessment"
+    },
+    "Second_Line_Response_Assessment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Second_Line_Response",
+          "distribution": 0.6
+        },
+        {
+          "transition": "Refractory_Disease",
+          "distribution": 0.4
+        }
+      ]
+    },
+    "Second_Line_Response": {
+      "type": "Observation",
+      "category": "survey",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 182840001,
+          "display": "Response to treatment"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": 182840001,
+        "display": "Response to second-line treatment"
+      },
+      "direct_transition": "Second_Remission_Period"
+    },
+    "Refractory_Disease": {
+      "type": "Observation",
+      "category": "survey",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 1251565009,
+          "display": "Refractory disease"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": 1251565009,
+        "display": "Refractory malignant neoplastic disease (disorder)"
+      },
+      "direct_transition": "Palliative_Care"
+    },
+    "Second_Remission_Period": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 3,
+        "unit": "years"
+      },
+      "direct_transition": "Second_Remission_Outcome"
+    },
+    "Second_Remission_Outcome": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Second_Relapse",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Durable_Second_Remission",
+          "distribution": 0.6
+        }
+      ]
+    },
+    "Second_Relapse": {
+      "type": "Simple",
+      "direct_transition": "Third_Line_Treatment"
+    },
+    "Durable_Second_Remission": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 5,
+        "unit": "years"
+      },
+      "direct_transition": "Long_Term_Surveillance"
+    },
+    "Third_Line_Treatment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Clinical_Trial_Treatment",
+          "distribution": 0.3
+        },
+        {
+          "transition": "Salvage_Chemotherapy",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Palliative_Care",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "Clinical_Trial_Treatment": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "mcl_condition",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "183616001",
+          "display": "Clinical trial treatment plan"
+        }
+      ],
+      "direct_transition": "Clinical_Trial_Monitoring"
+    },
+    "Clinical_Trial_Monitoring": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 18,
+        "unit": "months"
+      },
+      "direct_transition": "Clinical_Trial_Outcome"
+    },
+    "Clinical_Trial_Outcome": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Clinical_Trial_Response",
+          "distribution": 0.35
+        },
+        {
+          "transition": "Clinical_Trial_Failure",
+          "distribution": 0.65
+        }
+      ]
+    },
+    "Clinical_Trial_Response": {
+      "type": "Simple",
+      "direct_transition": "Extended_Remission"
+    },
+    "Clinical_Trial_Failure": {
+      "type": "Simple",
+      "direct_transition": "Palliative_Care"
+    },
+    "Salvage_Chemotherapy": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "mcl_condition",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "183616001",
+          "display": "Salvage chemotherapy plan"
+        }
+      ],
+      "direct_transition": "Salvage_Treatment_Period"
+    },
+    "Salvage_Treatment_Period": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 9,
+        "unit": "months"
+      },
+      "direct_transition": "Salvage_Outcome"
+    },
+    "Salvage_Outcome": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Salvage_Response",
+          "distribution": 0.25
+        },
+        {
+          "transition": "Palliative_Care",
+          "distribution": 0.75
+        }
+      ]
+    },
+    "Salvage_Response": {
+      "type": "Simple",
+      "direct_transition": "Extended_Remission"
+    },
+    "Extended_Remission": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 2,
+        "unit": "years"
+      },
+      "direct_transition": "Late_Stage_Outcome"
+    },
+    "Late_Stage_Outcome": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Final_Relapse",
+          "distribution": 0.7
+        },
+        {
+          "transition": "Long_Term_Control",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "Final_Relapse": {
+      "type": "Simple",
+      "direct_transition": "Palliative_Care"
+    },
+    "Long_Term_Control": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 10,
+        "unit": "years"
+      },
+      "direct_transition": "Elderly_Complications"
+    },
+    "Elderly_Complications": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Age_Related_Death",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Secondary_Cancer_Death",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Treatment_Related_Death",
+          "distribution": 0.15
+        },
+        {
+          "transition": "Continue_Long_Term_Control",
+          "distribution": 0.25
+        }
+      ]
+    },
+    "Continue_Long_Term_Control": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 5,
+        "unit": "years"
+      },
+      "direct_transition": "Elderly_Complications"
+    },
+    "Palliative_Care": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "mcl_condition",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "713058002",
+          "display": "End of life care planning"
+        }
+      ],
+      "direct_transition": "Palliative_Symptom_Management"
+    },
+    "Palliative_Symptom_Management": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 12,
+        "unit": "months"
+      },
+      "direct_transition": "End_of_Life_Care"
+    },
+    "End_of_Life_Care": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "mcl_condition",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "182964004",
+          "display": "Terminal care encounter"
+        }
+      ],
+      "direct_transition": "MCL_Death"
+    },
+    "MCL_Death": {
+      "type": "Death",
+      "direct_transition": "Terminal",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "74654000",
+          "display": "Mantle cell lymphoma"
+        }
+      ]
+    },
+    "Age_Related_Death": {
+      "type": "Death",
+      "direct_transition": "Terminal",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 419620001,
+          "display": "Death"
+        }
+      ]
+    },
+    "Secondary_Cancer_Death": {
+      "type": "Death",
+      "direct_transition": "Terminal",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 363346000,
+          "display": "Malignant neoplastic disease"
+        }
+      ]
+    },
+    "Treatment_Related_Death": {
+      "type": "Death",
+      "direct_transition": "Terminal",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 419620001,
+          "display": "Death"
+        }
+      ]
+    },
+    "Continue_Current_Treatment": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Response_Assessment"
+    },
+    "Monitor_Disease_Progression": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 12,
+        "unit": "months"
+      },
+      "direct_transition": "Indolent_Progression_Check"
+    },
+    "Indolent_Progression_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Indolent_Progression",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Continued_Indolent_Course",
+          "distribution": 0.8
+        }
+      ]
+    },
+    "Indolent_Progression": {
+      "type": "Simple",
+      "direct_transition": "BR_Treatment"
+    },
+    "Continued_Indolent_Course": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 2,
+        "unit": "years"
+      },
+      "direct_transition": "Monitor_Disease_Progression"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    }
+  },
+  "gmf_version": 2
+}

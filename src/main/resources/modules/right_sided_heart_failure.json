@@ -1,0 +1,916 @@
+{
+  "name": "Right-Sided Heart Failure - Claims Optimized",
+  "gmf_version": 1,
+  "remarks": [
+    "Claims-optimized right-sided heart failure module",
+    "Enhanced ICU utilization and mortality modeling",
+    "All major billable activities occur within encounters",
+    "Improved BFD/CCW claim generation realism"
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "CheckRiskFactors"
+    },
+    "CheckRiskFactors": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "And",
+        "conditions": [
+          {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 50,
+            "unit": "years"
+          },
+          {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Active Condition",
+                "codes": [
+                  {
+                    "system": "SNOMED-CT",
+                    "code": "13645005",
+                    "display": "Chronic obstructive lung disease (disorder)"
+                  }
+                ]
+              },
+              {
+                "condition_type": "Active Condition",
+                "codes": [
+                  {
+                    "system": "SNOMED-CT",
+                    "code": "70995007",
+                    "display": "Pulmonary hypertension (disorder)"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "direct_transition": "Initial_Cardiology_Encounter"
+    },
+    "Initial_Cardiology_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for cardiovascular examination"
+        }
+      ],
+      "direct_transition": "HeartFailure_Onset"
+    },
+    "HeartFailure_Onset": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "right_hf",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "10335000",
+          "display": "Chronic right sided heart failure"
+        },
+        {
+          "system": "ICD-10-CM",
+          "code": "I50.810",
+          "display": "Right heart failure, unspecified"
+        }
+      ],
+      "direct_transition": "Dyspnea_Symptom"
+    },
+    "Dyspnea_Symptom": {
+      "type": "Symptom",
+      "symptom": "Dyspnea",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "267036007",
+          "display": "Dyspnea"
+        }
+      ],
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "Peripheral_Edema"
+    },
+    "Peripheral_Edema": {
+      "type": "Symptom",
+      "symptom": "Peripheral edema",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "271809000",
+          "display": "Edema"
+        }
+      ],
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "JVD_Observation"
+    },
+    "JVD_Observation": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "271653008",
+          "display": "Jugular venous distension"
+        }
+      ],
+      "value": {
+        "type": "String",
+        "value": "Present"
+      },
+      "direct_transition": "Echo_Procedure"
+    },
+    "Echo_Procedure": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "93306",
+          "display": "Transthoracic echocardiography"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "Chest_Xray"
+    },
+    "Chest_Xray": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "71046",
+          "display": "Chest x-ray 2 views"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "BNP_Observation"
+    },
+    "BNP_Observation": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "pg/mL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "33762-6",
+          "display": "BNP"
+        }
+      ],
+      "value": {
+        "type": "Range",
+        "low": 200,
+        "high": 1800,
+        "unit": "pg/mL"
+      },
+      "direct_transition": "CMP_Report"
+    },
+    "CMP_Report": {
+      "type": "DiagnosticReport",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "24323-8",
+          "display": "Comprehensive metabolic panel"
+        }
+      ],
+      "observations": [
+        {
+          "category": "laboratory",
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "3094-0",
+              "display": "Blood urea nitrogen"
+            }
+          ],
+          "unit": "mg/dL",
+          "range": {
+            "low": 15,
+            "high": 45
+          }
+        }
+      ],
+      "direct_transition": "CBC_Report"
+    },
+    "CBC_Report": {
+      "type": "DiagnosticReport",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "58410-2",
+          "display": "CBC panel"
+        }
+      ],
+      "observations": [
+        {
+          "category": "laboratory",
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "718-7",
+              "display": "Hemoglobin"
+            }
+          ],
+          "unit": "g/dL",
+          "range": {
+            "low": 10,
+            "high": 15
+          }
+        }
+      ],
+      "direct_transition": "Medication_Furosemide"
+    },
+    "Medication_Furosemide": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "313988",
+          "display": "furosemide 40 MG Oral Tablet"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "Medication_Furosemide_Supply_Delay",
+      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx"
+    },
+    "Medication_Sildenafil": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "577033",
+          "display": "Sildenafil 20 MG Oral Tablet"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "Medication_Sildenafil_Supply_Delay",
+      "assign_to_attribute": "sildenafil_20_mg_oral_tablet_rx"
+    },
+    "Medication_Bosentan": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "349253",
+          "display": "bosentan 62.5 MG Oral Tablet"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "Medication_Bosentan_Supply_Delay",
+      "assign_to_attribute": "bosentan_625_mg_oral_tablet_rx"
+    },
+    "Initial_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Maintenance_Loop"
+    },
+    "Maintenance_Loop": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 90,
+        "unit": "days"
+      },
+      "distributed_transition": [
+        {
+          "distribution": 0.1,
+          "transition": "Emergency_Decompensation"
+        },
+        {
+          "distribution": 0.89,
+          "transition": "Routine_Followup"
+        },
+        {
+          "distribution": 0.01,
+          "transition": "HF_Death"
+        }
+      ]
+    },
+    "Routine_Followup": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "right_hf",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for cardiovascular examination"
+        }
+      ],
+      "direct_transition": "Routine_Echo"
+    },
+    "Routine_Echo": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "93306",
+          "display": "Transthoracic echocardiography"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "Routine_BNP"
+    },
+    "Routine_BNP": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "pg/mL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "33762-6",
+          "display": "BNP"
+        }
+      ],
+      "value": {
+        "type": "Range",
+        "low": 150,
+        "high": 1200,
+        "unit": "pg/mL"
+      },
+      "direct_transition": "Home_Oxygen_Assessment"
+    },
+    "Home_Oxygen_Assessment": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "371908008",
+          "display": "Oxygen therapy"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "Routine_Encounter_End"
+    },
+    "Routine_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Maintenance_Loop"
+    },
+    "Emergency_Decompensation": {
+      "type": "Encounter",
+      "encounter_class": "emergency",
+      "reason": "right_hf",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "50849002",
+          "display": "Emergency room admission"
+        }
+      ],
+      "direct_transition": "ER_BNP"
+    },
+    "ER_BNP": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "pg/mL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "33762-6",
+          "display": "BNP"
+        }
+      ],
+      "value": {
+        "type": "Range",
+        "low": 1200,
+        "high": 5000,
+        "unit": "pg/mL"
+      },
+      "direct_transition": "ER_CXR"
+    },
+    "ER_CXR": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "71045",
+          "display": "Portable chest x-ray"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "ER_Encounter_End"
+    },
+    "ER_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Hospital_Admission"
+    },
+    "Hospital_Admission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "reason": "right_hf",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission"
+        }
+      ],
+      "direct_transition": "Inpatient_Echo"
+    },
+    "Inpatient_Echo": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "93306",
+          "display": "Transthoracic echocardiography"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "Inpatient_Diuresis"
+    },
+    "Inpatient_Diuresis": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "313988",
+          "display": "furosemide 40 MG Oral Tablet"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "Inpatient_Diuresis_Supply_Delay",
+      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx_2"
+    },
+    "Assess_ICU_Need": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.3,
+          "transition": "ICU_Admission"
+        },
+        {
+          "distribution": 0.7,
+          "transition": "Ward_Management"
+        }
+      ]
+    },
+    "ICU_Admission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "305351004",
+          "display": "Admission to intensive care unit"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "Critical_Care_Billing"
+    },
+    "Critical_Care_Billing": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "99291",
+          "display": "Critical care first hour"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "ICU_Oxygen_Therapy"
+    },
+    "ICU_Oxygen_Therapy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "371908008",
+          "display": "Oxygen therapy"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "ICU_RightHeartCath"
+    },
+    "ICU_RightHeartCath": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "93503",
+          "display": "Right heart catheterization"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "ICU_BNP"
+    },
+    "ICU_BNP": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "pg/mL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "33762-6",
+          "display": "BNP"
+        }
+      ],
+      "value": {
+        "type": "Range",
+        "low": 1200,
+        "high": 5000,
+        "unit": "pg/mL"
+      },
+      "direct_transition": "ICU_CMP"
+    },
+    "ICU_CMP": {
+      "type": "DiagnosticReport",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "24323-8",
+          "display": "Comprehensive metabolic panel"
+        }
+      ],
+      "observations": [
+        {
+          "category": "laboratory",
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "3094-0",
+              "display": "Blood urea nitrogen"
+            }
+          ],
+          "unit": "mg/dL",
+          "range": {
+            "low": 25,
+            "high": 80
+          }
+        }
+      ],
+      "direct_transition": "ICU_CBC"
+    },
+    "ICU_CBC": {
+      "type": "DiagnosticReport",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "58410-2",
+          "display": "CBC panel"
+        }
+      ],
+      "observations": [
+        {
+          "category": "laboratory",
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "718-7",
+              "display": "Hemoglobin"
+            }
+          ],
+          "unit": "g/dL",
+          "range": {
+            "low": 8,
+            "high": 13
+          }
+        }
+      ],
+      "direct_transition": "ICU_IV_Diuresis"
+    },
+    "ICU_IV_Diuresis": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "313988",
+          "display": "furosemide 40 MG Oral Tablet"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "ICU_IV_Diuresis_Supply_Delay",
+      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx_3"
+    },
+    "ICU_LOS": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 7,
+        "unit": "days"
+      },
+      "direct_transition": "ICU_Admission_End"
+    },
+    "ICU_Mortality_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.15,
+          "transition": "HF_Death"
+        },
+        {
+          "distribution": 0.85,
+          "transition": "Stepdown_Ward"
+        }
+      ]
+    },
+    "Stepdown_Ward": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "Ward_Monitoring"
+    },
+    "Ward_Monitoring": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "71045",
+          "display": "Portable chest x-ray"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "Ward_LOS"
+    },
+    "Ward_LOS": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 5,
+        "unit": "days"
+      },
+      "direct_transition": "PostHospital_Mortality_Check"
+    },
+    "PostHospital_Mortality_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.05,
+          "transition": "HF_Death"
+        },
+        {
+          "distribution": 0.95,
+          "transition": "Hospital_Discharge"
+        }
+      ]
+    },
+    "Hospital_Discharge": {
+      "type": "EncounterEnd",
+      "direct_transition": "PostDischarge_Cardiology"
+    },
+    "PostDischarge_Cardiology": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "right_hf",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for cardiovascular examination"
+        }
+      ],
+      "direct_transition": "PostDischarge_BNP"
+    },
+    "PostDischarge_BNP": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "pg/mL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "33762-6",
+          "display": "BNP"
+        }
+      ],
+      "value": {
+        "type": "Range",
+        "low": 150,
+        "high": 2500,
+        "unit": "pg/mL"
+      },
+      "direct_transition": "PostDischarge_Encounter_End"
+    },
+    "PostDischarge_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Recovery_Delay"
+    },
+    "Recovery_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 14,
+        "high": 45,
+        "unit": "days"
+      },
+      "distributed_transition": [
+        {
+          "distribution": 0.03,
+          "transition": "HF_Death"
+        },
+        {
+          "distribution": 0.12,
+          "transition": "Hospital_Admission"
+        },
+        {
+          "distribution": 0.85,
+          "transition": "Maintenance_Loop"
+        }
+      ]
+    },
+    "Ward_Management": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "Ward_Echo"
+    },
+    "Ward_Echo": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "93306",
+          "display": "Transthoracic echocardiography"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "Ward_BNP"
+    },
+    "Ward_BNP": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "pg/mL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "33762-6",
+          "display": "BNP"
+        }
+      ],
+      "value": {
+        "type": "Range",
+        "low": 800,
+        "high": 3000,
+        "unit": "pg/mL"
+      },
+      "direct_transition": "Ward_Diuresis"
+    },
+    "Ward_Diuresis": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "313988",
+          "display": "furosemide 40 MG Oral Tablet"
+        }
+      ],
+      "reason": "right_hf",
+      "direct_transition": "Ward_Diuresis_Supply_Delay",
+      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx_4"
+    },
+    "Ward_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Recovery_Delay"
+    },
+    "HF_Death": {
+      "type": "Death",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "84114007",
+          "display": "Heart failure"
+        }
+      ],
+      "direct_transition": "Terminal"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "Hospital_Admission_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Assess_ICU_Need"
+    },
+    "ICU_Admission_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ICU_Mortality_Check"
+    },
+    "Medication_Furosemide_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Medication_Furosemide_End"
+    },
+    "Medication_Furosemide_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "furosemide_40_mg_oral_tablet_rx",
+      "direct_transition": "Medication_Lisinopril"
+    },
+    "Medication_Lisinopril": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "314077",
+          "display": "Lisinopril 20 MG Oral Tablet"
+        }
+      ],
+      "reason": "right_hf",
+      "assign_to_attribute": "lisinopril_20_mg_oral_tablet_rx",
+      "direct_transition": "Medication_Lisinopril_Supply_Delay"
+    },
+    "Medication_Lisinopril_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Medication_Lisinopril_End"
+    },
+    "Medication_Lisinopril_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "lisinopril_20_mg_oral_tablet_rx",
+      "direct_transition": "Medication_Sildenafil"
+    },
+    "Medication_Sildenafil_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Medication_Sildenafil_End"
+    },
+    "Medication_Sildenafil_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "sildenafil_20_mg_oral_tablet_rx",
+      "direct_transition": "Medication_Bosentan"
+    },
+    "Medication_Bosentan_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Medication_Bosentan_End"
+    },
+    "Medication_Bosentan_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "bosentan_625_mg_oral_tablet_rx",
+      "direct_transition": "Initial_Encounter_End"
+    },
+    "Inpatient_Diuresis_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Inpatient_Diuresis_End"
+    },
+    "Inpatient_Diuresis_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "furosemide_40_mg_oral_tablet_rx_2",
+      "direct_transition": "Hospital_Admission_End"
+    },
+    "ICU_IV_Diuresis_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "ICU_IV_Diuresis_End"
+    },
+    "ICU_IV_Diuresis_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "furosemide_40_mg_oral_tablet_rx_3",
+      "direct_transition": "ICU_LOS"
+    },
+    "Ward_Diuresis_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Ward_Diuresis_End"
+    },
+    "Ward_Diuresis_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "furosemide_40_mg_oral_tablet_rx_4",
+      "direct_transition": "Ward_Encounter_End"
+    }
+  }
+}

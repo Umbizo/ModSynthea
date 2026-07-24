@@ -1,0 +1,496 @@
+{
+  "name": "high_output_heart_failure",
+  "remarks": [
+    "Simulates high-output heart failure in adults with risk factors such as anemia, hyperthyroidism, AV fistula, or pregnancy.",
+    "Updated with realistic incidence, symptoms, and diagnostics"
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "CheckRiskFactors"
+    },
+    "CheckRiskFactors": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "And",
+        "conditions": [
+          {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 20,
+            "unit": "years"
+          },
+          {
+            "condition_type": "Age",
+            "operator": "<=",
+            "quantity": 70,
+            "unit": "years"
+          },
+          {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "anemia",
+                "operator": "==",
+                "value": true
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "hyperthyroidism",
+                "operator": "==",
+                "value": true
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "av_fistula",
+                "operator": "==",
+                "value": true
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "pregnant",
+                "operator": "==",
+                "value": true
+              }
+            ]
+          }
+        ]
+      },
+      "direct_transition": "OnsetHighOutputHF"
+    },
+    "OnsetHighOutputHF": {
+      "type": "Simple",
+      "direct_transition": "OnsetHighOutputHF_Action_1"
+    },
+    "HighOutputHF_Maintenance": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 90,
+        "unit": "days"
+      },
+      "distributed_transition": [
+        {
+          "distribution": 0.1,
+          "transition": "HighOutputHF_Decompensation"
+        },
+        {
+          "distribution": 0.9,
+          "transition": "HighOutputHF_Maintenance_Actions"
+        }
+      ]
+    },
+    "HighOutputHF_Maintenance_Actions": {
+      "type": "Simple",
+      "direct_transition": "HighOutputHF_Maintenance_Actions_Action_1"
+    },
+    "HighOutputHF_Decompensation": {
+      "type": "Simple",
+      "direct_transition": "HighOutputHF_Decompensation_Action_1"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "OnsetHighOutputHF_Action_1": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for cardiovascular examination"
+        }
+      ],
+      "direct_transition": "OnsetHighOutputHF_Action_2"
+    },
+    "OnsetHighOutputHF_Action_2": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "high_output_hf",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "10091002",
+          "display": "High output heart failure"
+        },
+        {
+          "system": "ICD-10-CM",
+          "code": "I50.9",
+          "display": "Heart failure, unspecified"
+        },
+        {
+          "system": "ICD-10-CM",
+          "code": "I50.89",
+          "display": "Other heart failure"
+        }
+      ],
+      "direct_transition": "OnsetHighOutputHF_Action_3"
+    },
+    "OnsetHighOutputHF_Action_3": {
+      "type": "Symptom",
+      "symptom": "Dyspnea on exertion (finding)",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "OnsetHighOutputHF_Action_4"
+    },
+    "OnsetHighOutputHF_Action_4": {
+      "type": "Symptom",
+      "symptom": "Fatigue (finding)",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "OnsetHighOutputHF_Action_5_Gate"
+    },
+    "OnsetHighOutputHF_Action_5_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "OnsetHighOutputHF_Action_5",
+          "distribution": 0.3
+        },
+        {
+          "transition": "OnsetHighOutputHF_Action_6",
+          "distribution": 0.7
+        }
+      ]
+    },
+    "OnsetHighOutputHF_Action_5": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "64798005",
+          "display": "Widened pulse pressure"
+        }
+      ],
+      "direct_transition": "OnsetHighOutputHF_Action_6"
+    },
+    "OnsetHighOutputHF_Action_6": {
+      "type": "ImagingStudy",
+      "procedure_code": {
+        "system": "SNOMED-CT",
+        "code": "40701008",
+        "display": "Echocardiography (procedure)"
+      },
+      "series": [
+        {
+          "body_site": {
+            "system": "SNOMED-CT",
+            "code": "80891009",
+            "display": "Heart structure (body structure)"
+          },
+          "modality": {
+            "system": "DICOM-DCM",
+            "code": "US",
+            "display": "Ultrasound"
+          },
+          "instances": [
+            {
+              "title": "Initial Echocardiogram",
+              "sop_class": {
+                "system": "DICOM-SOP",
+                "code": "1.2.840.10008.5.1.4.1.1.3.1",
+                "display": "Ultrasound Multiframe Image Storage"
+              }
+            }
+          ]
+        }
+      ],
+      "direct_transition": "OnsetHighOutputHF_Action_7"
+    },
+    "OnsetHighOutputHF_Action_7": {
+      "type": "DiagnosticReport",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "55405-5",
+          "display": "Heart failure tracking panel"
+        }
+      ],
+      "observations": [
+        {
+          "category": "laboratory",
+          "unit": "%",
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "10230-1",
+              "display": "Left ventricular Ejection fraction"
+            }
+          ],
+          "vital_sign": "Left ventricular Ejection fraction",
+          "remarks": [
+            "Preserved EF typical in high-output HF"
+          ],
+          "range": {
+            "low": 50,
+            "high": 70
+          }
+        },
+        {
+          "category": "exam",
+          "codes": [
+            {
+              "system": "SNOMED-CT",
+              "code": "46206005",
+              "display": "Cardiac output increased (finding)"
+            }
+          ]
+        }
+      ],
+      "direct_transition": "HighOutputHF_Maintenance"
+    },
+    "HighOutputHF_Maintenance_Actions_Action_1": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for cardiovascular examination"
+        }
+      ],
+      "reason": "high_output_hf",
+      "direct_transition": "HighOutputHF_Maintenance_Actions_Action_2_Gate"
+    },
+    "HighOutputHF_Maintenance_Actions_Action_2_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "HighOutputHF_Maintenance_Actions_Action_2",
+          "distribution": 0.7
+        },
+        {
+          "transition": "HighOutputHF_Maintenance_Actions_Action_3",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "HighOutputHF_Maintenance_Actions_Action_2": {
+      "type": "Symptom",
+      "symptom": "Dyspnea on exertion (finding)",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "HighOutputHF_Maintenance_Actions_Action_3_Gate"
+    },
+    "HighOutputHF_Maintenance_Actions_Action_3_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "HighOutputHF_Maintenance_Actions_Action_3",
+          "distribution": 0.6
+        },
+        {
+          "transition": "HighOutputHF_Maintenance_Actions_Action_4",
+          "distribution": 0.4
+        }
+      ]
+    },
+    "HighOutputHF_Maintenance_Actions_Action_3": {
+      "type": "Symptom",
+      "symptom": "Fatigue (finding)",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "HighOutputHF_Maintenance_Actions_Action_4_Gate"
+    },
+    "HighOutputHF_Maintenance_Actions_Action_4_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "HighOutputHF_Maintenance_Actions_Action_4",
+          "distribution": 0.4
+        },
+        {
+          "transition": "HighOutputHF_Maintenance_Actions_Action_5",
+          "distribution": 0.6
+        }
+      ]
+    },
+    "HighOutputHF_Maintenance_Actions_Action_4": {
+      "type": "Symptom",
+      "symptom": "Edema of lower extremity (finding)",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "HighOutputHF_Maintenance_Actions_Action_5_Gate"
+    },
+    "HighOutputHF_Maintenance_Actions_Action_5_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "HighOutputHF_Maintenance_Actions_Action_5",
+          "distribution": 0.5
+        },
+        {
+          "transition": "HighOutputHF_Maintenance_Actions_Action_6",
+          "distribution": 0.5
+        }
+      ]
+    },
+    "HighOutputHF_Maintenance_Actions_Action_5": {
+      "type": "Symptom",
+      "symptom": "Tachycardia (finding)",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "HighOutputHF_Maintenance_Actions_Action_6_Gate"
+    },
+    "HighOutputHF_Maintenance_Actions_Action_6_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "HighOutputHF_Maintenance_Actions_Action_6",
+          "distribution": 0.3
+        },
+        {
+          "transition": "HighOutputHF_Maintenance_Actions_Action_7",
+          "distribution": 0.7
+        }
+      ]
+    },
+    "HighOutputHF_Maintenance_Actions_Action_6": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "64798005",
+          "display": "Widened pulse pressure"
+        }
+      ],
+      "direct_transition": "HighOutputHF_Maintenance_Actions_Action_7_Gate"
+    },
+    "HighOutputHF_Maintenance_Actions_Action_7_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "HighOutputHF_Maintenance_Actions_Action_7",
+          "distribution": 0.8
+        },
+        {
+          "transition": "HighOutputHF_Maintenance_Actions_Action_8",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "HighOutputHF_Maintenance_Actions_Action_7": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "93306",
+          "display": "Transthoracic echocardiography"
+        }
+      ],
+      "reason": "high_output_hf",
+      "direct_transition": "HighOutputHF_Maintenance_Actions_Action_8_Gate"
+    },
+    "HighOutputHF_Maintenance_Actions_Action_8_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "HighOutputHF_Maintenance_Actions_Action_8",
+          "distribution": 0.6
+        },
+        {
+          "transition": "HighOutputHF_Maintenance",
+          "distribution": 0.4
+        }
+      ]
+    },
+    "HighOutputHF_Maintenance_Actions_Action_8": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "%",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "10230-1",
+          "display": "Left ventricular Ejection fraction"
+        }
+      ],
+      "vital_sign": "Left ventricular Ejection fraction",
+      "range": {
+        "low": 50,
+        "high": 70
+      },
+      "direct_transition": "HighOutputHF_Maintenance"
+    },
+    "HighOutputHF_Decompensation_Action_1": {
+      "type": "Encounter",
+      "encounter_class": "emergency",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "50849002",
+          "display": "Emergency room admission (procedure)"
+        }
+      ],
+      "reason": "high_output_hf",
+      "direct_transition": "HighOutputHF_Decompensation_Action_2"
+    },
+    "HighOutputHF_Decompensation_Action_2": {
+      "type": "Symptom",
+      "symptom": "Severe dyspnea (finding)",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "HighOutputHF_Decompensation_Action_3"
+    },
+    "HighOutputHF_Decompensation_Action_3": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission"
+        }
+      ],
+      "reason": "high_output_hf",
+      "direct_transition": "HighOutputHF_Decompensation_Action_4"
+    },
+    "HighOutputHF_Decompensation_Action_4": {
+      "type": "ImagingStudy",
+      "procedure_code": {
+        "system": "SNOMED-CT",
+        "code": "40701008",
+        "display": "Echocardiography (procedure)"
+      },
+      "series": [
+        {
+          "body_site": {
+            "system": "SNOMED-CT",
+            "code": "80891009",
+            "display": "Heart structure (body structure)"
+          },
+          "modality": {
+            "system": "DICOM-DCM",
+            "code": "US",
+            "display": "Ultrasound"
+          },
+          "instances": [
+            {
+              "title": "Decompensation Echocardiogram",
+              "sop_class": {
+                "system": "DICOM-SOP",
+                "code": "1.2.840.10008.5.1.4.1.1.3.1",
+                "display": "Ultrasound Multiframe Image Storage"
+              }
+            }
+          ]
+        }
+      ],
+      "direct_transition": "HighOutputHF_Decompensation_Action_5"
+    },
+    "HighOutputHF_Decompensation_Action_5": {
+      "type": "CallSubmodule",
+      "submodule": "treat_underlying_cause",
+      "direct_transition": "HighOutputHF_Maintenance"
+    }
+  }
+}

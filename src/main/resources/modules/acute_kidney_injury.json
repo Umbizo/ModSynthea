@@ -1,0 +1,327 @@
+{
+  "name": "Acute Kidney Injury",
+  "gmf_version": 1,
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "Initial_Delay"
+    },
+    "AKI_Risk_Exposure": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.22,
+          "transition": "AKI_Symptom1"
+        },
+        {
+          "distribution": 0.78,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "AKI_Symptom1": {
+      "type": "Symptom",
+      "symptom": "Decreased urine output",
+      "range": {
+        "low": 1,
+        "high": 3
+      },
+      "direct_transition": "AKI_Symptom2"
+    },
+    "AKI_Symptom2": {
+      "type": "Symptom",
+      "symptom": "Fatigue",
+      "range": {
+        "low": 1,
+        "high": 3
+      },
+      "direct_transition": "AKI_Symptom3"
+    },
+    "AKI_Symptom3": {
+      "type": "Symptom",
+      "symptom": "Nausea",
+      "range": {
+        "low": 1,
+        "high": 3
+      },
+      "direct_transition": "AKI_ED_Encounter"
+    },
+    "AKI_ED_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "emergency",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "50849002",
+          "display": "Emergency room admission"
+        }
+      ],
+      "direct_transition": "AKI_Creatinine_Check"
+    },
+    "AKI_Creatinine_Check": {
+      "type": "Observation",
+      "category": "laboratory",
+      "assign_to_attribute": "creatinine",
+      "unit": "mg/dL",
+      "range": {
+        "low": 1.2,
+        "high": 6.5
+      },
+      "direct_transition": "AKI_Diagnosis"
+    },
+    "AKI_Diagnosis": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "14669001",
+          "display": "Acute kidney injury"
+        }
+      ],
+      "direct_transition": "AKI_BUN_Check"
+    },
+    "AKI_BUN_Check": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "mg/dL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "3094-0",
+          "display": "Urea nitrogen [Mass/volume] in Serum or Plasma"
+        }
+      ],
+      "range": {
+        "low": 20,
+        "high": 80
+      },
+      "direct_transition": "AKI_ED_Encounter_End"
+    },
+    "Assess_AKI_Severity": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "creatinine",
+            "operator": "<",
+            "value": 2.0
+          },
+          "transition": "Mild_AKI"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "creatinine",
+            "operator": "<",
+            "value": 4.0
+          },
+          "transition": "Moderate_AKI"
+        },
+        {
+          "transition": "Severe_AKI"
+        }
+      ]
+    },
+    "Mild_AKI": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 5,
+        "unit": "days"
+      },
+      "direct_transition": "AKI_Recovery"
+    },
+    "Moderate_AKI": {
+      "type": "Delay",
+      "range": {
+        "low": 5,
+        "high": 10,
+        "unit": "days"
+      },
+      "direct_transition": "AKI_Hospital_Admission"
+    },
+    "Severe_AKI": {
+      "type": "Delay",
+      "range": {
+        "low": 0,
+        "high": 1,
+        "unit": "days"
+      },
+      "direct_transition": "AKI_Hospital_Admission"
+    },
+    "Dialysis": {
+      "type": "Procedure",
+      "target_encounter": "AKI_Hospital_Admission",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "302497006",
+          "display": "Hemodialysis procedure"
+        }
+      ],
+      "direct_transition": "AKI_Hospital_Discharge"
+    },
+    "AKI_Monitoring": {
+      "type": "Delay",
+      "range": {
+        "low": 7,
+        "high": 21,
+        "unit": "days"
+      },
+      "direct_transition": "AKI_Outcome"
+    },
+    "AKI_Hospital_Admission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "direct_transition": "AKI_Hospital_Labs"
+    },
+    "AKI_Hospital_Labs": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "mg/dL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2160-0",
+          "display": "Creatinine [Mass/volume] in Serum or Plasma"
+        }
+      ],
+      "range": {
+        "low": 1.5,
+        "high": 8.0
+      },
+      "direct_transition": "AKI_Hospital_Disposition"
+    },
+    "Nephrology_Followup": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "direct_transition": "Followup_Creatinine"
+    },
+    "Followup_Creatinine": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "mg/dL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2160-0",
+          "display": "Creatinine [Mass/volume] in Serum or Plasma"
+        }
+      ],
+      "range": {
+        "low": 1.0,
+        "high": 5.0
+      },
+      "direct_transition": "Nephrology_Followup_End"
+    },
+    "AKI_Hospital_Disposition": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "creatinine",
+            "operator": ">=",
+            "value": 4.0
+          },
+          "transition": "Dialysis"
+        },
+        {
+          "transition": "AKI_Hospital_Discharge"
+        }
+      ]
+    },
+    "AKI_Hospital_Discharge": {
+      "type": "EncounterEnd",
+      "direct_transition": "Nephrology_Followup"
+    },
+    "AKI_Outcome": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "AKI_Recovery"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Progress_to_CKD"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "AKI_Death"
+        }
+      ]
+    },
+    "AKI_Recovery": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Terminal"
+    },
+    "Progress_to_CKD": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "709044004",
+          "display": "Chronic kidney disease (disorder)"
+        }
+      ],
+      "direct_transition": "CKD_Lisinopril"
+    },
+    "CKD_Lisinopril": {
+      "type": "MedicationOrder",
+      "assign_to_attribute": "ckd_lisinopril",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "314077",
+          "display": "Lisinopril 20 MG Oral Tablet"
+        }
+      ],
+      "reason": "chronic_kidney_disease",
+      "chronic": true,
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 1,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 365,
+          "unit": "days"
+        }
+      },
+      "direct_transition": "Terminal"
+    },
+    "AKI_Death": {
+      "type": "Death",
+      "direct_transition": "Terminal"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "AKI_ED_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Assess_AKI_Severity"
+    },
+    "Initial_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 365,
+        "high": 3650,
+        "unit": "days"
+      },
+      "direct_transition": "AKI_Risk_Exposure"
+    },
+    "Nephrology_Followup_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "AKI_Monitoring"
+    }
+  }
+}

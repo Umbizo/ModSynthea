@@ -1,0 +1,549 @@
+{
+  "name": "Small Cell Lung Cancer Module",
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "Smoking_Status_Check"
+    },
+    "Medical_Oncology_Encounter": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for oncology service"
+        }
+      ],
+      "direct_transition": "Treatment_Pathway"
+    },
+    "Treatment_Pathway": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "sclc_stage",
+            "operator": "==",
+            "value": "limited"
+          },
+          "transition": "Chemoradiation_Therapy"
+        },
+        {
+          "transition": "Chemotherapy_First_Line"
+        }
+      ]
+    },
+    "Smoking_Status_Check": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 1,
+          "standardDeviation": 0.5
+        }
+      },
+      "unit": "days",
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "smoker",
+            "operator": "==",
+            "value": true
+          },
+          "distributions": [
+            {
+              "transition": "Cancer_Risk_Assessment",
+              "distribution": 1.0
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "smoker",
+            "operator": "is nil"
+          },
+          "distributions": [
+            {
+              "transition": "Cancer_Risk_Assessment",
+              "distribution": 0.3
+            },
+            {
+              "transition": "Terminal",
+              "distribution": 0.7
+            }
+          ]
+        },
+        {
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Cancer_Risk_Assessment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.002,
+          "transition": "Symptom_Onset"
+        },
+        {
+          "distribution": 0.998,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Symptom_Onset": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 2,
+          "standardDeviation": 1
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Present_Symptoms"
+    },
+    "Present_Symptoms": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "Cough_Symptom"
+    },
+    "Cough_Symptom": {
+      "type": "Symptom",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "49727002",
+          "display": "Cough"
+        }
+      ],
+      "direct_transition": "Hemoptysis_Check"
+    },
+    "Hemoptysis_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
+          "transition": "Hemoptysis_Symptom"
+        },
+        {
+          "distribution": 0.6,
+          "transition": "Chest_Pain_Check"
+        }
+      ]
+    },
+    "Hemoptysis_Symptom": {
+      "type": "Symptom",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "66857006",
+          "display": "Hemoptysis"
+        }
+      ],
+      "direct_transition": "Chest_Pain_Check"
+    },
+    "Chest_Pain_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "Chest_Pain_Symptom"
+        },
+        {
+          "distribution": 0.5,
+          "transition": "Initial_Imaging"
+        }
+      ]
+    },
+    "Chest_Pain_Symptom": {
+      "type": "Symptom",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "29857009",
+          "display": "Chest pain"
+        }
+      ],
+      "direct_transition": "Initial_Imaging"
+    },
+    "Initial_Imaging": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "430448007",
+          "display": "CT of neck and thorax"
+        }
+      ],
+      "direct_transition": "Biopsy_Decision"
+    },
+    "Biopsy_Decision": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.8,
+          "transition": "Bronchoscopy"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "CT_Guided_Biopsy"
+        }
+      ]
+    },
+    "CT_Guided_Biopsy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "35295005",
+          "display": "Percutaneous needle biopsy of lung"
+        }
+      ],
+      "direct_transition": "Pathology_Diagnosis"
+    },
+    "Bronchoscopy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "10847001",
+          "display": "Bronchoscopy"
+        }
+      ],
+      "direct_transition": "Pathology_Diagnosis"
+    },
+    "Pathology_Diagnosis": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "254632001",
+          "display": "Small cell carcinoma of lung"
+        }
+      ],
+      "direct_transition": "Staging_Workup",
+      "assign_to_attribute": "Small Cell Lung Cancer"
+    },
+    "Staging_Workup": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "82918005",
+          "display": "PET scan"
+        }
+      ],
+      "direct_transition": "Brain_Imaging"
+    },
+    "Brain_Imaging": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "16327691000119101",
+          "display": "Magnetic resonance imaging of brain with contrast"
+        }
+      ],
+      "direct_transition": "Stage_Classification"
+    },
+    "Stage_Classification": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.3,
+          "transition": "Limited_Stage"
+        },
+        {
+          "distribution": 0.7,
+          "transition": "Extensive_Stage"
+        }
+      ]
+    },
+    "Limited_Stage": {
+      "type": "SetAttribute",
+      "attribute": "sclc_stage",
+      "value": "limited",
+      "direct_transition": "Medical_Oncology_Encounter"
+    },
+    "Extensive_Stage": {
+      "type": "SetAttribute",
+      "attribute": "sclc_stage",
+      "value": "extensive",
+      "direct_transition": "Medical_Oncology_Encounter"
+    },
+    "Chemoradiation_Therapy": {
+      "type": "MedicationOrder",
+      "assign_to_attribute": "carboplatin_limited",
+      "target_encounter": "Medical_Oncology_Encounter",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "40048",
+          "display": "carboplatin"
+        }
+      ],
+      "direct_transition": "End_Carboplatin"
+    },
+    "Etoposide_Chemoradiation": {
+      "type": "MedicationOrder",
+      "assign_to_attribute": "etoposide_limited",
+      "target_encounter": "Medical_Oncology_Encounter",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "4179",
+          "display": "etoposide"
+        }
+      ],
+      "direct_transition": "End_Etoposide_Chemoradiation"
+    },
+    "Concurrent_Radiation": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "385798007",
+          "display": "Radiation therapy"
+        }
+      ],
+      "direct_transition": "Prophylactic_Cranial_Irradiation"
+    },
+    "Chemotherapy_First_Line": {
+      "type": "MedicationOrder",
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "carboplatin_extensive",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "40048",
+          "display": "carboplatin"
+        }
+      ],
+      "direct_transition": "End_Carboplatin_First_Line"
+    },
+    "Etoposide_First_Line": {
+      "type": "MedicationOrder",
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "etoposide_extensive",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "4179",
+          "display": "etoposide"
+        }
+      ],
+      "direct_transition": "End_Etoposide_First_Line"
+    },
+    "Immunotherapy_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.42,
+          "transition": "Atezolizumab"
+        },
+        {
+          "distribution": 0.18,
+          "transition": "Durvalumab"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "Medical_Oncology_Encounter_End"
+        }
+      ]
+    },
+    "Durvalumab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "durvalumab_tx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1919503",
+          "display": "Durvalumab"
+        }
+      ],
+      "direct_transition": "End_Durvalumab"
+    },
+    "End_Durvalumab": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "durvalumab_tx",
+      "direct_transition": "Medical_Oncology_Encounter_End"
+    },
+    "Atezolizumab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "atezolizumab_tx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1792776",
+          "display": "Atezolizumab"
+        }
+      ],
+      "direct_transition": "End_Atezolizumab"
+    },
+    "End_Carboplatin": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "carboplatin_limited",
+      "direct_transition": "Etoposide_Chemoradiation"
+    },
+    "End_Etoposide_Chemoradiation": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "etoposide_limited",
+      "direct_transition": "Concurrent_Radiation"
+    },
+    "End_Carboplatin_First_Line": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "carboplatin_extensive",
+      "direct_transition": "Etoposide_First_Line"
+    },
+    "End_Etoposide_First_Line": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "etoposide_extensive",
+      "direct_transition": "Immunotherapy_Check"
+    },
+    "End_Atezolizumab": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "atezolizumab_tx",
+      "direct_transition": "Medical_Oncology_Encounter_End"
+    },
+    "End_Topotecan": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "topotecan_tx",
+      "direct_transition": "Palliative_Care_Integration"
+    },
+    "Prophylactic_Cranial_Irradiation": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "428412000",
+          "display": "Radiotherapy to head"
+        }
+      ],
+      "direct_transition": "Medical_Oncology_Encounter_End"
+    },
+    "Response_Evaluation": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 3,
+          "standardDeviation": 1
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Treatment_Response_Check"
+    },
+    "Treatment_Response_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.8,
+          "transition": "Progression"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Surveillance"
+        }
+      ]
+    },
+    "Progression": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "1259237005",
+          "display": "Recurrent malignant neoplasm"
+        }
+      ],
+      "direct_transition": "Second_Line_Therapy"
+    },
+    "Medical_Oncology_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Response_Evaluation"
+    },
+    "Second_Line_Therapy": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "topotecan_tx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "57308",
+          "display": "Topotecan"
+        }
+      ],
+      "direct_transition": "End_Topotecan"
+    },
+    "Surveillance": {
+      "type": "CarePlanStart",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "305058001",
+          "display": "Patient encounter procedure (procedure)"
+        }
+      ],
+      "direct_transition": "Long_Term_Followup"
+    },
+    "Long_Term_Followup": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 12,
+          "standardDeviation": 6
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Terminal"
+    },
+    "Palliative_Care_Integration": {
+      "type": "CarePlanStart",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "103735009",
+          "display": "Palliative care"
+        }
+      ],
+      "direct_transition": "End_of_Life_Care"
+    },
+    "End_of_Life_Care": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 6,
+          "standardDeviation": 3
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Death_From_SCLC"
+    },
+    "Death_From_SCLC": {
+      "type": "Death",
+      "direct_transition": "Terminal"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    }
+  }
+}

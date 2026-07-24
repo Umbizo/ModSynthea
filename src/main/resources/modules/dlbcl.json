@@ -1,0 +1,721 @@
+{
+  "name": "Diffuse Large B-Cell Lymphoma",
+  "remarks": [
+    "Diagnosis and management of diffuse large B-cell lymphoma (DLBCL)."
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "Risk_Assessment"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "Risk_Assessment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.002,
+          "transition": "Symptom_Onset"
+        },
+        {
+          "distribution": 0.998,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Symptom_Onset": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 3,
+          "standardDeviation": 1
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Presentation_Encounter"
+    },
+    "Presentation_Encounter": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "Lymphadenopathy"
+    },
+    "Lymphadenopathy": {
+      "type": "Symptom",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "30746006",
+          "display": "Lymphadenopathy"
+        }
+      ],
+      "direct_transition": "B_Symptoms_Check"
+    },
+    "B_Symptoms_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.35,
+          "transition": "B_Symptoms"
+        },
+        {
+          "distribution": 0.65,
+          "transition": "Excisional_Biopsy"
+        }
+      ]
+    },
+    "B_Symptoms": {
+      "type": "Symptom",
+      "symptom": "Constitutional symptoms",
+      "direct_transition": "Excisional_Biopsy"
+    },
+    "Excisional_Biopsy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "86273004",
+          "display": "Excision biopsy of lymph node"
+        }
+      ],
+      "direct_transition": "DLBCL_Diagnosis"
+    },
+    "DLBCL_Diagnosis": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "118601006",
+          "display": "Diffuse large B-cell lymphoma"
+        }
+      ],
+      "direct_transition": "PET_CT",
+      "assign_to_attribute": "Diffuse Large B Cell Lymphoma"
+    },
+    "PET_CT": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "450436003",
+          "display": "Positron emission tomography with computed tomography"
+        }
+      ],
+      "direct_transition": "Bone_Marrow_Decision"
+    },
+    "Bone_Marrow_Decision": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.3,
+          "transition": "Bone_Marrow_Biopsy"
+        },
+        {
+          "distribution": 0.7,
+          "transition": "Stage_Decision"
+        }
+      ]
+    },
+    "Bone_Marrow_Biopsy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "234326005",
+          "display": "Bone marrow biopsy"
+        }
+      ],
+      "direct_transition": "Stage_Decision"
+    },
+    "Stage_Decision": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.45,
+          "transition": "Limited_Stage"
+        },
+        {
+          "distribution": 0.55,
+          "transition": "Advanced_Stage"
+        }
+      ]
+    },
+    "Limited_Stage": {
+      "type": "SetAttribute",
+      "attribute": "dlbcl_stage",
+      "value": "limited",
+      "direct_transition": "Medical_Oncology_Encounter"
+    },
+    "Advanced_Stage": {
+      "type": "SetAttribute",
+      "attribute": "dlbcl_stage",
+      "value": "advanced",
+      "direct_transition": "Medical_Oncology_Encounter"
+    },
+    "Medical_Oncology_Encounter": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for oncology service"
+        }
+      ],
+      "direct_transition": "Treatment_Decision"
+    },
+    "Treatment_Decision": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.9,
+          "transition": "Rituximab"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "Dose_Adjusted_RCHOP"
+        }
+      ]
+    },
+    "Interim_PET_CT": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "450436003",
+          "display": "Positron emission tomography with computed tomography"
+        }
+      ],
+      "direct_transition": "Response_Assessment"
+    },
+    "Response_Assessment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "Complete_Response"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "Partial_Response"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "Primary_Refractory"
+        }
+      ]
+    },
+    "RICE_Rituximab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "rice_rituximab",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "121191",
+          "display": "Rituximab"
+        }
+      ],
+      "direct_transition": "End_RICE_Rituximab"
+    },
+    "End_RICE_Rituximab": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "rice_rituximab",
+      "direct_transition": "Ifosfamide"
+    },
+    "Ifosfamide": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "ifosfamide_tx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "5657",
+          "display": "ifosfamide"
+        }
+      ],
+      "direct_transition": "End_Ifosfamide"
+    },
+    "End_Ifosfamide": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "ifosfamide_tx",
+      "direct_transition": "Carboplatin_Salvage"
+    },
+    "Carboplatin_Salvage": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "carboplatin_salvage",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "40048",
+          "display": "carboplatin"
+        }
+      ],
+      "direct_transition": "End_Carboplatin_Salvage"
+    },
+    "End_Carboplatin_Salvage": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "carboplatin_salvage",
+      "direct_transition": "Etoposide_Salvage"
+    },
+    "Etoposide_Salvage": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "etoposide_salvage",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "4179",
+          "display": "etoposide"
+        }
+      ],
+      "direct_transition": "End_Etoposide_Salvage"
+    },
+    "End_Etoposide_Salvage": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "etoposide_salvage",
+      "direct_transition": "Salvage_Oncology_Encounter_End"
+    },
+    "RDHAP_Rituximab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "rdhap_rituximab",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "121191",
+          "display": "Rituximab"
+        }
+      ],
+      "direct_transition": "End_RDHAP_Rituximab"
+    },
+    "End_RDHAP_Rituximab": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "rdhap_rituximab",
+      "direct_transition": "Cisplatin"
+    },
+    "Cisplatin": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "cisplatin_tx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2555",
+          "display": "cisplatin"
+        }
+      ],
+      "direct_transition": "End_Cisplatin"
+    },
+    "End_Cisplatin": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "cisplatin_tx",
+      "direct_transition": "Cytarabine"
+    },
+    "Cytarabine": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "cytarabine_tx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "3041",
+          "display": "cytarabine"
+        }
+      ],
+      "direct_transition": "End_Cytarabine"
+    },
+    "End_Cytarabine": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "cytarabine_tx",
+      "direct_transition": "Dexamethasone"
+    },
+    "Dexamethasone": {
+      "type": "MedicationOrder",
+      "assign_to_attribute": "dexamethasone_tx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "3264",
+          "display": "Dexamethasone"
+        }
+      ],
+      "direct_transition": "End_Dexamethasone"
+    },
+    "End_Dexamethasone": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "dexamethasone_tx",
+      "direct_transition": "Salvage_Oncology_Encounter_End"
+    },
+    "Transplant_Assessment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.65,
+          "transition": "Autologous_Stem_Cell_Transplant"
+        },
+        {
+          "distribution": 0.35,
+          "transition": "CAR_T_Assessment"
+        }
+      ]
+    },
+    "Autologous_Stem_Cell_Transplant": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "58776007",
+          "display": "Autologous bone marrow transplant"
+        }
+      ],
+      "direct_transition": "Post_Transplant_Response"
+    },
+    "Post_Transplant_Response": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "Long_Term_Remission"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "CAR_T_Assessment"
+        }
+      ]
+    },
+    "CAR_T_Assessment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "CAR_T_Therapy"
+        },
+        {
+          "distribution": 0.5,
+          "transition": "Palliative_Care"
+        }
+      ]
+    },
+    "CAR_T_Therapy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "1156961008",
+          "display": "Chimeric antigen receptor T-cell immunotherapy"
+        }
+      ],
+      "direct_transition": "CAR_T_Response"
+    },
+    "CAR_T_Response": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.55,
+          "transition": "Long_Term_Remission"
+        },
+        {
+          "distribution": 0.45,
+          "transition": "Palliative_Care"
+        }
+      ]
+    },
+    "Palliative_Care": {
+      "type": "CarePlanStart",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "103735009",
+          "display": "Palliative care"
+        }
+      ],
+      "direct_transition": "Hospice"
+    },
+    "Hospice": {
+      "type": "CarePlanStart",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "385763009",
+          "display": "Hospice care"
+        }
+      ],
+      "direct_transition": "Death_From_DLBCL"
+    },
+    "Death_From_DLBCL": {
+      "type": "Death",
+      "direct_transition": "Terminal"
+    },
+    "Complete_Response": {
+      "type": "ConditionEnd",
+      "referenced_by_attribute": "Diffuse Large B Cell Lymphoma",
+      "direct_transition": "Surveillance_Careplan"
+    },
+    "Partial_Response": {
+      "type": "Simple",
+      "remarks": [
+        "Residual disease after first-line R-CHOP."
+      ],
+      "direct_transition": "Salvage_Oncology_Encounter"
+    },
+    "Primary_Refractory": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "1259237005",
+          "display": "Recurrent malignant neoplasm"
+        }
+      ],
+      "direct_transition": "Salvage_Treatment_Decision"
+    },
+    "Surveillance_Careplan": {
+      "type": "CarePlanStart",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "736373009",
+          "display": "Cancer surveillance"
+        }
+      ],
+      "direct_transition": "Surveillance_Interval"
+    },
+    "Surveillance_Interval": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 12,
+          "standardDeviation": 4
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Relapse_Check"
+    },
+    "Relapse_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.8,
+          "transition": "Long_Term_Remission"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Relapsed_DLBCL"
+        }
+      ]
+    },
+    "Long_Term_Remission": {
+      "type": "CarePlanEnd",
+      "direct_transition": "Terminal"
+    },
+    "Relapsed_DLBCL": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "1259237005",
+          "display": "Recurrent malignant neoplasm"
+        }
+      ],
+      "direct_transition": "Salvage_Oncology_Encounter"
+    },
+    "Salvage_Oncology_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Transplant_Assessment"
+    },
+    "Salvage_Treatment_Decision": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "RICE_Rituximab"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "RDHAP_Rituximab"
+        }
+      ]
+    },
+    "Dose_Adjusted_RCHOP": {
+      "type": "Simple",
+      "remarks": [
+        "Placeholder for intensified regimen"
+      ],
+      "direct_transition": "Rituximab"
+    },
+    "Rituximab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "rituximab_tx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "121191",
+          "display": "Rituximab"
+        }
+      ],
+      "direct_transition": "End_Rituximab"
+    },
+    "End_Rituximab": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "rituximab_tx",
+      "direct_transition": "Cyclophosphamide"
+    },
+    "Cyclophosphamide": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "cyclophosphamide_tx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "3002",
+          "display": "Cyclophosphamide"
+        }
+      ],
+      "direct_transition": "End_Cyclophosphamide"
+    },
+    "End_Cyclophosphamide": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "cyclophosphamide_tx",
+      "direct_transition": "Doxorubicin"
+    },
+    "Doxorubicin": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "doxorubicin_tx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "3639",
+          "display": "Doxorubicin"
+        }
+      ],
+      "direct_transition": "End_Doxorubicin"
+    },
+    "End_Doxorubicin": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "doxorubicin_tx",
+      "direct_transition": "Vincristine"
+    },
+    "Vincristine": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "vincristine_tx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "11202",
+          "display": "vincristine"
+        }
+      ],
+      "direct_transition": "End_Vincristine"
+    },
+    "End_Vincristine": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "vincristine_tx",
+      "direct_transition": "Prednisone"
+    },
+    "Prednisone": {
+      "type": "MedicationOrder",
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "prednisone_tx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "8640",
+          "display": "Prednisone"
+        }
+      ],
+      "direct_transition": "End_Prednisone"
+    },
+    "End_Prednisone": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "prednisone_tx",
+      "direct_transition": "Supportive_Care_Decision"
+    },
+    "Supportive_Care_Decision": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.3,
+          "transition": "Pegfilgrastim"
+        },
+        {
+          "distribution": 0.7,
+          "transition": "Ondansetron"
+        }
+      ]
+    },
+    "Pegfilgrastim": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "assign_to_attribute": "pegfilgrastim_tx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "338036",
+          "display": "pegfilgrastim"
+        }
+      ],
+      "direct_transition": "End_Pegfilgrastim"
+    },
+    "Salvage_Oncology_Encounter": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for oncology service"
+        }
+      ],
+      "direct_transition": "Salvage_Treatment_Decision"
+    },
+    "End_Pegfilgrastim": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "pegfilgrastim_tx",
+      "direct_transition": "Ondansetron"
+    },
+    "Ondansetron": {
+      "type": "MedicationOrder",
+      "assign_to_attribute": "ondansetron_tx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "26225",
+          "display": "Ondansetron"
+        }
+      ],
+      "direct_transition": "End_Ondansetron"
+    },
+    "End_Ondansetron": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "ondansetron_tx",
+      "direct_transition": "Medical_Oncology_Encounter_End"
+    },
+    "Medical_Oncology_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Interim_PET_CT"
+    }
+  }
+}

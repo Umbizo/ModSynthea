@@ -1,0 +1,1024 @@
+{
+  "name": "Endometrial Cancer Module",
+  "remarks": [
+    "Simulates endometrial cancer development, diagnosis, treatment, and surveillance",
+    "Includes risk factors, staging, treatment pathways, and recurrence monitoring",
+    "Models both early-stage and advanced disease with appropriate interventions"
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "InitializeCounters"
+    },
+    "InitializeCounters": {
+      "type": "SetAttribute",
+      "attribute": "surveillance_visits",
+      "value": 0,
+      "direct_transition": "InitializeRecurrenceCounter"
+    },
+    "InitializeRecurrenceCounter": {
+      "type": "SetAttribute",
+      "attribute": "years_no_recurrence",
+      "value": 0,
+      "direct_transition": "CheckRiskFactors"
+    },
+    "CheckRiskFactors": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "And",
+        "conditions": [
+          {
+            "condition_type": "Gender",
+            "gender": "F"
+          },
+          {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 50,
+            "unit": "years"
+          },
+          {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "obesity",
+                "operator": "==",
+                "value": true
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "diabetes",
+                "operator": "==",
+                "value": true
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "hypertension",
+                "operator": "==",
+                "value": true
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "nulliparous",
+                "operator": "==",
+                "value": true
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "tamoxifen_use",
+                "operator": "==",
+                "value": true
+              }
+            ]
+          }
+        ]
+      },
+      "direct_transition": "SymptomDevelopment"
+    },
+    "SymptomDevelopment": {
+      "type": "Delay",
+      "range": {
+        "low": 0,
+        "high": 2,
+        "unit": "years"
+      },
+      "direct_transition": "PresentingSymptoms"
+    },
+    "PresentingSymptoms": {
+      "type": "Simple",
+      "direct_transition": "PresentingSymptoms_Action_1_Gate"
+    },
+    "PrimaryCareEvaluation": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "TransvaginalUltrasound"
+    },
+    "TransvaginalUltrasound": {
+      "type": "ImagingStudy",
+      "procedure_code": {
+        "system": "SNOMED-CT",
+        "code": "429915000",
+        "display": "Transvaginal ultrasonography of pelvis"
+      },
+      "series": [
+        {
+          "body_site": {
+            "system": "SNOMED-CT",
+            "code": "35039007",
+            "display": "Uterus"
+          },
+          "modality": {
+            "system": "DICOM-DCM",
+            "code": "US",
+            "display": "Ultrasound"
+          }
+        }
+      ],
+      "direct_transition": "EndometrialSampling"
+    },
+    "EndometrialSampling": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "58100",
+          "display": "Endometrial sampling (biopsy) with or without endocervical sampling (biopsy), without cervical dilation, any method"
+        }
+      ],
+      "direct_transition": "PathologyResults"
+    },
+    "PathologyResults": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.8,
+          "transition": "EndometrialCancerDiagnosis"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "EndometrialHyperplasia"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "BenignFindings"
+        }
+      ]
+    },
+    "EndometrialHyperplasia": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "237072009",
+          "display": "Endometrial hyperplasia"
+        }
+      ],
+      "direct_transition": "HyperplasiaManagement"
+    },
+    "HyperplasiaManagement": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "ProgesteroneTherapy"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "Hysterectomy_Hyperplasia"
+        }
+      ]
+    },
+    "ProgesteroneTherapy": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1000114",
+          "display": "medroxyprogesterone acetate 10 MG Oral Tablet"
+        }
+      ],
+      "direct_transition": "FollowUpBiopsy"
+    },
+    "FollowUpBiopsy": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "RegressionToNormal"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "PersistentHyperplasia"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "ProgressionToCancer"
+        }
+      ]
+    },
+    "RegressionToNormal": {
+      "type": "ConditionEnd",
+      "direct_transition": "Terminal"
+    },
+    "PersistentHyperplasia": {
+      "type": "Simple",
+      "direct_transition": "Hysterectomy_Hyperplasia"
+    },
+    "ProgressionToCancer": {
+      "type": "ConditionEnd",
+      "direct_transition": "EndometrialCancerDiagnosis"
+    },
+    "Hysterectomy_Hyperplasia": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "58571",
+          "display": "Laparoscopy, surgical, with total hysterectomy, for uterus 250 g or less"
+        }
+      ],
+      "direct_transition": "Terminal"
+    },
+    "BenignFindings": {
+      "type": "ConditionEnd",
+      "direct_transition": "Terminal"
+    },
+    "EndometrialCancerDiagnosis": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "endometrial_cancer",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "93781006",
+          "display": "Primary malignant neoplasm of endometrium (disorder)"
+        },
+        {
+          "system": "ICD-10-CM",
+          "code": "C54.1",
+          "display": "Malignant neoplasm of endometrium"
+        }
+      ],
+      "direct_transition": "SurgicalStaging"
+    },
+    "SurgicalStaging": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "58570",
+          "display": "Laparoscopy, surgical, with total hysterectomy, for uterus 250 g or less; with bilateral salpingo-oophorectomy"
+        }
+      ],
+      "direct_transition": "SurgicalPathology"
+    },
+    "SurgicalPathology": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "StageIA"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "StageIB"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "StageII"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "StageIII_IV"
+        }
+      ]
+    },
+    "StageIA": {
+      "type": "SetAttribute",
+      "attribute": "endometrial_cancer_stage",
+      "value": "IA",
+      "direct_transition": "LowRiskDisease"
+    },
+    "StageIB": {
+      "type": "SetAttribute",
+      "attribute": "endometrial_cancer_stage",
+      "value": "IB",
+      "direct_transition": "IntermediateRiskDisease"
+    },
+    "StageII": {
+      "type": "SetAttribute",
+      "attribute": "endometrial_cancer_stage",
+      "value": "II",
+      "direct_transition": "HighIntermediateRiskDisease"
+    },
+    "StageIII_IV": {
+      "type": "SetAttribute",
+      "attribute": "endometrial_cancer_stage",
+      "value": "III_IV",
+      "direct_transition": "AdvancedDisease"
+    },
+    "LowRiskDisease": {
+      "type": "Simple",
+      "direct_transition": "LowRiskDisease_Action_1"
+    },
+    "SurgeryOnly": {
+      "type": "Simple",
+      "direct_transition": "SurgeryOnly_Action_1"
+    },
+    "SurveillanceLowRisk": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 4,
+        "unit": "months"
+      },
+      "direct_transition": "FollowUpVisit"
+    },
+    "FollowUpVisit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185389009",
+          "display": "Follow-up encounter (procedure)"
+        }
+      ],
+      "direct_transition": "PhysicalExamSurveillance"
+    },
+    "PhysicalExamSurveillance": {
+      "type": "Simple",
+      "direct_transition": "PhysicalExamSurveillance_Action_1_Gate"
+    },
+    "ContinueSurveillance": {
+      "type": "Counter",
+      "attribute": "surveillance_visits",
+      "action": "increment",
+      "direct_transition": "SurveillanceLowRisk"
+    },
+    "LongTermSurveillance": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 12,
+        "unit": "months"
+      },
+      "direct_transition": "FollowUpVisit"
+    },
+    "IntermediateRiskDisease": {
+      "type": "Simple",
+      "direct_transition": "IntermediateRiskDisease_Action_1"
+    },
+    "ConsiderAdjuvantTherapy": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "VaginalBrachytherapy"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "ObservationIntermediateRisk"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "EBRT_Therapy"
+        }
+      ]
+    },
+    "VaginalBrachytherapy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "77776",
+          "display": "Interstitial radiation source application; complex"
+        }
+      ],
+      "direct_transition": "SurveillanceIntermediateRisk"
+    },
+    "EBRT_Therapy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "77427",
+          "display": "Radiation treatment management, 5 treatments"
+        }
+      ],
+      "direct_transition": "SurveillanceIntermediateRisk"
+    },
+    "ObservationIntermediateRisk": {
+      "type": "Simple",
+      "direct_transition": "SurveillanceIntermediateRisk"
+    },
+    "SurveillanceIntermediateRisk": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "FollowUpVisit"
+    },
+    "HighIntermediateRiskDisease": {
+      "type": "Simple",
+      "direct_transition": "HighIntermediateRiskDisease_Action_1"
+    },
+    "AdjuvantRadiationTherapy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "77427",
+          "display": "Radiation treatment management, 5 treatments"
+        }
+      ],
+      "direct_transition": "ConsiderChemotherapy"
+    },
+    "ConsiderChemotherapy": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "AdjuvantChemotherapy"
+        },
+        {
+          "distribution": 0.5,
+          "transition": "RadiationOnly"
+        }
+      ]
+    },
+    "AdjuvantChemotherapy": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "378363",
+          "display": "carboplatin Injectable Solution"
+        },
+        {
+          "system": "RxNorm",
+          "code": "312199",
+          "display": "paclitaxel 6 MG/ML Injectable Solution"
+        }
+      ],
+      "direct_transition": "SurveillanceHighRisk"
+    },
+    "RadiationOnly": {
+      "type": "Simple",
+      "direct_transition": "SurveillanceHighRisk"
+    },
+    "SurveillanceHighRisk": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 4,
+        "unit": "months"
+      },
+      "direct_transition": "FollowUpVisit"
+    },
+    "AdvancedDisease": {
+      "type": "Simple",
+      "direct_transition": "AdvancedDisease_Action_1"
+    },
+    "SystemicTherapy": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "ChemotherapyAdvanced"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "HormonalTherapy"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "TargetedTherapy"
+        }
+      ]
+    },
+    "ChemotherapyAdvanced": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "378363",
+          "display": "carboplatin Injectable Solution"
+        },
+        {
+          "system": "RxNorm",
+          "code": "312199",
+          "display": "paclitaxel 6 MG/ML Injectable Solution"
+        }
+      ],
+      "direct_transition": "ResponseEvaluation"
+    },
+    "HormonalTherapy": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "860221",
+          "display": "megestrol acetate 40 MG Oral Tablet"
+        }
+      ],
+      "direct_transition": "ResponseEvaluation"
+    },
+    "TargetedTherapy": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1657750",
+          "display": "4 ML pembrolizumab 25 MG/ML Injection"
+        }
+      ],
+      "direct_transition": "ResponseEvaluation"
+    },
+    "ResponseEvaluation": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 4,
+        "unit": "months"
+      },
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
+          "transition": "ResponseComplete"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "ResponsePartial"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "StableDisease"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "ProgressiveDisease"
+        }
+      ]
+    },
+    "ResponseComplete": {
+      "type": "Simple",
+      "direct_transition": "MaintenanceTherapy"
+    },
+    "ResponsePartial": {
+      "type": "Simple",
+      "direct_transition": "ContinueTherapy"
+    },
+    "StableDisease": {
+      "type": "Simple",
+      "direct_transition": "ContinueTherapy"
+    },
+    "ProgressiveDisease": {
+      "type": "Simple",
+      "direct_transition": "SecondLineTherapy"
+    },
+    "ContinueTherapy": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 4,
+        "unit": "months"
+      },
+      "direct_transition": "ResponseEvaluation"
+    },
+    "MaintenanceTherapy": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "ObservationMaintenance"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "MaintenanceHormonalTherapy"
+        }
+      ]
+    },
+    "ObservationMaintenance": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "SurveillanceAdvanced"
+    },
+    "MaintenanceHormonalTherapy": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "860221",
+          "display": "megestrol acetate 40 MG Oral Tablet"
+        }
+      ],
+      "direct_transition": "SurveillanceAdvanced"
+    },
+    "SecondLineTherapy": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
+          "transition": "SecondLineChemotherapy"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "Immunotherapy"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "ClinicalTrial"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "PalliativeCareOnly"
+        }
+      ]
+    },
+    "SecondLineChemotherapy": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "374376",
+          "display": "doxorubicin Injectable Solution"
+        }
+      ],
+      "direct_transition": "ResponseEvaluation"
+    },
+    "Immunotherapy": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1657750",
+          "display": "4 ML pembrolizumab 25 MG/ML Injection"
+        }
+      ],
+      "direct_transition": "ResponseEvaluation"
+    },
+    "ClinicalTrial": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "446096008",
+          "display": "Clinical trial participation (procedure)"
+        }
+      ],
+      "direct_transition": "ResponseEvaluation"
+    },
+    "PalliativeCareOnly": {
+      "type": "Encounter",
+      "encounter_class": "hospice",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "305336008",
+          "display": "Admission to hospice (procedure)"
+        }
+      ],
+      "direct_transition": "EndOfLife"
+    },
+    "SurveillanceAdvanced": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "years_no_recurrence",
+            "operator": ">=",
+            "value": 5
+          },
+          "transition": "LongTermRemission"
+        },
+        {
+          "transition": "RecurrenceCheck"
+        }
+      ]
+    },
+    "RecurrenceCheck": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.2,
+          "transition": "LocalRecurrence"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "DistantRecurrence"
+        },
+        {
+          "distribution": 0.65,
+          "transition": "NoEvidenceDisease"
+        }
+      ]
+    },
+    "LocalRecurrence": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "405843009",
+          "display": "Widespread metastatic malignant neoplastic disease (disorder)"
+        }
+      ],
+      "direct_transition": "SalvageTherapy"
+    },
+    "DistantRecurrence": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "128462008",
+          "display": "Metastatic malignant neoplasm (disorder)"
+        }
+      ],
+      "direct_transition": "SystemicTherapy"
+    },
+    "NoEvidenceDisease": {
+      "type": "Counter",
+      "attribute": "years_no_recurrence",
+      "action": "increment",
+      "direct_transition": "SurveillanceAdvanced"
+    },
+    "SalvageTherapy": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "RadiationSalvage"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "SurgicalSalvage"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "SystemicTherapy"
+        }
+      ]
+    },
+    "RadiationSalvage": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "77427",
+          "display": "Radiation treatment management, 5 treatments"
+        }
+      ],
+      "direct_transition": "ResponseEvaluation"
+    },
+    "SurgicalSalvage": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "58960",
+          "display": "Resection (tumor debulking) of ovarian, peritoneal, or omental tumor"
+        }
+      ],
+      "direct_transition": "ResponseEvaluation"
+    },
+    "LongTermRemission": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 2,
+        "unit": "years"
+      },
+      "direct_transition": "FollowUpVisit"
+    },
+    "EndOfLife": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 12,
+        "unit": "months"
+      },
+      "direct_transition": "Death"
+    },
+    "Death": {
+      "type": "Death",
+      "direct_transition": "Terminal",
+      "range": {
+        "low": 1,
+        "high": 6,
+        "unit": "months"
+      },
+      "referenced_by_attribute": "endometrial_cancer"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "PresentingSymptoms_Action_1_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "PresentingSymptoms_Action_1",
+          "distribution": 0.9
+        },
+        {
+          "transition": "PresentingSymptoms_Action_2",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "PresentingSymptoms_Action_1": {
+      "type": "Symptom",
+      "symptom": "Postmenopausal bleeding (finding)",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "PresentingSymptoms_Action_2_Gate"
+    },
+    "PresentingSymptoms_Action_2_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "PresentingSymptoms_Action_2",
+          "distribution": 0.8
+        },
+        {
+          "transition": "PresentingSymptoms_Action_3",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "PresentingSymptoms_Action_2": {
+      "type": "Symptom",
+      "symptom": "Abnormal uterine bleeding (finding)",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "PresentingSymptoms_Action_3_Gate"
+    },
+    "PresentingSymptoms_Action_3_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "PresentingSymptoms_Action_3",
+          "distribution": 0.4
+        },
+        {
+          "transition": "PrimaryCareEvaluation",
+          "distribution": 0.6
+        }
+      ]
+    },
+    "PresentingSymptoms_Action_3": {
+      "type": "Symptom",
+      "symptom": "Pelvic pain (finding)",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "PrimaryCareEvaluation"
+    },
+    "LowRiskDisease_Action_1": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "21905-5",
+          "display": "Pathology report cancer staging"
+        }
+      ],
+      "direct_transition": "SurgeryOnly"
+    },
+    "SurgeryOnly_Action_1": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "116144002",
+          "display": "Total abdominal hysterectomy with bilateral salpingo-oophorectomy"
+        }
+      ],
+      "direct_transition": "SurveillanceLowRisk"
+    },
+    "PhysicalExamSurveillance_Action_1_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "PhysicalExamSurveillance_Action_1",
+          "distribution": 0.9
+        },
+        {
+          "transition": "ContinueSurveillance",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "PhysicalExamSurveillance_Action_1": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "30954-2",
+          "display": "Relevant physical findings"
+        }
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "surveillance_visits",
+            "operator": "<",
+            "value": 5
+          },
+          "transition": "ContinueSurveillance"
+        },
+        {
+          "transition": "LongTermSurveillance"
+        }
+      ]
+    },
+    "IntermediateRiskDisease_Action_1": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "21905-5",
+          "display": "Pathology report cancer staging"
+        }
+      ],
+      "direct_transition": "ConsiderAdjuvantTherapy"
+    },
+    "HighIntermediateRiskDisease_Action_1": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "21905-5",
+          "display": "Pathology report cancer staging"
+        }
+      ],
+      "direct_transition": "AdjuvantRadiationTherapy"
+    },
+    "AdvancedDisease_Action_1": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "21905-5",
+          "display": "Pathology report cancer staging"
+        }
+      ],
+      "direct_transition": "AdvancedDisease_Action_2_Gate"
+    },
+    "AdvancedDisease_Action_2_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "AdvancedDisease_Action_2",
+          "distribution": 0.8
+        },
+        {
+          "transition": "AdvancedDisease_Action_3",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "AdvancedDisease_Action_2": {
+      "type": "ImagingStudy",
+      "procedure_code": {
+        "system": "SNOMED-CT",
+        "code": "77477000",
+        "display": "Magnetic resonance imaging of abdomen (procedure)"
+      },
+      "direct_transition": "AdvancedDisease_Action_3_Gate"
+    },
+    "AdvancedDisease_Action_3_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "AdvancedDisease_Action_3",
+          "distribution": 0.9
+        },
+        {
+          "transition": "SystemicTherapy",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "AdvancedDisease_Action_3": {
+      "type": "ImagingStudy",
+      "procedure_code": {
+        "system": "SNOMED-CT",
+        "code": "399208008",
+        "display": "Plain X-ray of chest (procedure)"
+      },
+      "direct_transition": "SystemicTherapy"
+    }
+  }
+}

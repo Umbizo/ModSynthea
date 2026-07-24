@@ -1,0 +1,699 @@
+{
+  "name": "Ovarian Cancer",
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "Gender_Check"
+    },
+    "Gender_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Gender",
+            "gender": "F"
+          },
+          "transition": "Age_Check"
+        },
+        {
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Age_Check": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 30,
+          "standardDeviation": 10
+        }
+      },
+      "unit": "years",
+      "direct_transition": "Ovarian_Age_Guard"
+    },
+    "Wellness_Encounter": {
+      "type": "Encounter",
+      "wellness": true,
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for check up"
+        }
+      ],
+      "direct_transition": "Risk_Assessment"
+    },
+    "Risk_Assessment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.0015,
+          "transition": "High_Risk_BRCA"
+        },
+        {
+          "distribution": 0.008,
+          "transition": "Family_History_Risk"
+        },
+        {
+          "distribution": 0.9905,
+          "transition": "Average_Risk"
+        }
+      ]
+    },
+    "High_Risk_BRCA": {
+      "type": "SetAttribute",
+      "attribute": "ovarian_cancer_risk",
+      "value": "high_brca",
+      "direct_transition": "Genetic_Testing"
+    },
+    "Genetic_Testing": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "405824009",
+          "display": "Genetic testing"
+        }
+      ],
+      "direct_transition": "BRCA_Mutation_Result"
+    },
+    "BRCA_Mutation_Result": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "412734009",
+          "display": "BRCA1 gene mutation detected (finding)"
+        }
+      ],
+      "direct_transition": "Genetic_Counseling"
+    },
+    "Genetic_Counseling": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "79841006",
+          "display": "Genetic counseling"
+        }
+      ],
+      "direct_transition": "Risk_Based_Surveillance"
+    },
+    "Family_History_Risk": {
+      "type": "SetAttribute",
+      "attribute": "ovarian_cancer_risk",
+      "value": "family_history",
+      "direct_transition": "Enhanced_Screening"
+    },
+    "Enhanced_Screening": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "426491001",
+          "display": "Transvaginal ultrasound of female genital tract"
+        }
+      ],
+      "direct_transition": "Risk_Based_Surveillance"
+    },
+    "Average_Risk": {
+      "type": "SetAttribute",
+      "attribute": "ovarian_cancer_risk",
+      "value": "average",
+      "direct_transition": "Terminal"
+    },
+    "Risk_Based_Surveillance": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 6,
+          "standardDeviation": 1
+        }
+      },
+      "unit": "months",
+      "direct_transition": "CA125_Screening"
+    },
+    "CA125_Screening": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "10334-1",
+          "display": "Cancer Ag 125 [Units/volume] in Serum or Plasma"
+        }
+      ],
+      "direct_transition": "Cancer_Onset_Check",
+      "unit": "U/mL",
+      "range": {
+        "low": 5.0,
+        "high": 35.0
+      },
+      "assign_to_attribute": "last_ca125"
+    },
+    "Cancer_Onset_Check": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 12,
+          "standardDeviation": 6
+        }
+      },
+      "unit": "months",
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Age",
+                "operator": ">=",
+                "quantity": 45,
+                "unit": "years"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "ovarian_cancer_risk",
+                "operator": "==",
+                "value": "high_brca"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "transition": "Ovarian_Cancer_Onset_High_Risk",
+              "distribution": 0.8
+            },
+            {
+              "transition": "Risk_Based_Surveillance",
+              "distribution": 0.2
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 55,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "transition": "Ovarian_Cancer_Onset_Sporadic",
+              "distribution": 0.0015
+            },
+            {
+              "transition": "Risk_Based_Surveillance",
+              "distribution": 0.9985
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "transition": "Risk_Based_Surveillance",
+              "distribution": 1.0
+            }
+          ]
+        }
+      ]
+    },
+    "Ovarian_Cancer_Onset_High_Risk": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.85,
+          "transition": "High_Grade_Serous"
+        },
+        {
+          "distribution": 0.08,
+          "transition": "Endometrioid"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "Clear_Cell"
+        },
+        {
+          "distribution": 0.02,
+          "transition": "Low_Grade_Serous"
+        }
+      ]
+    },
+    "Ovarian_Cancer_Onset_Sporadic": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.68,
+          "transition": "High_Grade_Serous"
+        },
+        {
+          "distribution": 0.12,
+          "transition": "Endometrioid"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "Clear_Cell"
+        },
+        {
+          "distribution": 0.06,
+          "transition": "Mucinous"
+        },
+        {
+          "distribution": 0.04,
+          "transition": "Low_Grade_Serous"
+        }
+      ]
+    },
+    "High_Grade_Serous": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "93796005",
+          "display": "Primary malignant neoplasm of ovary"
+        }
+      ],
+      "direct_transition": "Set_Histology_Serous",
+      "assign_to_attribute": "Ovarian Cancer"
+    },
+    "Set_Histology_Serous": {
+      "type": "SetAttribute",
+      "attribute": "histology",
+      "value": "high_grade_serous",
+      "direct_transition": "Set_Cancer_Stage"
+    },
+    "Endometrioid": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "93796005",
+          "display": "Primary malignant neoplasm of ovary"
+        }
+      ],
+      "direct_transition": "Set_Histology_Endometrioid",
+      "assign_to_attribute": "Ovarian Cancer"
+    },
+    "Set_Histology_Endometrioid": {
+      "type": "SetAttribute",
+      "attribute": "histology",
+      "value": "endometrioid",
+      "direct_transition": "Set_Cancer_Stage"
+    },
+    "Clear_Cell": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "93796005",
+          "display": "Primary malignant neoplasm of ovary"
+        }
+      ],
+      "direct_transition": "Set_Histology_Clear_Cell",
+      "assign_to_attribute": "Ovarian Cancer"
+    },
+    "Set_Histology_Clear_Cell": {
+      "type": "SetAttribute",
+      "attribute": "histology",
+      "value": "clear_cell",
+      "direct_transition": "Set_Cancer_Stage"
+    },
+    "Mucinous": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "93796005",
+          "display": "Primary malignant neoplasm of ovary"
+        }
+      ],
+      "direct_transition": "Set_Histology_Mucinous",
+      "assign_to_attribute": "Ovarian Cancer"
+    },
+    "Set_Histology_Mucinous": {
+      "type": "SetAttribute",
+      "attribute": "histology",
+      "value": "mucinous",
+      "direct_transition": "Set_Cancer_Stage"
+    },
+    "Low_Grade_Serous": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "93796005",
+          "display": "Primary malignant neoplasm of ovary"
+        }
+      ],
+      "direct_transition": "Set_Histology_Low_Grade",
+      "assign_to_attribute": "Ovarian Cancer"
+    },
+    "Set_Histology_Low_Grade": {
+      "type": "SetAttribute",
+      "attribute": "histology",
+      "value": "low_grade_serous",
+      "direct_transition": "Set_Cancer_Stage"
+    },
+    "Set_Cancer_Stage": {
+      "type": "SetAttribute",
+      "attribute": "cancer_stage",
+      "value": {
+        "type": "String",
+        "value_set": [
+          "I",
+          "II",
+          "III",
+          "IV"
+        ]
+      },
+      "direct_transition": "Set_ECOG_Status"
+    },
+    "Set_ECOG_Status": {
+      "type": "SetAttribute",
+      "attribute": "ecog_status",
+      "value": {
+        "type": "Integer",
+        "range": {
+          "low": 0,
+          "high": 3
+        }
+      },
+      "direct_transition": "Treatment_Decision"
+    },
+    "Treatment_Decision": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 14,
+          "standardDeviation": 7
+        }
+      },
+      "unit": "days",
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "cancer_stage",
+                "operator": "==",
+                "value": "I"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "cancer_stage",
+                "operator": "==",
+                "value": "II"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "transition": "Primary_Surgery",
+              "distribution": 1.0
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "cancer_stage",
+                "operator": "==",
+                "value": "III"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "cancer_stage",
+                "operator": "==",
+                "value": "IV"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "transition": "Neoadjuvant_Chemotherapy",
+              "distribution": 0.7
+            },
+            {
+              "transition": "Primary_Surgery",
+              "distribution": 0.3
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "cancer_stage",
+            "operator": "is nil"
+          },
+          "distributions": [
+            {
+              "transition": "Primary_Surgery",
+              "distribution": 1.0
+            }
+          ]
+        },
+        {
+          "transition": "Primary_Surgery"
+        }
+      ]
+    },
+    "Primary_Surgery": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "116028008",
+          "display": "Salpingo-oophorectomy"
+        }
+      ],
+      "direct_transition": "Adjuvant_Therapy_Decision"
+    },
+    "Adjuvant_Therapy_Decision": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 21,
+          "standardDeviation": 7
+        }
+      },
+      "unit": "days",
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "cancer_stage",
+                "operator": "==",
+                "value": "II"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "cancer_stage",
+                "operator": "==",
+                "value": "III"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "cancer_stage",
+                "operator": "==",
+                "value": "IV"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "transition": "Adjuvant_Chemotherapy",
+              "distribution": 0.9
+            },
+            {
+              "transition": "Surveillance_Phase",
+              "distribution": 0.1
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "cancer_stage",
+            "operator": "is nil"
+          },
+          "distributions": [
+            {
+              "transition": "Surveillance_Phase",
+              "distribution": 1.0
+            }
+          ]
+        },
+        {
+          "transition": "Surveillance_Phase"
+        }
+      ]
+    },
+    "Neoadjuvant_Chemotherapy": {
+      "type": "MedicationOrder",
+      "direct_transition": "Interval_Surgery",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "40048",
+          "display": "Carboplatin"
+        },
+        {
+          "system": "RxNorm",
+          "code": "56946",
+          "display": "Paclitaxel"
+        }
+      ]
+    },
+    "Interval_Surgery": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "116028008",
+          "display": "Salpingo-oophorectomy"
+        }
+      ],
+      "direct_transition": "Adjuvant_Chemotherapy"
+    },
+    "Adjuvant_Chemotherapy": {
+      "type": "MedicationOrder",
+      "direct_transition": "Response_Assessment",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "40048",
+          "display": "Carboplatin"
+        },
+        {
+          "system": "RxNorm",
+          "code": "56946",
+          "display": "Paclitaxel"
+        }
+      ]
+    },
+    "Response_Assessment": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 1,
+          "standardDeviation": 0.5
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Maintenance_Therapy_Decision"
+    },
+    "Maintenance_Therapy_Decision": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "PARP_Inhibitor_Maintenance"
+        },
+        {
+          "distribution": 0.5,
+          "transition": "Surveillance_Phase"
+        }
+      ]
+    },
+    "PARP_Inhibitor_Maintenance": {
+      "type": "MedicationOrder",
+      "direct_transition": "Surveillance_Phase",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1597582",
+          "display": "olaparib"
+        }
+      ]
+    },
+    "Surveillance_Phase": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 4.5,
+          "standardDeviation": 1.5
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Recurrence_Check"
+    },
+    "Recurrence_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.25,
+          "transition": "Recurrent_Disease"
+        },
+        {
+          "distribution": 0.75,
+          "transition": "Surveillance_Phase"
+        }
+      ]
+    },
+    "Recurrent_Disease": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "1259237005",
+          "display": "Recurrent malignant neoplasm"
+        }
+      ],
+      "direct_transition": "Second_Line_Treatment"
+    },
+    "Second_Line_Treatment": {
+      "type": "MedicationOrder",
+      "direct_transition": "Palliative_Care",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "466523",
+          "display": "doxorubicin hydrochloride liposome"
+        }
+      ]
+    },
+    "Palliative_Care": {
+      "type": "CarePlanStart",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "103735009",
+          "display": "Palliative care"
+        }
+      ],
+      "direct_transition": "Death_from_Cancer"
+    },
+    "Death_from_Cancer": {
+      "type": "Death",
+      "direct_transition": "Terminal"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "Ovarian_Age_Guard": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 18,
+        "unit": "years"
+      },
+      "direct_transition": "Wellness_Encounter"
+    }
+  }
+}

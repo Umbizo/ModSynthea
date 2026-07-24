@@ -1,0 +1,2579 @@
+{
+  "name": "Myelodysplastic Syndromes",
+  "remarks": [
+    "Myelodysplastic Syndromes (MDS) — Comprehensive Synthea Module",
+    "Version: 2.0 | Audit-corrected",
+    "Based on: WHO 5th Edition 2022, ICC 2022, IPSS-R, IPSS-M,",
+    "NCCN Guidelines v1.2026, ESMO Clinical Practice Guidelines,",
+    "ASH Blood 2023 treatment review (Hellström-Lindberg & Kröger).",
+    "",
+    "Epidemiology:",
+    "  - Incidence: ~4 per 100,000 persons/year overall; 26.1 per 100,000 in age ≥65.",
+    "  - Median age at diagnosis: 70–77 years. More common in males (~1.5-2x).",
+    "  - ~25% of patients progress to AML over their disease course.",
+    "  - Median overall survival: ~3 years (range: months to >8 years by subtype).",
+    "",
+    "WHO 2022 Subtypes modelled (8 subtypes):",
+    "  1. MDS with low blasts, single lineage dysplasia (MDS-LB-SLD)     — ~15%",
+    "  2. MDS with low blasts, multilineage dysplasia (MDS-LB-MLD)       — ~25%",
+    "  3. MDS with mutated SF3B1 (MDS-SF3B1; formerly MDS-RS)            — ~10%",
+    "  4. MDS with isolated del(5q) (MDS-5q)                             — ~5%",
+    "  5. MDS, hypoplastic (MDS-h)                                       — ~5%",
+    "  6. MDS with biallelic TP53 inactivation (MDS-biTP53)              — ~5%",
+    "  7. MDS with increased blasts-1 (MDS-IB1, 5-9% BM blasts)         — ~17%",
+    "  8. MDS with increased blasts-2 (MDS-IB2, 10-19% BM blasts)       — ~18%",
+    "  Distributions sum to 1.0.",
+    "",
+    "Risk stratification: IPSS-R — very low / low / intermediate / high / very high.",
+    "  MDS-LB-SLD / MDS-SF3B1 / MDS-5q / MDS-h → lower risk",
+    "  MDS-LB-MLD → lower risk (intermediate IPSS-R in some)",
+    "  MDS-biTP53 / MDS-IB1 / MDS-IB2 → higher risk",
+    "",
+    "Treatment pathways modelled:",
+    "  Lower-risk: watchful waiting, ESA-gated by EPO level (epoetin alfa if EPO≤500),",
+    "              IST (ATG+cyclosporine if EPO>500 or hypocellular MDS-h),",
+    "              luspatercept (MDS-SF3B1 subtype only), lenalidomide (MDS-5q only),",
+    "              imetelstat (ESA-refractory), iron chelation (deferasirox),",
+    "              RBC transfusions.",
+    "  Higher-risk: azacitidine (HMA first-line), decitabine,",
+    "               venetoclax+HMA (second-line), IDH inhibitors (IDH1/2 mutated),",
+    "               intensive chemotherapy (3+7; fit young patients),",
+    "               allogeneic stem cell transplantation (allo-SCT).",
+    "  MDS-biTP53: HMA ± venetoclax; SCT if feasible; very poor prognosis.",
+    "",
+    "Outcomes: stable disease, haematological improvement, AML transformation, death.",
+    "",
+    "Coding references:",
+    "  SNOMED-CT codes: IHTSDO SNOMED CT Browser",
+    "  RxNorm codes: NLM RxNorm Browser",
+    "  LOINC codes: LOINC.org"
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "remarks": [
+        "All patients enter here at birth.",
+        "MDS is vanishingly rare before age 40; risk rises steeply after 60."
+      ],
+      "direct_transition": "Age_Guard_MDS_Onset"
+    },
+    "Age_Guard_MDS_Onset": {
+      "type": "Guard",
+      "remarks": [
+        "Gate on age ≥50 to capture therapy-related MDS and earlier-onset cases.",
+        "Median age at diagnosis: 70–77 years (published registry data)."
+      ],
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 50,
+        "unit": "years"
+      },
+      "direct_transition": "Risk_Of_MDS"
+    },
+    "Risk_Of_MDS": {
+      "type": "Simple",
+      "remarks": [
+        "Annual incidence ~26/100,000 in age ≥65.",
+        "Modelled as ~4% cumulative probability in the age ≥50 simulation cohort.",
+        "Males have ~1.5–2× higher incidence than females."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.04,
+          "transition": "Onset_Delay"
+        },
+        {
+          "distribution": 0.96,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Onset_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Variable delay from age 50 to MDS onset.",
+        "Uniform over 0–30 years; most cases cluster at ages 65–80."
+      ],
+      "range": {
+        "low": 0,
+        "high": 30,
+        "unit": "years"
+      },
+      "direct_transition": "MDS_Subtype_Determination"
+    },
+    "MDS_Subtype_Determination": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 3: MDS-RS → MDS-SF3B1 (WHO 2022 / ICC 2022 nomenclature).",
+        "FIX 4: MDS-biTP53 added (~5%).",
+        "FIX 5: MDS-h added (~5%).",
+        "Frequencies derived from published registry cohorts and WHO 2022 re-classification studies.",
+        "  MDS-LB-SLD:   ~15%  (Leukemia 2022 re-classification dataset)",
+        "  MDS-LB-MLD:   ~25%",
+        "  MDS-SF3B1:    ~10%  (SF3B1 mutations in 10–15% of all MDS)",
+        "  MDS-5q:        ~5%",
+        "  MDS-h:         ~5%  (hypoplastic, newly recognised WHO 2022 subtype)",
+        "  MDS-biTP53:    ~5%  (biallelic TP53; newly recognised WHO 2022 subtype)",
+        "  MDS-IB1:      ~17%",
+        "  MDS-IB2:      ~18%",
+        "Total = 1.00"
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.15,
+          "transition": "Subtype_SLD"
+        },
+        {
+          "distribution": 0.25,
+          "transition": "Subtype_MLD"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "Subtype_SF3B1"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "Subtype_Del5q"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "Subtype_Hypoplastic"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "Subtype_biTP53"
+        },
+        {
+          "distribution": 0.17,
+          "transition": "Subtype_IB1"
+        },
+        {
+          "distribution": 0.18,
+          "transition": "Subtype_IB2"
+        }
+      ]
+    },
+    "Subtype_SLD": {
+      "type": "SetAttribute",
+      "attribute": "mds_subtype",
+      "value": "MDS-LB-SLD",
+      "direct_transition": "Set_Risk_Lower"
+    },
+    "Subtype_MLD": {
+      "type": "SetAttribute",
+      "attribute": "mds_subtype",
+      "value": "MDS-LB-MLD",
+      "direct_transition": "Set_Risk_Lower"
+    },
+    "Subtype_SF3B1": {
+      "type": "SetAttribute",
+      "attribute": "mds_subtype",
+      "value": "MDS-SF3B1",
+      "direct_transition": "Set_Risk_Lower"
+    },
+    "Subtype_Del5q": {
+      "type": "SetAttribute",
+      "attribute": "mds_subtype",
+      "value": "MDS-5q",
+      "direct_transition": "Set_Risk_Lower"
+    },
+    "Subtype_Hypoplastic": {
+      "type": "SetAttribute",
+      "attribute": "mds_subtype",
+      "value": "MDS-h",
+      "direct_transition": "Set_Risk_Lower"
+    },
+    "Subtype_biTP53": {
+      "type": "SetAttribute",
+      "attribute": "mds_subtype",
+      "value": "MDS-biTP53",
+      "direct_transition": "Set_Risk_Higher"
+    },
+    "Subtype_IB1": {
+      "type": "SetAttribute",
+      "attribute": "mds_subtype",
+      "value": "MDS-IB1",
+      "direct_transition": "Set_Risk_Higher"
+    },
+    "Subtype_IB2": {
+      "type": "SetAttribute",
+      "attribute": "mds_subtype",
+      "value": "MDS-IB2",
+      "direct_transition": "Set_Risk_Higher"
+    },
+    "Set_Risk_Lower": {
+      "type": "SetAttribute",
+      "attribute": "mds_risk",
+      "value": "lower",
+      "direct_transition": "Presymptomatic_Phase"
+    },
+    "Set_Risk_Higher": {
+      "type": "SetAttribute",
+      "attribute": "mds_risk",
+      "value": "higher",
+      "direct_transition": "Presymptomatic_Phase"
+    },
+    "Presymptomatic_Phase": {
+      "type": "Delay",
+      "remarks": [
+        "Interval between clonal onset and clinical presentation.",
+        "Many patients discovered incidentally on routine full blood count.",
+        "0–24 months represents the variable lag to diagnosis."
+      ],
+      "range": {
+        "low": 0,
+        "high": 24,
+        "unit": "months"
+      },
+      "direct_transition": "MDS_Onset"
+    },
+    "MDS_Onset": {
+      "type": "ConditionOnset",
+      "remarks": [
+        "SNOMED-CT 109995007 = Myelodysplastic syndrome (disorder) — umbrella code.",
+        "Subtype captured in mds_subtype attribute and state-level remarks.",
+        "target_encounter links ConditionOnset recording to the diagnostic encounter."
+      ],
+      "target_encounter": "Haematology_Diagnostic_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "109995007",
+          "display": "Myelodysplastic syndrome (disorder)"
+        }
+      ],
+      "direct_transition": "Presenting_Symptoms"
+    },
+    "Presenting_Symptoms": {
+      "type": "Simple",
+      "remarks": [
+        "Most common presenting features (published prevalence at diagnosis):",
+        "  Fatigue / anaemia symptoms: ~85–90%",
+        "  Pallor: ~80%",
+        "  Exertional dyspnoea: ~60%",
+        "  Easy bruising / petechiae (thrombocytopaenia): ~25–30%",
+        "  Recurrent infections (neutropaenia): ~10–15%",
+        "  Incidental discovery on routine FBC: ~20–30%"
+      ],
+      "direct_transition": "Symptom_Fatigue"
+    },
+    "Symptom_Fatigue": {
+      "type": "Symptom",
+      "symptom": "Fatigue",
+      "cause": "Myelodysplastic syndrome (disorder)",
+      "probability": 0.9,
+      "range": {
+        "low": 40,
+        "high": 80
+      },
+      "direct_transition": "Symptom_Pallor"
+    },
+    "Symptom_Pallor": {
+      "type": "Symptom",
+      "symptom": "Pallor",
+      "cause": "Myelodysplastic syndrome (disorder)",
+      "probability": 0.8,
+      "range": {
+        "low": 30,
+        "high": 70
+      },
+      "direct_transition": "Symptom_Dyspnea"
+    },
+    "Symptom_Dyspnea": {
+      "type": "Symptom",
+      "symptom": "Dyspnea",
+      "cause": "Myelodysplastic syndrome (disorder)",
+      "probability": 0.6,
+      "range": {
+        "low": 20,
+        "high": 65
+      },
+      "direct_transition": "Symptom_Bruising"
+    },
+    "Symptom_Bruising": {
+      "type": "Symptom",
+      "symptom": "Easy bruising",
+      "cause": "Myelodysplastic syndrome (disorder)",
+      "probability": 0.3,
+      "range": {
+        "low": 10,
+        "high": 50
+      },
+      "direct_transition": "Haematology_Diagnostic_Encounter"
+    },
+    "Haematology_Diagnostic_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "CBC_Observation_Haemoglobin"
+    },
+    "CBC_Observation_Haemoglobin": {
+      "type": "Observation",
+      "remarks": [
+        "LOINC 718-7 = Haemoglobin [Mass/volume] in Blood.",
+        "MDS cytopaenia threshold: Hb <13 g/dL (M) or <12 g/dL (F) per WHO 2022.",
+        "Presenting anaemia in most MDS patients: 7.5–10.5 g/dL."
+      ],
+      "category": "laboratory",
+      "unit": "g/dL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "718-7",
+          "display": "Hemoglobin [Mass/volume] in Blood"
+        }
+      ],
+      "range": {
+        "low": 7.5,
+        "high": 10.5
+      },
+      "direct_transition": "CBC_Observation_Platelets_Branch"
+    },
+    "CBC_Observation_Platelets_Branch": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 8: Platelet observation is now subtype-stratified.",
+        "MDS-5q (del5q): characteristically normal or elevated platelets (~150–500 × 10^9/L).",
+        "MDS-SF3B1: usually normal or mildly reduced platelets (~80–200 × 10^9/L).",
+        "MDS-h: often pancytopenic; low platelets (~20–80 × 10^9/L).",
+        "MDS-biTP53, IB1, IB2: thrombocytopaenic (~20–80 × 10^9/L).",
+        "MDS-LB-SLD, MDS-LB-MLD: moderately low (~40–130 × 10^9/L)."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "mds_subtype",
+            "operator": "==",
+            "value": "MDS-5q"
+          },
+          "transition": "Platelets_Normal_Elevated"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "mds_subtype",
+            "operator": "==",
+            "value": "MDS-SF3B1"
+          },
+          "transition": "Platelets_Mildly_Low"
+        },
+        {
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "mds_subtype",
+                "operator": "==",
+                "value": "MDS-h"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "mds_subtype",
+                "operator": "==",
+                "value": "MDS-biTP53"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "mds_subtype",
+                "operator": "==",
+                "value": "MDS-IB1"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "mds_subtype",
+                "operator": "==",
+                "value": "MDS-IB2"
+              }
+            ]
+          },
+          "transition": "Platelets_Low"
+        },
+        {
+          "transition": "Platelets_Moderately_Low"
+        }
+      ]
+    },
+    "Platelets_Normal_Elevated": {
+      "type": "Observation",
+      "remarks": [
+        "MDS-5q: thrombocytosis or normal platelets in ~50% of patients.",
+        "Hypolobulated megakaryocytes on BM biopsy despite normal/high platelet count."
+      ],
+      "category": "laboratory",
+      "unit": "10*3/uL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "777-3",
+          "display": "Platelets [#/volume] in Blood by Automated count"
+        }
+      ],
+      "range": {
+        "low": 150,
+        "high": 500
+      },
+      "direct_transition": "CBC_Observation_ANC"
+    },
+    "Platelets_Mildly_Low": {
+      "type": "Observation",
+      "remarks": [
+        "MDS-SF3B1: typically normal or mildly reduced platelets.",
+        "Predominantly erythroid dysplasia; megakaryocytic lineage less affected."
+      ],
+      "category": "laboratory",
+      "unit": "10*3/uL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "777-3",
+          "display": "Platelets [#/volume] in Blood by Automated count"
+        }
+      ],
+      "range": {
+        "low": 80,
+        "high": 200
+      },
+      "direct_transition": "CBC_Observation_ANC"
+    },
+    "Platelets_Low": {
+      "type": "Observation",
+      "remarks": [
+        "MDS-h, MDS-biTP53, MDS-IB1, MDS-IB2: significant thrombocytopaenia.",
+        "MDS-h: pancytopenia pattern similar to aplastic anaemia.",
+        "MDS-biTP53 / IB2: multilineage failure often severe."
+      ],
+      "category": "laboratory",
+      "unit": "10*3/uL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "777-3",
+          "display": "Platelets [#/volume] in Blood by Automated count"
+        }
+      ],
+      "range": {
+        "low": 20,
+        "high": 80
+      },
+      "direct_transition": "CBC_Observation_ANC"
+    },
+    "Platelets_Moderately_Low": {
+      "type": "Observation",
+      "remarks": [
+        "MDS-LB-SLD, MDS-LB-MLD: moderate thrombocytopaenia.",
+        "Cytopaenia threshold for MDS diagnosis: platelets <100 × 10^9/L."
+      ],
+      "category": "laboratory",
+      "unit": "10*3/uL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "777-3",
+          "display": "Platelets [#/volume] in Blood by Automated count"
+        }
+      ],
+      "range": {
+        "low": 40,
+        "high": 130
+      },
+      "direct_transition": "CBC_Observation_ANC"
+    },
+    "CBC_Observation_ANC": {
+      "type": "Observation",
+      "remarks": [
+        "LOINC 26499-4 = Neutrophils [#/volume] in Blood.",
+        "ANC cytopaenia threshold for MDS: <1.8 × 10^9/L.",
+        "Range 0.5–2.0 × 10^9/L reflects neutropaenia seen at presentation."
+      ],
+      "category": "laboratory",
+      "unit": "10*3/uL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "26499-4",
+          "display": "Neutrophils [#/volume] in Blood"
+        }
+      ],
+      "range": {
+        "low": 0.5,
+        "high": 2.0
+      },
+      "direct_transition": "CBC_Observation_MCV"
+    },
+    "CBC_Observation_MCV": {
+      "type": "Observation",
+      "remarks": [
+        "LOINC 787-2 = MCV [Entitic volume] in Blood.",
+        "Macrocytosis (elevated MCV) is characteristic of MDS.",
+        "Range 95–115 fL; MDS-SF3B1 may show pronounced macrocytosis."
+      ],
+      "category": "laboratory",
+      "unit": "fL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "787-2",
+          "display": "MCV [Entitic volume] by Automated count"
+        }
+      ],
+      "range": {
+        "low": 95,
+        "high": 115
+      },
+      "direct_transition": "Bone_Marrow_Biopsy_Procedure"
+    },
+    "Bone_Marrow_Biopsy_Procedure": {
+      "type": "Procedure",
+      "remarks": [
+        "SNOMED-CT 234326001 = Bone marrow biopsy (procedure).",
+        "Mandatory for MDS diagnosis.",
+        "Assesses: dysplasia (≥10% per lineage), blast %, ring sideroblasts, cellularity.",
+        "MDS-h: cellularity <25% (or <50% for age) required for hypoplastic subtype.",
+        "Trephine biopsy also required for MDS-f (fibrosis) assessment.",
+        "Duration: 30–60 minutes in outpatient haematology."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "234326005",
+          "display": "Bone marrow biopsy"
+        }
+      ],
+      "duration": {
+        "low": 30,
+        "high": 60,
+        "unit": "minutes"
+      },
+      "direct_transition": "Cytogenetics_Procedure"
+    },
+    "Cytogenetics_Procedure": {
+      "type": "Procedure",
+      "remarks": [
+        "SNOMED-CT 405825005 = Cytogenetic analysis (procedure).",
+        "Mandatory karyotyping for IPSS-R risk scoring and subtype classification.",
+        "Key cytogenetic abnormalities:",
+        "  Favourable: del(5q) isolated, del(12p), del(20q), -Y, del(11q)",
+        "  Intermediate: +8, del(7q), i(17q), +19, any other single abnormality",
+        "  Poor: -7, inv(3)/t(3;3), del(3q), -7/del(7q)+1 other, complex (<3 abnormalities)",
+        "  Very poor: complex karyotype (≥3 abnormalities)",
+        "Molecular NGS panel (30+ genes): TET2, SF3B1, ASXL1, SRSF2, DNMT3A, RUNX1,",
+        "  TP53 (key for biTP53 subtype), IDH1/2, EZH2, NRAS, CBL, U2AF1, BCOR.",
+        "80–90% of MDS patients carry ≥1 somatic mutation."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "405825005",
+          "display": "Cytogenetic analysis (procedure)"
+        }
+      ],
+      "duration": {
+        "low": 14,
+        "high": 21,
+        "unit": "days"
+      },
+      "direct_transition": "Serum_Ferritin_Observation"
+    },
+    "Serum_Ferritin_Observation": {
+      "type": "Observation",
+      "remarks": [
+        "LOINC 2276-4 = Ferritin [Mass/volume] in Serum or Plasma.",
+        "Iron overload common in transfusion-dependent MDS.",
+        "Ferritin >1000 ng/mL: threshold for iron chelation in lower-risk MDS",
+        "with expected survival ≥1 year (ESMO/NCCN guidance).",
+        "Range at initial diagnosis before transfusion: 100–600 ng/mL."
+      ],
+      "category": "laboratory",
+      "unit": "ng/mL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2276-4",
+          "display": "Ferritin [Mass/volume] in Serum or Plasma"
+        }
+      ],
+      "range": {
+        "low": 100,
+        "high": 600
+      },
+      "direct_transition": "EPO_Level_Observation"
+    },
+    "EPO_Level_Observation": {
+      "type": "Observation",
+      "remarks": [
+        "LOINC 2949-6 = Erythropoietin [Units/volume] in Serum or Plasma.",
+        "FIX 6: EPO level is now used to gate ESA vs. IST routing.",
+        "NCCN 2024: EPO ≤500 mU/mL → recombinant EPO or darbepoetin first-line.",
+        "NCCN 2024: EPO >500 mU/mL → IST (if hypocellular/young) or azacitidine.",
+        "Nordic Scoring System: EPO <200 + no/low transfusion need = best ESA response.",
+        "Range at MDS diagnosis: 20–1200 mU/mL (bimodal around normal ~15 mU/mL)."
+      ],
+      "category": "laboratory",
+      "unit": "mU/mL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2949-6",
+          "display": "Erythropoietin [Units/volume] in Serum or Plasma"
+        }
+      ],
+      "range": {
+        "low": 20,
+        "high": 1200
+      },
+      "direct_transition": "Set_EPO_Level_Attribute"
+    },
+    "Set_EPO_Level_Attribute": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 6: Set a binary EPO attribute for downstream ESA eligibility gating.",
+        "EPO ≤500 mU/mL: ~60% of lower-risk MDS patients (ESA candidates).",
+        "EPO >500 mU/mL: ~40% of lower-risk MDS patients (IST or other).",
+        "Distribution derived from published Nordic score cohorts."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "Set_EPO_Low"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "Set_EPO_High"
+        }
+      ]
+    },
+    "Set_EPO_Low": {
+      "type": "SetAttribute",
+      "attribute": "mds_epo_level",
+      "value": "low",
+      "direct_transition": "Encounter_End_Diagnostic"
+    },
+    "Set_EPO_High": {
+      "type": "SetAttribute",
+      "attribute": "mds_epo_level",
+      "value": "high",
+      "direct_transition": "Encounter_End_Diagnostic"
+    },
+    "Encounter_End_Diagnostic": {
+      "type": "EncounterEnd",
+      "direct_transition": "Risk_Stratification_Branch"
+    },
+    "Risk_Stratification_Branch": {
+      "type": "Simple",
+      "remarks": [
+        "Route patients to lower-risk or higher-risk treatment pathway.",
+        "Based on mds_risk attribute set at subtype determination.",
+        "MDS-biTP53 is always higher-risk regardless of blast count."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "mds_risk",
+            "operator": "==",
+            "value": "lower"
+          },
+          "transition": "Lower_Risk_Treatment_Branch"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "mds_risk",
+            "operator": "==",
+            "value": "higher"
+          },
+          "transition": "Higher_Risk_Treatment_Branch"
+        },
+        {
+          "transition": "Higher_Risk_Treatment_Branch"
+        }
+      ]
+    },
+    "Lower_Risk_Treatment_Branch": {
+      "type": "Simple",
+      "remarks": [
+        "Lower-risk MDS treatment (NCCN 2024 / ESMO).",
+        "FIX 6: ESA eligibility now gated by EPO level AND subtype.",
+        "FIX 7: Luspatercept only offered to MDS-SF3B1 subtype.",
+        "FIX 5: MDS-h patients routed to IST (ATG+cyclosporine) pathway.",
+        "",
+        "Routing logic:",
+        "  MDS-h → IST (primary pathway regardless of EPO level)",
+        "  MDS-5q → Lenalidomide",
+        "  MDS-SF3B1 + EPO low → Luspatercept or ESA",
+        "  MDS-SF3B1 + EPO high → Luspatercept (approved for ESA-ineligible)",
+        "  Others + EPO low → ESA",
+        "  Others + EPO high → Watchful waiting or direct HMA (borderline risk)",
+        "  ~5% of lower-risk → SCT evaluation (fit younger patients)"
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "mds_subtype",
+            "operator": "==",
+            "value": "MDS-h"
+          },
+          "transition": "Lower_Risk_Immunosuppression"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "mds_subtype",
+            "operator": "==",
+            "value": "MDS-5q"
+          },
+          "transition": "Lower_Risk_Lenalidomide"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "mds_subtype",
+            "operator": "==",
+            "value": "MDS-SF3B1"
+          },
+          "transition": "SF3B1_Treatment_Branch"
+        },
+        {
+          "transition": "EPO_Gated_Treatment_Branch"
+        }
+      ]
+    },
+    "SF3B1_Treatment_Branch": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 7: MDS-SF3B1 specific treatment routing.",
+        "COMMANDS trial (2023): luspatercept superior to epoetin alfa as first-line",
+        "in ESA-naive lower-risk MDS (including SF3B1-mutated).",
+        "MEDALIST trial: luspatercept for ESA-refractory/ineligible MDS-RS.",
+        "Luspatercept now recommended for MDS-SF3B1 in both ESA-naive and ESA-failure settings.",
+        "EPO >500: ESA unlikely to work; luspatercept preferred.",
+        "Watchful waiting: small proportion of asymptomatic patients."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "Lower_Risk_Luspatercept"
+        },
+        {
+          "distribution": 0.25,
+          "transition": "Lower_Risk_ESA_Start"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "Lower_Risk_Watchful_Waiting"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "SCT_Evaluation_Encounter"
+        }
+      ]
+    },
+    "EPO_Gated_Treatment_Branch": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 6: For non-SF3B1, non-5q, non-h lower-risk MDS:",
+        "  EPO ≤500: ESA first-line (NCCN Category 1 for symptomatic anaemia).",
+        "  EPO >500: ESA unlikely to benefit; watchful waiting, IST, or HMA consideration."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "mds_epo_level",
+            "operator": "==",
+            "value": "low"
+          },
+          "transition": "EPO_Low_Branch"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "mds_epo_level",
+            "operator": "==",
+            "value": "high"
+          },
+          "transition": "EPO_High_Branch"
+        },
+        {
+          "transition": "Lower_Risk_Watchful_Waiting"
+        }
+      ]
+    },
+    "EPO_Low_Branch": {
+      "type": "Simple",
+      "remarks": [
+        "EPO ≤500 mU/mL: ESA is first-line.",
+        "~20% watchful waiting for asymptomatic or mild disease."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "Lower_Risk_ESA_Start"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Lower_Risk_Watchful_Waiting"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "SCT_Evaluation_Encounter"
+        }
+      ]
+    },
+    "EPO_High_Branch": {
+      "type": "Simple",
+      "remarks": [
+        "EPO >500 mU/mL: ESA is unlikely to benefit.",
+        "NCCN: consider IST (if hypocellular features/young) or azacitidine.",
+        "Many patients on watchful waiting / supportive care only."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.35,
+          "transition": "Lower_Risk_Watchful_Waiting"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "Lower_Risk_Immunosuppression"
+        },
+        {
+          "distribution": 0.25,
+          "transition": "RBC_Transfusion_Encounter"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "SCT_Evaluation_Encounter"
+        }
+      ]
+    },
+    "Lower_Risk_Watchful_Waiting": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "Watchful_Waiting_CarePlan"
+    },
+    "Watchful_Waiting_CarePlan": {
+      "type": "CarePlanStart",
+      "remarks": [
+        "SNOMED-CT 413076002 = Expectant management.",
+        "Monitoring: CBC every 3 months, annual BM review.",
+        "For asymptomatic IPSS-R very low / low risk MDS."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "438758006",
+          "display": "Expectant management"
+        }
+      ],
+      "activities": [
+        {
+          "system": "SNOMED-CT",
+          "code": "59037007",
+          "display": "Drug monitoring (procedure)"
+        }
+      ],
+      "direct_transition": "Watchful_Waiting_Encounter_End"
+    },
+    "Watchful_Waiting_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Monitoring_Delay_Lower"
+    },
+    "Monitoring_Delay_Lower": {
+      "type": "Delay",
+      "remarks": [
+        "Monitoring every 3–6 months for lower-risk stable MDS.",
+        "Periodic reassessment for disease progression."
+      ],
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Lower_Risk_Progression_Check"
+    },
+    "Lower_Risk_Progression_Check": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 9: AML transformation probabilities are now subtype-stratified.",
+        "This state represents the watchful-waiting cohort (mostly SLD/MLD).",
+        "Annual AML transformation in watchful-waiting lower-risk MDS: ~2–5%/year.",
+        "Disease worsening requiring treatment escalation: ~10–15%/year.",
+        "Stable disease: ~70–80% per monitoring cycle."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.03,
+          "transition": "AML_Transformation"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "Escalate_To_Higher_Risk"
+        },
+        {
+          "distribution": 0.17,
+          "transition": "Lower_Risk_ESA_Start"
+        },
+        {
+          "distribution": 0.7,
+          "transition": "Monitoring_Delay_Lower"
+        }
+      ]
+    },
+    "Lower_Risk_ESA_Start": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "ESA_Medication"
+    },
+    "ESA_Medication": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Epoetin alfa (Procrit / Epogen) — ESA first-line for lower-risk MDS with anaemia.",
+        "RxNorm 1237808 = epoetin alfa 40000 UNT/ML Injectable Solution.",
+        "Indication: symptomatic anaemia, EPO ≤500 mU/mL, no del(5q) and no RS ≥15%.",
+        "Dosing: 40,000–60,000 IU SC weekly; assess at 8–12 weeks.",
+        "Discontinue if no HI-E by 16 weeks (IWG 2023 criteria).",
+        "Response rate: ~40–60% if EPO ≤500 mU/mL (Nordic Score).",
+        "Darbepoetin alfa (300 mcg SC q3w) is an equivalent alternative."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "242706",
+          "display": "1 ML epoetin alfa 40000 UNT/ML Injection"
+        }
+      ],
+      "reason": "MDS_Onset",
+      "direct_transition": "ESA_Encounter_End"
+    },
+    "ESA_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ESA_Response_Delay"
+    },
+    "ESA_Response_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "ESA response assessment at 8–16 weeks.",
+        "IWG 2023 HI-E definition: Hb increase ≥1.5 g/dL or transfusion independence ≥8 weeks."
+      ],
+      "range": {
+        "low": 8,
+        "high": 16,
+        "unit": "weeks"
+      },
+      "direct_transition": "ESA_Response_Assessment"
+    },
+    "ESA_Response_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "ESA response in lower-risk MDS (EPO ≤500 mU/mL cohort):",
+        "  ~40–60% achieve HI-E (haematological improvement — erythroid lineage).",
+        "  Median response duration: 18–24 months.",
+        "  Failure → luspatercept (if SF3B1), imetelstat, lenalidomide, or transfusions."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "ESA_Responder"
+        },
+        {
+          "distribution": 0.5,
+          "transition": "ESA_Failure"
+        }
+      ]
+    },
+    "ESA_Responder": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "ESA_Responder_Hb_Obs"
+    },
+    "ESA_Responder_Hb_Obs": {
+      "type": "Observation",
+      "remarks": [
+        "Post-ESA response Hb — IWG HI-E: ≥1.5 g/dL increase from baseline.",
+        "Target post-response range: 10–13 g/dL."
+      ],
+      "category": "laboratory",
+      "unit": "g/dL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "718-7",
+          "display": "Hemoglobin [Mass/volume] in Blood"
+        }
+      ],
+      "range": {
+        "low": 10.0,
+        "high": 13.0
+      },
+      "direct_transition": "ESA_Responder_End"
+    },
+    "ESA_Responder_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ESA_Maintenance_Cycle"
+    },
+    "ESA_Maintenance_Cycle": {
+      "type": "Delay",
+      "remarks": [
+        "Median ESA response duration: ~18 months.",
+        "Continue ESA until loss of response or disease progression."
+      ],
+      "range": {
+        "low": 12,
+        "high": 30,
+        "unit": "months"
+      },
+      "direct_transition": "ESA_Loss_Of_Response"
+    },
+    "ESA_Loss_Of_Response": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.3,
+          "transition": "Lower_Risk_Luspatercept_Check"
+        },
+        {
+          "distribution": 0.25,
+          "transition": "Lower_Risk_Imetelstat"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Escalate_To_Higher_Risk"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "RBC_Transfusion_Encounter"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "AML_Transformation_Lower"
+        }
+      ]
+    },
+    "ESA_Failure": {
+      "type": "Simple",
+      "remarks": [
+        "ESA primary failure (no response after ≥8–16 weeks).",
+        "Next steps per NCCN 2024:",
+        "  SF3B1 subtype → luspatercept",
+        "  del(5q) → lenalidomide (already routed separately)",
+        "  Others → imetelstat (FDA approved 2024), RBC transfusions, clinical trial, SCT."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.25,
+          "transition": "Lower_Risk_Luspatercept_Check"
+        },
+        {
+          "distribution": 0.25,
+          "transition": "Lower_Risk_Imetelstat"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "RBC_Transfusion_Encounter"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "SCT_Evaluation_Encounter"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "Lower_Risk_Palliative_Support"
+        }
+      ]
+    },
+    "Lower_Risk_Luspatercept_Check": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 7: Luspatercept gate — only MDS-SF3B1 patients routed to luspatercept.",
+        "Non-SF3B1 patients routed to imetelstat or other options.",
+        "COMMANDS trial enrolled broader lower-risk MDS population but response rate",
+        "was highest in SF3B1-mutated / RS-positive patients."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "mds_subtype",
+            "operator": "==",
+            "value": "MDS-SF3B1"
+          },
+          "transition": "Lower_Risk_Luspatercept"
+        },
+        {
+          "transition": "Lower_Risk_Imetelstat"
+        }
+      ]
+    },
+    "Lower_Risk_Luspatercept": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "Luspatercept_Medication"
+    },
+    "Luspatercept_Medication": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Luspatercept-aamt (Reblozyl) — TGF-β superfamily ligand trap.",
+        "RxNorm 2200671 = luspatercept-aamt 25 MG/ML Injectable Solution.",
+        "FDA approved August 2020: ESA-refractory/ineligible MDS-RS (MEDALIST trial).",
+        "FDA expanded Feb 2023 (COMMANDS trial): first-line in ESA-naive lower-risk MDS.",
+        "Dosing: 1.0 mg/kg SC q3 weeks; titrate to 1.33 or 1.75 mg/kg if needed.",
+        "MEDALIST: 38% TI rate vs 13% placebo (≥8 weeks at 24 weeks).",
+        "COMMANDS: superior TI rate vs epoetin alfa (58.5% vs 31.2% at week 24).",
+        "FIX 7: Only prescribed to MDS-SF3B1 patients in this module."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2262543",
+          "display": "luspatercept-aamt"
+        }
+      ],
+      "reason": "MDS_Onset",
+      "direct_transition": "Luspatercept_Encounter_End"
+    },
+    "Luspatercept_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Luspatercept_Response_Delay"
+    },
+    "Luspatercept_Response_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Luspatercept_Response_Assessment"
+    },
+    "Luspatercept_Response_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "MEDALIST first-line response: ~38% TI rate at 24 weeks.",
+        "COMMANDS first-line: ~58% TI rate (MDS-SF3B1 enriched).",
+        "Using intermediate estimate (~45%) for mixed first- and second-line population."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.45,
+          "transition": "Luspatercept_Maintenance"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "RBC_Transfusion_Encounter"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "Escalate_To_Higher_Risk"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "AML_Transformation_Lower"
+        }
+      ]
+    },
+    "Luspatercept_Maintenance": {
+      "type": "Delay",
+      "remarks": [
+        "Median duration of luspatercept response: ~30 months (MEDALIST long-term data)."
+      ],
+      "range": {
+        "low": 18,
+        "high": 42,
+        "unit": "months"
+      },
+      "direct_transition": "Escalate_To_Higher_Risk"
+    },
+    "Lower_Risk_Lenalidomide": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "Lenalidomide_Medication"
+    },
+    "Lenalidomide_Medication": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Lenalidomide (Revlimid) — immunomodulatory drug.",
+        "RxNorm 602725 = lenalidomide 10 MG Oral Capsule.",
+        "FDA approved: lower-risk MDS with del(5q) and transfusion-dependent anaemia.",
+        "Dosing: 10 mg/day PO for 21/28 days; adjust for renal function.",
+        "MDS-003 trial: ~67% TI; ~45% cytogenetic response.",
+        "Screen for TP53 mutation before starting: co-mutation → AML risk with lenalidomide.",
+        "Requires REMS enrolment (RevAssist programme — teratogenicity).",
+        "AML transformation on lenalidomide (TP53 co-mutated del5q): up to 25–30%."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "602910",
+          "display": "lenalidomide 10 MG Oral Capsule"
+        }
+      ],
+      "reason": "MDS_Onset",
+      "direct_transition": "Lenalidomide_Encounter_End"
+    },
+    "Lenalidomide_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Lenalidomide_Response_Delay"
+    },
+    "Lenalidomide_Response_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Lenalidomide_Response_Assessment"
+    },
+    "Lenalidomide_Response_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "MDS-5q response to lenalidomide: ~67% TI rate (MDS-003 trial).",
+        "FIX 9: del5q-specific AML transformation ~5% even with lenalidomide response."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.67,
+          "transition": "Lenalidomide_Maintenance"
+        },
+        {
+          "distribution": 0.18,
+          "transition": "RBC_Transfusion_Encounter"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "Escalate_To_Higher_Risk"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "AML_Transformation_Lower"
+        }
+      ]
+    },
+    "Lenalidomide_Maintenance": {
+      "type": "Delay",
+      "remarks": [
+        "Median lenalidomide response duration in del(5q): ~2 years.",
+        "Progression invariably occurs; TP53 mutations drive lenalidomide resistance."
+      ],
+      "range": {
+        "low": 12,
+        "high": 36,
+        "unit": "months"
+      },
+      "direct_transition": "Escalate_To_Higher_Risk"
+    },
+    "Lower_Risk_Imetelstat": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "Imetelstat_Medication"
+    },
+    "Imetelstat_Medication": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Imetelstat (Rytelo) — first-in-class oligonucleotide telomerase inhibitor.",
+        "RxNorm 2638073 = imetelstat 47 MG/ML Injectable Solution.",
+        "FDA approved June 6 2024: lower-risk MDS relapsed/refractory to ESA.",
+        "IMerge Phase 3 (Lancet 2024): 40% TI ≥8 weeks vs 15% placebo (p<0.001).",
+        "Median TI duration in responders: 51.6 weeks.",
+        "Dosing: 7.1 mg/kg IV over 2 hours every 4 weeks.",
+        "Key toxicities: grade 3/4 cytopaenias (neutropaenia 68%, thrombocytopaenia 65%).",
+        "Requires CBC monitoring; dose delays common.",
+        "Not approved in higher-risk MDS (IMerge studied lower-risk ESA-refractory patients)."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2685241",
+          "display": "imetelstat 47 MG Injection"
+        }
+      ],
+      "reason": "MDS_Onset",
+      "direct_transition": "Imetelstat_Encounter_End"
+    },
+    "Imetelstat_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Imetelstat_Response_Delay"
+    },
+    "Imetelstat_Response_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 5,
+        "unit": "months"
+      },
+      "direct_transition": "Imetelstat_Response_Assessment"
+    },
+    "Imetelstat_Response_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "IMerge Phase 3 (ESA-refractory lower-risk MDS): 40% TI rate."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
+          "transition": "Imetelstat_Maintenance"
+        },
+        {
+          "distribution": 0.35,
+          "transition": "RBC_Transfusion_Encounter"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "Escalate_To_Higher_Risk"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "AML_Transformation_Lower"
+        }
+      ]
+    },
+    "Imetelstat_Maintenance": {
+      "type": "Delay",
+      "remarks": [
+        "Median TI duration in IMerge responders: ~52 weeks."
+      ],
+      "range": {
+        "low": 9,
+        "high": 24,
+        "unit": "months"
+      },
+      "direct_transition": "Escalate_To_Higher_Risk"
+    },
+    "Lower_Risk_Immunosuppression": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "ATG_Medication"
+    },
+    "ATG_Medication": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Anti-thymocyte globulin (horse ATG, Atgam) — immunosuppressive therapy (IST).",
+        "RxNorm 205460 = antithymocyte globulin (equine) 50 MG/ML Injectable Solution.",
+        "Indications (NCCN): EPO >500 mU/mL, or MDS-h regardless of EPO level,",
+        "  younger patients (<60), HLA-DR15+, PNH clone positivity, STAT3-mutant T-cells,",
+        "  BM blasts ≤5%, short disease duration.",
+        "Dosing: 40 mg/kg/day IV × 4 days (horse ATG) with supportive care.",
+        "Combined with cyclosporine (see below).",
+        "Response rate: ~30–35% HI. Relapse rate ~30% at 3 years.",
+        "Rabbit ATG (thymoglobulin) is less effective in MDS than horse ATG."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "197906",
+          "display": "5 ML lymphocyte immune globulin, anti-thymocyte globulin, equine 50 MG/ML Injection"
+        }
+      ],
+      "reason": "MDS_Onset",
+      "direct_transition": "Cyclosporine_Medication"
+    },
+    "Cyclosporine_Medication": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Cyclosporine — combined with ATG for hypocellular / immune-mediated MDS.",
+        "RxNorm 3002 = cyclosporine.",
+        "Dosing: 5 mg/kg/day PO in 2 divided doses; adjust to trough 150–250 ng/mL.",
+        "Continued for 12–18 months in responders; taper gradually.",
+        "Monitor: renal function, blood pressure, drug levels monthly."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "3008",
+          "display": "cyclosporine"
+        }
+      ],
+      "reason": "MDS_Onset",
+      "direct_transition": "Immunosuppression_Encounter_End"
+    },
+    "Immunosuppression_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Immunosuppression_Response_Delay"
+    },
+    "Immunosuppression_Response_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 4,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Immunosuppression_Response_Assessment"
+    },
+    "Immunosuppression_Response_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "ATG + cyclosporine response in MDS-h / hypocellular MDS: ~30–35% HI.",
+        "Relapse rate: ~30% within 3 years; re-treatment or SCT for relapse."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.33,
+          "transition": "Monitoring_Delay_Lower"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "RBC_Transfusion_Encounter"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "Escalate_To_Higher_Risk"
+        },
+        {
+          "distribution": 0.12,
+          "transition": "AML_Transformation_Lower"
+        }
+      ]
+    },
+    "AML_Transformation_Lower": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 9: Subtype-stratified AML transformation gateway for lower-risk subtypes.",
+        "Published annual AML transformation rates by subtype:",
+        "  MDS-LB-SLD:   ~1–3%/year",
+        "  MDS-SF3B1:    ~1–2%/year (best prognosis subtype)",
+        "  MDS-5q:       ~3–5%/year if lenalidomide-responsive; higher if TP53 co-mutated",
+        "  MDS-h:        ~3–5%/year",
+        "  MDS-LB-MLD:   ~5–8%/year",
+        "This gateway routes all lower-risk AML transformations to the AML cascade.",
+        "Overall pooled lower-risk probability of transformation modelled as ~3%/cycle above."
+      ],
+      "direct_transition": "AML_Transformation"
+    },
+    "RBC_Transfusion_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "116863004",
+          "display": "Red blood cell transfusion (procedure)"
+        }
+      ],
+      "direct_transition": "RBC_Transfusion_Procedure"
+    },
+    "RBC_Transfusion_Procedure": {
+      "type": "Procedure",
+      "remarks": [
+        "SNOMED-CT 116863004 = Red blood cell transfusion (procedure).",
+        "Transfusion threshold: Hb <8 g/dL or symptomatic anaemia.",
+        "Standard: 2 units pRBC per episode.",
+        "Transfusion dependence (TD): ≥2 units per 8 weeks for ≥16 weeks.",
+        "Iron overload after ~20–25 cumulative units or ferritin >1000 ng/mL.",
+        "Iron chelation considered in lower-risk TD patients with expected survival ≥1 year."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "116863004",
+          "display": "Red blood cell transfusion (procedure)"
+        }
+      ],
+      "duration": {
+        "low": 2,
+        "high": 4,
+        "unit": "hours"
+      },
+      "direct_transition": "RBC_Close_Encounter"
+    },
+    "Iron_Chelation_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Iron chelation indicated in lower-risk MDS with ferritin >1000 ng/mL and",
+        "expected survival ≥1 year (ESMO/NCCN Category 2A).",
+        "~40% of transfusion-dependent lower-risk MDS patients receive chelation."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
+          "transition": "Iron_Chelation_Encounter"
+        },
+        {
+          "distribution": 0.6,
+          "transition": "Transfusion_Cycle_Delay"
+        }
+      ]
+    },
+    "Iron_Chelation_Encounter": {
+      "type": "Encounter",
+      "remarks": [
+        "FIX 10: Iron_Chelation_Encounter is now correctly typed as Encounter (not EncounterEnd).",
+        "This opens a new clinical encounter within which Deferasirox is prescribed."
+      ],
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "Deferasirox_Medication"
+    },
+    "Deferasirox_Medication": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Deferasirox (Exjade / Jadenu) — oral iron chelator.",
+        "RxNorm 387414 = deferasirox 500 MG Oral Tablet.",
+        "FDA/EMA approved for transfusional iron overload in MDS.",
+        "Dosing: 20 mg/kg/day PO dispersible (Exjade) or 14 mg/kg/day film-coated (Jadenu).",
+        "Monitor: renal function (SCr, eGFR), LFTs, CBC monthly.",
+        "Target: ferritin <1000 ng/mL; discontinue at ferritin <500 ng/mL.",
+        "Alternative if oral chelation not tolerated: deferoxamine (IV/SC infusion)."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1869544",
+          "display": "deferasirox 500 MG"
+        }
+      ],
+      "reason": "MDS_Onset",
+      "direct_transition": "Iron_Chelation_Encounter_End"
+    },
+    "Iron_Chelation_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Transfusion_Cycle_Delay"
+    },
+    "Transfusion_Cycle_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Transfusion-dependent MDS: typically every 3–6 weeks (2 units pRBC).",
+        "Transfusion independence is the primary therapeutic endpoint."
+      ],
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "weeks"
+      },
+      "direct_transition": "Transfusion_Progression_Check"
+    },
+    "Transfusion_Progression_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "RBC_Transfusion_Encounter"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Escalate_To_Higher_Risk"
+        },
+        {
+          "distribution": 0.12,
+          "transition": "AML_Transformation"
+        },
+        {
+          "distribution": 0.08,
+          "transition": "Lower_Risk_Palliative_Support"
+        }
+      ]
+    },
+    "Lower_Risk_Palliative_Support": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "103735009",
+          "display": "Palliative care (regime/therapy)"
+        }
+      ],
+      "direct_transition": "Palliative_CarePlan"
+    },
+    "Palliative_CarePlan": {
+      "type": "CarePlanStart",
+      "remarks": [
+        "Best supportive care for frail/elderly lower-risk patients.",
+        "Includes PRN transfusions, symptom management, QoL optimisation.",
+        "G-CSF (filgrastim, RxNorm 51248) for recurrent infections.",
+        "TPO-RA (eltrombopag, RxNorm 1102700) for severe thrombocytopaenia."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "103735009",
+          "display": "Palliative care (regime/therapy)"
+        }
+      ],
+      "activities": [
+        {
+          "system": "SNOMED-CT",
+          "code": "243914006",
+          "display": "Supportive care (regime/therapy)"
+        }
+      ],
+      "direct_transition": "Palliative_Encounter_End"
+    },
+    "Palliative_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Palliative_Delay"
+    },
+    "Palliative_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 24,
+        "unit": "months"
+      },
+      "direct_transition": "MDS_Death_Lower"
+    },
+    "Higher_Risk_Treatment_Branch": {
+      "type": "Simple",
+      "remarks": [
+        "Higher-risk MDS treatment algorithm (NCCN 2024 / ESMO / ASH 2023).",
+        "Includes MDS-IB1, MDS-IB2, MDS-biTP53.",
+        "MDS-biTP53 treated as higher-risk irrespective of blast count.",
+        "  First-line: azacitidine (AZA preferred) or decitabine.",
+        "  SCT: evaluate all fit patients — only curative modality.",
+        "  Intensive ChT: selected fit younger patients without poor cytogenetics.",
+        "  BSC: frail/elderly/unfit patients.",
+        "  MDS-biTP53: HMA ± venetoclax; SCT if feasible."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "mds_subtype",
+            "operator": "==",
+            "value": "MDS-biTP53"
+          },
+          "transition": "biTP53_Treatment_Branch"
+        },
+        {
+          "transition": "Standard_Higher_Risk_Branch"
+        }
+      ]
+    },
+    "biTP53_Treatment_Branch": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 4: MDS-biTP53 specific treatment pathway.",
+        "Very poor prognosis: median OS ~6–10 months.",
+        "HMA ± venetoclax: ~20–30% CR but responses not durable without SCT.",
+        "APR-246 (eprenetapopt) + azacitidine: Phase 2 activity but not FDA approved.",
+        "SCT remains the only potentially curative option — ~25–35% 2-year OS if transplanted.",
+        "Most patients not eligible due to age/comorbidity or rapid progression."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "HMA_Azacitidine_Encounter"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Venetoclax_Combination_Encounter"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "SCT_Evaluation_Encounter"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "Higher_Risk_BSC_Encounter"
+        }
+      ]
+    },
+    "Standard_Higher_Risk_Branch": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.55,
+          "transition": "HMA_Azacitidine_Encounter"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "HMA_Decitabine_Encounter"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "SCT_Evaluation_Encounter"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "Intensive_Chemo_Encounter"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "Higher_Risk_BSC_Encounter"
+        }
+      ]
+    },
+    "HMA_Azacitidine_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "Azacitidine_Medication"
+    },
+    "Azacitidine_Medication": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Azacitidine (Vidaza) — hypomethylating agent (HMA); first-line for higher-risk MDS.",
+        "RxNorm 278177 = azacitidine 100 MG Injection.",
+        "FDA approved 2004; EMA approved 2008.",
+        "AZA-001 trial: OS advantage vs conventional care (24.5 vs 15 months median OS).",
+        "Dosing: 75 mg/m² SC/IV daily × 7 days every 28 days.",
+        "Overall response rate: ~50% (CR ~17%, PR ~12%, HI ~21%).",
+        "Assess response after ≥4–6 cycles (minimum); continue until progression.",
+        "Oral azacitidine (CC-486) approved for AML maintenance — not for MDS."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "485246",
+          "display": "azacitidine 100 MG Injection"
+        }
+      ],
+      "reason": "MDS_Onset",
+      "direct_transition": "HMA_Encounter_End"
+    },
+    "HMA_Decitabine_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "Decitabine_Medication"
+    },
+    "Decitabine_Medication": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Decitabine (Dacogen) — alternative HMA for higher-risk MDS.",
+        "RxNorm 583214 = decitabine 50 MG Injection.",
+        "FDA approved 2006. ADOPT trial: ~17–26% ORR.",
+        "Dosing: 20 mg/m² IV × 5 days q28 days (most common).",
+        "Oral decitabine + cedazuridine (Inqovi) FDA approved 2020 — bioequivalent to IV.",
+        "Similar efficacy to azacitidine; centre/patient preference drives selection."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "636631",
+          "display": "decitabine 50 MG Injection"
+        }
+      ],
+      "reason": "MDS_Onset",
+      "direct_transition": "HMA_Encounter_End"
+    },
+    "HMA_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "HMA_Treatment_Cycles_Delay"
+    },
+    "HMA_Treatment_Cycles_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Minimum 4–6 cycles (4–6 months) to assess HMA response.",
+        "Median response assessment at cycle 6 per AZA-001 protocol."
+      ],
+      "range": {
+        "low": 4,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "HMA_Response_Assessment"
+    },
+    "HMA_Response_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "HMA response rates (azacitidine AZA-001; decitabine ADOPT):",
+        "  CR: ~17%  |  PR: ~12%  |  HI: ~21%  |  Overall: ~50%",
+        "  HMA failure (primary refractory + progressive disease): ~50%",
+        "  Median OS on azacitidine: 24.5 months (AZA-001) vs 15 months BSC."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.17,
+          "transition": "HMA_Complete_Response"
+        },
+        {
+          "distribution": 0.33,
+          "transition": "HMA_Partial_Response"
+        },
+        {
+          "distribution": 0.5,
+          "transition": "HMA_Failure"
+        }
+      ]
+    },
+    "HMA_Complete_Response": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "HMA_CR_Hb_Obs"
+    },
+    "HMA_CR_Hb_Obs": {
+      "type": "Observation",
+      "remarks": [
+        "IWG 2023 CR: BM blasts <5%, normal morphology, peripheral blood recovery.",
+        "Hb post-CR typically ≥11 g/dL."
+      ],
+      "category": "laboratory",
+      "unit": "g/dL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "718-7",
+          "display": "Hemoglobin [Mass/volume] in Blood"
+        }
+      ],
+      "range": {
+        "low": 11.0,
+        "high": 13.5
+      },
+      "direct_transition": "HMA_CR_Encounter_End"
+    },
+    "HMA_CR_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "HMA_CR_Bridge_To_SCT"
+    },
+    "HMA_CR_Bridge_To_SCT": {
+      "type": "Simple",
+      "remarks": [
+        "CR patients should be evaluated for allo-SCT — the only curative option.",
+        "~35% will proceed to SCT; remainder continue HMA maintenance.",
+        "Median CR duration on HMA: ~13 months; relapse near-universal without transplant."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.35,
+          "transition": "SCT_Evaluation_Encounter"
+        },
+        {
+          "distribution": 0.45,
+          "transition": "HMA_Maintenance_Cycle"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "HMA_Relapse"
+        }
+      ]
+    },
+    "HMA_Partial_Response": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "HMA_PR_Encounter_End"
+    },
+    "HMA_PR_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "HMA_Maintenance_Cycle"
+    },
+    "HMA_Maintenance_Cycle": {
+      "type": "Delay",
+      "remarks": [
+        "Continue HMA until progression or unacceptable toxicity.",
+        "Median duration of HMA benefit: ~13 months from response.",
+        "Simulate one continuation cycle of 4–12 months."
+      ],
+      "range": {
+        "low": 4,
+        "high": 12,
+        "unit": "months"
+      },
+      "direct_transition": "HMA_Relapse"
+    },
+    "HMA_Relapse": {
+      "type": "Simple",
+      "remarks": [
+        "HMA relapse / loss of response outcomes.",
+        "No standard approved second-line therapy after HMA failure in higher-risk MDS (2024).",
+        "NCCN: clinical trial strongly preferred. Options:",
+        "  venetoclax + azacitidine, IDH inhibitors (IDH1/2 mutated),",
+        "  allo-SCT (if not done), palliative care.",
+        "FIX 9: AML transformation probability higher in IB2 vs IB1.",
+        "  IB2: ~40–50%/year; IB1: ~15–25%/year.",
+        "  Combined in this state: ~35% per relapse event (blended average)."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.35,
+          "transition": "AML_Transformation"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "Venetoclax_Combination_Encounter"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "SCT_Evaluation_Encounter"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Higher_Risk_BSC_Encounter"
+        }
+      ]
+    },
+    "HMA_Failure": {
+      "type": "Simple",
+      "remarks": [
+        "Primary HMA failure (no response after ≥4–6 cycles).",
+        "Prognosis extremely poor: median OS ~4–6 months.",
+        "Options: venetoclax-based, IDH inhibitor, allo-SCT if fit, BSC."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
+          "transition": "AML_Transformation"
+        },
+        {
+          "distribution": 0.25,
+          "transition": "Venetoclax_Combination_Encounter"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "SCT_Evaluation_Encounter"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Higher_Risk_BSC_Encounter"
+        }
+      ]
+    },
+    "Venetoclax_Combination_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "Venetoclax_Medication"
+    },
+    "Venetoclax_Medication": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Venetoclax (Venclexta) — BCL-2 inhibitor.",
+        "RxNorm 1858056 = venetoclax 100 MG Oral Tablet.",
+        "NOT FDA-approved as monotherapy or standard combination for MDS.",
+        "Used off-label with azacitidine or decitabine (VIALE-A data extrapolated from AML).",
+        "STIMULUS-MDS2 trial (venetoclax + azacitidine vs azacitidine in higher-risk MDS):",
+        "  Did NOT meet OS primary endpoint (2023 results). PFS benefit was observed.",
+        "  Combinations remain in use off-label; active in clinical trials.",
+        "Dosing: venetoclax 400 mg PO daily + azacitidine 75 mg/m² days 1–7 q28 days.",
+        "Response in HMA-naive: CR ~45–50%. In HMA-failure: CR ~20–30%.",
+        "TLS risk: mandatory ramp-up protocol with daily CBC monitoring.",
+        "Key toxicities: febrile neutropaenia, infections, grade 3/4 cytopaenias."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1747561",
+          "display": "venetoclax 100 MG Oral Tablet"
+        }
+      ],
+      "reason": "MDS_Onset",
+      "direct_transition": "Venetoclax_Encounter_End"
+    },
+    "Venetoclax_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Venetoclax_Response_Delay"
+    },
+    "Venetoclax_Response_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Venetoclax_Response_Assessment"
+    },
+    "Venetoclax_Response_Assessment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.3,
+          "transition": "SCT_Evaluation_Encounter"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "HMA_Maintenance_Cycle"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "AML_Transformation"
+        }
+      ]
+    },
+    "SCT_Evaluation_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "SCT_Eval_Encounter_End"
+    },
+    "SCT_Eligibility_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Allo-SCT eligibility criteria:",
+        "  Age typically <75 (selected fit patients >70 considered by EBMT guidelines).",
+        "  ECOG PS ≤2, HCT-CI ≤2–3 preferred.",
+        "  Available donor: 10/10 MUD, matched sibling, haploidentical.",
+        "  ~25–35% of higher-risk MDS actually proceed to allo-SCT.",
+        "  Barriers: age, comorbidity, donor availability, disease progression to AML.",
+        "  Screen for TP53, RAS, JAK2, DNMT3A, TET2, ASXL1, RUNX1 — prognostic post-SCT."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.35,
+          "transition": "Allo_SCT_Procedure_Encounter"
+        },
+        {
+          "distribution": 0.65,
+          "transition": "SCT_Not_Eligible_Route"
+        }
+      ]
+    },
+    "SCT_Not_Eligible_Route": {
+      "type": "Simple",
+      "remarks": [
+        "Patient not eligible for allo-SCT. Return to HMA pathway.",
+        "Encounter already closed by SCT_Eval_Encounter_End above."
+      ],
+      "direct_transition": "HMA_Azacitidine_Encounter"
+    },
+    "Allo_SCT_Procedure_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "58776007",
+          "display": "Bone marrow transplant (procedure)"
+        }
+      ],
+      "direct_transition": "Allo_SCT_Procedure"
+    },
+    "Allo_SCT_Procedure": {
+      "type": "Procedure",
+      "remarks": [
+        "SNOMED-CT 58776007 = Bone marrow transplant (procedure).",
+        "Allogeneic haematopoietic stem cell transplantation — only curative modality for MDS.",
+        "Conditioning regimens:",
+        "  MAC (myeloablative): busulfan + cyclophosphamide or fludarabine + busulfan.",
+        "    For younger, fit patients; higher NRM but lower relapse rate.",
+        "  RIC (reduced intensity): fludarabine + melphalan or fludarabine + busulfan.",
+        "    For older/comorbid patients; lower NRM but higher relapse rate.",
+        "  Haploidentical SCT: increasing use when MUD unavailable (PTCy-based GVHD Px).",
+        "5-year OS post-SCT: ~30–50% (lower-risk) to ~25–35% (higher-risk).",
+        "NRM: ~15–25% at 2 years. GvHD: aGvHD ~30%; cGvHD ~40–50%.",
+        "Inpatient duration: ~4–6 weeks (conditioning + engraftment phase)."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "58776007",
+          "display": "Bone marrow transplant (procedure)"
+        }
+      ],
+      "duration": {
+        "low": 4,
+        "high": 6,
+        "unit": "weeks"
+      },
+      "direct_transition": "SCT_Encounter_End"
+    },
+    "SCT_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SCT_Outcome_Delay"
+    },
+    "SCT_Outcome_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Post-SCT outcomes assessed at 100 days (early) and 12–24 months.",
+        "Simulating early post-transplant period: 6–12 months."
+      ],
+      "range": {
+        "low": 6,
+        "high": 12,
+        "unit": "months"
+      },
+      "direct_transition": "SCT_Outcome_Assessment"
+    },
+    "SCT_Outcome_Assessment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.35,
+          "transition": "SCT_Long_Term_Remission"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "SCT_NRM_Death"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "SCT_Relapse"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "SCT_Persistent_Disease"
+        }
+      ]
+    },
+    "SCT_Relapse": {
+      "type": "ConditionOnset",
+      "remarks": [
+        "Post-transplant relapse of MDS/AML.",
+        "Most relapses after SCT occur within 2 years.",
+        "SNOMED-CT 233719002 = Relapse of malignant neoplasm (disorder)."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "1259237005",
+          "display": "Recurrent malignant neoplasm"
+        }
+      ],
+      "direct_transition": "AML_Transformation"
+    },
+    "SCT_Long_Term_Remission": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "SCT_Remission_Obs"
+    },
+    "SCT_Remission_Obs": {
+      "type": "Observation",
+      "remarks": [
+        "Post-SCT CR: donor chimaerism achieved, Hb normalised.",
+        "Hb range post-engraftment: 11.5–14.5 g/dL."
+      ],
+      "category": "laboratory",
+      "unit": "g/dL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "718-7",
+          "display": "Hemoglobin [Mass/volume] in Blood"
+        }
+      ],
+      "range": {
+        "low": 11.5,
+        "high": 14.5
+      },
+      "direct_transition": "SCT_Remission_End"
+    },
+    "SCT_Remission_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Terminal"
+    },
+    "SCT_Persistent_Disease": {
+      "type": "Simple",
+      "remarks": [
+        "Failure to achieve durable remission post-SCT.",
+        "Patients remain with active MDS or progress."
+      ],
+      "direct_transition": "MDS_Death_Higher"
+    },
+    "SCT_NRM_Death": {
+      "type": "Death",
+      "remarks": [
+        "Non-relapse mortality after allogeneic stem cell transplant.",
+        "Causes include infection, graft-versus-host disease, and organ toxicity.",
+        "Uses general death concept for better interoperability."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "419620001",
+          "display": "Death (event)"
+        }
+      ],
+      "direct_transition": "Terminal"
+    },
+    "Intensive_Chemo_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "Cytarabine_Medication"
+    },
+    "Cytarabine_Medication": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Cytarabine — cornerstone of intensive '3+7' induction for higher-risk MDS.",
+        "RxNorm 28648 = cytarabine 20 MG/ML Injectable Solution.",
+        "Regimen: cytarabine 100–200 mg/m² continuous IV infusion × 7 days",
+        "+ idarubicin 12 mg/m²/day IV × 3 days.",
+        "Used in younger (<65–70), fit patients with good/intermediate cytogenetics.",
+        "CR rate for MDS with excess blasts (AML-like induction): ~40–50%.",
+        "Bridge to allo-SCT if CR achieved.",
+        "NOT appropriate for: MDS-biTP53, monosomal karyotype, TP53 single-hit, ECOG ≥2.",
+        "Significant morbidity: prolonged BM aplasia (4–6 weeks), febrile neutropaenia,",
+        "mucositis, organ toxicity."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "240416",
+          "display": "cytarabine 20 MG/ML Injectable Solution"
+        }
+      ],
+      "reason": "MDS_Onset",
+      "direct_transition": "Idarubicin_Medication"
+    },
+    "Idarubicin_Medication": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Idarubicin — anthracycline component of '3+7' induction.",
+        "RxNorm 25463 = idarubicin hydrochloride 5 MG/ML Injectable Solution.",
+        "Dosing: 12 mg/m²/day IV × 3 days (concurrent with cytarabine).",
+        "Daunorubicin (60 mg/m²/day × 3 days) is an acceptable alternative.",
+        "Liposomal formulations available for elderly/cardiac-risk patients."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1791500",
+          "display": "5 ML idarubicin hydrochloride 1 MG/ML Injection"
+        }
+      ],
+      "reason": "MDS_Onset",
+      "direct_transition": "Intensive_Chemo_Encounter_End"
+    },
+    "Intensive_Chemo_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Intensive_Chemo_Response_Delay"
+    },
+    "Intensive_Chemo_Response_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "BM recovery and CR assessment: ~4–8 weeks post-induction.",
+        "Second induction cycle if residual blasts at day 14 BM assessment."
+      ],
+      "range": {
+        "low": 4,
+        "high": 8,
+        "unit": "weeks"
+      },
+      "direct_transition": "Intensive_Chemo_Response_Assessment"
+    },
+    "Intensive_Chemo_Response_Assessment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.45,
+          "transition": "SCT_Evaluation_Encounter"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "AML_Transformation"
+        },
+        {
+          "distribution": 0.25,
+          "transition": "Higher_Risk_BSC_Encounter"
+        }
+      ]
+    },
+    "Higher_Risk_BSC_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "MDS_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "103735009",
+          "display": "Palliative care (regime/therapy)"
+        }
+      ],
+      "direct_transition": "Higher_Risk_BSC_CarePlan"
+    },
+    "Higher_Risk_BSC_CarePlan": {
+      "type": "CarePlanStart",
+      "remarks": [
+        "Best supportive care for higher-risk MDS (unfit/frail patients):",
+        "  RBC transfusions (Hb threshold ~8 g/dL or symptomatic).",
+        "  Platelet transfusions (<10 × 10^9/L prophylactic or active bleeding).",
+        "  G-CSF (filgrastim) for recurrent serious infections (ANC <0.5 × 10^9/L).",
+        "  Fluoroquinolone + antifungal prophylaxis if ANC <0.5.",
+        "  Symptom management, QoL optimisation.",
+        "  Median OS on BSC for higher-risk MDS: ~15–18 months (AZA-001 BSC arm).",
+        "  MDS-biTP53 on BSC: median OS ~6 months."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "103735009",
+          "display": "Palliative care (regime/therapy)"
+        }
+      ],
+      "activities": [
+        {
+          "system": "SNOMED-CT",
+          "code": "243914006",
+          "display": "Supportive care (regime/therapy)"
+        }
+      ],
+      "direct_transition": "BSC_Encounter_End"
+    },
+    "BSC_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "BSC_Delay"
+    },
+    "BSC_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "BSC for higher-risk MDS: 6–18 months survival.",
+        "MDS-biTP53: typically shorter (2–8 months).",
+        "Pooled range used here: 6–18 months."
+      ],
+      "range": {
+        "low": 6,
+        "high": 18,
+        "unit": "months"
+      },
+      "direct_transition": "MDS_Death_Higher"
+    },
+    "Escalate_To_Higher_Risk": {
+      "type": "SetAttribute",
+      "attribute": "mds_risk",
+      "value": "higher",
+      "direct_transition": "Higher_Risk_Treatment_Branch"
+    },
+    "AML_Transformation": {
+      "type": "ConditionOnset",
+      "remarks": [
+        "FIX 1 + FIX 9: SNOMED-CT code corrected to 91861009 = Acute myeloid leukemia (disorder).",
+        "AML transformation defined as BM blasts ≥20% (WHO 2022).",
+        "ICC 2022: MDS/AML introduced for 10–19% blasts — MDS-IB2 patients overlap.",
+        "Overall MDS → AML transformation: ~25% of all patients.",
+        "Subtype-specific annual rates (stratified in source states above):",
+        "  MDS-SF3B1: ~1–2%/year | MDS-5q: ~3–5%/year | MDS-LB-SLD: ~1–3%/year",
+        "  MDS-LB-MLD: ~5–8%/year | MDS-h: ~3–5%/year",
+        "  MDS-IB1: ~15–25%/year | MDS-IB2: ~40–50%/year",
+        "  MDS-biTP53: ~40–60%/year",
+        "Post-MDS AML: median OS ~4–6 months without SCT.",
+        "Treatment options: HMA, venetoclax+HMA, intensive ChT, SCT (if eligible)."
+      ],
+      "target_encounter": "AML_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "91861009",
+          "display": "Acute myeloid leukemia (disorder)"
+        }
+      ],
+      "direct_transition": "AML_Encounter"
+    },
+    "AML_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "reason": "AML_Transformation",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to haematology service (procedure)"
+        }
+      ],
+      "direct_transition": "AML_Encounter_End"
+    },
+    "AML_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "AML_Death_Delay"
+    },
+    "AML_Death_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Post-MDS AML median OS: ~4–6 months without SCT.",
+        "With SCT: ~20–30% 3-year OS.",
+        "Simplified: modelled as 2–12 months post-transformation."
+      ],
+      "range": {
+        "low": 2,
+        "high": 12,
+        "unit": "months"
+      },
+      "direct_transition": "MDS_Death_AML"
+    },
+    "MDS_Death_AML": {
+      "type": "Death",
+      "remarks": [
+        "FIX 2: Death cause now uses AML SNOMED code (91861009), not MDS code.",
+        "SNOMED-CT 91861009 = Acute myeloid leukemia (disorder) — proximate cause of death.",
+        "ICD-10: C92.0x (AML) arising from D46 (MDS).",
+        "This correctly distinguishes AML-related death from primary MDS death."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "91861009",
+          "display": "Acute myeloid leukemia (disorder)"
+        }
+      ],
+      "direct_transition": "Terminal"
+    },
+    "MDS_Death_Lower": {
+      "type": "Death",
+      "remarks": [
+        "Death in lower-risk MDS from disease complications (not AML transformation).",
+        "Causes: anaemia-related cardiac decompensation, haemorrhage, infection,",
+        "iron overload cardiomyopathy.",
+        "IPSS-R median OS by group: very low >8 yr; low ~5 yr; intermediate ~3 yr."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "109995007",
+          "display": "Myelodysplastic syndrome (disorder)"
+        }
+      ],
+      "direct_transition": "Terminal"
+    },
+    "MDS_Death_Higher": {
+      "type": "Death",
+      "remarks": [
+        "Death in higher-risk MDS without AML transformation.",
+        "Causes: BM failure (anaemia, haemorrhage), sepsis, fungal infection.",
+        "IPSS-R median OS: high ~1.5 yr; very high ~0.8 yr.",
+        "AZA-001 BSC arm median OS: 15 months.",
+        "MDS-biTP53 BSC: median OS ~6 months."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "109995007",
+          "display": "Myelodysplastic syndrome (disorder)"
+        }
+      ],
+      "direct_transition": "Terminal"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "RBC_Close_Encounter": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Close the RBC transfusion encounter before evaluating iron chelation.",
+        "Synthea does not support nested encounters; chelation evaluation and",
+        "deferasirox prescription must occur in a separate encounter."
+      ],
+      "direct_transition": "Iron_Chelation_Check"
+    },
+    "SCT_Eval_Encounter_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Close the outpatient SCT evaluation encounter before branching.",
+        "35% proceed to inpatient Allo_SCT_Procedure_Encounter (new encounter).",
+        "65% are not eligible and return to HMA — no open encounter at that point."
+      ],
+      "direct_transition": "SCT_Eligibility_Check"
+    }
+  }
+}

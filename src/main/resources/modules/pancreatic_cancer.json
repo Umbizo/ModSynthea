@@ -1,0 +1,541 @@
+{
+  "name": "Pancreatic Cancer",
+  "remarks": [
+    "Clinically accurate pancreatic cancer module reflecting current guidelines",
+    "Includes proper risk stratification, diagnostic pathways, and evidence-based treatments"
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "Age_Check"
+    },
+    "Age_Check": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 50,
+        "unit": "years"
+      },
+      "direct_transition": "Cancer_Incidence_Check"
+    },
+    "Cancer_Incidence_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.00013,
+          "transition": "Pancreatic_Cancer_Onset"
+        },
+        {
+          "distribution": 0.99987,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Pancreatic_Cancer_Onset": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "363418001",
+          "display": "Malignant tumor of pancreas"
+        }
+      ],
+      "direct_transition": "Determine_Presentation_Type",
+      "assign_to_attribute": "Pancreatic Cancer"
+    },
+    "Determine_Presentation_Type": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "Jaundice_Presentation"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Abdominal_Pain_Presentation"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "Incidental_Finding"
+        }
+      ]
+    },
+    "Jaundice_Presentation": {
+      "type": "Symptom",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "18165001",
+          "display": "Jaundice"
+        }
+      ],
+      "direct_transition": "Dark_Urine"
+    },
+    "Dark_Urine": {
+      "type": "Symptom",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "39575007",
+          "display": "Dark urine"
+        }
+      ],
+      "direct_transition": "Pruritus"
+    },
+    "Pruritus": {
+      "type": "Symptom",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "403575000",
+          "display": "Pruritus due to systemic disorder"
+        }
+      ],
+      "direct_transition": "Seek_Medical_Care_Jaundice"
+    },
+    "Abdominal_Pain_Presentation": {
+      "type": "Symptom",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "21522001",
+          "display": "Abdominal pain"
+        }
+      ],
+      "direct_transition": "Weight_Loss"
+    },
+    "Weight_Loss": {
+      "type": "Symptom",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "161832001",
+          "display": "Weight loss"
+        }
+      ],
+      "direct_transition": "Anorexia"
+    },
+    "Anorexia": {
+      "type": "Symptom",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "79890006",
+          "display": "Loss of appetite"
+        }
+      ],
+      "direct_transition": "Seek_Medical_Care_Pain"
+    },
+    "Incidental_Finding": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for check up"
+        }
+      ],
+      "direct_transition": "Incidental_Imaging_Finding"
+    },
+    "Incidental_Imaging_Finding": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "169070004",
+          "display": "CT of abdomen"
+        }
+      ],
+      "direct_transition": "Seek_Medical_Care_Incidental"
+    },
+    "Seek_Medical_Care_Jaundice": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "Liver_Function_Tests"
+    },
+    "Seek_Medical_Care_Pain": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "Initial_Imaging"
+    },
+    "Seek_Medical_Care_Incidental": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "Referral_To_Specialist"
+    },
+    "Liver_Function_Tests": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "1975-2",
+          "display": "Bilirubin.total"
+        },
+        {
+          "system": "LOINC",
+          "code": "1742-6",
+          "display": "Alanine aminotransferase"
+        },
+        {
+          "system": "LOINC",
+          "code": "1920-8",
+          "display": "Aspartate aminotransferase"
+        }
+      ],
+      "direct_transition": "Abdominal_Ultrasound"
+    },
+    "Abdominal_Ultrasound": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "16310003",
+          "display": "Ultrasound of abdomen"
+        }
+      ],
+      "direct_transition": "CT_Pancreas_Protocol"
+    },
+    "Initial_Imaging": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "169070004",
+          "display": "CT of abdomen"
+        }
+      ],
+      "direct_transition": "CA19_9_Testing"
+    },
+    "CT_Pancreas_Protocol": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "169070004",
+          "display": "CT of abdomen"
+        }
+      ],
+      "direct_transition": "CA19_9_Testing"
+    },
+    "CA19_9_Testing": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "24108-3",
+          "display": "Cancer Ag 19-9 [Units/volume] in Serum or Plasma"
+        }
+      ],
+      "direct_transition": "Referral_To_Specialist"
+    },
+    "Referral_To_Specialist": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306206005",
+          "display": "Referral to service (procedure)"
+        }
+      ],
+      "direct_transition": "End_Initial_Encounter"
+    },
+    "End_Initial_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Specialist_Evaluation"
+    },
+    "Specialist_Evaluation": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 14,
+          "standardDeviation": 7
+        }
+      },
+      "unit": "days",
+      "direct_transition": "Staging_Workup"
+    },
+    "Staging_Workup": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185317003",
+          "display": "Telephone Encounter"
+        }
+      ],
+      "direct_transition": "Determine_Resectability"
+    },
+    "Determine_Resectability": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.15,
+          "transition": "Resectable_Disease"
+        },
+        {
+          "distribution": 0.25,
+          "transition": "Borderline_Resectable"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "Locally_Advanced"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Metastatic_Disease"
+        }
+      ]
+    },
+    "Resectable_Disease": {
+      "type": "SetAttribute",
+      "attribute": "cancer_stage",
+      "value": "resectable",
+      "direct_transition": "Surgical_Resection"
+    },
+    "Borderline_Resectable": {
+      "type": "SetAttribute",
+      "attribute": "cancer_stage",
+      "value": "borderline",
+      "direct_transition": "Neoadjuvant_Therapy"
+    },
+    "Locally_Advanced": {
+      "type": "SetAttribute",
+      "attribute": "cancer_stage",
+      "value": "locally_advanced",
+      "direct_transition": "Systemic_Therapy"
+    },
+    "Metastatic_Disease": {
+      "type": "SetAttribute",
+      "attribute": "cancer_stage",
+      "value": "metastatic",
+      "direct_transition": "Palliative_Care_Referral"
+    },
+    "Surgical_Resection": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "116241004",
+          "display": "Pancreaticoduodenectomy"
+        }
+      ],
+      "direct_transition": "Postoperative_Recovery"
+    },
+    "Postoperative_Recovery": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 10,
+          "standardDeviation": 3
+        }
+      },
+      "unit": "days",
+      "direct_transition": "Adjuvant_Chemotherapy"
+    },
+    "Neoadjuvant_Therapy": {
+      "type": "MedicationOrder",
+      "direct_transition": "Reassessment_After_Neoadjuvant",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1719003",
+          "display": "gemcitabine 1000 MG Injection"
+        }
+      ]
+    },
+    "Reassessment_After_Neoadjuvant": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 16,
+          "standardDeviation": 4
+        }
+      },
+      "unit": "weeks",
+      "direct_transition": "Surgical_Resection"
+    },
+    "Systemic_Therapy": {
+      "type": "MedicationOrder",
+      "direct_transition": "Palliative_Care_Integration",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1719003",
+          "display": "gemcitabine 1000 MG Injection"
+        }
+      ]
+    },
+    "Adjuvant_Chemotherapy": {
+      "type": "MedicationOrder",
+      "direct_transition": "Surveillance",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1719003",
+          "display": "gemcitabine 1000 MG Injection"
+        }
+      ]
+    },
+    "Palliative_Care_Integration": {
+      "type": "CarePlanStart",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "103735009",
+          "display": "Palliative care"
+        }
+      ],
+      "direct_transition": "Supportive_Care"
+    },
+    "Palliative_Care_Referral": {
+      "type": "CarePlanStart",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "103735009",
+          "display": "Palliative care"
+        }
+      ],
+      "direct_transition": "Systemic_Therapy_Metastatic"
+    },
+    "Systemic_Therapy_Metastatic": {
+      "type": "MedicationOrder",
+      "direct_transition": "Supportive_Care",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1719003",
+          "display": "gemcitabine 1000 MG Injection"
+        }
+      ]
+    },
+    "Supportive_Care": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 6,
+          "standardDeviation": 3
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Disease_Progression"
+    },
+    "Surveillance": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 6,
+          "standardDeviation": 2
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Recurrence_Check"
+    },
+    "Recurrence_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.8,
+          "transition": "Disease_Recurrence"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Continue_Surveillance"
+        }
+      ]
+    },
+    "Disease_Recurrence": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "314964006",
+          "display": "Local recurrence of malignant tumor of pancreas (disorder)"
+        }
+      ],
+      "direct_transition": "Palliative_Care_Integration"
+    },
+    "Disease_Progression": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.9,
+          "transition": "Cancer_Death"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "Continue_Supportive_Care"
+        }
+      ]
+    },
+    "Continue_Surveillance": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 12,
+          "standardDeviation": 6
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Long_Term_Survival"
+    },
+    "Continue_Supportive_Care": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 3,
+          "standardDeviation": 2
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Cancer_Death"
+    },
+    "Long_Term_Survival": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 36,
+          "standardDeviation": 24
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Terminal"
+    },
+    "Cancer_Death": {
+      "type": "Death",
+      "direct_transition": "Terminal"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    }
+  }
+}

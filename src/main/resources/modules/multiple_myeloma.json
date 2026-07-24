@@ -1,0 +1,993 @@
+{
+  "name": "Multiple Myeloma Claims Realistic",
+  "remarks": [
+    "Merged disease-natural-history and claims-utilization multiple myeloma module",
+    "Preserves MGUS → smoldering → active MM progression",
+    "Adds Medicare oncology utilization realism for BB2 RIF generation"
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "MGUS_Risk"
+    },
+    "Stem_Cell_Collection": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "38206",
+          "display": "Stem cell harvesting"
+        }
+      ],
+      "direct_transition": "Melphalan_Conditioning"
+    },
+    "Autologous_Transplant": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "58776007",
+          "display": "Autologous bone marrow transplant"
+        }
+      ],
+      "direct_transition": "Maintenance_Lenalidomide"
+    },
+    "Blood_Transfusion": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "36430",
+          "display": "Blood transfusion"
+        }
+      ],
+      "direct_transition": "MM_Longitudinal_Monitoring"
+    },
+    "MGUS_Risk": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "MGUS_Onset",
+          "distribution": 0.03
+        },
+        {
+          "transition": "No_MM",
+          "distribution": 0.97
+        }
+      ]
+    },
+    "Transplant_Eligibility": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Stem_Cell_Collection",
+          "distribution": 0.35
+        },
+        {
+          "transition": "Maintenance_Lenalidomide",
+          "distribution": 0.65
+        }
+      ]
+    },
+    "No_MM": {
+      "type": "Terminal"
+    },
+    "MGUS_Onset": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "277577000",
+          "display": "Monoclonal gammopathy of undetermined significance"
+        }
+      ],
+      "direct_transition": "MGUS_Oncology_Encounter"
+    },
+    "MGUS_Oncology_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for oncology care"
+        }
+      ],
+      "direct_transition": "MGUS_SPEP"
+    },
+    "MGUS_SPEP": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "99415-2",
+          "display": "Protein.monoclonal band 1 [Mass/volume] in Serum or Plasma by Immunofixation"
+        }
+      ],
+      "range": {
+        "low": 5,
+        "high": 29
+      },
+      "unit": "g/L",
+      "direct_transition": "MGUS_Lab_Report"
+    },
+    "MGUS_Lab_Report": {
+      "type": "Simple",
+      "direct_transition": "MGUS_Progression_Check"
+    },
+    "MGUS_Progression_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "MGUS_Monitoring",
+          "distribution": 0.99
+        },
+        {
+          "transition": "Smoldering_MM",
+          "distribution": 0.01
+        }
+      ]
+    },
+    "MGUS_Monitoring": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 12,
+        "unit": "months"
+      },
+      "direct_transition": "MGUS_Oncology_Encounter"
+    },
+    "Smoldering_MM": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "413587002",
+          "display": "Smoldering multiple myeloma"
+        }
+      ],
+      "direct_transition": "Smoldering_MM_Encounter"
+    },
+    "Smoldering_MM_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for oncology care"
+        }
+      ],
+      "direct_transition": "Free_Light_Chain_Test"
+    },
+    "Free_Light_Chain_Test": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "33944-0",
+          "display": "Immunoglobulin free light chains"
+        }
+      ],
+      "range": {
+        "low": 30,
+        "high": 60
+      },
+      "unit": "mg/L",
+      "direct_transition": "FLC_Report"
+    },
+    "FLC_Report": {
+      "type": "Simple",
+      "direct_transition": "Smoldering_Progression_Check"
+    },
+    "Smoldering_Progression_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Smoldering_Monitoring",
+          "distribution": 0.9
+        },
+        {
+          "transition": "Active_MM",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "Smoldering_Monitoring": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Smoldering_MM_Encounter"
+    },
+    "Active_MM": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "109989006",
+          "display": "Multiple myeloma"
+        }
+      ],
+      "direct_transition": "Initial_MM_Workup"
+    },
+    "Initial_MM_Workup": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for oncology care"
+        }
+      ],
+      "direct_transition": "Bone_Marrow_Biopsy"
+    },
+    "Bone_Marrow_Biopsy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "38221",
+          "display": "Bone marrow biopsy"
+        }
+      ],
+      "direct_transition": "PET_CT"
+    },
+    "PET_CT": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "78816",
+          "display": "PET or CT whole body"
+        }
+      ],
+      "direct_transition": "Induction_Chemotherapy_Encounter"
+    },
+    "Induction_Chemotherapy_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "408443003",
+          "display": "Chemotherapy session"
+        }
+      ],
+      "direct_transition": "Chemotherapy_Administration"
+    },
+    "Chemotherapy_Administration": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "96413",
+          "display": "Chemotherapy administration"
+        }
+      ],
+      "direct_transition": "Induction_Regimen"
+    },
+    "Bortezomib": {
+      "type": "MedicationOrder",
+      "target_encounter": "Induction_Chemotherapy_Encounter",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "402243",
+          "display": "Bortezomib"
+        }
+      ],
+      "direct_transition": "Lenalidomide"
+    },
+    "Lenalidomide": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "342369",
+          "display": "Lenalidomide"
+        }
+      ],
+      "direct_transition": "Dexamethasone"
+    },
+    "Dexamethasone": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "197583",
+          "display": "Dexamethasone"
+        }
+      ],
+      "direct_transition": "Daratumumab"
+    },
+    "Daratumumab": {
+      "type": "MedicationOrder",
+      "target_encounter": "Induction_Chemotherapy_Encounter",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1721947",
+          "display": "Daratumumab"
+        }
+      ],
+      "direct_transition": "Transplant_Eligibility"
+    },
+    "MM_Longitudinal_Monitoring": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for oncology care"
+        }
+      ],
+      "direct_transition": "CBC"
+    },
+    "CBC": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "57021-8",
+          "display": "CBC panel"
+        }
+      ],
+      "direct_transition": "Creatinine"
+    },
+    "Creatinine": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2160-0",
+          "display": "Creatinine"
+        }
+      ],
+      "direct_transition": "Calcium"
+    },
+    "Calcium": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "17861-6",
+          "display": "Calcium"
+        }
+      ],
+      "direct_transition": "MM_Monitoring_Report"
+    },
+    "MM_Monitoring_Report": {
+      "type": "Simple",
+      "direct_transition": "CRAB_Check"
+    },
+    "CRAB_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Stable_MM",
+          "distribution": 0.65
+        },
+        {
+          "transition": "Anemia",
+          "distribution": 0.12
+        },
+        {
+          "transition": "Renal_Failure",
+          "distribution": 0.1
+        },
+        {
+          "transition": "Bone_Disease",
+          "distribution": 0.08
+        },
+        {
+          "transition": "Hypercalcemia",
+          "distribution": 0.05
+        }
+      ]
+    },
+    "Stable_MM": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 3,
+        "unit": "months"
+      },
+      "direct_transition": "Zoledronic_Maintenance"
+    },
+    "Zoledronic_Maintenance": {
+      "type": "MedicationOrder",
+      "target_encounter": "MM_Longitudinal_Monitoring",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1546014",
+          "display": "Zoledronic acid"
+        }
+      ],
+      "direct_transition": "Relapse_Check"
+    },
+    "Anemia": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Epoetin_Alfa",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Blood_Transfusion",
+          "distribution": 0.6
+        }
+      ]
+    },
+    "Transfusion_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "116859006",
+          "display": "Transfusion of blood product"
+        }
+      ],
+      "direct_transition": "Blood_Transfusion"
+    },
+    "Renal_Failure": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "709044004",
+          "display": "Chronic kidney disease"
+        }
+      ],
+      "direct_transition": "Renal_Hospitalization"
+    },
+    "Renal_Hospitalization": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission"
+        }
+      ],
+      "direct_transition": "Dialysis"
+    },
+    "Dialysis": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "90935",
+          "display": "Hemodialysis"
+        }
+      ],
+      "direct_transition": "MM_Longitudinal_Monitoring"
+    },
+    "Bone_Disease": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "125605004",
+          "display": "Pathological fracture"
+        }
+      ],
+      "direct_transition": "Fracture_Hospitalization"
+    },
+    "Fracture_Hospitalization": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission"
+        }
+      ],
+      "direct_transition": "MRI_Spine"
+    },
+    "MRI_Spine": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "72158",
+          "display": "MRI spine with contrast"
+        }
+      ],
+      "direct_transition": "MM_Longitudinal_Monitoring"
+    },
+    "Hypercalcemia": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "66931009",
+          "display": "Hypercalcemia"
+        }
+      ],
+      "direct_transition": "Hypercalcemia_Hospitalization"
+    },
+    "Hypercalcemia_Hospitalization": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission"
+        }
+      ],
+      "direct_transition": "Zoledronic_Acid"
+    },
+    "Zoledronic_Acid": {
+      "type": "MedicationOrder",
+      "target_encounter": "Hypercalcemia_Hospitalization",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "77655",
+          "display": "zoledronic acid"
+        }
+      ],
+      "direct_transition": "MM_Longitudinal_Monitoring"
+    },
+    "Relapse_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "MM_Longitudinal_Monitoring",
+          "distribution": 0.8
+        },
+        {
+          "transition": "Salvage_Therapy_Encounter",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "Salvage_Therapy_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "408443003",
+          "display": "Chemotherapy session"
+        }
+      ],
+      "direct_transition": "Salvage_Infusion"
+    },
+    "Salvage_Infusion": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "96413",
+          "display": "Chemotherapy infusion"
+        }
+      ],
+      "direct_transition": "Relapse_Regimen"
+    },
+    "Hospice_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Hospice_Enrollment",
+          "distribution": 0.4
+        },
+        {
+          "transition": "MM_Longitudinal_Monitoring",
+          "distribution": 0.6
+        }
+      ]
+    },
+    "Hospice_Enrollment": {
+      "type": "Encounter",
+      "encounter_class": "hospice",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "385763009",
+          "display": "Hospice care"
+        }
+      ],
+      "direct_transition": "Hospice_Visit"
+    },
+    "Hospice_Visit": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "305911006",
+          "display": "Seen in Hospice"
+        }
+      ],
+      "direct_transition": "Terminal_MM"
+    },
+    "Maintenance_Lenalidomide": {
+      "type": "MedicationOrder",
+      "reason": "Multiple myeloma",
+      "assign_to_attribute": "maintenance_lenalidomide",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "342369",
+          "display": "Lenalidomide"
+        }
+      ],
+      "direct_transition": "Maintenance_Lenalidomide_Delay"
+    },
+    "Maintenance_Lenalidomide_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 12,
+        "high": 36,
+        "unit": "months"
+      },
+      "direct_transition": "Maintenance_Lenalidomide_End"
+    },
+    "Terminal_MM": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Death_From_MM"
+    },
+    "Ixazomib": {
+      "type": "MedicationOrder",
+      "target_encounter": "Salvage_Therapy_Encounter",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1723770",
+          "display": "Ixazomib 4 MG Oral Capsule"
+        }
+      ],
+      "direct_transition": "Lenalidomide_Relapse"
+    },
+    "Lenalidomide_Relapse": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "342369",
+          "display": "Lenalidomide"
+        }
+      ],
+      "direct_transition": "Dexamethasone_Relapse"
+    },
+    "Dexamethasone_Relapse": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "197583",
+          "display": "Dexamethasone"
+        }
+      ],
+      "direct_transition": "MM_Longitudinal_Monitoring"
+    },
+    "Pomalidomide": {
+      "type": "MedicationOrder",
+      "target_encounter": "Salvage_Therapy_Encounter",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1369734",
+          "display": "Pomalidomide 4 MG Oral Capsule"
+        }
+      ],
+      "direct_transition": "Dexamethasone_Pom"
+    },
+    "Dexamethasone_Pom": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "197583",
+          "display": "Dexamethasone"
+        }
+      ],
+      "direct_transition": "MM_Longitudinal_Monitoring"
+    },
+    "Selinexor": {
+      "type": "MedicationOrder",
+      "target_encounter": "Salvage_Therapy_Encounter",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2178394",
+          "display": "selinexor Oral Tablet"
+        }
+      ],
+      "direct_transition": "Dexamethasone_Selinexor"
+    },
+    "Dexamethasone_Selinexor": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "197583",
+          "display": "Dexamethasone"
+        }
+      ],
+      "direct_transition": "MM_Longitudinal_Monitoring"
+    },
+    "Carfilzomib": {
+      "type": "MedicationOrder",
+      "target_encounter": "Salvage_Therapy_Encounter",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1302966",
+          "display": "carfilzomib"
+        }
+      ],
+      "direct_transition": "Lenalidomide_Relapse"
+    },
+    "Isatuximab": {
+      "type": "MedicationOrder",
+      "target_encounter": "Salvage_Therapy_Encounter",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2282018",
+          "display": "isatuximab"
+        }
+      ],
+      "direct_transition": "Pomalidomide"
+    },
+    "Maintenance_Lenalidomide_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "maintenance_lenalidomide",
+      "direct_transition": "MM_Longitudinal_Monitoring"
+    },
+    "Teclistamab": {
+      "type": "MedicationOrder",
+      "target_encounter": "Salvage_Therapy_Encounter",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2619426",
+          "display": "teclistamab"
+        }
+      ],
+      "direct_transition": "MM_Longitudinal_Monitoring"
+    },
+    "Talquetamab": {
+      "type": "MedicationOrder",
+      "target_encounter": "Salvage_Therapy_Encounter",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2644447",
+          "display": "talquetamab"
+        }
+      ],
+      "direct_transition": "MM_Longitudinal_Monitoring"
+    },
+    "Elranatamab": {
+      "type": "MedicationOrder",
+      "target_encounter": "Salvage_Therapy_Encounter",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2644880",
+          "display": "elranatamab"
+        }
+      ],
+      "direct_transition": "MM_Longitudinal_Monitoring"
+    },
+    "Belantamab": {
+      "type": "MedicationOrder",
+      "target_encounter": "Salvage_Therapy_Encounter",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2387834",
+          "display": "belantamab mafodotin"
+        }
+      ],
+      "direct_transition": "MM_Longitudinal_Monitoring"
+    },
+    "Relapse_Regimen": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Isatuximab",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Carfilzomib",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Ixazomib",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Selinexor",
+          "distribution": 0.1
+        },
+        {
+          "transition": "Teclistamab",
+          "distribution": 0.1
+        },
+        {
+          "transition": "Talquetamab",
+          "distribution": 0.07
+        },
+        {
+          "transition": "Elranatamab",
+          "distribution": 0.07
+        },
+        {
+          "transition": "Belantamab",
+          "distribution": 0.06
+        }
+      ]
+    },
+    "Death_From_MM": {
+      "type": "Death",
+      "direct_transition": "No_MM"
+    },
+    "Acyclovir": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "197311",
+          "display": "Acyclovir"
+        }
+      ],
+      "direct_transition": "TMP_SMX"
+    },
+    "Carfilzomib_Induction": {
+      "type": "MedicationOrder",
+      "target_encounter": "Induction_Chemotherapy_Encounter",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1302966",
+          "display": "Carfilzomib"
+        }
+      ],
+      "direct_transition": "Lenalidomide"
+    },
+    "CyBorD_Regimen": {
+      "type": "Simple",
+      "direct_transition": "Cyclophosphamide"
+    },
+    "Cyclophosphamide": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "83831-117",
+          "display": "Cyclophosphamide"
+        }
+      ],
+      "direct_transition": "Bortezomib"
+    },
+    "DaraVRd_Regimen": {
+      "type": "Simple",
+      "direct_transition": "Bortezomib"
+    },
+    "Elotuzumab": {
+      "type": "MedicationOrder",
+      "target_encounter": "Salvage_Therapy_Encounter",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1726119",
+          "display": "Elotuzumab"
+        }
+      ],
+      "direct_transition": "Lenalidomide_Relapse"
+    },
+    "Epoetin_Alfa": {
+      "type": "MedicationOrder",
+      "target_encounter": "MM_Longitudinal_Monitoring",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "385885",
+          "display": "Epoetin alfa"
+        }
+      ],
+      "direct_transition": "MM_Longitudinal_Monitoring"
+    },
+    "Induction_Regimen": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "VRd_Regimen",
+          "distribution": 0.35
+        },
+        {
+          "transition": "DaraVRd_Regimen",
+          "distribution": 0.4
+        },
+        {
+          "transition": "KRd_Regimen",
+          "distribution": 0.15
+        },
+        {
+          "transition": "CyBorD_Regimen",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "KRd_Regimen": {
+      "type": "Simple",
+      "direct_transition": "Carfilzomib_Induction"
+    },
+    "Melphalan_Conditioning": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2708998",
+          "display": "Melphalan"
+        }
+      ],
+      "direct_transition": "Autologous_Transplant"
+    },
+    "Pegfilgrastim": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "MM_Longitudinal_Monitoring",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2549331",
+          "display": "Pegfilgrastim"
+        }
+      ],
+      "direct_transition": "Maintenance_Lenalidomide"
+    },
+    "TMP_SMX": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "198335",
+          "display": "Sulfamethoxazole/Trimethoprim"
+        }
+      ],
+      "direct_transition": "MM_Longitudinal_Monitoring"
+    },
+    "VRd_Regimen": {
+      "type": "Simple",
+      "direct_transition": "Bortezomib"
+    }
+  }
+}

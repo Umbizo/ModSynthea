@@ -1,0 +1,692 @@
+{
+  "name": "Prostate Cancer Module",
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "Gender_Check"
+    },
+    "Gender_Check": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 1,
+          "standardDeviation": 0.5
+        }
+      },
+      "unit": "days",
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Gender",
+            "gender": "M"
+          },
+          "distributions": [
+            {
+              "transition": "Age_Check",
+              "distribution": 1.0
+            }
+          ]
+        },
+        {
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Age_Check": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 55,
+          "standardDeviation": 10
+        }
+      },
+      "unit": "years",
+      "direct_transition": "Screening_Discussion"
+    },
+    "Screening_Discussion": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "PSA_Testing_Decision"
+    },
+    "PSA_Testing_Decision": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "Initial_PSA_Test"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Initial_PSA_Test": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "PSA_Result_Normal",
+          "distribution": 0.88
+        },
+        {
+          "transition": "PSA_Result_Elevated",
+          "distribution": 0.12
+        }
+      ],
+      "remarks": [
+        "Roughly 10-15% of screening PSA draws are above the 3 ng/mL referral",
+        "threshold. Modelled as two ranges rather than one wide uniform draw, which",
+        "would have made most of the screened population look abnormal."
+      ]
+    },
+    "PSA_Interpretation": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 14,
+          "standardDeviation": 7
+        }
+      },
+      "unit": "days",
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "last_observation",
+            "operator": ">=",
+            "value": 3
+          },
+          "distributions": [
+            {
+              "transition": "Repeat_PSA_Test",
+              "distribution": 0.8
+            },
+            {
+              "transition": "Prostate_MRI",
+              "distribution": 0.2
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "last_observation",
+            "operator": "is nil"
+          },
+          "distributions": [
+            {
+              "transition": "Annual_Screening",
+              "distribution": 1.0
+            }
+          ]
+        },
+        {
+          "transition": "Annual_Screening"
+        }
+      ]
+    },
+    "Repeat_PSA_Test": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2857-1",
+          "display": "Prostate specific Ag [Mass/volume] in Serum"
+        }
+      ],
+      "direct_transition": "MRI_or_Biopsy_Decision",
+      "unit": "ng/mL",
+      "range": {
+        "low": 3.0,
+        "high": 12.0
+      },
+      "assign_to_attribute": "last_observation"
+    },
+    "MRI_or_Biopsy_Decision": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "Prostate_MRI"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "Prostate_Biopsy"
+        }
+      ]
+    },
+    "Prostate_MRI": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "2690005",
+          "display": "Magnetic resonance imaging of pelvis"
+        }
+      ],
+      "direct_transition": "MRI_Fusion_Biopsy"
+    },
+    "MRI_Fusion_Biopsy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "447395005",
+          "display": "MRI guided biopsy of prostate"
+        }
+      ],
+      "direct_transition": "Pathology_Results"
+    },
+    "Prostate_Biopsy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "65575008",
+          "display": "Biopsy of prostate"
+        }
+      ],
+      "direct_transition": "Pathology_Results"
+    },
+    "Pathology_Results": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 7,
+          "standardDeviation": 3
+        }
+      },
+      "unit": "days",
+      "direct_transition": "Cancer_Diagnosis_Decision"
+    },
+    "Cancer_Diagnosis_Decision": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.25,
+          "transition": "Diagnose_Prostate_Cancer"
+        },
+        {
+          "distribution": 0.75,
+          "transition": "Annual_Screening"
+        }
+      ]
+    },
+    "Diagnose_Prostate_Cancer": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "399068003",
+          "display": "Malignant neoplasm of prostate"
+        }
+      ],
+      "direct_transition": "Risk_Stratification",
+      "assign_to_attribute": "Prostate Cancer"
+    },
+    "Risk_Stratification": {
+      "type": "SetAttribute",
+      "attribute": "prostate_cancer_risk",
+      "value": {
+        "type": "String",
+        "value_set": [
+          "low_risk",
+          "favorable_intermediate",
+          "unfavorable_intermediate",
+          "high_risk",
+          "very_high_risk"
+        ]
+      },
+      "direct_transition": "Staging_Workup"
+    },
+    "Staging_Workup": {
+      "type": "SetAttribute",
+      "attribute": "clinical_stage",
+      "value": {
+        "type": "String",
+        "value_set": [
+          "T1c",
+          "T2a",
+          "T2b",
+          "T2c",
+          "T3a",
+          "T3b",
+          "T4"
+        ]
+      },
+      "direct_transition": "Genomic_Testing_Decision"
+    },
+    "Genomic_Testing_Decision": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
+          "transition": "Genomic_Testing"
+        },
+        {
+          "distribution": 0.6,
+          "transition": "Treatment_Discussion"
+        }
+      ]
+    },
+    "Genomic_Testing": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "81070-0",
+          "display": "Oncotype DX prostate cancer assay"
+        }
+      ],
+      "direct_transition": "Treatment_Discussion"
+    },
+    "Treatment_Discussion": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "287051000000107",
+          "display": "Multidisciplinary care conference"
+        }
+      ],
+      "direct_transition": "Treatment_Selection"
+    },
+    "Treatment_Selection": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 21,
+          "standardDeviation": 7
+        }
+      },
+      "unit": "days",
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "prostate_cancer_risk",
+            "operator": "==",
+            "value": "low_risk"
+          },
+          "distributions": [
+            {
+              "transition": "Active_Surveillance",
+              "distribution": 0.9
+            },
+            {
+              "transition": "Radical_Prostatectomy",
+              "distribution": 0.1
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "prostate_cancer_risk",
+            "operator": "==",
+            "value": "favorable_intermediate"
+          },
+          "distributions": [
+            {
+              "transition": "Active_Surveillance",
+              "distribution": 0.4
+            },
+            {
+              "transition": "Radical_Prostatectomy",
+              "distribution": 0.3
+            },
+            {
+              "transition": "Radiation_Therapy",
+              "distribution": 0.3
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "prostate_cancer_risk",
+            "operator": "==",
+            "value": "unfavorable_intermediate"
+          },
+          "distributions": [
+            {
+              "transition": "Radical_Prostatectomy",
+              "distribution": 0.4
+            },
+            {
+              "transition": "Radiation_Therapy",
+              "distribution": 0.4
+            },
+            {
+              "transition": "Combined_Modality",
+              "distribution": 0.2
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "prostate_cancer_risk",
+            "operator": "==",
+            "value": "high_risk"
+          },
+          "distributions": [
+            {
+              "transition": "Combined_Modality",
+              "distribution": 0.6
+            },
+            {
+              "transition": "Radical_Prostatectomy",
+              "distribution": 0.3
+            },
+            {
+              "transition": "Radiation_Therapy",
+              "distribution": 0.1
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "prostate_cancer_risk",
+            "operator": "==",
+            "value": "very_high_risk"
+          },
+          "distributions": [
+            {
+              "transition": "Systemic_Therapy",
+              "distribution": 0.7
+            },
+            {
+              "transition": "Combined_Modality",
+              "distribution": 0.3
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "prostate_cancer_risk",
+            "operator": "is nil"
+          },
+          "distributions": [
+            {
+              "transition": "Active_Surveillance",
+              "distribution": 1.0
+            }
+          ]
+        },
+        {
+          "transition": "Active_Surveillance"
+        }
+      ]
+    },
+    "Active_Surveillance": {
+      "type": "CarePlanStart",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "712837004",
+          "display": "Prostate cancer surveillance"
+        }
+      ],
+      "direct_transition": "Surveillance_Monitoring"
+    },
+    "Radical_Prostatectomy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "26294005",
+          "display": "Radical prostatectomy"
+        }
+      ],
+      "direct_transition": "Post_Treatment_Monitoring"
+    },
+    "Radiation_Therapy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "785706005",
+          "display": "Hypofractionated radiation therapy of prostate (procedure)"
+        }
+      ],
+      "direct_transition": "Post_Treatment_Monitoring"
+    },
+    "Combined_Modality": {
+      "type": "MedicationOrder",
+      "direct_transition": "Radiation_Therapy",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "42375",
+          "display": "leuprolide"
+        }
+      ]
+    },
+    "Systemic_Therapy": {
+      "type": "MedicationOrder",
+      "direct_transition": "Advanced_Disease_Monitoring",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "42375",
+          "display": "leuprolide"
+        }
+      ]
+    },
+    "Surveillance_Monitoring": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 12,
+          "standardDeviation": 3
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Progression_Check"
+    },
+    "Progression_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.3,
+          "transition": "Definitive_Treatment"
+        },
+        {
+          "distribution": 0.7,
+          "transition": "Surveillance_Monitoring"
+        }
+      ]
+    },
+    "Definitive_Treatment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "Radical_Prostatectomy"
+        },
+        {
+          "distribution": 0.5,
+          "transition": "Radiation_Therapy"
+        }
+      ]
+    },
+    "Post_Treatment_Monitoring": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 12,
+          "standardDeviation": 4
+        }
+      },
+      "unit": "months",
+      "direct_transition": "PSA_Recurrence_Check"
+    },
+    "PSA_Recurrence_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.2,
+          "transition": "Biochemical_Recurrence"
+        },
+        {
+          "distribution": 0.8,
+          "transition": "Post_Treatment_Monitoring"
+        }
+      ]
+    },
+    "Biochemical_Recurrence": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "1259237005",
+          "display": "Recurrent malignant neoplasm"
+        }
+      ],
+      "direct_transition": "Salvage_Therapy"
+    },
+    "Salvage_Therapy": {
+      "type": "MedicationOrder",
+      "direct_transition": "Advanced_Disease_Monitoring",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "42375",
+          "display": "leuprolide"
+        }
+      ]
+    },
+    "Advanced_Disease_Monitoring": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 24,
+          "standardDeviation": 12
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Castration_Resistance_Check"
+    },
+    "Castration_Resistance_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "Metastatic_Castration_Resistant"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "Advanced_Disease_Monitoring"
+        }
+      ]
+    },
+    "Metastatic_Castration_Resistant": {
+      "type": "MedicationOrder",
+      "direct_transition": "Palliative_Care_Integration",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "72962",
+          "display": "docetaxel"
+        }
+      ]
+    },
+    "Palliative_Care_Integration": {
+      "type": "CarePlanStart",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "103735009",
+          "display": "Palliative care"
+        }
+      ],
+      "direct_transition": "End_of_Life_Care"
+    },
+    "End_of_Life_Care": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 24,
+          "standardDeviation": 12
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Death_From_Prostate_Cancer"
+    },
+    "Annual_Screening": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 12,
+          "standardDeviation": 3
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Initial_PSA_Test"
+    },
+    "Death_From_Prostate_Cancer": {
+      "type": "Death",
+      "direct_transition": "Terminal"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "PSA_Result_Normal": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2857-1",
+          "display": "Prostate specific Ag [Mass/volume] in Serum"
+        }
+      ],
+      "unit": "ng/mL",
+      "range": {
+        "low": 0.2,
+        "high": 3.0
+      },
+      "assign_to_attribute": "last_observation",
+      "direct_transition": "PSA_Interpretation"
+    },
+    "PSA_Result_Elevated": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2857-1",
+          "display": "Prostate specific Ag [Mass/volume] in Serum"
+        }
+      ],
+      "unit": "ng/mL",
+      "range": {
+        "low": 3.0,
+        "high": 10.0
+      },
+      "assign_to_attribute": "last_observation",
+      "direct_transition": "PSA_Interpretation"
+    }
+  }
+}

@@ -1,0 +1,2819 @@
+{
+  "name": "Bladder Cancer",
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "Initial_Delay"
+    },
+    "Age_Check": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 45,
+        "unit": "years"
+      },
+      "direct_transition": "Gender_Check"
+    },
+    "Gender_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Bladder cancer is 3-4x more common in men"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Male_Risk_Assessment",
+          "distribution": 0.75
+        },
+        {
+          "transition": "Female_Risk_Assessment",
+          "distribution": 0.25
+        }
+      ]
+    },
+    "Male_Risk_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "Assess male-specific risk factors"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "High_Risk_Male",
+          "distribution": 0.25
+        },
+        {
+          "transition": "Standard_Risk_Male",
+          "distribution": 0.75
+        }
+      ]
+    },
+    "Female_Risk_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "Assess female-specific risk factors"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "High_Risk_Female",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Standard_Risk_Female",
+          "distribution": 0.8
+        }
+      ]
+    },
+    "High_Risk_Male": {
+      "type": "Simple",
+      "remarks": [
+        "High-risk males: smokers, occupational exposure, family history"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Develop_Bladder_Cancer",
+          "distribution": 0.008
+        },
+        {
+          "transition": "Terminal",
+          "distribution": 0.992
+        }
+      ]
+    },
+    "Standard_Risk_Male": {
+      "type": "Simple",
+      "remarks": [
+        "Standard risk males"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Develop_Bladder_Cancer",
+          "distribution": 0.0025
+        },
+        {
+          "transition": "Terminal",
+          "distribution": 0.9975
+        }
+      ]
+    },
+    "High_Risk_Female": {
+      "type": "Simple",
+      "remarks": [
+        "High-risk females: smokers, chronic UTIs, chemotherapy exposure"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Develop_Bladder_Cancer",
+          "distribution": 0.002
+        },
+        {
+          "transition": "Terminal",
+          "distribution": 0.998
+        }
+      ]
+    },
+    "Standard_Risk_Female": {
+      "type": "Simple",
+      "remarks": [
+        "Standard risk females"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Develop_Bladder_Cancer",
+          "distribution": 0.0008
+        },
+        {
+          "transition": "Terminal",
+          "distribution": 0.9992
+        }
+      ]
+    },
+    "Develop_Bladder_Cancer": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "255108000",
+          "display": "Carcinoma of bladder"
+        }
+      ],
+      "direct_transition": "Set_Smoking_History"
+    },
+    "Set_Smoking_History": {
+      "type": "SetAttribute",
+      "attribute": "smoking_history",
+      "value": true,
+      "direct_transition": "Initial_Symptoms"
+    },
+    "Medical_Oncology_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for symptom"
+        }
+      ],
+      "direct_transition": "Neoadjuvant_Chemotherapy"
+    },
+    "Initial_Symptoms": {
+      "type": "Simple",
+      "remarks": [
+        "Most common presenting symptom is hematuria"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Painless_Hematuria",
+          "distribution": 0.85
+        },
+        {
+          "transition": "Irritative_Symptoms",
+          "distribution": 0.15
+        }
+      ]
+    },
+    "Painless_Hematuria": {
+      "type": "Symptom",
+      "symptom": "Hematuria",
+      "cause": "",
+      "probability": 1,
+      "exact": {
+        "quantity": 3
+      },
+      "direct_transition": "Delay_Before_Seeking_Care"
+    },
+    "Irritative_Symptoms": {
+      "type": "Symptom",
+      "symptom": "Urinary frequency",
+      "cause": "",
+      "probability": 0.8,
+      "range": {
+        "low": 2,
+        "high": 3
+      },
+      "direct_transition": "Urgency_Symptom"
+    },
+    "Urgency_Symptom": {
+      "type": "Symptom",
+      "symptom": "Urinary urgency",
+      "cause": "",
+      "probability": 0.7,
+      "range": {
+        "low": 2,
+        "high": 3
+      },
+      "direct_transition": "Dysuria_Symptom"
+    },
+    "Dysuria_Symptom": {
+      "type": "Symptom",
+      "symptom": "Dysuria",
+      "cause": "",
+      "probability": 0.6,
+      "range": {
+        "low": 1,
+        "high": 3
+      },
+      "direct_transition": "Delay_Before_Seeking_Care"
+    },
+    "Delay_Before_Seeking_Care": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 12,
+        "unit": "weeks"
+      },
+      "direct_transition": "Primary_Care_Visit"
+    },
+    "Primary_Care_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "hematuria",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for symptom"
+        }
+      ],
+      "direct_transition": "Urinalysis_Order"
+    },
+    "Urinalysis_Order": {
+      "type": "Observation",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "24357-6",
+          "display": "Urinalysis complete"
+        }
+      ],
+      "direct_transition": "Primary_Care_Visit_End"
+    },
+    "Urology_Referral_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "Most patients with gross hematuria get urology referral"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Urology_Referral",
+          "distribution": 0.9
+        },
+        {
+          "transition": "Watchful_Waiting",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "Watchful_Waiting": {
+      "type": "Delay",
+      "range": {
+        "low": 4,
+        "high": 12,
+        "unit": "weeks"
+      },
+      "direct_transition": "Persistent_Symptoms_Check"
+    },
+    "Persistent_Symptoms_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Check if symptoms persist"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Urology_Referral",
+          "distribution": 0.75
+        },
+        {
+          "transition": "Delay_In_Diagnosis",
+          "distribution": 0.25
+        }
+      ]
+    },
+    "Delay_In_Diagnosis": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 9,
+        "unit": "months"
+      },
+      "direct_transition": "Urology_Referral"
+    },
+    "Urology_Referral": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "hematuria",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "11429006",
+          "display": "Consultation with specialist"
+        }
+      ],
+      "direct_transition": "Cystoscopy_Order"
+    },
+    "Cystoscopy_Order": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "142505009",
+          "display": "Cystoscopy"
+        }
+      ],
+      "direct_transition": "CT_Urography_Order"
+    },
+    "CT_Urography_Order": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "419775003",
+          "display": "CT urography"
+        }
+      ],
+      "direct_transition": "Urology_Referral_End"
+    },
+    "Tumor_Detection": {
+      "type": "Simple",
+      "remarks": [
+        "Tumor detected on cystoscopy"
+      ],
+      "direct_transition": "TURBT_Procedure"
+    },
+    "TURBT_Procedure": {
+      "type": "Procedure",
+      "target_encounter": "TURBT_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "176258007",
+          "display": "Transurethral resection of bladder tumor"
+        }
+      ],
+      "direct_transition": "TURBT_Encounter_End"
+    },
+    "TURBT_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Pathology_Results"
+    },
+    "Pathology_Results": {
+      "type": "Simple",
+      "remarks": [
+        "Determine tumor stage and grade"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Ta_Low_Grade",
+          "distribution": 0.35
+        },
+        {
+          "transition": "Ta_High_Grade",
+          "distribution": 0.15
+        },
+        {
+          "transition": "T1_High_Grade",
+          "distribution": 0.25
+        },
+        {
+          "transition": "CIS_Diagnosis",
+          "distribution": 0.05
+        },
+        {
+          "transition": "T2_Muscle_Invasive",
+          "distribution": 0.15
+        },
+        {
+          "transition": "T3_T4_Advanced",
+          "distribution": 0.05
+        }
+      ]
+    },
+    "Ta_Low_Grade": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "425231005",
+          "display": "Stage Ta bladder cancer"
+        }
+      ],
+      "direct_transition": "Ta_Low_Grade_Treatment"
+    },
+    "Ta_High_Grade": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "425231005",
+          "display": "Stage Ta high-grade bladder cancer"
+        }
+      ],
+      "direct_transition": "Ta_High_Grade_Treatment"
+    },
+    "T1_High_Grade": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "1228957006",
+          "display": "Stage T1 bladder cancer"
+        }
+      ],
+      "direct_transition": "T1_High_Grade_Treatment"
+    },
+    "CIS_Diagnosis": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "92546004",
+          "display": "Carcinoma in situ of bladder"
+        }
+      ],
+      "direct_transition": "CIS_Treatment"
+    },
+    "T2_Muscle_Invasive": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "1229852009",
+          "display": "Stage T2 bladder cancer"
+        }
+      ],
+      "direct_transition": "MIBC_Staging_Workup"
+    },
+    "T3_T4_Advanced": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "122985900",
+          "display": "Stage T3-T4 bladder cancer"
+        }
+      ],
+      "direct_transition": "Advanced_Staging_Workup"
+    },
+    "Ta_Low_Grade_Treatment": {
+      "type": "Simple",
+      "remarks": [
+        "Ta low-grade: surveillance after TURBT"
+      ],
+      "direct_transition": "NMIBC_Surveillance"
+    },
+    "Ta_High_Grade_Treatment": {
+      "type": "Simple",
+      "remarks": [
+        "Ta high-grade: consider intravesical therapy"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Single_Dose_Mitomycin",
+          "distribution": 0.6
+        },
+        {
+          "transition": "NMIBC_Surveillance",
+          "distribution": 0.4
+        }
+      ]
+    },
+    "T1_High_Grade_Treatment": {
+      "type": "Simple",
+      "remarks": [
+        "T1 high-grade: BCG induction recommended"
+      ],
+      "direct_transition": "Intravesical_Therapy_Encounter"
+    },
+    "CIS_Treatment": {
+      "type": "Simple",
+      "remarks": [
+        "CIS: BCG induction required"
+      ],
+      "direct_transition": "Intravesical_Therapy_Encounter"
+    },
+    "Single_Dose_Mitomycin": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Intravesical_Therapy_Encounter",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "632",
+          "display": "mitomycin"
+        }
+      ],
+      "reason": "bladder cancer",
+      "direct_transition": "Single_Dose_Mitomycin_Supply_Delay",
+      "assign_to_attribute": "mitomycin_rx"
+    },
+    "Post_Mitomycin_Recovery": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 6,
+        "unit": "weeks"
+      },
+      "direct_transition": "NMIBC_Surveillance"
+    },
+    "BCG_Induction": {
+      "type": "MedicationOrder",
+      "target_encounter": "Intravesical_Therapy_Encounter",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "221050",
+          "display": "BCG, live, Tice strain"
+        }
+      ],
+      "reason": "bladder cancer",
+      "direct_transition": "BCG_Induction_Supply_Delay",
+      "assign_to_attribute": "bcg_vaccine_rx"
+    },
+    "BCG_Induction_Cycles": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 6,
+        "unit": "weeks"
+      },
+      "direct_transition": "BCG_Response_Assessment"
+    },
+    "BCG_Response_Assessment": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "142505009",
+          "display": "Cystoscopy"
+        }
+      ],
+      "direct_transition": "Intravesical_Therapy_Encounter_End"
+    },
+    "BCG_Response_Evaluation": {
+      "type": "Simple",
+      "remarks": [
+        "Evaluate response to BCG"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "BCG_Complete_Response",
+          "distribution": 0.65
+        },
+        {
+          "transition": "BCG_Partial_Response",
+          "distribution": 0.2
+        },
+        {
+          "transition": "BCG_No_Response",
+          "distribution": 0.15
+        }
+      ]
+    },
+    "BCG_Complete_Response": {
+      "type": "Simple",
+      "remarks": [
+        "Complete response to BCG"
+      ],
+      "direct_transition": "BCG_Maintenance"
+    },
+    "BCG_Partial_Response": {
+      "type": "Simple",
+      "remarks": [
+        "Partial response to BCG"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "BCG_Maintenance",
+          "distribution": 0.7
+        },
+        {
+          "transition": "Consider_Cystectomy",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "BCG_No_Response": {
+      "type": "Simple",
+      "remarks": [
+        "No response to BCG - BCG refractory"
+      ],
+      "direct_transition": "Consider_Cystectomy"
+    },
+    "BCG_Maintenance": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Intravesical_Therapy_Encounter",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "221050",
+          "display": "BCG, live, Tice strain"
+        }
+      ],
+      "reason": "bladder cancer",
+      "direct_transition": "BCG_Maintenance_Supply_Delay",
+      "assign_to_attribute": "bcg_maintenance_rx"
+    },
+    "BCG_Maintenance_Period": {
+      "type": "Delay",
+      "range": {
+        "low": 12,
+        "high": 36,
+        "unit": "months"
+      },
+      "direct_transition": "NMIBC_Surveillance"
+    },
+    "NMIBC_Surveillance": {
+      "type": "Simple",
+      "remarks": [
+        "Regular surveillance for NMIBC"
+      ],
+      "direct_transition": "Surveillance_Cystoscopy"
+    },
+    "Surveillance_Cystoscopy": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "bladder cancer surveillance",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Follow-up encounter"
+        }
+      ],
+      "direct_transition": "Surveillance_Cystoscopy_Procedure"
+    },
+    "Surveillance_Cystoscopy_Procedure": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "142505009",
+          "display": "Cystoscopy"
+        }
+      ],
+      "direct_transition": "Surveillance_Cystoscopy_End"
+    },
+    "Check_For_Recurrence": {
+      "type": "Simple",
+      "remarks": [
+        "Check for tumor recurrence"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "NMIBC_Recurrence",
+          "distribution": 0.15
+        },
+        {
+          "transition": "Progression_To_MIBC",
+          "distribution": 0.05
+        },
+        {
+          "transition": "Continue_Surveillance",
+          "distribution": 0.8
+        }
+      ]
+    },
+    "NMIBC_Recurrence": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "405843009",
+          "display": "Recurrent bladder cancer"
+        }
+      ],
+      "direct_transition": "Recurrence_TURBT"
+    },
+    "Progression_To_MIBC": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "369974005",
+          "display": "Muscle invasive bladder cancer"
+        }
+      ],
+      "direct_transition": "MIBC_Staging_Workup"
+    },
+    "Recurrence_TURBT": {
+      "type": "Procedure",
+      "target_encounter": "TURBT_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "176258007",
+          "display": "Repeat TURBT"
+        }
+      ],
+      "direct_transition": "TURBT_Encounter_End_Recurrence"
+    },
+    "TURBT_Encounter_End_Recurrence": {
+      "type": "EncounterEnd",
+      "direct_transition": "Recurrence_Treatment_Decision"
+    },
+    "Recurrence_Treatment_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "Treatment decision for recurrent NMIBC"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Second_Line_BCG",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Alternative_Intravesical",
+          "distribution": 0.3
+        },
+        {
+          "transition": "Consider_Cystectomy",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "Second_Line_BCG": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Intravesical_Therapy_Encounter",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "221050",
+          "display": "BCG, live, Tice strain"
+        }
+      ],
+      "reason": "recurrent bladder cancer",
+      "direct_transition": "Second_Line_BCG_Supply_Delay",
+      "assign_to_attribute": "second_line_bcg_rx"
+    },
+    "Second_BCG_Period": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 6,
+        "unit": "weeks"
+      },
+      "direct_transition": "Second_BCG_Response"
+    },
+    "Second_BCG_Response": {
+      "type": "Simple",
+      "remarks": [
+        "Response to second-line BCG"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "NMIBC_Surveillance",
+          "distribution": 0.45
+        },
+        {
+          "transition": "Consider_Cystectomy",
+          "distribution": 0.55
+        }
+      ]
+    },
+    "Alternative_Intravesical": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Intravesical_Therapy_Encounter",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "12574",
+          "display": "gemcitabine"
+        }
+      ],
+      "reason": "recurrent bladder cancer",
+      "direct_transition": "Alternative_Intravesical_Supply_Delay",
+      "assign_to_attribute": "gemcitabine_rx"
+    },
+    "Alternative_Treatment_Period": {
+      "type": "Delay",
+      "range": {
+        "low": 8,
+        "high": 12,
+        "unit": "weeks"
+      },
+      "direct_transition": "Alternative_Response_Assessment"
+    },
+    "Alternative_Response_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "Response to alternative intravesical therapy"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "NMIBC_Surveillance",
+          "distribution": 0.35
+        },
+        {
+          "transition": "Consider_Cystectomy",
+          "distribution": 0.65
+        }
+      ]
+    },
+    "Continue_Surveillance": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "distributed_transition": [
+        {
+          "transition": "Surveillance_Cystoscopy",
+          "distribution": 0.95
+        },
+        {
+          "transition": "Long_Term_Survivor",
+          "distribution": 0.05
+        }
+      ]
+    },
+    "Consider_Cystectomy": {
+      "type": "Simple",
+      "remarks": [
+        "Consider radical cystectomy for high-risk NMIBC"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Cystectomy_Admission",
+          "distribution": 0.7
+        },
+        {
+          "transition": "Palliative_Management",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "MIBC_Staging_Workup": {
+      "type": "Simple",
+      "remarks": [
+        "Staging workup for muscle invasive disease"
+      ],
+      "direct_transition": "Staging_Encounter"
+    },
+    "Staging_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "MIBC_Stage_Determination"
+    },
+    "Chest_CT_Staging": {
+      "type": "Procedure",
+      "target_encounter": "Staging_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "77477000",
+          "display": "CT chest"
+        }
+      ],
+      "direct_transition": "Abdomen_Pelvis_CT"
+    },
+    "Abdomen_Pelvis_CT": {
+      "type": "Procedure",
+      "target_encounter": "Staging_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "77477000",
+          "display": "CT abdomen and pelvis"
+        }
+      ],
+      "direct_transition": "Bone_Scan_Consideration"
+    },
+    "Bone_Scan_Consideration": {
+      "type": "Simple",
+      "remarks": [
+        "Consider bone scan if symptoms suggest metastases"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Bone_Scan",
+          "distribution": 0.3
+        },
+        {
+          "transition": "MIBC_Stage_Determination",
+          "distribution": 0.7
+        }
+      ]
+    },
+    "Bone_Scan": {
+      "type": "Procedure",
+      "target_encounter": "Staging_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32750006",
+          "display": "Bone scan"
+        }
+      ],
+      "direct_transition": "MIBC_Stage_Determination"
+    },
+    "MIBC_Stage_Determination": {
+      "type": "Simple",
+      "remarks": [
+        "Determine final stage of MIBC"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Localized_MIBC",
+          "distribution": 0.7
+        },
+        {
+          "transition": "Locally_Advanced_MIBC",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Metastatic_MIBC",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "Advanced_Staging_Workup": {
+      "type": "Simple",
+      "remarks": [
+        "Staging for T3-T4 disease"
+      ],
+      "direct_transition": "Advanced_Staging_Encounter"
+    },
+    "Advanced_Staging_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "direct_transition": "Advanced_CT_Staging"
+    },
+    "Advanced_CT_Staging": {
+      "type": "Procedure",
+      "target_encounter": "Advanced_Staging_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "77477000",
+          "display": "CT chest, abdomen, pelvis"
+        }
+      ],
+      "direct_transition": "Advanced_Staging_Encounter_End"
+    },
+    "Advanced_Stage_Determination": {
+      "type": "Simple",
+      "remarks": [
+        "Most T3-T4 tumors are locally advanced or metastatic"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Locally_Advanced_MIBC",
+          "distribution": 0.6
+        },
+        {
+          "transition": "Metastatic_MIBC",
+          "distribution": 0.4
+        }
+      ]
+    },
+    "Localized_MIBC": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "261004008",
+          "display": "Localized bladder cancer"
+        }
+      ],
+      "direct_transition": "MIBC_Treatment_Decision"
+    },
+    "Locally_Advanced_MIBC": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "399326009",
+          "display": "Locally advanced bladder cancer"
+        }
+      ],
+      "direct_transition": "Advanced_Treatment_Decision"
+    },
+    "Metastatic_MIBC": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "399326009",
+          "display": "Metastatic bladder cancer"
+        }
+      ],
+      "direct_transition": "Metastatic_Treatment_Decision"
+    },
+    "MIBC_Treatment_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "Treatment options for localized MIBC"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Medical_Oncology_Encounter",
+          "distribution": 0.6
+        },
+        {
+          "transition": "Primary_Cystectomy",
+          "distribution": 0.3
+        },
+        {
+          "transition": "Trimodal_Therapy",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "Advanced_Treatment_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "Treatment for locally advanced disease"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Medical_Oncology_Encounter",
+          "distribution": 0.7
+        },
+        {
+          "transition": "Palliative_Chemotherapy",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "Medical_Oncology_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Neoadjuvant_Cycles"
+    },
+    "Metastatic_Treatment_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "Treatment for metastatic disease"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Prochlorperazine_Order",
+          "distribution": 0.8
+        },
+        {
+          "transition": "Palliative_Care_Referral",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "Cystectomy_Admission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission"
+        }
+      ],
+      "direct_transition": "Radical_Cystectomy"
+    },
+    "Neoadjuvant_Chemotherapy": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2555",
+          "display": "cisplatin"
+        }
+      ],
+      "reason": "bladder cancer",
+      "direct_transition": "Neoadjuvant_Chemotherapy_Supply_Delay",
+      "assign_to_attribute": "cisplatin_rx"
+    },
+    "Neoadjuvant_Cycles": {
+      "type": "Delay",
+      "range": {
+        "low": 9,
+        "high": 12,
+        "unit": "weeks"
+      },
+      "direct_transition": "Neoadjuvant_Response_Assessment"
+    },
+    "Neoadjuvant_Response_Assessment": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "77477000",
+          "display": "Response assessment CT"
+        }
+      ],
+      "direct_transition": "Medical_Oncology_Encounter_End_2"
+    },
+    "Post_Neoadjuvant_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "Decision after neoadjuvant chemotherapy"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Cystectomy_Admission",
+          "distribution": 0.85
+        },
+        {
+          "transition": "Disease_Progression",
+          "distribution": 0.15
+        }
+      ]
+    },
+    "TURBT_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "11429006",
+          "display": "Consultation with specialist"
+        }
+      ],
+      "direct_transition": "TURBT_Procedure"
+    },
+    "Primary_Cystectomy": {
+      "type": "Simple",
+      "remarks": [
+        "Primary radical cystectomy without neoadjuvant therapy"
+      ],
+      "direct_transition": "Cystectomy_Admission"
+    },
+    "Radical_Cystectomy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "64063003",
+          "display": "Radical cystectomy"
+        }
+      ],
+      "direct_transition": "Urinary_Diversion_Type"
+    },
+    "Cystectomy_Admission_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Post_Surgical_Recovery"
+    },
+    "Urinary_Diversion_Type": {
+      "type": "Simple",
+      "remarks": [
+        "Type of urinary diversion"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Ileal_Conduit",
+          "distribution": 0.6
+        },
+        {
+          "transition": "Neobladder",
+          "distribution": 0.3
+        },
+        {
+          "transition": "Continent_Cutaneous",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "Ileal_Conduit": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "118508005",
+          "display": "Ileal conduit"
+        }
+      ],
+      "direct_transition": "Cystectomy_Admission_End"
+    },
+    "Neobladder": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "236334001",
+          "display": "Orthotopic neobladder"
+        }
+      ],
+      "direct_transition": "Cystectomy_Admission_End"
+    },
+    "Continent_Cutaneous": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "119560006",
+          "display": "Urinary diversion procedure"
+        }
+      ],
+      "direct_transition": "Cystectomy_Admission_End"
+    },
+    "Post_Surgical_Recovery": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 12,
+        "unit": "weeks"
+      },
+      "direct_transition": "Pathology_Review"
+    },
+    "Pathology_Review": {
+      "type": "Simple",
+      "remarks": [
+        "Final pathology after cystectomy"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Complete_Pathologic_Response",
+          "distribution": 0.25
+        },
+        {
+          "transition": "Residual_Disease_Organ_Confined",
+          "distribution": 0.45
+        },
+        {
+          "transition": "Residual_Disease_Node_Positive",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Residual_Advanced_Disease",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "Complete_Pathologic_Response": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "182840001",
+          "display": "Complete pathologic response"
+        }
+      ],
+      "direct_transition": "Post_Cystectomy_Surveillance"
+    },
+    "Residual_Disease_Organ_Confined": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "261004008",
+          "display": "Organ-confined residual disease"
+        }
+      ],
+      "direct_transition": "Post_Cystectomy_Surveillance"
+    },
+    "Residual_Disease_Node_Positive": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "399326009",
+          "display": "Node-positive bladder cancer"
+        }
+      ],
+      "direct_transition": "Consider_Adjuvant_Chemotherapy"
+    },
+    "Residual_Advanced_Disease": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "17964000",
+          "display": "Residual tumor"
+        }
+      ],
+      "direct_transition": "Adjuvant_Chemotherapy"
+    },
+    "Consider_Adjuvant_Chemotherapy": {
+      "type": "Simple",
+      "remarks": [
+        "Consider adjuvant chemotherapy for node-positive disease"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Adjuvant_Chemotherapy",
+          "distribution": 0.7
+        },
+        {
+          "transition": "Post_Cystectomy_Surveillance",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "Adjuvant_Chemotherapy": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "12574",
+          "display": "gemcitabine"
+        }
+      ],
+      "reason": "bladder cancer",
+      "direct_transition": "Adjuvant_Chemotherapy_Supply_Delay",
+      "assign_to_attribute": "gemcitabine_rx_2"
+    },
+    "Adjuvant_Treatment_Period": {
+      "type": "Delay",
+      "range": {
+        "low": 12,
+        "high": 18,
+        "unit": "weeks"
+      },
+      "direct_transition": "Post_Adjuvant_Assessment"
+    },
+    "Post_Adjuvant_Assessment": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "77477000",
+          "display": "Post-treatment assessment"
+        }
+      ],
+      "direct_transition": "Post_Cystectomy_Surveillance"
+    },
+    "Trimodal_Therapy": {
+      "type": "Simple",
+      "remarks": [
+        "Bladder-sparing trimodal therapy"
+      ],
+      "direct_transition": "Trimodal_Chemotherapy"
+    },
+    "Trimodal_Chemotherapy": {
+      "type": "MedicationOrder",
+      "target_encounter": "Medical_Oncology_Encounter",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2555",
+          "display": "cisplatin"
+        }
+      ],
+      "reason": "bladder cancer",
+      "direct_transition": "Trimodal_Chemotherapy_Supply_Delay",
+      "assign_to_attribute": "cisplatin_rx_2"
+    },
+    "Concurrent_Radiation": {
+      "type": "Procedure",
+      "target_encounter": "Radiation_Oncology_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "108290001",
+          "display": "Radiation therapy"
+        }
+      ],
+      "direct_transition": "Radiation_Oncology_Encounter_End"
+    },
+    "Palliative_Radiation_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "direct_transition": "Palliative_Radiotherapy"
+    },
+    "Palliative_Radiation_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Palliative_RT_Recovery"
+    },
+    "Staging_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "direct_transition": "Chest_CT_Staging"
+    },
+    "Trimodal_Treatment_Period": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 8,
+        "unit": "weeks"
+      },
+      "direct_transition": "Trimodal_Response_Assessment"
+    },
+    "Trimodal_Response_Assessment": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "142505009",
+          "display": "Cystoscopy"
+        }
+      ],
+      "direct_transition": "Trimodal_Response_Evaluation"
+    },
+    "Trimodal_Response_Evaluation": {
+      "type": "Simple",
+      "remarks": [
+        "Evaluate response to trimodal therapy"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Trimodal_Complete_Response",
+          "distribution": 0.65
+        },
+        {
+          "transition": "Trimodal_Partial_Response",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Trimodal_No_Response",
+          "distribution": 0.15
+        }
+      ]
+    },
+    "Trimodal_Complete_Response": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "399056007",
+          "display": "Complete response to trimodal therapy"
+        }
+      ],
+      "direct_transition": "Bladder_Preservation_Surveillance"
+    },
+    "Trimodal_Partial_Response": {
+      "type": "Simple",
+      "remarks": [
+        "Partial response - consider salvage cystectomy"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Salvage_Cystectomy",
+          "distribution": 0.7
+        },
+        {
+          "transition": "Bladder_Preservation_Surveillance",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "Trimodal_No_Response": {
+      "type": "Simple",
+      "remarks": [
+        "No response to trimodal therapy"
+      ],
+      "direct_transition": "Salvage_Cystectomy"
+    },
+    "Salvage_Cystectomy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "64063003",
+          "display": "Radical cystectomy"
+        }
+      ],
+      "direct_transition": "Salvage_Urinary_Diversion"
+    },
+    "Salvage_Urinary_Diversion": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "118508005",
+          "display": "Ileal conduit"
+        }
+      ],
+      "direct_transition": "Salvage_Recovery"
+    },
+    "Salvage_Recovery": {
+      "type": "Delay",
+      "range": {
+        "low": 8,
+        "high": 16,
+        "unit": "weeks"
+      },
+      "direct_transition": "Post_Cystectomy_Surveillance"
+    },
+    "First_Line_Chemotherapy": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2555",
+          "display": "cisplatin"
+        }
+      ],
+      "reason": "metastatic bladder cancer",
+      "direct_transition": "First_Line_Chemotherapy_Supply_Delay",
+      "assign_to_attribute": "cisplatin_rx_3"
+    },
+    "First_Line_Treatment_Period": {
+      "type": "Delay",
+      "range": {
+        "low": 12,
+        "high": 18,
+        "unit": "weeks"
+      },
+      "direct_transition": "First_Line_Response_Assessment"
+    },
+    "First_Line_Response_Assessment": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "77477000",
+          "display": "Response assessment imaging"
+        }
+      ],
+      "direct_transition": "First_Line_Response_Evaluation"
+    },
+    "First_Line_Response_Evaluation": {
+      "type": "Simple",
+      "remarks": [
+        "Response to first-line chemotherapy"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "First_Line_Response",
+          "distribution": 0.5
+        },
+        {
+          "transition": "First_Line_Stable_Disease",
+          "distribution": 0.3
+        },
+        {
+          "transition": "First_Line_Progression",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "First_Line_Response": {
+      "type": "Simple",
+      "remarks": [
+        "Good response to first-line therapy"
+      ],
+      "direct_transition": "Continue_First_Line"
+    },
+    "First_Line_Stable_Disease": {
+      "type": "Simple",
+      "remarks": [
+        "Stable disease on first-line therapy"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Continue_First_Line",
+          "distribution": 0.7
+        },
+        {
+          "transition": "Second_Line_Chemotherapy",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "First_Line_Progression": {
+      "type": "Simple",
+      "remarks": [
+        "Progression on first-line therapy"
+      ],
+      "direct_transition": "Second_Line_Chemotherapy"
+    },
+    "Continue_First_Line": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "distributed_transition": [
+        {
+          "transition": "Maintenance_Therapy",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Treatment_Break",
+          "distribution": 0.6
+        }
+      ]
+    },
+    "Maintenance_Therapy": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1875534",
+          "display": "avelumab"
+        }
+      ],
+      "reason": "bladder cancer maintenance",
+      "direct_transition": "Maintenance_Therapy_Supply_Delay",
+      "assign_to_attribute": "avelumab_rx"
+    },
+    "Maintenance_Period": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 24,
+        "unit": "months"
+      },
+      "direct_transition": "Maintenance_Assessment"
+    },
+    "Maintenance_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "Assessment during maintenance"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Continue_Maintenance",
+          "distribution": 0.6
+        },
+        {
+          "transition": "Disease_Progression",
+          "distribution": 0.4
+        }
+      ]
+    },
+    "Continue_Maintenance": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "distributed_transition": [
+        {
+          "transition": "Maintenance_Assessment",
+          "distribution": 0.7
+        },
+        {
+          "transition": "Long_Term_Survivor",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "Treatment_Break": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Treatment_Break_Assessment"
+    },
+    "Treatment_Break_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "Assessment during treatment break"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Continue_Break",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Disease_Progression",
+          "distribution": 0.6
+        }
+      ]
+    },
+    "Continue_Break": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Treatment_Break_Assessment"
+    },
+    "Second_Line_Chemotherapy": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1547545",
+          "display": "pembrolizumab"
+        }
+      ],
+      "reason": "progressive bladder cancer",
+      "direct_transition": "Second_Line_Chemotherapy_Supply_Delay",
+      "assign_to_attribute": "pembrolizumab_rx"
+    },
+    "Second_Line_Treatment_Period": {
+      "type": "Delay",
+      "range": {
+        "low": 8,
+        "high": 16,
+        "unit": "weeks"
+      },
+      "direct_transition": "Second_Line_Response_Assessment"
+    },
+    "Second_Line_Response_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "Response to second-line therapy"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Second_Line_Response",
+          "distribution": 0.25
+        },
+        {
+          "transition": "Second_Line_Stable",
+          "distribution": 0.35
+        },
+        {
+          "transition": "Second_Line_Progression",
+          "distribution": 0.4
+        }
+      ]
+    },
+    "Second_Line_Response": {
+      "type": "Simple",
+      "remarks": [
+        "Response to second-line therapy"
+      ],
+      "direct_transition": "Continue_Second_Line"
+    },
+    "Second_Line_Stable": {
+      "type": "Simple",
+      "remarks": [
+        "Stable on second-line therapy"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Continue_Second_Line",
+          "distribution": 0.7
+        },
+        {
+          "transition": "Third_Line_Treatment",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "Second_Line_Progression": {
+      "type": "Simple",
+      "remarks": [
+        "Progression on second-line therapy"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Third_Line_Treatment",
+          "distribution": 0.6
+        },
+        {
+          "transition": "Palliative_Care_Referral",
+          "distribution": 0.4
+        }
+      ]
+    },
+    "Continue_Second_Line": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 12,
+        "unit": "months"
+      },
+      "distributed_transition": [
+        {
+          "transition": "Second_Line_Response_Assessment",
+          "distribution": 0.8
+        },
+        {
+          "transition": "Long_Term_Survivor",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "Third_Line_Treatment": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2277607",
+          "display": "enfortumab vedotin"
+        }
+      ],
+      "reason": "refractory bladder cancer",
+      "direct_transition": "Third_Line_Treatment_Supply_Delay",
+      "assign_to_attribute": "enfortumab_vedotin_rx"
+    },
+    "Third_Line_Treatment_Period": {
+      "type": "Delay",
+      "range": {
+        "low": 8,
+        "high": 16,
+        "unit": "weeks"
+      },
+      "direct_transition": "Third_Line_Assessment"
+    },
+    "Third_Line_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "Response to third-line therapy"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Third_Line_Benefit",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Third_Line_No_Benefit",
+          "distribution": 0.6
+        }
+      ]
+    },
+    "Third_Line_Benefit": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 8,
+        "unit": "months"
+      },
+      "direct_transition": "Disease_Progression"
+    },
+    "Third_Line_No_Benefit": {
+      "type": "Simple",
+      "remarks": [
+        "No benefit from third-line therapy"
+      ],
+      "direct_transition": "Palliative_Care_Referral"
+    },
+    "Palliative_Chemotherapy": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "40048",
+          "display": "carboplatin"
+        }
+      ],
+      "reason": "advanced bladder cancer",
+      "direct_transition": "Palliative_Chemotherapy_Supply_Delay",
+      "assign_to_attribute": "carboplatin_rx"
+    },
+    "Palliative_Treatment_Period": {
+      "type": "Delay",
+      "range": {
+        "low": 8,
+        "high": 16,
+        "unit": "weeks"
+      },
+      "direct_transition": "Palliative_Assessment"
+    },
+    "Palliative_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "Assessment of palliative therapy"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Palliative_Benefit",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Palliative_Care_Referral",
+          "distribution": 0.6
+        }
+      ]
+    },
+    "Palliative_Benefit": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 9,
+        "unit": "months"
+      },
+      "direct_transition": "Disease_Progression"
+    },
+    "Post_Cystectomy_Surveillance": {
+      "type": "Simple",
+      "remarks": [
+        "Surveillance after cystectomy"
+      ],
+      "direct_transition": "Surveillance_Encounter"
+    },
+    "Bladder_Preservation_Surveillance": {
+      "type": "Simple",
+      "remarks": [
+        "Surveillance for bladder preservation"
+      ],
+      "direct_transition": "Bladder_Surveillance_Encounter"
+    },
+    "Surveillance_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "bladder cancer surveillance",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Follow-up encounter"
+        }
+      ],
+      "direct_transition": "Surveillance_Labs"
+    },
+    "Bladder_Surveillance_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "bladder cancer surveillance",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Follow-up encounter"
+        }
+      ],
+      "direct_transition": "Bladder_Surveillance_Cystoscopy"
+    },
+    "Surveillance_Labs": {
+      "type": "Observation",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "58410-2",
+          "display": "Surveillance laboratory studies"
+        }
+      ],
+      "direct_transition": "Surveillance_Imaging"
+    },
+    "Surveillance_Imaging": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "77477000",
+          "display": "Surveillance imaging"
+        }
+      ],
+      "direct_transition": "Surveillance_Encounter_End"
+    },
+    "Bladder_Surveillance_Cystoscopy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "142505009",
+          "display": "Cystoscopy"
+        }
+      ],
+      "direct_transition": "Bladder_Surveillance_Encounter_End"
+    },
+    "Check_For_Recurrence_Post_Cystectomy": {
+      "type": "Simple",
+      "remarks": [
+        "Check for recurrence after cystectomy"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Post_Cystectomy_Recurrence",
+          "distribution": 0.12
+        },
+        {
+          "transition": "Continue_Post_Cystectomy_Surveillance",
+          "distribution": 0.88
+        }
+      ]
+    },
+    "Check_For_Bladder_Recurrence": {
+      "type": "Simple",
+      "remarks": [
+        "Check for recurrence in preserved bladder"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Bladder_Recurrence",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Continue_Bladder_Surveillance",
+          "distribution": 0.8
+        }
+      ]
+    },
+    "Post_Cystectomy_Recurrence": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "263855007",
+          "display": "Recurrent bladder cancer post-cystectomy"
+        }
+      ],
+      "direct_transition": "Recurrence_Treatment_Decision_Advanced"
+    },
+    "Bladder_Recurrence": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "263855007",
+          "display": "Bladder recurrence after trimodal therapy"
+        }
+      ],
+      "direct_transition": "Bladder_Recurrence_Treatment"
+    },
+    "Recurrence_Treatment_Decision_Advanced": {
+      "type": "Simple",
+      "remarks": [
+        "Treatment for recurrence after cystectomy"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Metastatic_Chemotherapy_Recurrence",
+          "distribution": 0.7
+        },
+        {
+          "transition": "Palliative_Care_Referral",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "Bladder_Recurrence_Treatment": {
+      "type": "Simple",
+      "remarks": [
+        "Treatment for bladder recurrence"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Salvage_Cystectomy",
+          "distribution": 0.6
+        },
+        {
+          "transition": "Repeat_TURBT",
+          "distribution": 0.4
+        }
+      ]
+    },
+    "Repeat_TURBT": {
+      "type": "Procedure",
+      "target_encounter": "TURBT_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "176258007",
+          "display": "Repeat TURBT for recurrence"
+        }
+      ],
+      "direct_transition": "TURBT_Encounter_End_Repeat"
+    },
+    "TURBT_Encounter_End_Repeat": {
+      "type": "EncounterEnd",
+      "direct_transition": "Post_Repeat_TURBT_Assessment"
+    },
+    "Post_Repeat_TURBT_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "Assessment after repeat TURBT"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Bladder_Preservation_Surveillance",
+          "distribution": 0.5
+        },
+        {
+          "transition": "Salvage_Cystectomy",
+          "distribution": 0.5
+        }
+      ]
+    },
+    "Metastatic_Chemotherapy_Recurrence": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2555",
+          "display": "cisplatin"
+        }
+      ],
+      "reason": "recurrent bladder cancer",
+      "direct_transition": "Metastatic_Chemotherapy_Recurrence_Supply_Delay",
+      "assign_to_attribute": "cisplatin_rx_4"
+    },
+    "Recurrence_Treatment_Period": {
+      "type": "Delay",
+      "range": {
+        "low": 12,
+        "high": 18,
+        "unit": "weeks"
+      },
+      "direct_transition": "Recurrence_Response_Assessment"
+    },
+    "Recurrence_Response_Assessment": {
+      "type": "Simple",
+      "remarks": [
+        "Response to treatment for recurrence"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Recurrence_Response",
+          "distribution": 0.3
+        },
+        {
+          "transition": "Recurrence_Progression",
+          "distribution": 0.7
+        }
+      ]
+    },
+    "Recurrence_Response": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 18,
+        "unit": "months"
+      },
+      "direct_transition": "Disease_Progression"
+    },
+    "Recurrence_Progression": {
+      "type": "Simple",
+      "remarks": [
+        "Progression of recurrent disease"
+      ],
+      "direct_transition": "Palliative_Care_Referral"
+    },
+    "Continue_Post_Cystectomy_Surveillance": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "distributed_transition": [
+        {
+          "transition": "Surveillance_Encounter",
+          "distribution": 0.9
+        },
+        {
+          "transition": "Long_Term_Survivor",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "Continue_Bladder_Surveillance": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "distributed_transition": [
+        {
+          "transition": "Bladder_Surveillance_Encounter",
+          "distribution": 0.85
+        },
+        {
+          "transition": "Long_Term_Survivor",
+          "distribution": 0.15
+        }
+      ]
+    },
+    "Disease_Progression": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "1371415000",
+          "display": "Progressive bladder cancer"
+        }
+      ],
+      "direct_transition": "Palliative_Care_Referral"
+    },
+    "Palliative_Management": {
+      "type": "Simple",
+      "remarks": [
+        "Palliative management for poor surgical candidates"
+      ],
+      "direct_transition": "Palliative_Care_Referral"
+    },
+    "Palliative_Care_Referral": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "103735009",
+          "display": "Palliative care"
+        }
+      ],
+      "direct_transition": "Hospice_Enrollment"
+    },
+    "Palliative_Phase": {
+      "type": "Simple",
+      "remarks": [
+        "Palliative care phase with symptom management"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Palliative_Radiotherapy",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Comfort_Care_Only",
+          "distribution": 0.6
+        }
+      ]
+    },
+    "Palliative_Radiotherapy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "108290001",
+          "display": "Palliative radiation therapy"
+        }
+      ],
+      "target_encounter": "Palliative_Radiation_Encounter",
+      "direct_transition": "Palliative_Radiation_Encounter_End"
+    },
+    "Palliative_RT_Recovery": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 6,
+        "unit": "weeks"
+      },
+      "direct_transition": "Comfort_Care_Only"
+    },
+    "Comfort_Care_Only": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 18,
+        "unit": "months"
+      },
+      "direct_transition": "End_Stage_Disease"
+    },
+    "Long_Term_Survivor": {
+      "type": "Simple",
+      "remarks": [
+        "Patient remains disease-free long-term"
+      ],
+      "direct_transition": "Annual_Surveillance"
+    },
+    "Ondansetron_Order": {
+      "type": "MedicationOrder",
+      "assign_to_attribute": "ondansetron_rx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "26225",
+          "display": "Ondansetron 8 MG Oral Tablet"
+        }
+      ],
+      "direct_transition": "Ondansetron_Supply_Delay"
+    },
+    "Ondansetron_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Ondansetron_End"
+    },
+    "Ondansetron_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "ondansetron_rx",
+      "direct_transition": "First_Line_Chemotherapy"
+    },
+    "Annual_Surveillance": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 1,
+        "unit": "years"
+      },
+      "distributed_transition": [
+        {
+          "transition": "Late_Recurrence_Check",
+          "distribution": 0.95
+        },
+        {
+          "transition": "Secondary_Malignancy",
+          "distribution": 0.03
+        },
+        {
+          "transition": "Terminal",
+          "distribution": 0.02
+        }
+      ]
+    },
+    "Late_Recurrence_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Check for late recurrences"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Late_Recurrence",
+          "distribution": 0.03
+        },
+        {
+          "transition": "Annual_Surveillance",
+          "distribution": 0.97
+        }
+      ]
+    },
+    "Late_Recurrence": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "263855007",
+          "display": "Late recurrence of bladder cancer"
+        }
+      ],
+      "direct_transition": "Late_Recurrence_Treatment"
+    },
+    "Late_Recurrence_Treatment": {
+      "type": "Simple",
+      "remarks": [
+        "Treatment approach for late recurrence"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Late_Recurrence_Systemic",
+          "distribution": 0.7
+        },
+        {
+          "transition": "Late_Recurrence_Local",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "Intravesical_Therapy_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "direct_transition": "BCG_Induction"
+    },
+    "Late_Recurrence_Systemic": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Medical_Oncology_Encounter",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1547545",
+          "display": "pembrolizumab"
+        }
+      ],
+      "reason": "recurrent bladder cancer",
+      "direct_transition": "Late_Recurrence_Systemic_Supply_Delay",
+      "assign_to_attribute": "pembrolizumab_rx_2"
+    },
+    "Late_Recurrence_Systemic_Period": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 12,
+        "unit": "months"
+      },
+      "direct_transition": "Late_Recurrence_Outcome"
+    },
+    "Prochlorperazine_Order": {
+      "type": "MedicationOrder",
+      "assign_to_attribute": "prochlorperazine_rx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "312635",
+          "display": "Prochlorperazine 10 MG Oral Tablet"
+        }
+      ],
+      "direct_transition": "Prochlorperazine_Supply_Delay"
+    },
+    "Prochlorperazine_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Prochlorperazine_End"
+    },
+    "Prochlorperazine_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "prochlorperazine_rx",
+      "direct_transition": "Ondansetron_Order"
+    },
+    "Late_Recurrence_Local": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "108290001",
+          "display": "Local salvage therapy"
+        }
+      ],
+      "direct_transition": "Late_Local_Recovery"
+    },
+    "Late_Local_Recovery": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 12,
+        "unit": "weeks"
+      },
+      "direct_transition": "Late_Recurrence_Outcome"
+    },
+    "Late_Recurrence_Outcome": {
+      "type": "Simple",
+      "remarks": [
+        "Outcome of late recurrence treatment"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Late_Recurrence_Control",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Palliative_Care_Referral",
+          "distribution": 0.6
+        }
+      ]
+    },
+    "Late_Recurrence_Control": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 24,
+        "unit": "months"
+      },
+      "distributed_transition": [
+        {
+          "transition": "Annual_Surveillance",
+          "distribution": 0.3
+        },
+        {
+          "transition": "Disease_Progression",
+          "distribution": 0.7
+        }
+      ]
+    },
+    "Secondary_Malignancy": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "128462008",
+          "display": "Secondary malignancy"
+        }
+      ],
+      "direct_transition": "Secondary_Cancer_Treatment"
+    },
+    "Secondary_Cancer_Treatment": {
+      "type": "Simple",
+      "remarks": [
+        "Treatment for secondary malignancy"
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Secondary_Cancer_Therapy",
+          "distribution": 0.7
+        },
+        {
+          "transition": "Palliative_Care_Referral",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "Secondary_Cancer_Therapy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "367336001",
+          "display": "Cancer therapy"
+        }
+      ],
+      "direct_transition": "Secondary_Cancer_Period"
+    },
+    "Secondary_Cancer_Period": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 24,
+        "unit": "months"
+      },
+      "distributed_transition": [
+        {
+          "transition": "Secondary_Cancer_Remission",
+          "distribution": 0.5
+        },
+        {
+          "transition": "End_Stage_Disease",
+          "distribution": 0.5
+        }
+      ]
+    },
+    "Secondary_Cancer_Remission": {
+      "type": "Simple",
+      "remarks": [
+        "Remission of secondary cancer"
+      ],
+      "direct_transition": "Annual_Surveillance"
+    },
+    "End_Stage_Disease": {
+      "type": "Death",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "419620001",
+          "display": "Death due to malignant neoplastic disease"
+        }
+      ],
+      "direct_transition": "Terminal"
+    },
+    "Primary_Care_Visit_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Urology_Referral_Decision"
+    },
+    "Urology_Referral_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Tumor_Detection"
+    },
+    "Surveillance_Cystoscopy_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Check_For_Recurrence"
+    },
+    "Surveillance_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Check_For_Recurrence_Post_Cystectomy"
+    },
+    "Bladder_Surveillance_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Check_For_Bladder_Recurrence"
+    },
+    "Single_Dose_Mitomycin_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Single_Dose_Mitomycin_End"
+    },
+    "Single_Dose_Mitomycin_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "mitomycin_rx",
+      "direct_transition": "Post_Mitomycin_Recovery"
+    },
+    "BCG_Induction_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "BCG_Induction_End"
+    },
+    "BCG_Induction_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "bcg_vaccine_rx",
+      "direct_transition": "BCG_Induction_Cycles"
+    },
+    "BCG_Maintenance_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "BCG_Maintenance_End"
+    },
+    "BCG_Maintenance_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "bcg_maintenance_rx",
+      "direct_transition": "BCG_Maintenance_Period"
+    },
+    "Second_Line_BCG_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Second_Line_BCG_End"
+    },
+    "Second_Line_BCG_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "second_line_bcg_rx",
+      "direct_transition": "Second_BCG_Period"
+    },
+    "Alternative_Intravesical_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Alternative_Intravesical_End"
+    },
+    "Alternative_Intravesical_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "gemcitabine_rx",
+      "direct_transition": "Alternative_Treatment_Period"
+    },
+    "Neoadjuvant_Chemotherapy_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Neoadjuvant_Chemotherapy_End"
+    },
+    "Radiation_Oncology_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "direct_transition": "Concurrent_Radiation"
+    },
+    "Radiation_Oncology_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Trimodal_Treatment_Period"
+    },
+    "Neoadjuvant_Chemotherapy_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "cisplatin_rx",
+      "direct_transition": "Neoadjuvant_Cycles"
+    },
+    "Adjuvant_Chemotherapy_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Adjuvant_Chemotherapy_End"
+    },
+    "Adjuvant_Chemotherapy_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "gemcitabine_rx_2",
+      "direct_transition": "Adjuvant_Treatment_Period"
+    },
+    "Trimodal_Chemotherapy_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Trimodal_Chemotherapy_End"
+    },
+    "Trimodal_Chemotherapy_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "cisplatin_rx_2",
+      "direct_transition": "Concurrent_Radiation"
+    },
+    "First_Line_Chemotherapy_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "First_Line_Chemotherapy_End"
+    },
+    "First_Line_Chemotherapy_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "cisplatin_rx_3",
+      "direct_transition": "First_Line_Treatment_Period"
+    },
+    "Maintenance_Therapy_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Maintenance_Therapy_End"
+    },
+    "Maintenance_Therapy_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "avelumab_rx",
+      "direct_transition": "Maintenance_Period"
+    },
+    "Second_Line_Chemotherapy_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Second_Line_Chemotherapy_End"
+    },
+    "Second_Line_Chemotherapy_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "pembrolizumab_rx",
+      "direct_transition": "Second_Line_Treatment_Period"
+    },
+    "Third_Line_Treatment_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Third_Line_Treatment_End"
+    },
+    "Third_Line_Treatment_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "enfortumab_vedotin_rx",
+      "direct_transition": "Third_Line_Treatment_Period"
+    },
+    "Palliative_Chemotherapy_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Palliative_Chemotherapy_End"
+    },
+    "Palliative_Chemotherapy_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "carboplatin_rx",
+      "direct_transition": "Palliative_Treatment_Period"
+    },
+    "Metastatic_Chemotherapy_Recurrence_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Metastatic_Chemotherapy_Recurrence_End"
+    },
+    "Hospice_Enrollment": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "advanced bladder cancer",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "305336008",
+          "display": "Referral to hospice service"
+        }
+      ],
+      "direct_transition": "Hospice_Period"
+    },
+    "Hospice_Period": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 180,
+        "unit": "days"
+      },
+      "direct_transition": "Hospice_Enrollment_End"
+    },
+    "Metastatic_Chemotherapy_Recurrence_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "cisplatin_rx_4",
+      "direct_transition": "Recurrence_Treatment_Period"
+    },
+    "Late_Recurrence_Systemic_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Late_Recurrence_Systemic_End"
+    },
+    "Late_Recurrence_Systemic_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "pembrolizumab_rx_2",
+      "direct_transition": "Late_Recurrence_Systemic_Period"
+    },
+    "Initial_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 90,
+        "high": 3650,
+        "unit": "days"
+      },
+      "direct_transition": "Age_Check"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "Medical_Oncology_Encounter_End_2": {
+      "type": "EncounterEnd",
+      "direct_transition": "Post_Neoadjuvant_Decision"
+    },
+    "Advanced_Staging_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Advanced_Stage_Determination"
+    },
+    "Intravesical_Therapy_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "BCG_Response_Evaluation"
+    },
+    "Hospice_Enrollment_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "End_Stage_Disease"
+    }
+  }
+}

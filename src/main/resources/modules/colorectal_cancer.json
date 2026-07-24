@@ -187,6 +187,9 @@
               "transition": "Detect_Adenoma"
             }
           ]
+        },
+        {
+          "transition": "Detect_Adenoma"
         }
       ]
     },
@@ -830,6 +833,9 @@
             "value": 4
           },
           "transition": "Colorectal_Cancer_Stage_IV"
+        },
+        {
+          "transition": "Colorectal_Cancer_Stage_IV"
         }
       ]
     },
@@ -1022,6 +1028,9 @@
             "operator": "==",
             "value": 4
           }
+        },
+        {
+          "transition": "Oncologist_Encounter"
         }
       ],
       "remarks": [
@@ -1167,6 +1176,9 @@
               "transition": "Wait_For_Initial_Chemotherapy_Treatment"
             }
           ]
+        },
+        {
+          "transition": "Wait_For_Initial_Chemotherapy_Treatment"
         }
       ]
     },
@@ -1729,7 +1741,7 @@
             {
               "system": "LOINC",
               "code": "33914-3",
-              "display": "Glomerular filtration rate [Volume Rate/Area] in Serum or Plasma by Creatinine-based formula (MDRD)/1.73 sq M"
+              "display": "Glomerular filtration rate/1.73 sq M.predicted [Volume Rate/Area] in Serum or Plasma by Creatinine-based formula (MDRD)"
             }
           ],
           "range": {
@@ -1769,7 +1781,7 @@
         },
         {
           "category": "laboratory",
-          "unit": "g/L",
+          "unit": "g/dL",
           "codes": [
             {
               "system": "LOINC",
@@ -1923,7 +1935,7 @@
             {
               "system": "LOINC",
               "code": "787-2",
-              "display": "MCV [Entitic mean volume] in Red Blood Cells by Automated count"
+              "display": "MCV [Entitic volume] by Automated count"
             }
           ],
           "range": {
@@ -1953,7 +1965,7 @@
             {
               "system": "LOINC",
               "code": "786-4",
-              "display": "MCHC [Entitic Mass/volume] in Red Blood Cells by Automated count"
+              "display": "MCHC [Mass/volume] by Automated count"
             }
           ],
           "range": {
@@ -1967,8 +1979,8 @@
           "codes": [
             {
               "system": "LOINC",
-              "code": "788-0",
-              "display": "Erythrocyte [DistWidth] in Blood by Automated count"
+              "code": "21000-5",
+              "display": "Erythrocyte distribution width [Entitic volume] by Automated count"
             }
           ],
           "range": {
@@ -2002,8 +2014,8 @@
             }
           ],
           "range": {
-            "low": 150,
-            "high": 520
+            "low": 9,
+            "high": 17
           }
         },
         {
@@ -2013,7 +2025,7 @@
             {
               "system": "LOINC",
               "code": "32623-1",
-              "display": "Platelet [Entitic mean volume] in Blood by Automated count"
+              "display": "Platelet mean volume [Entitic volume] in Blood by Automated count"
             }
           ],
           "range": {
@@ -2127,7 +2139,7 @@
       "type": "SetAttribute",
       "attribute": "hospice_reason",
       "direct_transition": "Wait_For_Oncologist_Encounter",
-      "value_attribute": "colorectal_cancer"
+      "value": "colorectal_cancer"
     },
     "Postoperative Care": {
       "type": "Procedure",

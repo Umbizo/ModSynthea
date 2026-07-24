@@ -1,5 +1,5 @@
 {
-  "name": "Acute Myeloid Leukemia for PCOR Research",
+  "name": "Acute Myeloid Leukemia - Pediatric Levofloxacin Prophylaxis",
   "states": {
     "Initial": {
       "type": "Initial",
@@ -11,7 +11,7 @@
           },
           "distributions": [
             {
-              "transition": "Cancerous",
+              "transition": "AML_Already_Present_Check",
               "distribution": 0.002
             },
             {
@@ -27,7 +27,7 @@
           },
           "distributions": [
             {
-              "transition": "Cancerous",
+              "transition": "AML_Already_Present_Check",
               "distribution": 0.003
             },
             {
@@ -35,6 +35,9 @@
               "distribution": 0.997
             }
           ]
+        },
+        {
+          "transition": "Terminal"
         }
       ]
     },
@@ -84,14 +87,13 @@
         }
       ],
       "range": {
-        "low": 250,
-        "high": 500
+        "low": 0.25,
+        "high": 0.5
       },
       "direct_transition": "Check_Fever"
     },
     "Febrile_Neutropenia": {
       "type": "ConditionOnset",
-      "assign_to_attribute": "",
       "target_encounter": "Chemotherapy_Inpatient_Encounter",
       "codes": [
         {
@@ -104,7 +106,6 @@
     },
     "Non-Febrile_Neutropenia": {
       "type": "ConditionOnset",
-      "assign_to_attribute": "",
       "target_encounter": "Chemotherapy_Inpatient_Encounter",
       "codes": [
         {
@@ -190,6 +191,9 @@
               "distribution": 0.6699999999999999
             }
           ]
+        },
+        {
+          "transition": "No_Bacteremia"
         }
       ]
     },
@@ -246,14 +250,14 @@
       ],
       "direct_transition": "Check_Fever2",
       "range": {
-        "low": 250,
-        "high": 500
+        "low": 0.25,
+        "high": 0.5
       }
     },
     "Normal_Body_Temp": {
       "type": "Observation",
       "category": "vital-signs",
-      "unit": "[degF]",
+      "unit": "Cel",
       "codes": [
         {
           "system": "LOINC",
@@ -263,14 +267,14 @@
       ],
       "direct_transition": "Non-Febrile_Neutropenia",
       "range": {
-        "low": 96,
-        "high": 99
+        "low": 35.6,
+        "high": 37.2
       }
     },
     "Fever": {
       "type": "Observation",
       "category": "vital-signs",
-      "unit": "[degF]",
+      "unit": "Cel",
       "codes": [
         {
           "system": "LOINC",
@@ -279,8 +283,8 @@
         }
       ],
       "range": {
-        "low": 100.4,
-        "high": 103
+        "low": 38.0,
+        "high": 39.4
       },
       "direct_transition": "Febrile_Neutropenia"
     },
@@ -702,7 +706,7 @@
     },
     "Acute_Myeloid_Leukemia_AML": {
       "type": "ConditionOnset",
-      "assign_to_attribute": "",
+      "assign_to_attribute": "acute_myeloid_leukemia",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -860,6 +864,32 @@
       },
       "unit": "minutes",
       "direct_transition": "End_Levofloxacin"
+    },
+    "AML_Already_Present_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "91861009",
+                "display": "Acute myeloid leukemia (disorder)"
+              }
+            ]
+          },
+          "transition": "Terminal"
+        },
+        {
+          "transition": "Cancerous"
+        }
+      ],
+      "remarks": [
+        "Two modules in this repo onset SNOMED 91861009. Without this check a",
+        "patient can receive two independent AML diagnoses and two unrelated",
+        "treatment courses, roughly doubling apparent AML prevalence."
+      ]
     }
   },
   "remarks": [

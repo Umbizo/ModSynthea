@@ -1,0 +1,335 @@
+{
+  "name": "Non-Small Cell Lung Cancer Module",
+  "remarks": [
+    "Simulation of NSCLC including subtypes, staging, molecular testing, and treatment pathways"
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "Check Lung Cancer Probability"
+    },
+    "Check Lung Cancer Probability": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.001,
+          "transition": "Symptom Onset"
+        },
+        {
+          "distribution": 0.999,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Symptom Onset": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.85,
+          "transition": "Present Symptoms"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "Incidental Finding"
+        }
+      ]
+    },
+    "Present Symptoms": {
+      "type": "MultiObservation",
+      "observations": [
+        {
+          "codes": [
+            {
+              "system": "SNOMED-CT",
+              "code": "49727002",
+              "display": "Cough (finding)"
+            }
+          ]
+        },
+        {
+          "codes": [
+            {
+              "system": "SNOMED-CT",
+              "code": "66857006",
+              "display": "Hemoptysis"
+            }
+          ],
+          "probability": 0.3
+        },
+        {
+          "codes": [
+            {
+              "system": "SNOMED-CT",
+              "code": "29857009",
+              "display": "Chest pain"
+            }
+          ],
+          "probability": 0.4
+        }
+      ],
+      "direct_transition": "Initial Imaging"
+    },
+    "Incidental Finding": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "399208008",
+          "display": "Plain chest X-ray"
+        }
+      ],
+      "direct_transition": "Initial Imaging"
+    },
+    "Initial Imaging": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "77477000",
+          "display": "CT scan of thorax"
+        }
+      ],
+      "direct_transition": "Biopsy"
+    },
+    "Biopsy": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "CT Guided Biopsy"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "Bronchoscopy"
+        }
+      ]
+    },
+    "CT Guided Biopsy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "274319000",
+          "display": "Percutaneous needle biopsy of lung"
+        }
+      ],
+      "direct_transition": "Pathology"
+    },
+    "Bronchoscopy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "10847001",
+          "display": "Bronchoscopy"
+        }
+      ],
+      "direct_transition": "Pathology"
+    },
+    "Pathology": {
+      "type": "MultiObservation",
+      "observations": [
+        {
+          "codes": [
+            {
+              "system": "SNOMED-CT",
+              "code": "254626006",
+              "display": "Adenocarcinoma of lung"
+            },
+            {
+              "system": "SNOMED-CT",
+              "code": "254634000",
+              "display": "Squamous cell carcinoma of lung"
+            },
+            {
+              "system": "SNOMED-CT",
+              "code": "254629004",
+              "display": "Large cell carcinoma of lung"
+            }
+          ]
+        },
+        {
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "85319-2",
+              "display": "PD-L1 [Presence] in Tissue"
+            }
+          ]
+        }
+      ],
+      "direct_transition": "Set Histology"
+    },
+    "Set Histology": {
+      "type": "SetAttribute",
+      "attribute": "histology",
+      "value": "Adenocarcinoma of lung",
+      "direct_transition": "Molecular Testing"
+    },
+    "Molecular Testing": {
+      "type": "MultiObservation",
+      "observations": [
+        {
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "21665-5",
+              "display": "EGFR gene mutations found [Identifier] in Blood or Tissue by Molecular genetics method"
+            }
+          ]
+        },
+        {
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "78205-2",
+              "display": "ALK gene rearrangements [Presence] in Blood or Tissue by FISH"
+            }
+          ]
+        },
+        {
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "81406-4",
+              "display": "ROS1 gene rearrangement"
+            }
+          ]
+        }
+      ],
+      "direct_transition": "Staging"
+    },
+    "Staging": {
+      "type": "SetAttribute",
+      "attribute": "cancer_stage",
+      "value": {
+        "type": "String",
+        "value_set": [
+          "IA",
+          "IB",
+          "IIA",
+          "IIB",
+          "IIIA",
+          "IIIB",
+          "IIIC",
+          "IVA",
+          "IVB"
+        ]
+      },
+      "direct_transition": "Early Stage Check"
+    },
+    "Early Stage Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.3,
+          "transition": "Surgical Resection"
+        },
+        {
+          "distribution": 0.7,
+          "transition": "Chemoradiation"
+        }
+      ]
+    },
+    "Surgical Resection": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "119000",
+          "display": "Thoracoscopic partial lobectomy of lung"
+        }
+      ],
+      "direct_transition": "Adjuvant Therapy Check"
+    },
+    "Adjuvant Therapy Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
+          "transition": "Adjuvant Chemotherapy"
+        },
+        {
+          "distribution": 0.6,
+          "transition": "Surveillance"
+        }
+      ]
+    },
+    "Adjuvant Chemotherapy": {
+      "type": "MedicationOrder",
+      "direct_transition": "Surveillance",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "56946",
+          "display": "paclitaxel"
+        },
+        {
+          "system": "RxNorm",
+          "code": "40048",
+          "display": "carboplatin"
+        }
+      ]
+    },
+    "Chemoradiation": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "169400008",
+          "display": "Radiochemotherapy via intravenous route (procedure"
+        }
+      ],
+      "direct_transition": "Systemic Therapy Check"
+    },
+    "Systemic Therapy Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "Targeted Therapy"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "Immunotherapy"
+        }
+      ]
+    },
+    "Targeted Therapy": {
+      "type": "MedicationOrder",
+      "direct_transition": "Surveillance",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1721560",
+          "display": "osimertinib"
+        }
+      ]
+    },
+    "Immunotherapy": {
+      "type": "MedicationOrder",
+      "direct_transition": "Surveillance",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1547545",
+          "display": "pembrolizumab"
+        }
+      ]
+    },
+    "Surveillance": {
+      "type": "CarePlanStart",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "394888000",
+          "display": "Oncology followup (regime/therapy)"
+        }
+      ],
+      "direct_transition": "Terminal"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    }
+  }
+}

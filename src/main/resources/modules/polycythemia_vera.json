@@ -1,0 +1,1758 @@
+{
+  "name": "Polycythemia Vera",
+  "remarks": [
+    "Polycythemia Vera (PV) is a JAK2-mutated clonal myeloproliferative neoplasm (MPN) characterised",
+    "by excessive erythrocytosis, often with concomitant leukocytosis and thrombocytosis.",
+    "",
+    "EPIDEMIOLOGY",
+    "  Incidence: 0.6-1.6 per 100,000 persons per year (US data).",
+    "  Prevalence: ~44-57 per 100,000 (US).",
+    "  Median age at diagnosis: ~65 years; rare below age 40.",
+    "  Male:Female ratio approximately 1.2:1 (modelled via complex_transition).",
+    "  Median overall survival >35 years in patients diagnosed <60 years.",
+    "",
+    "DIAGNOSIS (WHO 2022 / ICC 2022 criteria)",
+    "  Major criteria:",
+    "    1. Hb >16.5 g/dL (men) or >16.0 g/dL (women), OR Hct >49% (men) / >48% (women)",
+    "    2. Bone marrow biopsy: hypercellularity with trilineage panmyelosis and pleomorphic megakaryocytes",
+    "    3. Presence of JAK2 V617F or JAK2 exon 12 mutation (>97% JAK2 V617F)",
+    "  Minor criterion:",
+    "    1. Subnormal serum erythropoietin (Epo) level",
+    "  Diagnosis: all 3 major criteria OR major criteria 1+2 plus the minor criterion.",
+    "",
+    "RISK STRATIFICATION (thrombotic risk)",
+    "  Low-risk:  Age <60 years AND no prior thrombotic event",
+    "  High-risk: Age >=60 years OR prior arterial/venous thrombosis",
+    "",
+    "TREATMENT ALGORITHM",
+    "  All patients: Phlebotomy (Hct target <45%) + aspirin 81 mg/day LIFELONG",
+    "  NB: Aspirin stopped when systemic anticoagulation initiated (ECLAP bleeding data).",
+    "  High-risk: Add cytoreductive therapy",
+    "    First-line:  Hydroxyurea OR ropeginterferon alfa-2b (Besremi, FDA-approved 2021)",
+    "                 [peg-IFN alfa-2a used in this module as RxNorm proxy; off-label US]",
+    "    Second-line: Ruxolitinib (HU-resistant/intolerant; FDA 2014) or Busulfan (elderly)",
+    "  Symptomatic low-risk: cytoreduction per NCCN/ELN in ~20% of patients",
+    "  Pruritus: paroxetine 20 mg/day (RxNorm 41493) or fluoxetine 20 mg/day (RxNorm 4493030)",
+    "  Post-VTE: indefinite anticoagulation (warfarin); aspirin discontinued",
+    "",
+    "DISEASE PROGRESSION",
+    "  Post-PV MF:           ~10-20% at 20 years",
+    "  AML transformation:   ~4-5%   at 20 years",
+    "  Thrombotic events:    ~26%    at 20 years",
+    "  Haemorrhagic events:  ~7-15%  lifetime",
+    "",
+    "SNOMED CODES",
+    "  109992005 - Polycythemia vera (disorder)",
+    "  109962001 - Post-polycythemia vera myelofibrosis (disorder)",
+    "  91861009  - Acute myeloid leukemia, disease (disorder)",
+    "  230690007 - Cerebrovascular accident (disorder)",
+    "  57054005  - Acute myocardial infarction (disorder)",
+    "  59282003  - Pulmonary embolism (disorder)",
+    "  128053003 - Deep vein thrombosis (disorder)",
+    "  16726004  - Splenomegaly (disorder)",
+    "  271807003 - Erythromelalgia (disorder)",
+    "  131148009 - Bleeding (finding)",
+    "  396487009 - Bone marrow biopsy (procedure)",
+    "  67270000  - Phlebotomy (procedure)",
+    "  405824009 - Genetic testing (procedure)",
+    "  58776007  - Bone marrow transplantation (procedure)",
+    "  11429006  - Consultation (procedure)",
+    "  390906007 - Follow-up encounter (procedure)",
+    "  182964004 - Treatment compliance (finding) [care plan anchor]",
+    "",
+    "LOINC CODES",
+    "  718-7   - Hemoglobin [Mass/volume] in Blood",
+    "  4544-3  - Hematocrit [Volume Fraction] of Blood",
+    "  777-3   - Platelets [#/volume] in Blood by Automated count",
+    "  6690-2  - Leukocytes [#/volume] in Blood by Automated count",
+    "  2157-6  - Erythropoietin [Units/volume] in Serum or Plasma",
+    "  55277-8 - JAK2 V617F [Presence] in Blood or Tissue by Molecular genetics method",
+    "  85319-2 - Bone marrow Reticulin grade by WHO",
+    "  14804-9 - Lactate dehydrogenase [Enzymatic activity/volume] in Serum or Plasma",
+    "  3084-1  - Uric acid [Mass/volume] in Serum or Plasma",
+    "",
+    "RXNORM CODES",
+    "  202591  - Hydroxyurea 500 MG Oral Capsule",
+    "  1049502 - Aspirin 81 MG Oral Tablet",
+    "  1860507 - Peginterferon alfa-2a 180 MCG/0.5 ML Injectable Solution [off-label US]",
+    "  2281945 - Ropeginterferon alfa-2b [Besremi; FDA-approved Nov 2021 for PV; preferred US]",
+    "  1373464 - Ruxolitinib 5 MG Oral Tablet",
+    "  1860384 - Busulfan 2 MG Oral Tablet",
+    "  41493   - Paroxetine 20 MG Oral Tablet [pruritus]",
+    "  104849 - Fluoxetine 20 MG Oral Capsule [pruritus alternative; different from paroxetine]",
+    "  1049721 - Warfarin Sodium 5 MG Oral Tablet",
+    "",
+    "REFERENCES",
+    "  Tefferi A et al. Am J Hematol. 2023 (2024 update on PV diagnosis and management).",
+    "  Arber DA et al. Blood. 2022 (ICC 2022 myeloid neoplasm classification).",
+    "  WHO Classification of Haematolymphoid Tumours, 5th ed. 2022.",
+    "  Vannucchi AM et al. Leukemia. 2021 (PV diagnostic detail and therapeutic views).",
+    "  Marchioli R et al. NEJM. 2013 (CYTO-PV: Hct <45% reduces cardiovascular events).",
+    "  Landolfi R et al. NEJM. 2004 (ECLAP: low-dose aspirin in PV; bleeding HR data).",
+    "  Vannucchi AM et al. NEJM. 2015 (RESPONSE trial: ruxolitinib vs BAT).",
+    "  Gisslinger H et al. Lancet Haematol. 2020 (PROUD-PV/CONTINUATION-PV: ropeginterferon).",
+    "  Barbui T et al. Blood. 2015 (CYTO-PV subanalysis: WBC and thrombosis)."
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "remarks": [
+        "All patients begin here. PV is extremely rare in children.",
+        "Most patients diagnosed in their 6th-7th decade.",
+        "Age guard applied at 40 years before incidence check."
+      ],
+      "direct_transition": "Age_Guard"
+    },
+    "Age_Guard": {
+      "type": "Guard",
+      "remarks": [
+        "PV is rare before age 40. Block until patient reaches 40,",
+        "then apply gender-weighted incidence check."
+      ],
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 40,
+        "unit": "years"
+      },
+      "direct_transition": "PV_Incidence_Check"
+    },
+    "PV_Incidence_Check": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 5: Gender-weighted incidence modelled at M:F ratio ~1.2:1.",
+        "Overall ~0.2% of adults 40+ develop PV over lifetime.",
+        "Males: 0.22%, Females: 0.18% to achieve 1.2:1 ratio."
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Gender",
+            "gender": "M"
+          },
+          "distributions": [
+            {
+              "distribution": 0.0022,
+              "transition": "PV_Onset_Delay"
+            },
+            {
+              "distribution": 0.9978,
+              "transition": "Terminal"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Gender",
+            "gender": "F"
+          },
+          "distributions": [
+            {
+              "distribution": 0.0018,
+              "transition": "PV_Onset_Delay"
+            },
+            {
+              "distribution": 0.9982,
+              "transition": "Terminal"
+            }
+          ]
+        },
+        {
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "PV_Onset_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "FIX 6: Pre-clinical phase delay corrected.",
+        "Range 100-300 months after age-40 guard produces diagnosis age ~48-65+,",
+        "better reflecting the true median diagnosis age of ~65 years.",
+        "Previously 0-240 months (uniform), which skewed diagnoses far too young."
+      ],
+      "range": {
+        "low": 100,
+        "high": 300,
+        "unit": "months"
+      },
+      "direct_transition": "PV_Condition_Onset"
+    },
+    "PV_Condition_Onset": {
+      "type": "ConditionOnset",
+      "remarks": [
+        "SNOMED: 109992005 - Polycythemia vera (disorder).",
+        "Pre-diagnostic onset; recorded at the Initial_Hematology_Encounter."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "109992005",
+          "display": "Polycythemia vera (disorder)"
+        }
+      ],
+      "target_encounter": "Initial_Hematology_Encounter",
+      "direct_transition": "Develop_Symptoms"
+    },
+    "Develop_Symptoms": {
+      "type": "Simple",
+      "direct_transition": "Symptom_Pruritus"
+    },
+    "Symptom_Pruritus": {
+      "type": "Symptom",
+      "symptom": "Aquagenic Pruritus",
+      "cause": "Polycythemia Vera",
+      "probability": 0.5,
+      "range": {
+        "low": 3,
+        "high": 9
+      },
+      "direct_transition": "Symptom_Headache"
+    },
+    "Symptom_Headache": {
+      "type": "Symptom",
+      "symptom": "Headache",
+      "cause": "Polycythemia Vera",
+      "remarks": [
+        "Hyperviscosity-related headache in ~45% of patients."
+      ],
+      "probability": 0.45,
+      "range": {
+        "low": 2,
+        "high": 7
+      },
+      "direct_transition": "Symptom_Fatigue"
+    },
+    "Symptom_Fatigue": {
+      "type": "Symptom",
+      "symptom": "Fatigue",
+      "cause": "Polycythemia Vera",
+      "remarks": [
+        "Fatigue is the most burdensome symptom in PV (~80% of patients)."
+      ],
+      "probability": 0.75,
+      "range": {
+        "low": 4,
+        "high": 9
+      },
+      "direct_transition": "Symptom_Splenomegaly_Check"
+    },
+    "Symptom_Splenomegaly_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Splenomegaly present in ~35% of PV patients at diagnosis."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.35,
+          "transition": "Splenomegaly_Onset"
+        },
+        {
+          "distribution": 0.65,
+          "transition": "Initial_CBC_Abnormality"
+        }
+      ]
+    },
+    "Splenomegaly_Onset": {
+      "type": "ConditionOnset",
+      "remarks": [
+        "SNOMED: 16726004 - Splenomegaly (disorder)."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "16294009",
+          "display": "Splenomegaly"
+        }
+      ],
+      "target_encounter": "Initial_Hematology_Encounter",
+      "direct_transition": "Initial_CBC_Abnormality"
+    },
+    "Initial_CBC_Abnormality": {
+      "type": "Delay",
+      "remarks": [
+        "Time from symptom onset to haematology presentation.",
+        "Many patients detected incidentally on routine CBC (1-24 month range)."
+      ],
+      "range": {
+        "low": 1,
+        "high": 24,
+        "unit": "months"
+      },
+      "direct_transition": "Initial_Hematology_Encounter"
+    },
+    "Initial_Hematology_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "PV_Condition_Onset",
+      "remarks": [
+        "Haematology referral encounter; formal diagnostic workup occurs here.",
+        "SNOMED: 11429006 - Consultation."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "11429006",
+          "display": "Consultation (procedure)"
+        }
+      ],
+      "direct_transition": "CBC_Hemoglobin_Observation"
+    },
+    "CBC_Hemoglobin_Observation": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 7: Gender-stratified Hb observation.",
+        "WHO 2022: men >16.5 g/dL, women >16.0 g/dL as major criterion 1."
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Gender",
+            "gender": "M"
+          },
+          "transition": "CBC_Hemoglobin_Male"
+        },
+        {
+          "condition": {
+            "condition_type": "Gender",
+            "gender": "F"
+          },
+          "transition": "CBC_Hemoglobin_Female"
+        },
+        {
+          "transition": "CBC_Hemoglobin_Female"
+        }
+      ]
+    },
+    "CBC_Hemoglobin_Male": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "g/dL",
+      "remarks": [
+        "LOINC: 718-7. Male PV presenting range 17.5-22.0 g/dL.",
+        "Diagnostic threshold: >16.5 g/dL (WHO 2022 major criterion 1)."
+      ],
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "718-7",
+          "display": "Hemoglobin [Mass/volume] in Blood"
+        }
+      ],
+      "vital_sign": "Hemoglobin",
+      "range": {
+        "low": 17.5,
+        "high": 22.0
+      },
+      "direct_transition": "CBC_Hematocrit_Observation"
+    },
+    "CBC_Hemoglobin_Female": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "g/dL",
+      "remarks": [
+        "LOINC: 718-7. Female PV presenting range 16.0-20.0 g/dL.",
+        "Diagnostic threshold: >16.0 g/dL (WHO 2022 major criterion 1)."
+      ],
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "718-7",
+          "display": "Hemoglobin [Mass/volume] in Blood"
+        }
+      ],
+      "vital_sign": "Hemoglobin",
+      "range": {
+        "low": 16.0,
+        "high": 20.0
+      },
+      "direct_transition": "CBC_Hematocrit_Observation"
+    },
+    "CBC_Hematocrit_Observation": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "%",
+      "remarks": [
+        "LOINC: 4544-3. Hematocrit at diagnosis typically 50-65%.",
+        "Treatment target: <45% (CYTO-PV trial, Marchioli 2013)."
+      ],
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "4544-3",
+          "display": "Hematocrit [Volume Fraction] of Blood"
+        }
+      ],
+      "range": {
+        "low": 50,
+        "high": 65
+      },
+      "direct_transition": "CBC_WBC_Observation"
+    },
+    "CBC_WBC_Observation": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "10*3/uL",
+      "remarks": [
+        "LOINC: 6690-2. Leukocytosis in ~50% of PV patients.",
+        "WBC >=15 x10^9/L is an independent adverse prognostic factor (MIPSS-PV)."
+      ],
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "6690-2",
+          "display": "Leukocytes [#/volume] in Blood by Automated count"
+        }
+      ],
+      "range": {
+        "low": 10.0,
+        "high": 20.0
+      },
+      "direct_transition": "CBC_Platelet_Observation"
+    },
+    "CBC_Platelet_Observation": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "10*3/uL",
+      "remarks": [
+        "LOINC: 777-3. Thrombocytosis in ~50% of PV patients (400-900 x10^9/L).",
+        "Extreme thrombocytosis (>1500 x10^9/L) causes acquired vWD and bleeding risk."
+      ],
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "777-3",
+          "display": "Platelets [#/volume] in Blood by Automated count"
+        }
+      ],
+      "range": {
+        "low": 400,
+        "high": 900
+      },
+      "direct_transition": "Serum_Epo_Observation"
+    },
+    "Serum_Epo_Observation": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "mU/mL",
+      "remarks": [
+        "LOINC: 2157-6. Subnormal Epo is the WHO 2022 minor diagnostic criterion.",
+        "Normal: 2.6-18.5 mIU/mL. PV: typically <2 mIU/mL due to autonomous erythropoiesis."
+      ],
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2157-6",
+          "display": "Erythropoietin [Units/volume] in Serum or Plasma"
+        }
+      ],
+      "range": {
+        "low": 0.5,
+        "high": 2.0
+      },
+      "direct_transition": "JAK2_Mutation_Test"
+    },
+    "JAK2_Mutation_Test": {
+      "type": "Procedure",
+      "reason": "PV_Condition_Onset",
+      "remarks": [
+        "SNOMED: 405824009 - Genetic testing.",
+        "JAK2 V617F: >95% of PV. JAK2 exon 12: ~3-4%.",
+        "Testing by allele-specific PCR or NGS. VAF range 1-100%, median ~50%."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "405824009",
+          "display": "Genetic testing (procedure)"
+        }
+      ],
+      "direct_transition": "JAK2_Result_Observation"
+    },
+    "JAK2_Result_Observation": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "%",
+      "remarks": [
+        "LOINC: 55277-8 - JAK2 V617F allele burden (VAF).",
+        "Range 20-80% represents typical detected allele burden in clinical practice.",
+        "Higher VAF associated with more proliferative phenotype."
+      ],
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "55277-8",
+          "display": "JAK2 V617F [Presence] in Blood or Tissue by Molecular genetics method"
+        }
+      ],
+      "range": {
+        "low": 20,
+        "high": 80
+      },
+      "direct_transition": "Bone_Marrow_Biopsy_Decision"
+    },
+    "Bone_Marrow_Biopsy_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "Bone marrow biopsy recommended for all newly diagnosed PV (WHO 2022/ICC 2022)",
+        "to confirm diagnosis and establish baseline fibrosis grade.",
+        "May be bypassed if Hb markedly elevated + JAK2 V617F confirmed.",
+        "~75% of patients undergo BMBx in practice."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.75,
+          "transition": "Bone_Marrow_Biopsy"
+        },
+        {
+          "distribution": 0.25,
+          "transition": "Risk_Stratification"
+        }
+      ]
+    },
+    "Bone_Marrow_Biopsy": {
+      "type": "Procedure",
+      "reason": "PV_Condition_Onset",
+      "remarks": [
+        "SNOMED: 396487009 - Bone marrow biopsy.",
+        "Histology: hypercellular marrow, trilineage panmyelosis, pleomorphic megakaryocytes.",
+        "Baseline fibrosis: MF-0 or MF-1 in ~90% of newly diagnosed PV."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "234326005",
+          "display": "Bone marrow biopsy"
+        }
+      ],
+      "duration": {
+        "low": 30,
+        "high": 60,
+        "unit": "minutes"
+      },
+      "direct_transition": "BMBx_Fibrosis_Grade_Observation"
+    },
+    "BMBx_Fibrosis_Grade_Observation": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "{score}",
+      "remarks": [
+        "FIX 9: Bone marrow reticulin fibrosis grade (WHO/EUMNET).",
+        "LOINC: 85319-2 - Bone marrow Reticulin grade by WHO.",
+        "Scale: MF-0 (none) to MF-3 (dense collagen). Baseline PV: MF-0 or MF-1 (range 0-1).",
+        "Progression to MF-2/3 defines post-PV myelofibrosis."
+      ],
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "85319-2",
+          "display": "Bone marrow Reticulin grade by WHO"
+        }
+      ],
+      "range": {
+        "low": 0,
+        "high": 1
+      },
+      "direct_transition": "LDH_Observation"
+    },
+    "LDH_Observation": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "U/L",
+      "remarks": [
+        "FIX 8: LDH observation added.",
+        "LOINC: 14804-9 - Lactate dehydrogenase in Serum or Plasma.",
+        "Elevated LDH reflects increased cell turnover; marker of disease burden.",
+        ">2x ULN is a component of DIPSS-plus and MF prognostic models.",
+        "Normal ULN ~250 U/L; PV presenting range typically 200-500 U/L."
+      ],
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "14804-9",
+          "display": "Lactate dehydrogenase [Enzymatic activity/volume] in Serum or Plasma"
+        }
+      ],
+      "range": {
+        "low": 200,
+        "high": 500
+      },
+      "direct_transition": "Uric_Acid_Observation"
+    },
+    "Uric_Acid_Observation": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "mg/dL",
+      "remarks": [
+        "FIX 8: Uric acid observation added.",
+        "LOINC: 3084-1 - Uric acid in Serum or Plasma.",
+        "Hyperuricaemia in >30% of PV from increased purine turnover.",
+        "Complications: gout, uric acid nephropathy.",
+        "Range 5.0-9.5 mg/dL reflects presenting hyperuricaemia."
+      ],
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "3084-1",
+          "display": "Uric acid [Mass/volume] in Serum or Plasma"
+        }
+      ],
+      "range": {
+        "low": 5.0,
+        "high": 9.5
+      },
+      "direct_transition": "Risk_Stratification"
+    },
+    "Risk_Stratification": {
+      "type": "Simple",
+      "remarks": [
+        "WHO/ELN thrombotic risk stratification:",
+        "  High-risk: age >=60 OR prior arterial/venous thrombosis",
+        "  Low-risk:  age <60 AND no prior thrombosis"
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 60,
+            "unit": "years"
+          },
+          "transition": "High_Risk_PV"
+        },
+        {
+          "transition": "Low_Risk_PV"
+        }
+      ]
+    },
+    "Low_Risk_PV": {
+      "type": "SetAttribute",
+      "attribute": "pv_risk_category",
+      "value": "low",
+      "direct_transition": "CarePlan_PV"
+    },
+    "High_Risk_PV": {
+      "type": "SetAttribute",
+      "attribute": "pv_risk_category",
+      "value": "high",
+      "direct_transition": "Check_Allopurinol_Need"
+    },
+    "Check_Allopurinol_Need": {
+      "type": "Simple",
+      "remarks": [
+        "Approximately one-third of PV patients develop clinically significant hyperuricaemia requiring allopurinol."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.35,
+          "transition": "Prescribe_Allopurinol"
+        },
+        {
+          "distribution": 0.65,
+          "transition": "CarePlan_PV"
+        }
+      ]
+    },
+    "CarePlan_PV": {
+      "type": "CarePlanStart",
+      "reason": "PV_Condition_Onset",
+      "remarks": [
+        "Care plan covering: phlebotomy schedule, aspirin, cytoreduction (if indicated),",
+        "cardiovascular risk factor modification, regular haematology monitoring."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "182964004",
+          "display": "Treatment compliance (finding)"
+        }
+      ],
+      "activities": [
+        {
+          "system": "SNOMED-CT",
+          "code": "396540005",
+          "display": "Phlebotomy"
+        },
+        {
+          "system": "SNOMED-CT",
+          "code": "717854002",
+          "display": "Aspirin therapy"
+        }
+      ],
+      "direct_transition": "Prescribe_Aspirin"
+    },
+    "Prescribe_Aspirin": {
+      "type": "MedicationOrder",
+      "reason": "PV_Condition_Onset",
+      "remarks": [
+        "FIX 1: Aspirin is LIFELONG therapy - duration set to 50 years.",
+        "RxNorm: 1049502 - Aspirin 81 MG Oral Tablet.",
+        "Universal for all PV patients absent contraindications.",
+        "Contraindications: extreme thrombocytosis >1500e9/L, active bleeding, acquired vWD.",
+        "Reduces microvascular events and CVD (ECLAP trial, Landolfi 2004 NEJM).",
+        "FIX 2: Aspirin is ended (MedicationEnd state) when anticoagulation is initiated.",
+        "Concurrent aspirin + anticoagulation: major bleeding HR 5.83 (ECLAP data)."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "308416",
+          "display": "aspirin 81 MG Delayed Release Oral Tablet"
+        }
+      ],
+      "dosage": {
+        "amount": 1,
+        "frequency": 1,
+        "period": 1,
+        "unit": "days"
+      },
+      "duration": {
+        "quantity": 50,
+        "unit": "years"
+      },
+      "direct_transition": "Initial_Phlebotomy",
+      "assign_to_attribute": "aspirin_81_mg_oral_tablet_rx"
+    },
+    "Initial_Phlebotomy": {
+      "type": "Procedure",
+      "reason": "PV_Condition_Onset",
+      "remarks": [
+        "SNOMED: 67270000 - Phlebotomy.",
+        "Initial therapeutic phlebotomy: 450-500 mL per session.",
+        "Hct target <45% proven by CYTO-PV (Marchioli 2013 NEJM).",
+        "Initial frequency weekly until Hct <45%, then maintenance as needed."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "396540005",
+          "display": "Phlebotomy"
+        }
+      ],
+      "duration": {
+        "low": 30,
+        "high": 60,
+        "unit": "minutes"
+      },
+      "direct_transition": "Risk_Based_Cytoreduction_Decision"
+    },
+    "Risk_Based_Cytoreduction_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "Cytoreduction algorithm:",
+        "  High-risk (age >=60 or thrombosis history): always cytoreduct.",
+        "  Low-risk: ~20% receive cytoreduction for symptoms per NCCN/ELN.",
+        "  Low-risk asymptomatic: phlebotomy + aspirin only."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "pv_risk_category",
+            "operator": "==",
+            "value": "high"
+          },
+          "transition": "Cytoreduction_Choice"
+        },
+        {
+          "transition": "Low_Risk_Cytoreduction_Check"
+        }
+      ]
+    },
+    "Low_Risk_Cytoreduction_Check": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 11: ~20% of low-risk patients develop indication for cytoreduction:",
+        "  Refractory pruritus, rising counts, frequent phlebotomy need, splenomegaly.",
+        "  NCCN/ELN support this pathway for symptomatic low-risk disease."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.2,
+          "transition": "Cytoreduction_Choice"
+        },
+        {
+          "distribution": 0.8,
+          "transition": "Erythromelalgia_Check"
+        }
+      ]
+    },
+    "Erythromelalgia_Check": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 10: Erythromelalgia modelled in ~8% of PV patients.",
+        "Burning pain and erythema of extremities from platelet-mediated microvascular occlusion.",
+        "Responds well to low-dose aspirin in most cases."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.08,
+          "transition": "Erythromelalgia_Onset"
+        },
+        {
+          "distribution": 0.92,
+          "transition": "Pruritus_Management_Check"
+        }
+      ]
+    },
+    "Erythromelalgia_Onset": {
+      "type": "ConditionOnset",
+      "remarks": [
+        "FIX 10: SNOMED: 271807003 - Erythromelalgia (disorder).",
+        "Characteristic of JAK2-mutated MPNs. Usually responds to aspirin.",
+        "Refractory cases may benefit from ruxolitinib."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "37151006",
+          "display": "Erythromelalgia"
+        }
+      ],
+      "target_encounter": "Initial_Hematology_Encounter",
+      "direct_transition": "Pruritus_Management_Check"
+    },
+    "Cytoreduction_Choice": {
+      "type": "Simple",
+      "remarks": [
+        "First-line cytoreduction selection:",
+        "  HU: preferred in patients >=50; most widely used globally.",
+        "  Peg-IFN alfa-2a (proxy for ropeginterferon alfa-2b): preferred <50, reproductive-age women.",
+        "  Real-world: ~70-75% HU first-line, ~25-30% interferon.",
+        "  Under 50: 40% interferon, 60% HU."
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": "<",
+            "quantity": 50,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "distribution": 0.4,
+              "transition": "Prescribe_Peg_Interferon"
+            },
+            {
+              "distribution": 0.6,
+              "transition": "Prescribe_Hydroxyurea"
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "distribution": 0.75,
+              "transition": "Prescribe_Hydroxyurea"
+            },
+            {
+              "distribution": 0.25,
+              "transition": "Prescribe_Peg_Interferon"
+            }
+          ]
+        }
+      ]
+    },
+    "Prescribe_Hydroxyurea": {
+      "type": "MedicationOrder",
+      "reason": "PV_Condition_Onset",
+      "remarks": [
+        "RxNorm: 202591 - Hydroxyurea 500 MG Oral Capsule.",
+        "Starting: 500-1000 mg/day; maintenance 500-2000 mg/day (titrated to CBC).",
+        "amount:2 frequency:1 = 1000 mg/day starting dose.",
+        "Reduces thrombotic risk vs phlebotomy alone (PVSG data; ECLAP subanalysis).",
+        "Resistance/intolerance: ~15-25% at 5 years (ELN 2011 criteria).",
+        "Adverse effects: cytopenias, leg ulcers, mucocutaneous toxicity, fever."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "197797",
+          "display": "hydroxyurea 500 MG Oral Capsule"
+        }
+      ],
+      "dosage": {
+        "amount": 2,
+        "frequency": 1,
+        "period": 1,
+        "unit": "days"
+      },
+      "duration": {
+        "quantity": 10,
+        "unit": "years"
+      },
+      "direct_transition": "Pruritus_Management_Check",
+      "assign_to_attribute": "hydroxyurea_500_mg_oral_capsule_rx"
+    },
+    "Prescribe_Peg_Interferon": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "target_encounter": "Follow_Up_Encounter",
+      "reason": "PV_Condition_Onset",
+      "remarks": [
+        "FIX 14: Ropeginterferon alfa-2b (Besremi) is FDA-approved Nov 2021 for PV",
+        "and is now the preferred interferon in current US guidelines (NCCN, ASH 2022).",
+        "RxNorm: 2281945 (ropeginterferon alfa-2b) should be substituted for US simulations.",
+        "This state uses peg-IFN alfa-2a (RxNorm: 1860507) as a proxy where ropeg",
+        "RxNorm availability may be limited in older Synthea builds.",
+        "Peginterferon alfa-2a (Pegasys) is OFF-LABEL for PV in the US.",
+        "Dose: 45-90 mcg SC weekly (peg-IFN alfa-2a); ropeg 100-250 mcg SC every 2 weeks.",
+        "CONTINUATION-PV (6-year): ropeg superior event-free survival vs standard therapy.",
+        "Achieves complete haematological response ~70-80%; molecular response ~20-40%.",
+        "Preferred: age <50, reproductive-age women, HU resistance/intolerance."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "351270",
+          "display": "1 ML peginterferon alfa-2a 0.18 MG/ML Injection"
+        }
+      ],
+      "dosage": {
+        "amount": 1,
+        "frequency": 1,
+        "period": 1,
+        "unit": "weeks"
+      },
+      "duration": {
+        "quantity": 10,
+        "unit": "years"
+      },
+      "direct_transition": "Pruritus_Management_Check",
+      "assign_to_attribute": "peginterferon_alfa_2a_180_mcg_05_rx"
+    },
+    "Pruritus_Management_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Aquagenic pruritus present in ~50% of PV patients.",
+        "Management: SSRIs (paroxetine 20 mg/day first-line; fluoxetine 20 mg/day alternative),",
+        "antihistamines (H1-blockers), UVB phototherapy, ruxolitinib (for refractory cases)."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Symptom",
+            "symptom": "Aquagenic Pruritus",
+            "operator": ">",
+            "value": 0
+          },
+          "transition": "Treat_Pruritus"
+        },
+        {
+          "transition": "Encounter_End_Initial"
+        }
+      ]
+    },
+    "Encounter_End_Initial": {
+      "type": "EncounterEnd",
+      "direct_transition": "Ongoing_Monitoring_Delay"
+    },
+    "Ongoing_Monitoring_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Routine haematology follow-up every 3 months.",
+        "Newly diagnosed/unstable: every 1-3 months.",
+        "Stable: every 3-6 months. Model uses 3-month fixed cycle."
+      ],
+      "exact": {
+        "quantity": 3,
+        "unit": "months"
+      },
+      "direct_transition": "Follow_Up_Encounter"
+    },
+    "Follow_Up_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "reason": "PV_Condition_Onset",
+      "remarks": [
+        "Routine haematology follow-up. CBC, symptom review, progression check."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "390906007",
+          "display": "Follow-up encounter (procedure)"
+        }
+      ],
+      "direct_transition": "Follow_Up_CBC"
+    },
+    "Follow_Up_CBC": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "%",
+      "remarks": [
+        "LOINC: 4544-3. Monitoring hematocrit.",
+        "Target <45% (CYTO-PV). Range 42-52% reflects treated patients",
+        "who may occasionally rise above target between phlebotomy sessions."
+      ],
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "4544-3",
+          "display": "Hematocrit [Volume Fraction] of Blood"
+        }
+      ],
+      "range": {
+        "low": 42,
+        "high": 52
+      },
+      "direct_transition": "Repeat_PegInterferon"
+    },
+    "Phlebotomy_If_Needed": {
+      "type": "Procedure",
+      "reason": "PV_Condition_Onset",
+      "remarks": [
+        "Maintenance phlebotomy to sustain Hct <45%.",
+        "Frequency varies per patient: monthly to quarterly.",
+        "Each session: 450-500 mL removed."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "396540005",
+          "display": "Phlebotomy"
+        }
+      ],
+      "duration": {
+        "low": 30,
+        "high": 60,
+        "unit": "minutes"
+      },
+      "direct_transition": "Check_Progression"
+    },
+    "Check_Progression": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 12: Haemorrhagic event added. Per-cycle probabilities (3-month cycle):",
+        "  Thrombosis:    ~1.6%/yr  → 0.004/cycle",
+        "  Post-PV MF:   ~0.8%/yr  → 0.002/cycle",
+        "  AML:          ~0.4%/yr  → 0.001/cycle",
+        "  HU resistance: ~0.4%/yr → 0.001/cycle",
+        "  Haemorrhage:  ~1.2%/yr  → 0.003/cycle",
+        "  Stable:        remainder → 0.989/cycle"
+      ],
+      "complex_transition": [
+        {
+          "distributions": [
+            {
+              "distribution": 0.004,
+              "transition": "Thrombotic_Event"
+            },
+            {
+              "distribution": 0.002,
+              "transition": "Post_PV_MF_Transition"
+            },
+            {
+              "distribution": 0.001,
+              "transition": "AML_Transformation"
+            },
+            {
+              "distribution": 0.001,
+              "transition": "HU_Resistance_Check"
+            },
+            {
+              "distribution": 0.003,
+              "transition": "Haemorrhagic_Event"
+            },
+            {
+              "distribution": 0.989,
+              "transition": "Follow_Up_Encounter_End"
+            }
+          ]
+        }
+      ]
+    },
+    "Haemorrhagic_Event": {
+      "type": "ConditionOnset",
+      "remarks": [
+        "FIX 12: SNOMED: 131148009 - Bleeding (finding).",
+        "Haemorrhagic complications in PV: ~7-15% lifetime.",
+        "Most common: epistaxis, gingival bleeding, ecchymoses, GI bleeding.",
+        "Risk highest with extreme thrombocytosis (>1500e9/L; acquired vWD).",
+        "Management: withhold/reduce aspirin, cytoreduction to reduce platelet count."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "131148009",
+          "display": "Bleeding (finding)"
+        }
+      ],
+      "target_encounter": "Follow_Up_Encounter",
+      "direct_transition": "Follow_Up_Encounter_End"
+    },
+    "Thrombotic_Event": {
+      "type": "Simple",
+      "remarks": [
+        "Thrombosis: leading cause of morbidity/mortality in PV.",
+        "Arterial (stroke, MI) ~60%; venous (DVT, PE, splanchnic) ~40%.",
+        "Distribution reflects ECLAP and PVSG registry data."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.3,
+          "transition": "Stroke_Event"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "MI_Event"
+        },
+        {
+          "distribution": 0.25,
+          "transition": "DVT_Event"
+        },
+        {
+          "distribution": 0.25,
+          "transition": "PE_Event"
+        }
+      ]
+    },
+    "Stroke_Event": {
+      "type": "ConditionOnset",
+      "remarks": [
+        "SNOMED: 230690007 - Cerebrovascular accident. Most common arterial event in PV."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "230690007",
+          "display": "Cerebrovascular accident (disorder)"
+        }
+      ],
+      "target_encounter": "Follow_Up_Encounter",
+      "direct_transition": "Stroke_Hospitalization"
+    },
+    "Stroke_Hospitalization": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "reason": "Stroke_Event",
+      "direct_transition": "Upgrade_To_High_Risk"
+    },
+    "MI_Event": {
+      "type": "ConditionOnset",
+      "remarks": [
+        "SNOMED: 57054005 - Acute myocardial infarction. Arterial thrombotic event."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "57054005",
+          "display": "Acute myocardial infarction (disorder)"
+        }
+      ],
+      "target_encounter": "Follow_Up_Encounter",
+      "direct_transition": "MI_Hospitalization"
+    },
+    "MI_Hospitalization": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "reason": "MI_Event",
+      "direct_transition": "Upgrade_To_High_Risk"
+    },
+    "DVT_Event": {
+      "type": "ConditionOnset",
+      "remarks": [
+        "SNOMED: 128053003 - Deep vein thrombosis.",
+        "Venous event; anticoagulation required. Splanchnic VTE classic in MPN."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "128053003",
+          "display": "Deep vein thrombosis (disorder)"
+        }
+      ],
+      "target_encounter": "Follow_Up_Encounter",
+      "direct_transition": "Stop_Aspirin_For_Anticoagulation"
+    },
+    "PE_Event": {
+      "type": "ConditionOnset",
+      "remarks": [
+        "SNOMED: 59282003 - Pulmonary embolism. Indefinite anticoagulation required."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "59282003",
+          "display": "Pulmonary embolism (disorder)"
+        }
+      ],
+      "target_encounter": "Follow_Up_Encounter",
+      "direct_transition": "PE_Hospitalization"
+    },
+    "PE_Hospitalization": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "reason": "PE_Event",
+      "direct_transition": "Stop_Aspirin_For_Anticoagulation"
+    },
+    "Stop_Aspirin_For_Anticoagulation": {
+      "type": "MedicationEnd",
+      "remarks": [
+        "FIX 2: Aspirin ended BEFORE starting anticoagulation.",
+        "Concurrent aspirin + anticoagulation in PV: major bleeding HR 5.83 (ECLAP data).",
+        "Clinical practice: stop aspirin at anticoagulation initiation; do not restart",
+        "unless anticoagulation is later discontinued."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "308416",
+          "display": "aspirin 81 MG Delayed Release Oral Tablet"
+        }
+      ],
+      "direct_transition": "Start_Warfarin"
+    },
+    "Start_Warfarin": {
+      "type": "MedicationOrder",
+      "reason": "PV_Condition_Onset",
+      "remarks": [
+        "RxNorm: 1049721 - Warfarin Sodium 5 MG Oral Tablet.",
+        "Indefinite anticoagulation post-VTE in PV (ongoing thrombotic risk).",
+        "Target INR 2.0-3.0; 2.5-3.5 for recurrent VTE or splanchnic thrombosis.",
+        "DOACs (rivaroxaban, apixaban) increasingly used off-label in MPN VTE;",
+        "warfarin modelled here for established RxNorm/NDC availability.",
+        "Duration 50 years = lifelong intent."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "855332",
+          "display": "warfarin sodium 5 MG Oral Tablet"
+        }
+      ],
+      "dosage": {
+        "amount": 1,
+        "frequency": 1,
+        "period": 1,
+        "unit": "days"
+      },
+      "duration": {
+        "quantity": 50,
+        "unit": "years"
+      },
+      "direct_transition": "Upgrade_To_High_Risk",
+      "assign_to_attribute": "warfarin_sodium_5_mg_oral_tablet_rx"
+    },
+    "Upgrade_To_High_Risk": {
+      "type": "SetAttribute",
+      "attribute": "pv_risk_category",
+      "value": "high",
+      "remarks": [
+        "Any thrombotic event upgrades to high-risk, mandating cytoreduction."
+      ],
+      "direct_transition": "Post_Thrombosis_Cytoreduction_Check"
+    },
+    "Post_Thrombosis_Cytoreduction_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Post-thrombosis cytoreduction check:",
+        "  Already on HU: consider switch to ruxolitinib",
+        "  Already on peg-IFN: continue (adequate cytoreduction)",
+        "  No cytoreduction: initiate HU"
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Active Medication",
+            "codes": [
+              {
+                "system": "RxNorm",
+                "code": "197797",
+                "display": "hydroxyurea 500 MG Oral Capsule"
+              }
+            ]
+          },
+          "transition": "Consider_Ruxolitinib_Switch"
+        },
+        {
+          "condition": {
+            "condition_type": "Active Medication",
+            "codes": [
+              {
+                "system": "RxNorm",
+                "code": "351270",
+                "display": "1 ML peginterferon alfa-2a 0.18 MG/ML Injection"
+              }
+            ]
+          },
+          "transition": "Follow_Up_Encounter_End"
+        },
+        {
+          "transition": "Prescribe_Hydroxyurea_Post_Event"
+        }
+      ]
+    },
+    "Prescribe_Hydroxyurea_Post_Event": {
+      "type": "MedicationOrder",
+      "reason": "PV_Condition_Onset",
+      "remarks": [
+        "Initiating HU post-thrombotic event in previously untreated patient."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "197797",
+          "display": "hydroxyurea 500 MG Oral Capsule"
+        }
+      ],
+      "dosage": {
+        "amount": 2,
+        "frequency": 1,
+        "period": 1,
+        "unit": "days"
+      },
+      "duration": {
+        "quantity": 10,
+        "unit": "years"
+      },
+      "direct_transition": "Follow_Up_Encounter_End",
+      "assign_to_attribute": "hydroxyurea_500_mg_oral_capsule_rx_2"
+    },
+    "Consider_Ruxolitinib_Switch": {
+      "type": "Simple",
+      "remarks": [
+        "Post-thrombosis on HU: consider switch to ruxolitinib.",
+        "RESPONSE trial: ruxolitinib superior to BAT for Hct control and spleen reduction.",
+        "~50% probability of switching in this scenario."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "Switch_To_Ruxolitinib"
+        },
+        {
+          "distribution": 0.5,
+          "transition": "Follow_Up_Encounter_End"
+        }
+      ]
+    },
+    "Switch_To_Ruxolitinib": {
+      "type": "MedicationEnd",
+      "remarks": [
+        "Discontinue HU before starting ruxolitinib.",
+        "Gradual taper recommended to avoid rebound leukocytosis."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "197797",
+          "display": "hydroxyurea 500 MG Oral Capsule"
+        }
+      ],
+      "direct_transition": "Prescribe_Ruxolitinib"
+    },
+    "Prescribe_Ruxolitinib": {
+      "type": "MedicationOrder",
+      "reason": "PV_Condition_Onset",
+      "remarks": [
+        "RxNorm: 1373464 - Ruxolitinib 5 MG Oral Tablet.",
+        "FDA-approved for HU-resistant/intolerant PV (December 2014).",
+        "Starting dose PV: 10 mg BID = 2 x 5mg tablets twice daily (amount:2 frequency:2).",
+        "RESPONSE trial: hematocrit control 60% vs 20%; primary endpoint 21% vs 1%.",
+        "Adverse effects: anaemia, thrombocytopenia, herpes zoster reactivation,",
+        "non-melanoma skin cancer (long-term monitoring required)."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1193339",
+          "display": "ruxolitinib 5 MG Oral Tablet"
+        }
+      ],
+      "dosage": {
+        "amount": 2,
+        "frequency": 2,
+        "period": 1,
+        "unit": "days"
+      },
+      "duration": {
+        "quantity": 10,
+        "unit": "years"
+      },
+      "direct_transition": "Follow_Up_Encounter_End",
+      "assign_to_attribute": "ruxolitinib_5_mg_oral_tablet_rx"
+    },
+    "HU_Resistance_Check": {
+      "type": "Simple",
+      "remarks": [
+        "HU resistance/intolerance: ~15-25% of patients at 5 years.",
+        "ELN 2011 resistance criteria: need for phlebotomy (Hct >=45%), PLT >400,",
+        "WBC >10 despite >=2g/day HU; failure to reduce splenomegaly >=50%;",
+        "Grade 3/4 non-haematologic toxicity at any dose.",
+        "Second-line options: ruxolitinib (50%), busulfan (elderly; 30%), or continue/defer (20%)."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "Switch_To_Ruxolitinib"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "Switch_To_Busulfan"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Follow_Up_Encounter_End"
+        }
+      ]
+    },
+    "Switch_To_Busulfan": {
+      "type": "MedicationOrder",
+      "reason": "PV_Condition_Onset",
+      "remarks": [
+        "RxNorm: 1860384 - Busulfan 2 MG Oral Tablet.",
+        "Second-line cytoreduction; preferred in elderly patients intolerant of HU.",
+        "Induction: 4-6 mg/day until response; maintenance 2-4 mg/day or pulsed.",
+        "amount:2 frequency:1 = 4mg/day (induction range lower end).",
+        "Effective and well-tolerated in elderly PV; secondary leukaemia risk lower",
+        "than historically thought at standard therapeutic doses."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "197422",
+          "display": "busulfan 2 MG Oral Tablet"
+        }
+      ],
+      "dosage": {
+        "amount": 2,
+        "frequency": 1,
+        "period": 1,
+        "unit": "days"
+      },
+      "duration": {
+        "quantity": 5,
+        "unit": "years"
+      },
+      "direct_transition": "Follow_Up_Encounter_End",
+      "assign_to_attribute": "busulfan_2_mg_oral_tablet_rx"
+    },
+    "Post_PV_MF_Transition": {
+      "type": "ConditionOnset",
+      "remarks": [
+        "FIX 3: SNOMED: 109962001 - Post-polycythemia vera myelofibrosis (disorder).",
+        "[v1 used 307561004, which is ambiguous in current SNOMED releases]",
+        "Post-PV MF in ~10-20% of patients by 20 years.",
+        "IWG-MRT diagnostic criteria:",
+        "  - Prior documented PV diagnosis",
+        "  - Bone marrow fibrosis grade MF-2 or MF-3",
+        "  - >=2 of: anaemia, leukoerythroblastic film, splenomegaly >=5cm,",
+        "    constitutional symptoms (weight loss >10%, night sweats, fever >37.5C)",
+        "Management: ruxolitinib (symptom/splenomegaly control) ± allogeneic SCT."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "109962001",
+          "display": "Post-polycythemia vera myelofibrosis (disorder)"
+        }
+      ],
+      "target_encounter": "Follow_Up_Encounter",
+      "direct_transition": "Post_PV_MF_Management"
+    },
+    "Post_PV_MF_Management": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 13: SCT age-gated to patients <70 years.",
+        "Patients >=70: ruxolitinib or supportive care only.",
+        "Patients <70: ruxolitinib (65%), SCT evaluation (15%), supportive care (20%)."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": "<",
+            "quantity": 70,
+            "unit": "years"
+          },
+          "transition": "Post_PV_MF_Management_Under70"
+        },
+        {
+          "transition": "Post_PV_MF_Ruxolitinib"
+        }
+      ]
+    },
+    "Treat_Pruritus": {
+      "type": "Simple",
+      "direct_transition": "Prescribe_Pruritus_Treatment_Supply_Delay"
+    },
+    "Hydroxyzine_Response": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "Prescribe_Pruritus_Treatment_End"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "Select_SSRI"
+        }
+      ]
+    },
+    "Select_SSRI": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "Prescribe_Paroxetine"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "Prescribe_Fluoxetine"
+        }
+      ]
+    },
+    "Prescribe_Paroxetine": {
+      "type": "MedicationOrder",
+      "reason": "PV_Condition_Onset",
+      "remarks": [
+        "Paroxetine 20 mg/day for refractory PV-associated pruritus."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "32937",
+          "display": "Paroxetine 20 MG Oral Tablet"
+        }
+      ],
+      "dosage": {
+        "amount": 1,
+        "frequency": 1,
+        "period": 1,
+        "unit": "days"
+      },
+      "duration": {
+        "quantity": 5,
+        "unit": "years"
+      },
+      "assign_to_attribute": "paroxetine_rx",
+      "direct_transition": "Encounter_End_Initial"
+    },
+    "Repeat_PegInterferon": {
+      "type": "MedicationOrder",
+      "reason": "PV_Condition_Onset",
+      "administration": true,
+      "target_encounter": "Follow_Up_Encounter",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "120608",
+          "display": "peginterferon alfa-2a"
+        }
+      ],
+      "assign_to_attribute": "peg_interferon_rx",
+      "direct_transition": "Phlebotomy_If_Needed"
+    },
+    "Prescribe_Fluoxetine": {
+      "type": "MedicationOrder",
+      "reason": "PV_Condition_Onset",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "104849",
+          "display": "Fluoxetine 20 MG Oral Capsule"
+        }
+      ],
+      "dosage": {
+        "amount": 1,
+        "frequency": 1,
+        "period": 1,
+        "unit": "days"
+      },
+      "duration": {
+        "quantity": 12,
+        "unit": "months"
+      },
+      "assign_to_attribute": "fluoxetine_rx",
+      "direct_transition": "Encounter_End_Initial"
+    },
+    "Prescribe_Hydroxyzine": {
+      "type": "MedicationOrder",
+      "reason": "PV_Condition_Onset",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "5553",
+          "display": "Hydroxyzine HCl 25 MG Oral Tablet"
+        }
+      ],
+      "dosage": {
+        "amount": 1,
+        "frequency": 3,
+        "period": 1,
+        "unit": "days"
+      },
+      "duration": {
+        "quantity": 3,
+        "unit": "months"
+      },
+      "assign_to_attribute": "hydroxyzine_rx",
+      "direct_transition": "Hydroxyzine_Response"
+    },
+    "Prescribe_Allopurinol": {
+      "type": "MedicationOrder",
+      "reason": "PV_Condition_Onset",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "197320",
+          "display": "Allopurinol 300 MG Oral Tablet"
+        }
+      ],
+      "dosage": {
+        "amount": 1,
+        "frequency": 1,
+        "period": 1,
+        "unit": "days"
+      },
+      "duration": {
+        "quantity": 5,
+        "unit": "years"
+      },
+      "assign_to_attribute": "allopurinol_rx",
+      "direct_transition": "CarePlan_PV"
+    },
+    "Post_PV_MF_Management_Under70": {
+      "type": "Simple",
+      "remarks": [
+        "Patients <70 eligible for SCT evaluation if DIPSS-plus intermediate-2 or high-risk.",
+        "~15% of eligible younger patients proceed to transplant evaluation.",
+        "5-year OS with allogenic SCT: ~30-50% with modern conditioning."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.65,
+          "transition": "Post_PV_MF_Ruxolitinib"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "Stem_Cell_Transplant_Procedure"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Follow_Up_Encounter_End"
+        }
+      ]
+    },
+    "Post_PV_MF_Ruxolitinib": {
+      "type": "MedicationOrder",
+      "reason": "Post_PV_MF_Transition",
+      "remarks": [
+        "Ruxolitinib for symptomatic post-PV MF (splenomegaly, constitutional symptoms).",
+        "MF dosing by platelet count: PLT >200: 20mg BID; PLT 100-200: 15mg BID; PLT 50-100: 5mg BID.",
+        "amount:4 frequency:2 = 4 x 5mg tablets twice daily = 20mg BID (PLT >200 starting dose)."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1193339",
+          "display": "ruxolitinib 5 MG Oral Tablet"
+        }
+      ],
+      "dosage": {
+        "amount": 4,
+        "frequency": 2,
+        "period": 1,
+        "unit": "days"
+      },
+      "duration": {
+        "quantity": 5,
+        "unit": "years"
+      },
+      "direct_transition": "Follow_Up_Encounter_End",
+      "assign_to_attribute": "ruxolitinib_5_mg_oral_tablet_rx_2"
+    },
+    "Stem_Cell_Transplant_Procedure": {
+      "type": "Procedure",
+      "reason": "Post_PV_MF_Transition",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "58390007",
+          "display": "Allogeneic bone marrow transplantation (procedure)"
+        }
+      ],
+      "duration": {
+        "low": 20,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Follow_Up_Encounter_End"
+    },
+    "AML_Transformation": {
+      "type": "ConditionOnset",
+      "remarks": [
+        "SNOMED: 91861009 - Acute myeloid leukemia, disease.",
+        "AML transformation in PV: ~4-5% at 20 years.",
+        "Risk factors: prior alkylating agents, leukocytosis, SRSF2/IDH2/TP53 mutations.",
+        "Median OS post-transformation: 2-5 months.",
+        "HU-associated AML risk is low at standard therapeutic doses."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "91861009",
+          "display": "Acute myeloid leukemia, disease (disorder)"
+        }
+      ],
+      "target_encounter": "Follow_Up_Encounter",
+      "direct_transition": "AML_Management"
+    },
+    "AML_Management": {
+      "type": "Simple",
+      "remarks": [
+        "AML from PV: poor prognosis. Intensive 7+3 induction ± allogeneic SCT.",
+        "Many patients ineligible due to age/comorbidities; best supportive care.",
+        "Model: 70% die within simulation; 30% survive short-term."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "AML_Death"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "Follow_Up_Encounter_End"
+        }
+      ]
+    },
+    "AML_Death": {
+      "type": "Death",
+      "remarks": [
+        "Death from AML transformation. Median OS post-transformation ~2-5 months."
+      ],
+      "condition_onset": "AML_Transformation",
+      "direct_transition": "Terminal"
+    },
+    "Follow_Up_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Long_Term_Monitoring_Check"
+    },
+    "Long_Term_Monitoring_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Loop back to monitoring unless simulation ends or patient dies.",
+        "Module runs indefinitely until terminal event or end of simulation."
+      ],
+      "direct_transition": "Ongoing_Monitoring_Delay"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "Prescribe_Pruritus_Treatment_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Prescribe_Hydroxyzine"
+    },
+    "Prescribe_Pruritus_Treatment_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "hydroxyzine_rx",
+      "direct_transition": "Encounter_End_Initial"
+    }
+  }
+}

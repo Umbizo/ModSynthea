@@ -1,0 +1,946 @@
+{
+  "name": "Wet Age-Related Macular Degeneration",
+  "remarks": [
+    "This module models wet (neovascular) age-related macular degeneration (AMD),",
+    "a serious eye condition that causes rapid vision loss in the central field of vision.",
+    "Wet AMD accounts for about 10-15% of all AMD cases but causes 90% of severe vision loss.",
+    "It typically affects people over 50, with increasing prevalence with age.",
+    "The module includes risk factors, progression from dry AMD, diagnostic procedures,",
+    "and current treatment modalities including anti-VEGF therapy.",
+    "References: AAO Retina/Vitreous Panel. Preferred Practice Pattern Guidelines.",
+    "Age-Related Macular Degeneration. San Francisco, CA: American Academy of Ophthalmology; 2019."
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "Age_Guard"
+    },
+    "Age_Guard": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 50,
+        "unit": "years"
+      },
+      "direct_transition": "Risk_Factor_Assessment"
+    },
+    "Risk_Factor_Assessment": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "transition": "High_Risk_Smoking",
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "smoker",
+                "operator": "==",
+                "value": true
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "former_smoker",
+                "operator": "==",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "transition": "Check_Family_History"
+        }
+      ]
+    },
+    "High_Risk_Smoking": {
+      "type": "SetAttribute",
+      "attribute": "amd_risk_factor_smoking",
+      "value": true,
+      "direct_transition": "Check_Family_History"
+    },
+    "Check_Family_History": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Family_History_Positive",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Check_Existing_Dry_AMD",
+          "distribution": 0.8
+        }
+      ]
+    },
+    "Family_History_Positive": {
+      "type": "SetAttribute",
+      "attribute": "amd_family_history",
+      "value": true,
+      "direct_transition": "Check_Existing_Dry_AMD"
+    },
+    "Check_Existing_Dry_AMD": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "transition": "Existing_Dry_AMD",
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "267718000",
+                "display": "Age-related macular degeneration"
+              }
+            ]
+          }
+        },
+        {
+          "transition": "Age_Based_AMD_Risk"
+        }
+      ]
+    },
+    "Existing_Dry_AMD": {
+      "type": "SetAttribute",
+      "attribute": "has_dry_amd",
+      "value": true,
+      "direct_transition": "Dry_AMD_Monitoring_Period"
+    },
+    "Age_Based_AMD_Risk": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "transition": "Very_High_Age_Risk",
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 75,
+            "unit": "years"
+          }
+        },
+        {
+          "transition": "High_Age_Risk",
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 65,
+            "unit": "years"
+          }
+        },
+        {
+          "transition": "Standard_Age_Risk"
+        }
+      ]
+    },
+    "Very_High_Age_Risk": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Develop_Dry_AMD_First",
+          "distribution": 0.25
+        },
+        {
+          "transition": "No_AMD_Development",
+          "distribution": 0.75
+        }
+      ]
+    },
+    "High_Age_Risk": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Develop_Dry_AMD_First",
+          "distribution": 0.15
+        },
+        {
+          "transition": "No_AMD_Development",
+          "distribution": 0.85
+        }
+      ]
+    },
+    "Standard_Age_Risk": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Develop_Dry_AMD_First",
+          "distribution": 0.05
+        },
+        {
+          "transition": "No_AMD_Development",
+          "distribution": 0.95
+        }
+      ]
+    },
+    "Develop_Dry_AMD_First": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "267718000",
+          "display": "Age-related macular degeneration"
+        }
+      ],
+      "direct_transition": "Set_Dry_AMD_Attribute"
+    },
+    "Set_Dry_AMD_Attribute": {
+      "type": "SetAttribute",
+      "attribute": "has_dry_amd",
+      "value": true,
+      "direct_transition": "Dry_AMD_Monitoring_Period"
+    },
+    "Dry_AMD_Monitoring_Period": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 5,
+        "unit": "years"
+      },
+      "direct_transition": "Wet_AMD_Risk_Assessment"
+    },
+    "Wet_AMD_Risk_Assessment": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "transition": "High_Risk_Wet_AMD_Development",
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "amd_risk_factor_smoking",
+                "operator": "==",
+                "value": true
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "amd_family_history",
+                "operator": "==",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "transition": "Moderate_Risk_Wet_AMD_Development",
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "has_dry_amd",
+            "operator": "==",
+            "value": true
+          }
+        },
+        {
+          "transition": "Low_Risk_Wet_AMD_Development"
+        }
+      ]
+    },
+    "High_Risk_Wet_AMD_Development": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Early_Wet_AMD_Symptoms",
+          "distribution": 0.2
+        },
+        {
+          "transition": "No_AMD_Development",
+          "distribution": 0.8
+        }
+      ]
+    },
+    "Moderate_Risk_Wet_AMD_Development": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Early_Wet_AMD_Symptoms",
+          "distribution": 0.15
+        },
+        {
+          "transition": "No_AMD_Development",
+          "distribution": 0.85
+        }
+      ]
+    },
+    "Low_Risk_Wet_AMD_Development": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Early_Wet_AMD_Symptoms",
+          "distribution": 0.03
+        },
+        {
+          "transition": "No_AMD_Development",
+          "distribution": 0.97
+        }
+      ]
+    },
+    "Early_Wet_AMD_Symptoms": {
+      "type": "Observation",
+      "category": "survey",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "246636008",
+          "display": "Distorted vision"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": "52101004",
+        "display": "Present"
+      },
+      "direct_transition": "Central_Vision_Loss_Symptom"
+    },
+    "Central_Vision_Loss_Symptom": {
+      "type": "Observation",
+      "category": "survey",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "246636008",
+          "display": "Central vision loss"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": "52101004",
+        "display": "Present"
+      },
+      "direct_transition": "Seek_Medical_Care_Delay"
+    },
+    "Seek_Medical_Care_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 4,
+        "unit": "weeks"
+      },
+      "direct_transition": "Initial_Eye_Examination"
+    },
+    "Initial_Eye_Examination": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "wet_amd_symptoms",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "36228007",
+          "display": "Ophthalmologic examination and evaluation"
+        }
+      ],
+      "direct_transition": "Visual_Acuity_Test"
+    },
+    "Visual_Acuity_Test": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "16830007",
+          "display": "Visual acuity testing"
+        }
+      ],
+      "duration": {
+        "low": 10,
+        "high": 15,
+        "unit": "minutes"
+      },
+      "direct_transition": "Amsler_Grid_Test"
+    },
+    "Amsler_Grid_Test": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "410451008",
+          "display": "Amsler grid test"
+        }
+      ],
+      "duration": {
+        "low": 5,
+        "high": 10,
+        "unit": "minutes"
+      },
+      "direct_transition": "Dilated_Fundus_Examination"
+    },
+    "Dilated_Fundus_Examination": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "410453006",
+          "display": "Dilated fundus examination"
+        }
+      ],
+      "duration": {
+        "low": 15,
+        "high": 30,
+        "unit": "minutes"
+      },
+      "direct_transition": "OCT_Imaging"
+    },
+    "OCT_Imaging": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "700070005",
+          "display": "Optical coherence tomography of retina [procedure]"
+        }
+      ],
+      "duration": {
+        "low": 10,
+        "high": 20,
+        "unit": "minutes"
+      },
+      "direct_transition": "Fluorescein_Angiography"
+    },
+    "Fluorescein_Angiography": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "172581008",
+          "display": "Fluorescein angiography of eye"
+        }
+      ],
+      "duration": {
+        "low": 30,
+        "high": 45,
+        "unit": "minutes"
+      },
+      "direct_transition": "CNV_Finding"
+    },
+    "CNV_Finding": {
+      "type": "Observation",
+      "category": "imaging",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "193387007",
+          "display": "Choroidal neovascularization"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": "52101004",
+        "display": "Present"
+      },
+      "direct_transition": "Wet_AMD_Diagnosis"
+    },
+    "Wet_AMD_Diagnosis": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "414173003",
+          "display": "Exudative age-related macular degeneration"
+        }
+      ],
+      "direct_transition": "Baseline_Visual_Acuity"
+    },
+    "Baseline_Visual_Acuity": {
+      "type": "Observation",
+      "category": "vital-signs",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "79875-9",
+          "display": "Visual acuity"
+        }
+      ],
+      "range": {
+        "low": 20,
+        "high": 200
+      },
+      "unit": "Snellen",
+      "direct_transition": "End_Initial_Encounter"
+    },
+    "End_Initial_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Treatment_Planning_Delay"
+    },
+    "Treatment_Planning_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 7,
+        "unit": "days"
+      },
+      "direct_transition": "Retina_Specialist_Encounter"
+    },
+    "Retina_Specialist_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "wet_amd",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "390906007",
+          "display": "Retinal specialist consultation"
+        }
+      ],
+      "direct_transition": "Treatment_Decision"
+    },
+    "Treatment_Decision": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Begin_Anti_VEGF_Treatment",
+          "distribution": 0.85
+        },
+        {
+          "transition": "Conservative_Management",
+          "distribution": 0.15
+        }
+      ]
+    },
+    "Begin_Anti_VEGF_Treatment": {
+      "type": "SetAttribute",
+      "attribute": "treatment_type",
+      "value": "anti_vegf",
+      "direct_transition": "First_Anti_VEGF_Injection"
+    },
+    "First_Anti_VEGF_Injection": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "418551006",
+          "display": "Intravitreal injection of anti-VEGF agent"
+        }
+      ],
+      "duration": {
+        "low": 15,
+        "high": 30,
+        "unit": "minutes"
+      },
+      "direct_transition": "Anti_VEGF_Medication"
+    },
+    "Repeat_Anti_VEGF_Medication": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Repeat_Ranibizumab_Order",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Repeat_Aflibercept_Order",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Repeat_Bevacizumab_Order",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "Repeat_Aflibercept_Order": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1232151",
+          "display": "aflibercept 40 MG/ML"
+        }
+      ],
+      "administration": true,
+      "direct_transition": "Increment_Counter"
+    },
+    "Repeat_Bevacizumab_Order": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "437105",
+          "display": "bevacizumab 25 MG/ML"
+        }
+      ],
+      "administration": true,
+      "direct_transition": "Increment_Counter"
+    },
+    "Repeat_Ranibizumab_Order": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "643191",
+          "display": "ranibizumab 10 MG/ML"
+        }
+      ],
+      "administration": true,
+      "direct_transition": "Increment_Counter"
+    },
+    "Anti_VEGF_Medication": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Ranibizumab_Order",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Aflibercept_Order",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Bevacizumab_Order",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "Ranibizumab_Order": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "643191",
+          "display": "ranibizumab 10 MG/ML"
+        }
+      ],
+      "administration": true,
+      "direct_transition": "Initialize_Injection_Counter"
+    },
+    "Aflibercept_Order": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1232151",
+          "display": "aflibercept 40 MG/ML"
+        }
+      ],
+      "administration": true,
+      "direct_transition": "Initialize_Injection_Counter"
+    },
+    "Bevacizumab_Order": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "437105",
+          "display": "bevacizumab 25 MG/ML"
+        }
+      ],
+      "administration": true,
+      "direct_transition": "Initialize_Injection_Counter"
+    },
+    "Initialize_Injection_Counter": {
+      "type": "Counter",
+      "attribute": "injection_count",
+      "action": "increment",
+      "direct_transition": "End_Treatment_Encounter"
+    },
+    "End_Treatment_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Loading_Phase_Wait"
+    },
+    "Loading_Phase_Wait": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 4,
+        "unit": "weeks"
+      },
+      "conditional_transition": [
+        {
+          "transition": "Continue_Loading_Phase",
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "injection_count",
+            "operator": "<",
+            "value": 3
+          }
+        },
+        {
+          "transition": "Treatment_Response_Assessment"
+        }
+      ]
+    },
+    "Continue_Loading_Phase": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "wet_amd_follow_up",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "390906007",
+          "display": "Follow-up retinal examination"
+        }
+      ],
+      "direct_transition": "Follow_Up_OCT"
+    },
+    "Follow_Up_OCT": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "700070005",
+          "display": "Optical coherence tomography of retina [procedure]"
+        }
+      ],
+      "direct_transition": "Subsequent_Injection"
+    },
+    "Subsequent_Injection": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "418551006",
+          "display": "Intravitreal injection of anti-VEGF agent"
+        }
+      ],
+      "direct_transition": "Repeat_Anti_VEGF_Medication"
+    },
+    "Increment_Counter": {
+      "type": "Counter",
+      "attribute": "injection_count",
+      "action": "increment",
+      "direct_transition": "End_Follow_Up_Encounter"
+    },
+    "End_Follow_Up_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Loading_Phase_Wait"
+    },
+    "Treatment_Response_Assessment": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "wet_amd_assessment",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "390906007",
+          "display": "Treatment response assessment"
+        }
+      ],
+      "direct_transition": "Follow_Up_Visual_Acuity"
+    },
+    "Follow_Up_Visual_Acuity": {
+      "type": "Observation",
+      "category": "vital-signs",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "79875-9",
+          "display": "Visual acuity"
+        }
+      ],
+      "range": {
+        "low": 20,
+        "high": 200
+      },
+      "unit": "Snellen",
+      "direct_transition": "Response_Assessment_OCT"
+    },
+    "Response_Assessment_OCT": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "700070005",
+          "display": "Optical coherence tomography of retina [procedure]"
+        }
+      ],
+      "direct_transition": "Treatment_Response_Determination"
+    },
+    "Treatment_Response_Determination": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Good_Treatment_Response",
+          "distribution": 0.6
+        },
+        {
+          "transition": "Partial_Treatment_Response",
+          "distribution": 0.3
+        },
+        {
+          "transition": "Poor_Treatment_Response",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "Good_Treatment_Response": {
+      "type": "SetAttribute",
+      "attribute": "treatment_response",
+      "value": "good",
+      "direct_transition": "Maintenance_Phase_Planning"
+    },
+    "Partial_Treatment_Response": {
+      "type": "SetAttribute",
+      "attribute": "treatment_response",
+      "value": "partial",
+      "direct_transition": "Modified_Treatment_Planning"
+    },
+    "Poor_Treatment_Response": {
+      "type": "SetAttribute",
+      "attribute": "treatment_response",
+      "value": "poor",
+      "direct_transition": "Alternative_Treatment_Planning"
+    },
+    "Maintenance_Phase_Planning": {
+      "type": "SetAttribute",
+      "attribute": "treatment_phase",
+      "value": "maintenance",
+      "direct_transition": "End_Assessment_Encounter"
+    },
+    "Modified_Treatment_Planning": {
+      "type": "SetAttribute",
+      "attribute": "treatment_phase",
+      "value": "modified",
+      "direct_transition": "End_Assessment_Encounter"
+    },
+    "Alternative_Treatment_Planning": {
+      "type": "SetAttribute",
+      "attribute": "treatment_phase",
+      "value": "alternative",
+      "direct_transition": "End_Assessment_Encounter"
+    },
+    "End_Assessment_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Long_Term_Management"
+    },
+    "Long_Term_Management": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 12,
+        "unit": "weeks"
+      },
+      "direct_transition": "Regular_Follow_Up_Encounter"
+    },
+    "Regular_Follow_Up_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "wet_amd_follow_up",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "390906007",
+          "display": "Routine retinal follow-up"
+        }
+      ],
+      "direct_transition": "Disease_Status_Check"
+    },
+    "Disease_Status_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Stable_Disease_Status",
+          "distribution": 0.7
+        },
+        {
+          "transition": "Disease_Progression_Detected",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Geographic_Atrophy_Development",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "Stable_Disease_Status": {
+      "type": "EncounterEnd",
+      "direct_transition": "Long_Term_Management"
+    },
+    "Disease_Progression_Detected": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "230145002",
+          "display": "Deteroration of sight"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": "52101004",
+        "display": "Present"
+      },
+      "direct_transition": "End_Progression_Encounter"
+    },
+    "End_Progression_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Modified_Treatment_Planning"
+    },
+    "Geographic_Atrophy_Development": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "414875008",
+          "display": "Nonexudative age-related macular degeneration"
+        }
+      ],
+      "direct_transition": "End_GA_Encounter"
+    },
+    "End_GA_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Advanced_Disease_Management"
+    },
+    "Advanced_Disease_Management": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 12,
+        "unit": "months"
+      },
+      "direct_transition": "Vision_Rehabilitation_Encounter"
+    },
+    "Vision_Rehabilitation_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "vision_rehabilitation",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "410006001",
+          "display": "Vision rehabilitation assessment"
+        }
+      ],
+      "direct_transition": "Low_Vision_Services"
+    },
+    "Low_Vision_Services": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "410007005",
+          "display": "Low vision rehabilitation"
+        }
+      ],
+      "direct_transition": "End_Rehabilitation_Encounter"
+    },
+    "End_Rehabilitation_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Terminal"
+    },
+    "Conservative_Management": {
+      "type": "SetAttribute",
+      "attribute": "treatment_type",
+      "value": "conservative",
+      "direct_transition": "End_Conservative_Encounter"
+    },
+    "End_Conservative_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Conservative_Follow_Up"
+    },
+    "Conservative_Follow_Up": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Regular_Follow_Up_Encounter"
+    },
+    "No_AMD_Development": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 3,
+        "unit": "years"
+      },
+      "direct_transition": "Age_Based_AMD_Risk"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    }
+  },
+  "gmf_version": 2
+}

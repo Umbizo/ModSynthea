@@ -1,7 +1,7 @@
 {
   "name": "Intraocular Pressure",
   "remarks": [
-    "Submodule for IOP procedure and findings."
+    "Submodule for IOP procedure and findings with expanded medications, glaucoma diagnosis, and follow-up care."
   ],
   "states": {
     "Initial": {
@@ -17,7 +17,7 @@
         {
           "system": "SNOMED-CT",
           "code": "252832004",
-          "display": "Intraocular pressure test (procedure)"
+          "display": "Intraocular pressure test"
         }
       ],
       "distribution": {
@@ -28,57 +28,6 @@
       },
       "unit": "minutes",
       "direct_transition": "IOP_Results_Left"
-    },
-    "Timolol": {
-      "type": "MedicationOrder",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": 1923432,
-          "display": "dorzolamide 20 MG/ML / timolol 5 MG/ML Ophthalmic Solution"
-        }
-      ],
-      "direct_transition": "Terminal",
-      "assign_to_attribute": "eye_pressure_med"
-    },
-    "Brimonidine": {
-      "type": "MedicationOrder",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": 861204,
-          "display": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
-        }
-      ],
-      "direct_transition": "Terminal",
-      "assign_to_attribute": "eye_pressure_med"
-    },
-    "High IOP Meds": {
-      "type": "Simple",
-      "complex_transition": [
-        {
-          "condition": {
-            "condition_type": "Attribute",
-            "attribute": "intraocular_pressure",
-            "operator": ">",
-            "value": 21
-          },
-          "distributions": [
-            {
-              "transition": "Timolol",
-              "distribution": 0.5
-            },
-            {
-              "transition": "Brimonidine",
-              "distribution": 0.5
-            }
-          ]
-        },
-        {
-          "distributions": [],
-          "transition": "Terminal"
-        }
-      ]
     },
     "IOP_Results_Left": {
       "type": "Observation",
@@ -96,11 +45,15 @@
           "display": "Intraocular pressure (observable entity)"
         }
       ],
+      "range": {
+        "low": 8,
+        "high": 35
+      },
       "direct_transition": "IOP_Results_Right",
       "remarks": [
-        "Note code 2 is actually SNOMED"
+        "Normal IOP range is 10-21 mmHg, but can be higher in pathological conditions"
       ],
-      "attribute": "intraocular_pressure"
+      "assign_to_attribute": "left_intraocular_pressure"
     },
     "IOP_Results_Right": {
       "type": "Observation",
@@ -118,12 +71,218 @@
           "display": "Intraocular pressure (observable entity)"
         }
       ],
-      "direct_transition": "High IOP Meds",
+      "range": {
+        "low": 8,
+        "high": 35
+      },
+      "direct_transition": "Evaluate_IOP_Levels",
       "remarks": [
-        "Note code 1 is actually SNOMED"
+        "Normal IOP range is 10-21 mmHg, but can be higher in pathological conditions"
       ],
-      "attribute": "intraocular_pressure"
+      "assign_to_attribute": "right_intraocular_pressure"
+    },
+    "Evaluate_IOP_Levels": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "left_intraocular_pressure",
+                "operator": ">",
+                "value": 21
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "right_intraocular_pressure",
+                "operator": ">",
+                "value": 21
+              }
+            ]
+          },
+          "transition": "High_IOP_Branch"
+        },
+        {
+          "transition": "Normal_IOP_Follow_Up"
+        }
+      ]
+    },
+    "High_IOP_Branch": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "left_intraocular_pressure",
+                "operator": ">",
+                "value": 30
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "right_intraocular_pressure",
+                "operator": ">",
+                "value": 30
+              }
+            ]
+          },
+          "transition": "Glaucoma_Diagnosis"
+        },
+        {
+          "transition": "Ocular_Hypertension_Diagnosis"
+        }
+      ]
+    },
+    "Glaucoma_Diagnosis": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "23986001",
+          "display": "Glaucoma (disorder)"
+        }
+      ],
+      "direct_transition": "High_IOP_Medication_Selection",
+      "assign_to_attribute": "glaucoma_diagnosed"
+    },
+    "Ocular_Hypertension_Diagnosis": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "4210003",
+          "display": "Ocular hypertension (disorder)"
+        }
+      ],
+      "direct_transition": "High_IOP_Medication_Selection",
+      "assign_to_attribute": "ocular_hypertension_diagnosed"
+    },
+    "High_IOP_Medication_Selection": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Prostaglandin_Analogs",
+          "distribution": 0.3
+        },
+        {
+          "transition": "Beta_Blockers",
+          "distribution": 0.25
+        },
+        {
+          "transition": "Carbonic_Anhydrase_Inhibitors",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Timolol_Combination",
+          "distribution": 0.15
+        },
+        {
+          "transition": "Alpha_Agonists",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "Prostaglandin_Analogs": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Latanoprost",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Travoprost",
+          "distribution": 0.3
+        },
+        {
+          "transition": "Bimatoprost",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "Travoprost": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": 284008,
+          "display": "travoprost 0.04 MG/ML Ophthalmic Solution"
+        }
+      ],
+      "direct_transition": "Terminal"
+    },
+    "Beta_Blockers": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": 10600,
+          "display": "timolol 5 MG/ML Ophthalmic Solution"
+        }
+      ],
+      "direct_transition": "Terminal"
+    },
+    "Carbonic_Anhydrase_Inhibitors": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "310015",
+          "display": "dorzolamide 20 MG/ML Ophthalmic Solution"
+        }
+      ],
+      "direct_transition": "Terminal"
+    },
+    "Timolol_Combination": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": 1923432,
+          "display": "dorzolamide 20 MG/ML / timolol 5 MG/ML Ophthalmic Solution"
+        }
+      ],
+      "direct_transition": "Terminal"
+    },
+    "Alpha_Agonists": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": 1999015,
+          "display": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+        }
+      ],
+      "direct_transition": "Terminal"
+    },
+    "Normal_IOP_Follow_Up": {
+      "type": "Simple",
+      "direct_transition": "Terminal"
+    },
+    "Bimatoprost": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "308739",
+          "display": "bimatoprost 0.3 MG/ML Ophthalmic Solution"
+        }
+      ],
+      "direct_transition": "Terminal"
+    },
+    "Latanoprost": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "314072",
+          "display": "latanoprost 0.05 MG/ML Ophthalmic Solution"
+        }
+      ],
+      "direct_transition": "Terminal"
     }
-  },
-  "gmf_version": 2
+  }
 }

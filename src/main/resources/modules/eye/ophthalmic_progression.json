@@ -216,6 +216,9 @@
             "operator": "==",
             "value": 4
           }
+        },
+        {
+          "transition": "Set_Stage_Code_4"
         }
       ],
       "remarks": [

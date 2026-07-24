@@ -1,0 +1,626 @@
+{
+  "name": "Pneumonia_Enhanced",
+  "remarks": [
+    "This module supports pediatric, adult, and geriatric populations",
+    "Includes mild, moderate, and severe pneumonia with appropriate treatment pathways",
+    "This module has expansions of antibiotic pathways and ventilator support"
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "PneumoniaOnset"
+    },
+    "PneumoniaOnset": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "pneumonia",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "233604007",
+          "display": "Pneumonia (disorder)"
+        },
+        {
+          "system": "ICD-10-CM",
+          "code": "J18.9",
+          "display": "Pneumonia, unspecified"
+        }
+      ],
+      "direct_transition": "CoughSymptom"
+    },
+    "CoughSymptom": {
+      "type": "Symptom",
+      "symptom": "Cough (finding)",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "49727002",
+          "display": "Cough (finding)"
+        }
+      ],
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "FeverSymptom"
+    },
+    "FeverSymptom": {
+      "type": "Symptom",
+      "symptom": "Fever (finding)",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "386661006",
+          "display": "Fever (finding)"
+        }
+      ],
+      "exact": {
+        "quantity": 1
+      },
+      "probability": 0.8,
+      "direct_transition": "DyspneaSymptom"
+    },
+    "DyspneaSymptom": {
+      "type": "Symptom",
+      "symptom": "Dyspnea (finding)",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "267036007",
+          "display": "Dyspnea (finding)"
+        }
+      ],
+      "exact": {
+        "quantity": 1
+      },
+      "probability": 0.6,
+      "direct_transition": "ChestPainSymptom"
+    },
+    "ChestPainSymptom": {
+      "type": "Symptom",
+      "symptom": "Chest pain (finding)",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "29857009",
+          "display": "Chest pain (finding)"
+        }
+      ],
+      "exact": {
+        "quantity": 1
+      },
+      "probability": 0.4,
+      "direct_transition": "ED_Visit"
+    },
+    "ED_Visit": {
+      "type": "Encounter",
+      "encounter_class": "emergency",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "50849002",
+          "display": "Emergency room admission (procedure)"
+        }
+      ],
+      "reason": "pneumonia",
+      "direct_transition": "ED_Chest_Xray"
+    },
+    "ED_Chest_Xray": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "71046",
+          "display": "Chest radiologic examination, 2 views"
+        }
+      ],
+      "direct_transition": "ED_Visit_End"
+    },
+    "DetermineSeverity": {
+      "type": "Simple",
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": "<",
+            "quantity": 65,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "distribution": 0.5,
+              "transition": "MildPneumonia"
+            },
+            {
+              "distribution": 0.3,
+              "transition": "ModeratePneumonia"
+            },
+            {
+              "distribution": 0.2,
+              "transition": "SeverePneumonia"
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "distribution": 0.3,
+              "transition": "MildPneumonia"
+            },
+            {
+              "distribution": 0.4,
+              "transition": "ModeratePneumonia"
+            },
+            {
+              "distribution": 0.3,
+              "transition": "SeverePneumonia"
+            }
+          ]
+        }
+      ]
+    },
+    "MildPneumonia": {
+      "type": "SetAttribute",
+      "attribute": "pneumonia_severity",
+      "value": "mild",
+      "direct_transition": "OutpatientManagement"
+    },
+    "ModeratePneumonia": {
+      "type": "SetAttribute",
+      "attribute": "pneumonia_severity",
+      "value": "moderate",
+      "direct_transition": "InpatientAdmission"
+    },
+    "SeverePneumonia": {
+      "type": "SetAttribute",
+      "attribute": "pneumonia_severity",
+      "value": "severe",
+      "direct_transition": "ICUAdmission"
+    },
+    "OutpatientManagement": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "99213",
+          "display": "Office or other outpatient visit for the evaluation and management of an established patient"
+        }
+      ],
+      "reason": "pneumonia",
+      "direct_transition": "AntibioticTreatmentOutpatient"
+    },
+    "AntibioticTreatmentOutpatient": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "308191",
+          "display": "amoxicillin 500 MG Oral Capsule"
+        }
+      ],
+      "reason": "pneumonia",
+      "direct_transition": "AntibioticTreatmentOutpatient_Supply_Delay",
+      "assign_to_attribute": "amoxicillin_500_mg_oral_capsule_rx"
+    },
+    "FollowUpCare": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "99212",
+          "display": "Office or other outpatient visit for the evaluation and management of an established patient"
+        }
+      ],
+      "reason": "pneumonia",
+      "direct_transition": "RecoveryMild"
+    },
+    "InpatientAdmission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission (procedure)"
+        }
+      ],
+      "reason": "pneumonia",
+      "direct_transition": "ChestImagingInpatient"
+    },
+    "ChestImagingInpatient": {
+      "type": "ImagingStudy",
+      "procedure_code": {
+        "system": "SNOMED-CT",
+        "code": "399208008",
+        "display": "Plain X-ray of chest (procedure)"
+      },
+      "series": [
+        {
+          "body_site": {
+            "system": "SNOMED-CT",
+            "code": "51185008",
+            "display": "Thoracic structure (body structure)"
+          },
+          "modality": {
+            "system": "DICOM-DCM",
+            "code": "CR",
+            "display": "Computed Radiography"
+          },
+          "instances": [
+            {
+              "title": "Chest X-ray",
+              "sop_class": {
+                "system": "DICOM-SOP",
+                "code": "1.2.840.10008.5.1.4.1.1.1.1",
+                "display": "Digital X-Ray Image Storage – for Presentation"
+              }
+            }
+          ]
+        }
+      ],
+      "direct_transition": "InpatientAdmission_End"
+    },
+    "OxygenSaturationInpatient": {
+      "type": "Observation",
+      "category": "vital-signs",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2708-6",
+          "display": "Oxygen saturation in Arterial blood"
+        }
+      ],
+      "vital_sign": "Oxygen Saturation",
+      "value": {
+        "type": "Range",
+        "low": 88,
+        "high": 94,
+        "unit": "%"
+      },
+      "direct_transition": "InpatientAdmission_End"
+    },
+    "ICUAdmission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "305351004",
+          "display": "Admission to intensive care unit (procedure)"
+        }
+      ],
+      "reason": "pneumonia",
+      "direct_transition": "IVAntibiotics"
+    },
+    "IVAntibiotics": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1659137",
+          "display": "piperacillin 3000 MG / tazobactam 375 MG Injection"
+        }
+      ],
+      "reason": "pneumonia",
+      "direct_transition": "IVAntibiotics_Supply_Delay",
+      "assign_to_attribute": "piperacillin_3_gm___tazobactam_0_rx"
+    },
+    "CT_Chest": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "71260",
+          "display": "CT thorax with contrast"
+        }
+      ],
+      "direct_transition": "ABG"
+    },
+    "ABG": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2744-1",
+          "display": "pO2 Arterial"
+        }
+      ],
+      "value": {
+        "type": "Range",
+        "low": 50,
+        "high": 70,
+        "unit": "mmHg"
+      },
+      "direct_transition": "VentilatorSupport"
+    },
+    "Doxycycline_End_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 7,
+        "high": 14,
+        "unit": "days"
+      },
+      "direct_transition": "Doxycycline_End"
+    },
+    "Doxycycline_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "doxycycline_rx",
+      "direct_transition": "OutpatientManagement_End"
+    },
+    "Doxycycline_Order": {
+      "type": "MedicationOrder",
+      "assign_to_attribute": "doxycycline_rx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1650144",
+          "display": "doxycycline hyclate 100 MG Oral Capsule"
+        }
+      ],
+      "reason": "pneumonia",
+      "direct_transition": "Doxycycline_End_Delay"
+    },
+    "VentilatorSupport": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "40617009",
+          "display": "Artificial respiration (procedure)"
+        }
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": "<=",
+            "quantity": 18,
+            "unit": "years"
+          },
+          "transition": "PediatricComplications"
+        },
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">",
+            "quantity": 65,
+            "unit": "years"
+          },
+          "transition": "GeriatricComplications"
+        },
+        {
+          "transition": "RecoverySevere"
+        }
+      ]
+    },
+    "PediatricComplications": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "ICD-10-CM",
+          "code": "J13",
+          "display": "Pneumonia due to Streptococcus pneumoniae"
+        },
+        {
+          "system": "SNOMED-CT",
+          "code": "34050004",
+          "display": "Respiratory syncytial virus pneumonia (disorder)"
+        }
+      ],
+      "direct_transition": "RecoverySevere"
+    },
+    "GeriatricComplications": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "ICD-10-CM",
+          "code": "J15.7",
+          "display": "Pneumonia due to Mycoplasma pneumoniae"
+        },
+        {
+          "system": "SNOMED-CT",
+          "code": "233606009",
+          "display": "Severe pneumonia (disorder)"
+        }
+      ],
+      "direct_transition": "RecoverySevere"
+    },
+    "RecoveryMild": {
+      "type": "Delay",
+      "range": {
+        "low": 5,
+        "high": 14,
+        "unit": "days"
+      },
+      "direct_transition": "ConditionEnd_Mild"
+    },
+    "ConditionEnd_Mild": {
+      "type": "ConditionEnd",
+      "referenced_by_attribute": "pneumonia",
+      "direct_transition": "FollowUpCare_End"
+    },
+    "RecoveryModerate": {
+      "type": "Delay",
+      "range": {
+        "low": 10,
+        "high": 21,
+        "unit": "days"
+      },
+      "direct_transition": "ConditionEnd_Moderate"
+    },
+    "ConditionEnd_Moderate": {
+      "type": "ConditionEnd",
+      "referenced_by_attribute": "pneumonia",
+      "direct_transition": "Terminal"
+    },
+    "RecoverySevere": {
+      "type": "Delay",
+      "range": {
+        "low": 21,
+        "high": 42,
+        "unit": "days"
+      },
+      "direct_transition": "ConditionEnd_Severe"
+    },
+    "ConditionEnd_Severe": {
+      "type": "ConditionEnd",
+      "referenced_by_attribute": "pneumonia",
+      "direct_transition": "ICUAdmission_End"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "ED_Visit_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "DetermineSeverity"
+    },
+    "OutpatientManagement_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "FollowUpCare"
+    },
+    "FollowUpCare_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Terminal"
+    },
+    "InpatientAdmission_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "RecoveryModerate"
+    },
+    "Ceftriaxone_Order": {
+      "type": "MedicationOrder",
+      "assign_to_attribute": "ceftriaxone_rx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1665021",
+          "display": "ceftriaxone 1000 MG Injection"
+        }
+      ],
+      "reason": "pneumonia",
+      "direct_transition": "Ceftriaxone_Supply_Delay"
+    },
+    "Ceftriaxone_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 7,
+        "high": 7,
+        "unit": "days"
+      },
+      "direct_transition": "Ceftriaxone_End"
+    },
+    "Ceftriaxone_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "ceftriaxone_rx",
+      "direct_transition": "Azithromycin_Order"
+    },
+    "Azithromycin_Order": {
+      "type": "MedicationOrder",
+      "assign_to_attribute": "azithromycin_rx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "248656",
+          "display": "azithromycin 500 MG Oral Tablet"
+        }
+      ],
+      "reason": "pneumonia",
+      "direct_transition": "Azithromycin_Supply_Delay"
+    },
+    "Azithromycin_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 5,
+        "high": 5,
+        "unit": "days"
+      },
+      "direct_transition": "Azithromycin_End"
+    },
+    "Azithromycin_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "azithromycin_rx",
+      "direct_transition": "CBC_Inpatient"
+    },
+    "CBC_Inpatient": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "6690-2",
+          "display": "Leukocytes [#/volume] in Blood"
+        }
+      ],
+      "value": {
+        "type": "Range",
+        "low": 12000,
+        "high": 20000,
+        "unit": "/uL"
+      },
+      "direct_transition": "CRP_Inpatient"
+    },
+    "CRP_Inpatient": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "1988-5",
+          "display": "C reactive protein"
+        }
+      ],
+      "value": {
+        "type": "Range",
+        "low": 50,
+        "high": 200
+      },
+      "direct_transition": "Blood_Culture",
+      "unit": "mg/L"
+    },
+    "Blood_Culture": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "600-7",
+          "display": "Bacteria identified in Blood by Culture"
+        }
+      ],
+      "value": "Streptococcus pneumoniae",
+      "direct_transition": "OxygenSaturationInpatient"
+    },
+    "ICUAdmission_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Terminal"
+    },
+    "AntibioticTreatmentOutpatient_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "AntibioticTreatmentOutpatient_End"
+    },
+    "AntibioticTreatmentOutpatient_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "amoxicillin_500_mg_oral_capsule_rx",
+      "direct_transition": "Doxycycline_Order"
+    },
+    "IVAntibiotics_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "IVAntibiotics_End"
+    },
+    "IVAntibiotics_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "piperacillin_3_gm___tazobactam_0_rx",
+      "direct_transition": "CT_Chest"
+    }
+  }
+}

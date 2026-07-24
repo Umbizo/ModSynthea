@@ -1,25 +1,14 @@
 {
-  "name": "Rheumatoid Arthritis",
+  "name": "Rheumatoid_Arthritis",
+  "gmf_version": 2,
   "remarks": [
-    "Rheumatoid arthritis (RA) is a chronic condition where joints and other organs are ",
-    "attacked by the body's own immune system. RA is treated aggressively and about 75% ",
-    "of cases go into remission within 5 years.",
-    "Information on treatment, prevalence, and incidence of specific arthritis types from the CDC: ",
-    "http://www.cdc.gov/arthritis/basics/types.html",
-    "Overall prevalence of arthritis: ",
-    "http://www.cdc.gov/arthritis/data_statistics/national-statistics.html"
+    "RA module integrating incidence, symptom onset, lab-based ACR/EULAR heuristic, treatment, and outcomes."
   ],
   "states": {
     "Initial": {
       "type": "Initial",
       "remarks": [
-        "======================================================================",
-        " INCIDENCE                                                            ",
-        "======================================================================",
-        " | Arthritis Type | Prevalence | Ratio F:M | ",
-        " ------------------------------------------- ",
-        " | Rheumatoid     |   0.01000  |    1:1    | ",
-        " ------------------------------------------- "
+        "Seed patients using incidence (1%)"
       ],
       "distributed_transition": [
         {
@@ -84,43 +73,226 @@
         "low": 0,
         "high": 20
       },
-      "direct_transition": "Rheumatoid_Arthritis"
+      "direct_transition": "Primary_Care_Visit"
     },
-    "Rheumatoid_Arthritis": {
-      "type": "ConditionOnset",
-      "remarks": [
-        "======================================================================",
-        " RHEUMATOID ARTHRITIS                                                 ",
-        "======================================================================",
-        "Source: http://www.cdc.gov/arthritis/basics/rheumatoid.htm"
-      ],
-      "target_encounter": "RA_Diagnosis",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "69896004",
-          "display": "Rheumatoid arthritis (disorder)"
-        }
-      ],
-      "direct_transition": "RA_Diagnosis"
-    },
-    "RA_Diagnosis": {
+    "Primary_Care_Visit": {
       "type": "Encounter",
       "encounter_class": "ambulatory",
-      "reason": "Rheumatoid_Arthritis",
+      "reason": "RA_Symptom5",
+      "direct_transition": "Initial_Labs"
+    },
+    "Initial_Labs": {
+      "type": "Procedure",
       "codes": [
         {
-          "system": "SNOMED-CT",
-          "code": "185347001",
-          "display": "Encounter for problem (procedure)"
+          "system": "LOINC",
+          "code": "2571-8",
+          "display": "Rheumatoid factor"
+        },
+        {
+          "system": "LOINC",
+          "code": "33935-8",
+          "display": "Cyclic citrullinated peptide IgG Ab [Units/volume] in Serum or Plasma"
+        },
+        {
+          "system": "LOINC",
+          "code": "1988-5",
+          "display": "C-reactive protein"
         }
       ],
+      "direct_transition": "Lab_Results"
+    },
+    "Lab_Results": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "[IU]/mL",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "RF_Positive"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "RF_Negative"
+        }
+      ],
+      "range": {
+        "low": 5,
+        "high": 150
+      },
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "11572-5",
+          "display": "Rheumatoid factor [Units/volume] in Serum"
+        }
+      ]
+    },
+    "RF_Positive": {
+      "type": "SetAttribute",
+      "attribute": "rf_positive",
+      "value": true,
+      "direct_transition": "AntiCCP_Test"
+    },
+    "RF_Negative": {
+      "type": "SetAttribute",
+      "attribute": "rf_positive",
+      "value": false,
+      "direct_transition": "AntiCCP_Test"
+    },
+    "AntiCCP_Test": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "[arb'U]/mL",
+      "distributed_transition": [
+        {
+          "distribution": 0.55,
+          "transition": "AntiCCP_Pos"
+        },
+        {
+          "distribution": 0.45,
+          "transition": "AntiCCP_Neg"
+        }
+      ],
+      "range": {
+        "low": 5,
+        "high": 250
+      },
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "32167-9",
+          "display": "Cyclic citrullinated peptide Ab [Units/volume] in Serum"
+        }
+      ]
+    },
+    "AntiCCP_Pos": {
+      "type": "SetAttribute",
+      "attribute": "anti_ccp_positive",
+      "value": true,
+      "direct_transition": "CRP_Result"
+    },
+    "AntiCCP_Neg": {
+      "type": "SetAttribute",
+      "attribute": "anti_ccp_positive",
+      "value": false,
+      "direct_transition": "CRP_Result"
+    },
+    "CRP_Result": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "mg/L",
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "CRP_High"
+        },
+        {
+          "distribution": 0.5,
+          "transition": "CRP_Normal"
+        }
+      ],
+      "range": {
+        "low": 1,
+        "high": 60
+      },
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "1988-5",
+          "display": "C reactive protein [Mass/volume] in Serum or Plasma"
+        }
+      ]
+    },
+    "CRP_High": {
+      "type": "SetAttribute",
+      "attribute": "crp_high",
+      "value": true,
+      "direct_transition": "Joint_Count_Assessment"
+    },
+    "CRP_Normal": {
+      "type": "SetAttribute",
+      "attribute": "crp_high",
+      "value": false,
+      "direct_transition": "Joint_Count_Assessment"
+    },
+    "Joint_Count_Assessment": {
+      "type": "Observation",
+      "category": "exam",
+      "unit": "{count}",
+      "assign_to_attribute": "small_joint_count",
+      "range": {
+        "low": 0,
+        "high": 28
+      },
+      "direct_transition": "ACR_EULAR_Heuristic"
+    },
+    "ACR_EULAR_Heuristic": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "anti_ccp_positive",
+                "operator": "==",
+                "value": true
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "rf_positive",
+                "operator": "==",
+                "value": true
+              }
+            ]
+          },
+          "transition": "Rheumatology_Referral"
+        },
+        {
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "small_joint_count",
+                "operator": ">=",
+                "value": 4
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "crp_high",
+                "operator": "==",
+                "value": true
+              }
+            ]
+          },
+          "transition": "Rheumatology_Referral"
+        },
+        {
+          "transition": "Watchful_Waiting"
+        }
+      ]
+    },
+    "Watchful_Waiting": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Rheumatology_Referral"
+    },
+    "Rheumatology_Referral": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
       "direct_transition": "RA_CarePlan"
     },
     "RA_CarePlan": {
       "type": "CarePlanStart",
       "assign_to_attribute": "ra_careplan",
-      "reason": "Rheumatoid_Arthritis",
+      "reason": "Rheumatoid_Arthritis_Onset",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -141,18 +313,15 @@
         },
         {
           "system": "SNOMED-CT",
-          "code": "226234005",
-          "display": "Healthy diet (finding)"
+          "code": "11816003",
+          "display": "Diet education (procedure)"
         }
       ],
       "direct_transition": "RA_Nonopioid_Pain_Medication"
     },
     "RA_Nonopioid_Pain_Medication": {
       "type": "MedicationOrder",
-      "reason": "Rheumatoid_Arthritis",
-      "remarks": [
-        "A stronger NSAID pain reliever than the basic Aleve."
-      ],
+      "reason": "Rheumatoid_Arthritis_Onset",
       "codes": [
         {
           "system": "RxNorm",
@@ -167,10 +336,7 @@
             "operator": ">=",
             "year": 1990
           },
-          "transition": "DMARD",
-          "remarks": [
-            "Aggressive treatment using DMARDs didn't start until the 1990's."
-          ]
+          "transition": "DMARD"
         },
         {
           "transition": "Corticosteroid"
@@ -179,13 +345,7 @@
     },
     "DMARD": {
       "type": "MedicationOrder",
-      "reason": "Rheumatoid_Arthritis",
-      "remarks": [
-        "Disease-Modifying Anti-Rheumatic Drugs (DMARDs) inhibit or halt the progression ",
-        "of rheumatoid arthritis. Although there are side effects, prompt treatment with DMARDs ",
-        "can put RA into remission before more serious damage occurs. Typical treatment with ",
-        "DMARDs is 40-50 months. See: https://www.ncbi.nlm.nih.gov/pubmed/10813279"
-      ],
+      "reason": "Rheumatoid_Arthritis_Onset",
       "codes": [
         {
           "system": "RxNorm",
@@ -214,10 +374,7 @@
       "distributed_transition": [
         {
           "distribution": 0.75,
-          "transition": "RA_Ends",
-          "remarks": [
-            "Treatment with DMARDs is fairly successful - 75% of cases go into remission."
-          ]
+          "transition": "RA_Ends"
         },
         {
           "distribution": 0.25,
@@ -227,12 +384,7 @@
     },
     "Corticosteroid": {
       "type": "MedicationOrder",
-      "reason": "Rheumatoid_Arthritis",
-      "remarks": [
-        "When introduced in higher levels than those produced by the body, corticosteroids ",
-        "inhibit inflammation. However, doctors prefer to use these for as short a time period ",
-        "as possible to avoid dangerous side effects."
-      ],
+      "reason": "Rheumatoid_Arthritis_Onset",
       "codes": [
         {
           "system": "RxNorm",
@@ -261,11 +413,7 @@
       "distributed_transition": [
         {
           "distribution": 0.2,
-          "transition": "RA_Ends",
-          "remarks": [
-            "Although treatment with DMARDs is far more successful, some patients with mild ",
-            "RA can go into remission after only basic treatment."
-          ]
+          "transition": "RA_Ends"
         },
         {
           "distribution": 0.8,
@@ -280,10 +428,6 @@
         "high": 15,
         "unit": "years"
       },
-      "remarks": [
-        "About 25% of severe RA cases result in total joint replacement. Source: ",
-        "http://www.uptodate.com/contents/total-joint-replacement-for-severe-rheumatoid-arthritis"
-      ],
       "distributed_transition": [
         {
           "distribution": 0.125,
@@ -313,7 +457,7 @@
     },
     "RA_Ends": {
       "type": "ConditionEnd",
-      "condition_onset": "Rheumatoid_Arthritis",
+      "condition_onset": "Rheumatoid_Arthritis_Onset",
       "direct_transition": "End_RA_CarePlan"
     },
     "End_RA_CarePlan": {
@@ -369,6 +513,5 @@
     "Terminal": {
       "type": "Terminal"
     }
-  },
-  "gmf_version": 1
+  }
 }

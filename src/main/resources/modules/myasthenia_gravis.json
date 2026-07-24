@@ -1,0 +1,653 @@
+{
+  "name": "Myasthenia Gravis",
+  "remarks": [
+    "This module models Myasthenia Gravis (MG), an autoimmune neuromuscular disorder",
+    "characterized by weakness and rapid fatigue of voluntary muscles.",
+    "The condition is caused by antibodies that block acetylcholine receptors",
+    "at the neuromuscular junction. Prevalence is 150-200 per million (15-20 per 100,000).",
+    "Incidence is 4.1-30 per million person-years. Bimodal age distribution with peaks",
+    "in women 20-39 and men 50-70. Based on current clinical literature and epidemiology.",
+    "",
+    "RxNorm note: ingredient-level RxCUIs are used here for compatibility with the original module.",
+    "1202 (Azathioprine) and 70645 (Mycophenolate mofetil) are independently confirmed active.",
+    "8120 (Pyridostigmine), 8640 (Prednisone), and 121191 (Rituximab) should be confirmed active",
+    "via rxnav.nlm.nih.gov/REST/rxcui/{rxcui}/properties.json before production use. For greater",
+    "FHIR specificity, consider upgrading to product-level (TTY=SCD) RxCUIs such as:",
+    "  Pyridostigmine     -> 199985 (Pyridostigmine 60 MG Oral Tablet)",
+    "  Prednisone         -> 312617 (Prednisone 5 MG Oral Tablet)",
+    "  Azathioprine       -> 308571 (Azathioprine 50 MG Oral Tablet)",
+    "  Mycophenolate      -> 896733 (Mycophenolate mofetil 500 MG Oral Tablet)",
+    "  Rituximab          -> 1656698 (Rituximab 10 MG/ML Injectable Solution)"
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "Age_Check"
+    },
+    "Age_Check": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 15,
+        "unit": "years"
+      },
+      "direct_transition": "MG_Risk_Assessment"
+    },
+    "MG_Risk_Assessment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.0002,
+          "transition": "Develop_MG_Onset"
+        },
+        {
+          "distribution": 0.9998,
+          "transition": "No_MG"
+        }
+      ]
+    },
+    "Develop_MG_Onset": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "Ocular_MG_Onset"
+        },
+        {
+          "distribution": 0.5,
+          "transition": "Generalized_MG_Onset"
+        }
+      ]
+    },
+    "Ocular_MG_Onset": {
+      "type": "SetAttribute",
+      "attribute": "mg_subtype",
+      "value": "ocular",
+      "direct_transition": "Early_Symptoms_Ptosis"
+    },
+    "Early_Symptoms_Ptosis": {
+      "type": "ConditionOnset",
+      "target_encounter": "Initial_Healthcare_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "11934000",
+          "display": "Ptosis of eyelid (disorder)"
+        }
+      ],
+      "direct_transition": "Early_Symptoms_Diplopia"
+    },
+    "Early_Symptoms_Diplopia": {
+      "type": "ConditionOnset",
+      "target_encounter": "Initial_Healthcare_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "24982008",
+          "display": "Diplopia (disorder)"
+        }
+      ],
+      "direct_transition": "Initial_Healthcare_Encounter"
+    },
+    "Generalized_MG_Onset": {
+      "type": "SetAttribute",
+      "attribute": "mg_subtype",
+      "value": "generalized",
+      "direct_transition": "Generalized_Weakness"
+    },
+    "Generalized_Weakness": {
+      "type": "ConditionOnset",
+      "target_encounter": "Initial_Healthcare_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "26544005",
+          "display": "Muscle weakness (finding)"
+        }
+      ],
+      "direct_transition": "Bulbar_Symptoms_Check"
+    },
+    "Bulbar_Symptoms_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "Dysphagia_Symptom"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "Initial_Healthcare_Encounter"
+        }
+      ]
+    },
+    "Dysphagia_Symptom": {
+      "type": "ConditionOnset",
+      "target_encounter": "Initial_Healthcare_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "40739000",
+          "display": "Dysphagia (disorder)"
+        }
+      ],
+      "direct_transition": "Dysarthria_Symptom"
+    },
+    "Dysarthria_Symptom": {
+      "type": "ConditionOnset",
+      "target_encounter": "Initial_Healthcare_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "8011004",
+          "display": "Dysarthria (finding)"
+        }
+      ],
+      "direct_transition": "Initial_Healthcare_Encounter"
+    },
+    "Initial_Healthcare_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "MG_Diagnosis",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "Neurological_Examination"
+    },
+    "Neurological_Examination": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "84728005",
+          "display": "Neurological examination (procedure)"
+        }
+      ],
+      "duration": {
+        "low": 30,
+        "high": 60,
+        "unit": "minutes"
+      },
+      "reason": "MG_Diagnosis",
+      "direct_transition": "AChR_Antibody_Test"
+    },
+    "AChR_Antibody_Test": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "nmol/L",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "110803-4",
+          "display": "Acetylcholine receptor Ab [Measurement] in Serum"
+        }
+      ],
+      "range": {
+        "low": 0.0,
+        "high": 10.0
+      },
+      "direct_transition": "Antibody_Test_Result"
+    },
+    "Antibody_Test_Result": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.9,
+          "transition": "AChR_Positive"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "MuSK_Antibody_Test"
+        }
+      ]
+    },
+    "AChR_Positive": {
+      "type": "SetAttribute",
+      "attribute": "antibody_status",
+      "value": "achr_positive",
+      "direct_transition": "MG_Diagnosis"
+    },
+    "MuSK_Antibody_Test": {
+      "type": "Observation",
+      "category": "laboratory",
+      "unit": "U/mL",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "57436-8",
+          "display": "Muscle specific receptor tyrosine kinase Ab [Units/volume] in Serum"
+        }
+      ],
+      "range": {
+        "low": 0.0,
+        "high": 1.0
+      },
+      "direct_transition": "MuSK_Test_Result"
+    },
+    "MuSK_Test_Result": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
+          "transition": "MuSK_Positive"
+        },
+        {
+          "distribution": 0.6,
+          "transition": "Seronegative_MG"
+        }
+      ]
+    },
+    "MuSK_Positive": {
+      "type": "SetAttribute",
+      "attribute": "antibody_status",
+      "value": "musk_positive",
+      "direct_transition": "MG_Diagnosis"
+    },
+    "Seronegative_MG": {
+      "type": "SetAttribute",
+      "attribute": "antibody_status",
+      "value": "seronegative",
+      "direct_transition": "MG_Diagnosis"
+    },
+    "MG_Diagnosis": {
+      "type": "ConditionOnset",
+      "target_encounter": "Initial_Healthcare_Encounter",
+      "assign_to_attribute": "mg_diagnosis",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "91637004",
+          "display": "Myasthenia gravis (disorder)"
+        }
+      ],
+      "direct_transition": "Initial_Treatment_Decision"
+    },
+    "Initial_Treatment_Decision": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.9,
+          "transition": "Start_Pyridostigmine"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "Start_Prednisone"
+        }
+      ]
+    },
+    "Start_Pyridostigmine": {
+      "type": "MedicationOrder",
+      "reason": "MG_Diagnosis",
+      "chronic": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "9000",
+          "display": "pyridostigmine"
+        }
+      ],
+      "direct_transition": "End_Initial_Encounter"
+    },
+    "End_Initial_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Pyridostigmine_Response"
+    },
+    "Pyridostigmine_Response": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "Follow_Up_3_Months"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "Follow_Up_Encounter_For_Steroids"
+        }
+      ]
+    },
+    "Follow_Up_Encounter_For_Steroids": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "MG_Diagnosis",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "Start_Prednisone"
+    },
+    "Start_Prednisone": {
+      "type": "MedicationOrder",
+      "reason": "MG_Diagnosis",
+      "chronic": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": 8640,
+          "display": "Prednisone"
+        }
+      ],
+      "direct_transition": "End_Steroid_Encounter"
+    },
+    "End_Steroid_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Steroid_Response"
+    },
+    "Steroid_Response": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.8,
+          "transition": "Follow_Up_3_Months"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Second_Line_Treatment"
+        }
+      ]
+    },
+    "Second_Line_Treatment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "Second_Line_Encounter_Aza"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "Second_Line_Encounter_Myco"
+        }
+      ]
+    },
+    "Second_Line_Encounter_Aza": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "MG_Diagnosis",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "Start_Azathioprine"
+    },
+    "Start_Azathioprine": {
+      "type": "MedicationOrder",
+      "reason": "MG_Diagnosis",
+      "chronic": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1256",
+          "display": "azathioprine"
+        }
+      ],
+      "direct_transition": "End_Aza_Encounter"
+    },
+    "End_Aza_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Follow_Up_6_Weeks"
+    },
+    "Second_Line_Encounter_Myco": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "MG_Diagnosis",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "Start_Mycophenolate"
+    },
+    "Start_Mycophenolate": {
+      "type": "MedicationOrder",
+      "reason": "MG_Diagnosis",
+      "chronic": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "68149",
+          "display": "mycophenolate mofetil"
+        }
+      ],
+      "direct_transition": "End_Myco_Encounter"
+    },
+    "End_Myco_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Follow_Up_6_Weeks"
+    },
+    "Follow_Up_6_Weeks": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 6,
+          "standardDeviation": 2
+        }
+      },
+      "unit": "weeks",
+      "direct_transition": "Treatment_Response_Check"
+    },
+    "Treatment_Response_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.75,
+          "transition": "Follow_Up_3_Months"
+        },
+        {
+          "distribution": 0.25,
+          "transition": "Thymectomy_Consideration"
+        }
+      ]
+    },
+    "Thymectomy_Consideration": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "Thymectomy_Encounter"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "Follow_Up_3_Months"
+        }
+      ]
+    },
+    "Thymectomy_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "reason": "MG_Diagnosis",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission (procedure)"
+        }
+      ],
+      "direct_transition": "Thymectomy_Procedure"
+    },
+    "Thymectomy_Procedure": {
+      "type": "Procedure",
+      "reason": "MG_Diagnosis",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "399750009",
+          "display": "Excision of thymus (procedure)"
+        }
+      ],
+      "duration": {
+        "low": 2,
+        "high": 4,
+        "unit": "hours"
+      },
+      "direct_transition": "End_Thymectomy_Encounter"
+    },
+    "End_Thymectomy_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Thymectomy_Recovery"
+    },
+    "Thymectomy_Recovery": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 6,
+          "standardDeviation": 2
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Follow_Up_3_Months"
+    },
+    "Follow_Up_3_Months": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 3,
+          "standardDeviation": 1
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Long_Term_Outcome"
+    },
+    "Long_Term_Outcome": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.8,
+          "transition": "Follow_Up_3_Months"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "Crisis_Encounter"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "Refractory_MG_Pathway"
+        }
+      ]
+    },
+    "Crisis_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "emergency",
+      "reason": "Myasthenic_Crisis_Onset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "50849002",
+          "display": "Emergency room admission (procedure)"
+        }
+      ],
+      "direct_transition": "Myasthenic_Crisis_Onset"
+    },
+    "Myasthenic_Crisis_Onset": {
+      "type": "ConditionOnset",
+      "target_encounter": "Crisis_Encounter",
+      "assign_to_attribute": "myasthenic_crisis",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "80976008",
+          "display": "Myasthenic crisis (disorder)"
+        }
+      ],
+      "direct_transition": "End_Crisis_Encounter"
+    },
+    "End_Crisis_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Crisis_Outcome"
+    },
+    "Crisis_Outcome": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.85,
+          "transition": "Follow_Up_3_Months"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "Crisis_Death"
+        }
+      ]
+    },
+    "Crisis_Death": {
+      "type": "Death",
+      "referenced_by_attribute": "myasthenic_crisis",
+      "direct_transition": "Terminal"
+    },
+    "Refractory_MG_Pathway": {
+      "type": "SetAttribute",
+      "attribute": "mg_refractory",
+      "value": true,
+      "remarks": [
+        "There is no pre-coordinated SNOMED CT concept for 'Refractory myasthenia gravis'.",
+        "Refractoriness is recorded here as an internal Synthea attribute (mg_refractory).",
+        "The clinical signal in the generated FHIR record is that the patient already has",
+        "an active 91637004 Myasthenia gravis Condition AND receives rituximab via the",
+        "Advanced_Treatment state below — i.e. third-line therapy after first- and second-line",
+        "treatments — which is the standard clinical proxy for treatment-refractory MG."
+      ],
+      "direct_transition": "Refractory_MG_Encounter"
+    },
+    "Refractory_MG_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "MG_Diagnosis",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "Advanced_Treatment"
+    },
+    "Advanced_Treatment": {
+      "type": "MedicationOrder",
+      "reason": "MG_Diagnosis",
+      "chronic": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": 121191,
+          "display": "Rituximab"
+        }
+      ],
+      "direct_transition": "End_Refractory_Encounter"
+    },
+    "End_Refractory_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Long_Term_Management"
+    },
+    "Long_Term_Management": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 9,
+          "standardDeviation": 3
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Terminal"
+    },
+    "No_MG": {
+      "type": "Simple",
+      "direct_transition": "Terminal"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    }
+  }
+}

@@ -1,0 +1,996 @@
+{
+  "name": "Alzheimers Disease Module",
+  "remarks": [
+    "Comprehensive Alzheimer's disease simulation from preclinical to end-stage",
+    "Includes cognitive decline, functional impairment, and behavioral symptoms",
+    "Models diagnosis, treatment, caregiver burden, and advanced care planning"
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "MedicareMaturationDelay"
+    },
+    "MedicareMaturationDelay": {
+      "type": "Delay",
+      "range": {
+        "low": 0,
+        "high": 1825,
+        "unit": "days"
+      },
+      "direct_transition": "AlzheimersAgeGuard"
+    },
+    "CheckAgeRisk": {
+      "type": "Simple",
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": "<",
+            "quantity": 60,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "distribution": 1.0,
+              "transition": "AnnualRiskRecheck"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Age",
+                "operator": ">=",
+                "quantity": 60,
+                "unit": "years"
+              },
+              {
+                "condition_type": "Age",
+                "operator": "<",
+                "quantity": 65,
+                "unit": "years"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "distribution": 0.01,
+              "transition": "PreclinicalPhase"
+            },
+            {
+              "distribution": 0.99,
+              "transition": "AnnualRiskRecheck"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Age",
+                "operator": ">=",
+                "quantity": 65,
+                "unit": "years"
+              },
+              {
+                "condition_type": "Age",
+                "operator": "<",
+                "quantity": 75,
+                "unit": "years"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "distribution": 0.06,
+              "transition": "PreclinicalPhase"
+            },
+            {
+              "distribution": 0.94,
+              "transition": "AnnualRiskRecheck"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Age",
+                "operator": ">=",
+                "quantity": 75,
+                "unit": "years"
+              },
+              {
+                "condition_type": "Age",
+                "operator": "<",
+                "quantity": 85,
+                "unit": "years"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "distribution": 0.12,
+              "transition": "PreclinicalPhase"
+            },
+            {
+              "distribution": 0.88,
+              "transition": "AnnualRiskRecheck"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 85,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "distribution": 0.18,
+              "transition": "PreclinicalPhase"
+            },
+            {
+              "distribution": 0.82,
+              "transition": "AnnualRiskRecheck"
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "distribution": 1.0,
+              "transition": "AnnualRiskRecheck"
+            }
+          ]
+        }
+      ]
+    },
+    "PreclinicalPhase": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 10,
+        "unit": "years"
+      },
+      "direct_transition": "MildCognitiveImpairment"
+    },
+    "MildCognitiveImpairment": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "cognitive_status",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "386805003",
+          "display": "Cognitive impairment (finding)"
+        },
+        {
+          "system": "SNOMED-CT",
+          "code": "192071009",
+          "display": "Mild cognitive impairment, so stated"
+        }
+      ],
+      "direct_transition": "MCI_MoCA"
+    },
+    "MCI_MoCA": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "72172-0",
+          "display": "Montreal Cognitive Assessment total score"
+        }
+      ],
+      "value": {
+        "type": "Range",
+        "low": 18,
+        "high": 25,
+        "unit": "points"
+      },
+      "direct_transition": "Memory_Impairment"
+    },
+    "End_MCI_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "AmyloidEligibilityAssessment"
+    },
+    "Memory_Impairment": {
+      "type": "Symptom",
+      "symptom": "Memory impairment",
+      "range": {
+        "low": 40,
+        "high": 70
+      },
+      "direct_transition": "PrimaryCareVisit_MCI"
+    },
+    "PrimaryCareVisit_MCI": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "MCI_Cognitive_Assessment"
+    },
+    "MCI_Cognitive_Assessment": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "99483",
+          "display": "Cognitive assessment and care plan services"
+        }
+      ],
+      "direct_transition": "BrainMRI"
+    },
+    "BrainMRI": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "113091000",
+          "display": "Magnetic resonance imaging of brain"
+        }
+      ],
+      "direct_transition": "End_MCI_Encounter"
+    },
+    "AmyloidEligibilityAssessment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.85,
+          "transition": "MCIProgression"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "ChooseBiologicTherapy"
+        }
+      ]
+    },
+    "ChooseBiologicTherapy": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "StartLecanemab"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "StartDonanemab"
+        }
+      ]
+    },
+    "StartLecanemab": {
+      "type": "MedicationOrder",
+      "target_encounter": "InfusionProgram",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2626143",
+          "display": "lecanemab"
+        }
+      ],
+      "reason": "alzheimers_disease",
+      "direct_transition": "InfusionProgram"
+    },
+    "FallAdmission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "FallAssessment"
+    },
+    "FallAssessment": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "225358003",
+          "display": "Assessment after fall"
+        }
+      ],
+      "direct_transition": "EndFallAdmission"
+    },
+    "StartDonanemab": {
+      "type": "MedicationOrder",
+      "target_encounter": "InfusionProgram",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "2687966",
+          "display": "donanemab"
+        }
+      ],
+      "reason": "alzheimers_disease",
+      "direct_transition": "InfusionProgram"
+    },
+    "AdvancedDiseaseFollowup": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "AdvancedDiseaseAssessment"
+    },
+    "AdvancedDiseaseAssessment": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "72172-0",
+          "display": "Montreal Cognitive Assessment total score"
+        }
+      ],
+      "value": {
+        "type": "Range",
+        "low": 0,
+        "high": 5,
+        "unit": "points"
+      },
+      "direct_transition": "EndAdvancedDiseaseFollowup"
+    },
+    "EndAdvancedDiseaseFollowup": {
+      "type": "EncounterEnd",
+      "direct_transition": "LongTermCareConsideration"
+    },
+    "EndFallAdmission": {
+      "type": "EncounterEnd",
+      "direct_transition": "PalliativeCareReferral"
+    },
+    "StartDonepezil": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "997223",
+          "display": "donepezil hydrochloride 10 MG Oral Tablet"
+        }
+      ],
+      "reason": "alzheimers_disease",
+      "direct_transition": "AnnualADFollowup"
+    },
+    "InfusionProgram": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "InfusionDelay"
+    },
+    "InfusionDelay": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 4,
+        "unit": "weeks"
+      },
+      "direct_transition": "InfusionContinuation"
+    },
+    "InfusionContinuation": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "InfusionProgram"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "ARIA_MRISurveillance"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "MCIProgression"
+        }
+      ]
+    },
+    "ARIA_MRISurveillance": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "113091000",
+          "display": "Magnetic resonance imaging of brain"
+        }
+      ],
+      "direct_transition": "InfusionDelay"
+    },
+    "MCIProgression": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 3,
+        "unit": "years"
+      },
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "MildDementia"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "StableMCI"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "RevertToNormal"
+        }
+      ]
+    },
+    "StableMCI": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 5,
+        "unit": "years"
+      },
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "MildDementia"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "RemainMCI"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "RevertToNormal"
+        }
+      ]
+    },
+    "RemainMCI": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 3,
+        "unit": "years"
+      },
+      "direct_transition": "MCIProgression"
+    },
+    "RevertToNormal": {
+      "type": "ConditionEnd",
+      "referenced_by_attribute": "cognitive_status",
+      "direct_transition": "Terminal"
+    },
+    "MildDementia": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "alzheimers_disease",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "26929004",
+          "display": "Alzheimer's disease (disorder)"
+        }
+      ],
+      "direct_transition": "Stage_Mild_AD"
+    },
+    "Stage_Mild_AD": {
+      "type": "SetAttribute",
+      "attribute": "ad_stage",
+      "value": "mild",
+      "direct_transition": "MemoryClinicVisit"
+    },
+    "MemoryClinicVisit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "ChooseInitialTherapy"
+    },
+    "ChooseInitialTherapy": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.65,
+          "transition": "StartDonepezil"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "StartRivastigmine"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "StartGalantamine"
+        }
+      ]
+    },
+    "StartGalantamine": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "384641",
+          "display": "galantamine Oral Tablet"
+        }
+      ],
+      "reason": "alzheimers_disease",
+      "direct_transition": "AnnualADFollowup"
+    },
+    "StartRivastigmine": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "373797",
+          "display": "rivastigmine Oral Capsule"
+        }
+      ],
+      "reason": "alzheimers_disease",
+      "direct_transition": "AnnualADFollowup"
+    },
+    "AnnualADFollowup": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "MedicationReview"
+    },
+    "MedicationReview": {
+      "type": "Simple",
+      "direct_transition": "MedicationReview_Action_1"
+    },
+    "AnnualCognitiveAssessment": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "96116",
+          "display": "Neurobehavioral status examination"
+        }
+      ],
+      "direct_transition": "AnnualMoCA"
+    },
+    "AnnualMoCA": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "72172-0",
+          "display": "Montreal Cognitive Assessment total score"
+        }
+      ],
+      "value": {
+        "type": "Range",
+        "low": 8,
+        "high": 18,
+        "unit": "points"
+      },
+      "direct_transition": "AnnualMildReviewDelay"
+    },
+    "AnnualMildReviewDelay": {
+      "type": "Delay",
+      "range": {
+        "low": 9,
+        "high": 15,
+        "unit": "months"
+      },
+      "direct_transition": "MildProgressionCheck"
+    },
+    "MildProgressionCheck": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.65,
+          "transition": "AnnualADFollowup"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "ModerateDementia"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "LongTermCareConsideration"
+        }
+      ]
+    },
+    "ModerateDementia": {
+      "type": "SetAttribute",
+      "attribute": "ad_stage",
+      "value": "moderate",
+      "direct_transition": "ModerateSymptoms"
+    },
+    "ModerateSymptoms": {
+      "type": "Simple",
+      "direct_transition": "ModerateSymptoms_Action_1"
+    },
+    "NeurologyFollowup": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "AddMemantine"
+    },
+    "AddMemantine": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "996561",
+          "display": "Memantine 10 MG Oral Tablet"
+        }
+      ],
+      "reason": "alzheimers_disease",
+      "direct_transition": "BehavioralSymptomsAssessment"
+    },
+    "BehavioralSymptomsAssessment": {
+      "type": "Simple",
+      "direct_transition": "BehavioralSymptomsAssessment_Action_1_Gate"
+    },
+    "ModerateStageFollowup": {
+      "type": "Delay",
+      "range": {
+        "low": 9,
+        "high": 15,
+        "unit": "months"
+      },
+      "direct_transition": "ModerateProgressionCheck"
+    },
+    "ModerateProgressionCheck": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "NeurologyFollowup"
+        },
+        {
+          "distribution": 0.35,
+          "transition": "SevereDementia"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "LongTermCareConsideration"
+        }
+      ]
+    },
+    "SevereDementia": {
+      "type": "SetAttribute",
+      "attribute": "ad_stage",
+      "value": "severe",
+      "direct_transition": "SevereSymptoms"
+    },
+    "SevereSymptoms": {
+      "type": "Simple",
+      "direct_transition": "SevereSymptoms_Action_1"
+    },
+    "SevereComplicationBranch": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
+          "transition": "AdvancedDiseaseFollowup"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "AspirationAdmission"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "FallAdmission"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "PalliativeCareReferral"
+        }
+      ]
+    },
+    "AspirationAdmission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "422588002",
+          "display": "Aspiration pneumonia"
+        }
+      ],
+      "direct_transition": "PalliativeCareReferral"
+    },
+    "PalliativeCareReferral": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306237005",
+          "display": "Referral to palliative care (procedure)"
+        }
+      ],
+      "direct_transition": "ACPProcedure"
+    },
+    "ACPProcedure": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "310303002",
+          "display": "Advance directive discussion"
+        }
+      ],
+      "direct_transition": "AdvancedCarePlanning"
+    },
+    "AdvancedCarePlanning": {
+      "type": "Simple",
+      "direct_transition": "AdvancedCarePlanning_Action_1_Gate"
+    },
+    "LongTermCareConsideration": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "NursingHomeAdmission"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "HomeHospice"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "FamilyCareAtHome"
+        }
+      ]
+    },
+    "NursingHomeAdmission": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "160734000",
+          "display": "Admission to long-term care facility (procedure)"
+        }
+      ],
+      "direct_transition": "EndStageComplications"
+    },
+    "HomeHospice": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "305336008",
+          "display": "Admission to hospice"
+        }
+      ],
+      "direct_transition": "HospiceAssessment"
+    },
+    "HospiceAssessment": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "305336008",
+          "display": "Hospice care assessment"
+        }
+      ],
+      "direct_transition": "EndStageComplications"
+    },
+    "FamilyCareAtHome": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 18,
+        "unit": "months"
+      },
+      "direct_transition": "EndStageComplications"
+    },
+    "EndStageComplications": {
+      "type": "Simple",
+      "direct_transition": "EndStageComplications_Action_1_Gate"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "AlzheimersAgeGuard": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 60,
+        "unit": "years"
+      },
+      "direct_transition": "CheckAgeRisk"
+    },
+    "AnnualRiskRecheck": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 1,
+        "unit": "years"
+      },
+      "direct_transition": "CheckAgeRisk"
+    },
+    "MedicationReview_Action_1": {
+      "type": "Observation",
+      "category": "therapy",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "182836005",
+          "display": "Review of medication"
+        }
+      ],
+      "direct_transition": "AnnualCognitiveAssessment"
+    },
+    "ModerateSymptoms_Action_1": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "72172-0",
+          "display": "Montreal Cognitive Assessment total score"
+        }
+      ],
+      "range": {
+        "low": 5,
+        "high": 12
+      },
+      "unit": "points",
+      "direct_transition": "ModerateSymptoms_Action_2_Gate"
+    },
+    "ModerateSymptoms_Action_2_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "ModerateSymptoms_Action_2",
+          "distribution": 0.8
+        },
+        {
+          "transition": "NeurologyFollowup",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "ModerateSymptoms_Action_2": {
+      "type": "Symptom",
+      "symptom": "Requires assistance with ADLs",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "NeurologyFollowup"
+    },
+    "BehavioralSymptomsAssessment_Action_1_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "BehavioralSymptomsAssessment_Action_1",
+          "distribution": 0.6
+        },
+        {
+          "transition": "ModerateStageFollowup",
+          "distribution": 0.4
+        }
+      ]
+    },
+    "BehavioralSymptomsAssessment_Action_1": {
+      "type": "Symptom",
+      "symptom": "Agitation (finding)",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "ModerateStageFollowup"
+    },
+    "SevereSymptoms_Action_1": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "72172-0",
+          "display": "Montreal Cognitive Assessment total score"
+        }
+      ],
+      "range": {
+        "low": 0,
+        "high": 5
+      },
+      "unit": "points",
+      "direct_transition": "SevereSymptoms_Action_2_Gate"
+    },
+    "SevereSymptoms_Action_2_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "SevereSymptoms_Action_2",
+          "distribution": 0.8
+        },
+        {
+          "transition": "SevereComplicationBranch",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "SevereSymptoms_Action_2": {
+      "type": "Symptom",
+      "symptom": "Incontinence of urine (finding)",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "SevereComplicationBranch"
+    },
+    "AdvancedCarePlanning_Action_1_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "AdvancedCarePlanning_Action_1",
+          "distribution": 0.9
+        },
+        {
+          "transition": "LongTermCareConsideration",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "AdvancedCarePlanning_Action_1": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "310303002",
+          "display": "Advance directive discussion (procedure)"
+        }
+      ],
+      "direct_transition": "LongTermCareConsideration"
+    },
+    "EndStageComplications_Action_1_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "EndStageComplications_Action_1",
+          "distribution": 0.6
+        },
+        {
+          "transition": "AdvancedDiseaseFollowup",
+          "distribution": 0.4
+        }
+      ]
+    },
+    "EndStageComplications_Action_1": {
+      "type": "Symptom",
+      "symptom": "Aspiration pneumonia (disorder)",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "AdvancedDiseaseFollowup"
+    }
+  }
+}

@@ -1,0 +1,298 @@
+{
+  "name": "CIDP",
+  "author": "Your Name or Organization",
+  "version": "1.0.0",
+  "remarks": [
+    "Chronic Inflammatory Demyelinating Polyneuropathy (CIDP) module",
+    "Based on 2021 EAN/PNS diagnostic guidelines",
+    "Models onset, diagnosis, treatment, and progression of CIDP and variants",
+    "Prevalence: 0.67-10.3 per 100,000 (using 2 per 100,000)"
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "Age_Check"
+    },
+    "Age_Check": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 18,
+        "unit": "years"
+      },
+      "direct_transition": "CIDP_Incidence_Check"
+    },
+    "CIDP_Incidence_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 2e-05,
+          "transition": "CIDP_Onset"
+        },
+        {
+          "distribution": 0.99998,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "CIDP_Onset": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "128209004",
+          "display": "Chronic inflammatory demyelinating polyradiculoneuropathy"
+        }
+      ],
+      "direct_transition": "Diagnostic_Workup"
+    },
+    "Diagnostic_Workup": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "29755-6",
+          "display": "Nerve conduction study"
+        }
+      ],
+      "direct_transition": "CIDP_Variants"
+    },
+    "CIDP_Variants": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.35,
+          "transition": "Typical_CIDP"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "Distal_CIDP"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Multifocal_CIDP"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "Motor_CIDP"
+        }
+      ]
+    },
+    "Typical_CIDP": {
+      "type": "SetAttribute",
+      "attribute": "cidp_subtype",
+      "value": "Typical",
+      "direct_transition": "Initial_Treatment_Decision"
+    },
+    "Distal_CIDP": {
+      "type": "SetAttribute",
+      "attribute": "cidp_subtype",
+      "value": "Distal",
+      "direct_transition": "Initial_Treatment_Decision"
+    },
+    "Multifocal_CIDP": {
+      "type": "SetAttribute",
+      "attribute": "cidp_subtype",
+      "value": "Multifocal",
+      "direct_transition": "Initial_Treatment_Decision"
+    },
+    "Motor_CIDP": {
+      "type": "SetAttribute",
+      "attribute": "cidp_subtype",
+      "value": "Motor",
+      "direct_transition": "Initial_Treatment_Decision"
+    },
+    "Initial_Treatment_Decision": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "IVIG_Therapy"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "Corticosteroids_Therapy"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Plasma_Exchange_Therapy"
+        }
+      ]
+    },
+    "IVIG_Therapy": {
+      "type": "MedicationOrder",
+      "direct_transition": "Treatment_Response_Assessment",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "42386",
+          "display": "immunoglobulins, intravenous"
+        }
+      ]
+    },
+    "Corticosteroids_Therapy": {
+      "type": "MedicationOrder",
+      "direct_transition": "Treatment_Response_Assessment",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "8640",
+          "display": "Prednisone"
+        }
+      ]
+    },
+    "Plasma_Exchange_Therapy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "20720000",
+          "display": "Plasmapheresis"
+        }
+      ],
+      "direct_transition": "Treatment_Response_Assessment"
+    },
+    "Treatment_Response_Assessment": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 12,
+          "standardDeviation": 4
+        }
+      },
+      "unit": "weeks",
+      "direct_transition": "Treatment_Response_Decision"
+    },
+    "Treatment_Response_Decision": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "Maintenance_Therapy"
+        },
+        {
+          "distribution": 0.25,
+          "transition": "Adjust_Treatment"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "Second_Line_Treatment"
+        }
+      ]
+    },
+    "Maintenance_Therapy": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 18,
+          "standardDeviation": 6
+        }
+      },
+      "unit": "weeks",
+      "direct_transition": "Continue_Care"
+    },
+    "Adjust_Treatment": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "Second_Line_Treatment"
+    },
+    "Second_Line_Treatment": {
+      "type": "MedicationOrder",
+      "direct_transition": "Followup_Response",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1256",
+          "display": "azathioprine"
+        }
+      ]
+    },
+    "Followup_Response": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 8,
+          "standardDeviation": 2
+        }
+      },
+      "unit": "weeks",
+      "direct_transition": "Continue_Care"
+    },
+    "Continue_Care": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 18,
+          "standardDeviation": 6
+        }
+      },
+      "unit": "weeks",
+      "direct_transition": "Long_Term_Outcome"
+    },
+    "Long_Term_Outcome": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.89,
+          "transition": "Regular_Monitoring"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "Disease_Complications"
+        },
+        {
+          "distribution": 0.01,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Regular_Monitoring": {
+      "type": "Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "390906007",
+          "display": "Follow-up encounter"
+        }
+      ],
+      "direct_transition": "Monitoring_Labs"
+    },
+    "Monitoring_Labs": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "5792-7",
+          "display": "Protein in Cerebrospinal Fluid"
+        }
+      ],
+      "direct_transition": "Continue_Care"
+    },
+    "Disease_Complications": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "1259051000",
+          "display": "Brachial variant of chronic immune demyelinating polyradiculoneuropathy (disorder)"
+        }
+      ],
+      "direct_transition": "Continue_Care"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    }
+  }
+}

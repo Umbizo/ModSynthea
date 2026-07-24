@@ -1,0 +1,532 @@
+{
+  "name": "Primary Immunodeficiency",
+  "specialty": "IMMUNOLOGY",
+  "remarks": [
+    "Models the lifetime course of primary immunodeficiency disorder (PID) with branching for severity, infections, and treatment.",
+    "Code provenance (all verified April 2026):",
+    "- SNOMED 58606001 (Primary immune deficiency disorder) — verified via snomedbrowser.com (Read Code X20Ga; ICD-10 D80-D84)",
+    "- SNOMED 234336002 (Hemopoietic stem cell transplant) — verified via OpenSAFELY BMT codelist + NIH VSAC",
+    "- SNOMED 50849002 (Emergency room admission) — official Synthea wiki canonical example",
+    "- SNOMED 32485007 (Hospital admission) — verified via NCBO BioPortal",
+    "- SNOMED 185349003 (Encounter for symptom) — used in Synthea base modules",
+    "- SNOMED 11429006 (Consultation) — used in Synthea base modules",
+    "- SNOMED 12295008 (Bronchiectasis) — verified via OMIM (J47, UMLS C0006267)",
+    "- SNOMED 233604007 (Pneumonia) — used in Synthea base modules",
+    "- SNOMED 91302008 (Sepsis) — used in Synthea base modules",
+    "- LOINC 2465-3 (IgG), 2458-8 (IgA), 2472-9 (IgM) — verified via loinc.org + ARUP + Labcorp",
+    "- RxNorm 1809414 (immunoglobulin G, human 10% in 50 mL Injection) — verified via NLM RxNorm-NDC crosswalk (Octagam, Privigen)",
+    "- NUBC discharge code 01 (Discharged to home) — standard NUBC value"
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "remarks": [
+        "Seed all patients into PID risk assignment."
+      ],
+      "direct_transition": "Set_PID_Baseline"
+    },
+    "Set_PID_Baseline": {
+      "type": "SetAttribute",
+      "attribute": "pid_risk",
+      "value": "baseline",
+      "direct_transition": "Delay_Until_Onset"
+    },
+    "Delay_Until_Onset": {
+      "type": "Delay",
+      "remarks": [
+        "Onset of PID symptoms usually occurs in infancy or childhood, but some forms (e.g. CVID) are diagnosed in adulthood."
+      ],
+      "range": {
+        "low": 0,
+        "high": 20,
+        "unit": "years"
+      },
+      "direct_transition": "Recurrent_Infections_Symptom"
+    },
+    "Recurrent_Infections_Symptom": {
+      "type": "Symptom",
+      "symptom": "Recurrent Infections",
+      "cause": "Primary Immunodeficiency",
+      "range": {
+        "low": 30,
+        "high": 80
+      },
+      "remarks": [
+        "Severity 0-100 per GMF spec. Recurrent sinopulmonary, GI and skin infections are the cardinal feature of PID."
+      ],
+      "direct_transition": "Chronic_Diarrhea_Symptom"
+    },
+    "Chronic_Diarrhea_Symptom": {
+      "type": "Symptom",
+      "symptom": "Chronic Diarrhea",
+      "cause": "Primary Immunodeficiency",
+      "probability": 0.5,
+      "range": {
+        "low": 20,
+        "high": 70
+      },
+      "remarks": [
+        "Common in combined immunodeficiencies and CVID; occurs in roughly half of patients."
+      ],
+      "direct_transition": "Failure_To_Thrive_Symptom"
+    },
+    "Failure_To_Thrive_Symptom": {
+      "type": "Symptom",
+      "symptom": "Failure to Thrive",
+      "cause": "Primary Immunodeficiency",
+      "probability": 0.4,
+      "range": {
+        "low": 20,
+        "high": 70
+      },
+      "remarks": [
+        "More prominent in early-onset / severe forms (e.g. SCID, MHC class II deficiency)."
+      ],
+      "direct_transition": "Autoimmune_Manifestations_Symptom"
+    },
+    "Autoimmune_Manifestations_Symptom": {
+      "type": "Symptom",
+      "symptom": "Autoimmune Manifestations",
+      "cause": "Primary Immunodeficiency",
+      "probability": 0.3,
+      "range": {
+        "low": 10,
+        "high": 60
+      },
+      "remarks": [
+        "Autoimmune cytopenias and enteropathy are recognised complications of CVID and other PIDs."
+      ],
+      "direct_transition": "PID_Condition_Onset"
+    },
+    "PID_Condition_Onset": {
+      "type": "ConditionOnset",
+      "target_encounter": "Primary_Care_Visit",
+      "assign_to_attribute": "primary_immunodeficiency",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "58606001",
+          "display": "Primary immune deficiency disorder (disorder)"
+        }
+      ],
+      "remarks": [
+        "The condition is onset here but only diagnosed at the upcoming Primary_Care_Visit encounter."
+      ],
+      "direct_transition": "Primary_Care_Visit"
+    },
+    "Primary_Care_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "primary_immunodeficiency",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for check up (procedure)"
+        }
+      ],
+      "remarks": [
+        "Most patients are first seen in primary care or pediatrics."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.8,
+          "transition": "Initial_Labs"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Referral_To_Immunology"
+        }
+      ]
+    },
+    "Initial_Labs": {
+      "type": "DiagnosticReport",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "57021-8",
+          "display": "CBC W Auto Differential panel - Blood"
+        }
+      ],
+      "remarks": [
+        "Initial workup includes CBC and quantitative immunoglobulins. Modelled here as a DiagnosticReport that bundles the three Ig observations."
+      ],
+      "observations": [
+        {
+          "category": "laboratory",
+          "unit": "mg/dL",
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "2465-3",
+              "display": "IgG [Mass/volume] in Serum or Plasma"
+            }
+          ],
+          "range": {
+            "low": 200,
+            "high": 1600
+          }
+        },
+        {
+          "category": "laboratory",
+          "unit": "mg/dL",
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "2458-8",
+              "display": "IgA [Mass/volume] in Serum or Plasma"
+            }
+          ],
+          "range": {
+            "low": 10,
+            "high": 400
+          }
+        },
+        {
+          "category": "laboratory",
+          "unit": "mg/dL",
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "2472-9",
+              "display": "IgM [Mass/volume] in Serum or Plasma"
+            }
+          ],
+          "range": {
+            "low": 20,
+            "high": 250
+          }
+        }
+      ],
+      "direct_transition": "Severity_Assignment"
+    },
+    "Referral_To_Immunology": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "End the primary care visit before transitioning to the specialist visit."
+      ],
+      "discharge_disposition": {
+        "system": "NUBC",
+        "code": "01",
+        "display": "Discharged to home care or self care (routine discharge)"
+      },
+      "direct_transition": "Immunology_Consult"
+    },
+    "Immunology_Consult": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "primary_immunodeficiency",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "11429006",
+          "display": "Consultation (procedure)"
+        }
+      ],
+      "remarks": [
+        "Specialist immunology consultation."
+      ],
+      "direct_transition": "Initial_Labs"
+    },
+    "Severity_Assignment": {
+      "type": "Simple",
+      "remarks": [
+        "Severity stratification is encoded as a distributed transition, not as data on the Observation itself."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "Mild_PID"
+        },
+        {
+          "distribution": 0.35,
+          "transition": "Moderate_PID"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "Severe_PID"
+        }
+      ]
+    },
+    "Mild_PID": {
+      "type": "SetAttribute",
+      "attribute": "pid_severity",
+      "value": "mild",
+      "direct_transition": "End_Primary_Care_Visit_Mild"
+    },
+    "Moderate_PID": {
+      "type": "SetAttribute",
+      "attribute": "pid_severity",
+      "value": "moderate",
+      "direct_transition": "Order_Immunoglobulin_Replacement"
+    },
+    "Severe_PID": {
+      "type": "SetAttribute",
+      "attribute": "pid_severity",
+      "value": "severe",
+      "direct_transition": "End_Primary_Care_Visit_Severe"
+    },
+    "Order_Immunoglobulin_Replacement": {
+      "type": "MedicationOrder",
+      "reason": "primary_immunodeficiency",
+      "assign_to_attribute": "ivig_therapy",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1809414",
+          "display": "immunoglobulin G, human 10 % in 50 ML Injection"
+        }
+      ],
+      "chronic": true,
+      "remarks": [
+        "IVIG/SCIG is the mainstay of treatment for moderate antibody deficiency PIDs. Ordered while the patient is still in the Primary_Care_Visit (or Immunology_Consult) encounter."
+      ],
+      "direct_transition": "End_Primary_Care_Visit_Moderate"
+    },
+    "End_Primary_Care_Visit_Mild": {
+      "type": "EncounterEnd",
+      "discharge_disposition": {
+        "system": "NUBC",
+        "code": "01",
+        "display": "Discharged to home care or self care (routine discharge)"
+      },
+      "direct_transition": "Management_Mild"
+    },
+    "End_Primary_Care_Visit_Moderate": {
+      "type": "EncounterEnd",
+      "discharge_disposition": {
+        "system": "NUBC",
+        "code": "01",
+        "display": "Discharged to home care or self care (routine discharge)"
+      },
+      "direct_transition": "Chronic_Management"
+    },
+    "End_Primary_Care_Visit_Severe": {
+      "type": "EncounterEnd",
+      "discharge_disposition": {
+        "system": "NUBC",
+        "code": "01",
+        "display": "Discharged to home care or self care (routine discharge)"
+      },
+      "direct_transition": "HSCT_Admission"
+    },
+    "Management_Mild": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 24,
+        "unit": "months"
+      },
+      "remarks": [
+        "Mild PID may require periodic prophylactic antibiotics or routine monitoring (no chronic IVIG)."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.8,
+          "transition": "Normal_Life"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Infection_Complication_Admission"
+        }
+      ]
+    },
+    "Chronic_Management": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 5,
+        "unit": "years"
+      },
+      "remarks": [
+        "Patients on chronic IVIG/SCIG, monitored intermittently. They may develop infections or chronic organ damage despite replacement therapy."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "Normal_Life"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "Infection_Complication_Admission"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "Organ_Damage_Onset"
+        }
+      ]
+    },
+    "HSCT_Admission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "reason": "primary_immunodeficiency",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission (procedure)"
+        }
+      ],
+      "remarks": [
+        "Inpatient admission required to wrap the HSCT Procedure state. Synthea requires Procedure states to occur during an active Encounter."
+      ],
+      "direct_transition": "Hematopoietic_Stem_Cell_Transplant"
+    },
+    "Hematopoietic_Stem_Cell_Transplant": {
+      "type": "Procedure",
+      "reason": "primary_immunodeficiency",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "58390007",
+          "display": "Allogeneic bone marrow transplantation"
+        }
+      ],
+      "duration": {
+        "low": 4,
+        "high": 8,
+        "unit": "hours"
+      },
+      "remarks": [
+        "Severe PID (e.g. SCID, complete DiGeorge, leukocyte adhesion deficiency) may be cured by HSCT.",
+        "Top-level concept used here. For donor-source granularity substitute one of the verified alternatives:",
+        "- 58390007 Allogeneic bone marrow transplantation (procedure)",
+        "- 425843001 Allogeneic peripheral blood stem cell transplant (procedure)",
+        "- 23719005 Transplantation of bone marrow (procedure)"
+      ],
+      "direct_transition": "End_HSCT_Admission"
+    },
+    "End_HSCT_Admission": {
+      "type": "EncounterEnd",
+      "discharge_disposition": {
+        "system": "NUBC",
+        "code": "01",
+        "display": "Discharged to home care or self care (routine discharge)"
+      },
+      "direct_transition": "Post_Transplant_Monitoring"
+    },
+    "Post_Transplant_Monitoring": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 2,
+        "unit": "years"
+      },
+      "remarks": [
+        "Intensive monitoring after transplant for graft survival and infection prevention."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "Normal_Life"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Infection_Complication_Admission"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "PID_Mortality"
+        }
+      ]
+    },
+    "Infection_Complication_Admission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "reason": "primary_immunodeficiency",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "50849002",
+          "display": "Emergency hospital admission (procedure)"
+        }
+      ],
+      "remarks": [
+        "Serious infection requiring hospitalisation. Common organisms in PID include encapsulated bacteria (S. pneumoniae, H. influenzae) and opportunistic pathogens.",
+        "SNOMED 50849002 is the canonical Synthea-wiki example for emergency-class encounters."
+      ],
+      "direct_transition": "Infection_Complication_Diagnosis"
+    },
+    "Infection_Complication_Diagnosis": {
+      "type": "ConditionOnset",
+      "target_encounter": "Infection_Complication_Admission",
+      "assign_to_attribute": "infection_complication",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "233604007",
+          "display": "Pneumonia (disorder)"
+        }
+      ],
+      "remarks": [
+        "Pneumonia is the most common serious infection in PID; modelled here as the representative infection complication."
+      ],
+      "direct_transition": "End_Infection_Admission"
+    },
+    "End_Infection_Admission": {
+      "type": "EncounterEnd",
+      "discharge_disposition": {
+        "system": "NUBC",
+        "code": "01",
+        "display": "Discharged to home care or self care (routine discharge)"
+      },
+      "direct_transition": "Infection_Outcome"
+    },
+    "Infection_Outcome": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.85,
+          "transition": "Chronic_Management"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "PID_Mortality"
+        }
+      ]
+    },
+    "Organ_Damage_Onset": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "pid_organ_damage",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "12295008",
+          "display": "Bronchiectasis (disorder)"
+        }
+      ],
+      "remarks": [
+        "Bronchiectasis is the prototypical chronic organ-damage complication of antibody-deficiency PIDs (especially CVID).",
+        "Verified via OMIM (ICD-10 J47, UMLS C0006267).",
+        "Modelled as a long-term sequela arising in the Chronic_Management branch."
+      ],
+      "direct_transition": "Chronic_Management"
+    },
+    "Normal_Life": {
+      "type": "Delay",
+      "range": {
+        "low": 5,
+        "high": 40,
+        "unit": "years"
+      },
+      "remarks": [
+        "Patients live a normal life expectancy with appropriate supportive care."
+      ],
+      "direct_transition": "Terminal"
+    },
+    "PID_Mortality": {
+      "type": "Death",
+      "referenced_by_attribute": "primary_immunodeficiency",
+      "remarks": [
+        "Death due to severe PID or its complications.",
+        "Uses referenced_by_attribute to cite the PID condition (58606001) as the cause of death on the death certificate.",
+        "Replaces the prior version's incorrect ConditionEnd state."
+      ],
+      "direct_transition": "Terminal"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    }
+  },
+  "gmf_version": 2
+}

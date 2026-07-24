@@ -1,0 +1,1093 @@
+{
+  "name": "Parkinsons Disease Module",
+  "remarks": [
+    "Parkinson's disease simulation including motor and non-motor symptoms.",
+    "Includes diagnostic workup, medication management, and disease progression.",
+    "Models Hoehn & Yahr staging, dementia risk, and advanced therapies."
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "CheckAge"
+    },
+    "CheckAge": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 50,
+        "unit": "years"
+      },
+      "direct_transition": "ProdromalPhase"
+    },
+    "ProdromalPhase": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 5,
+        "unit": "years"
+      },
+      "direct_transition": "EarlyMotorSymptoms"
+    },
+    "EarlyMotorSymptoms": {
+      "type": "Simple",
+      "direct_transition": "EarlyMotorSymptoms_Action_1"
+    },
+    "PrimaryCareVisit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "NeurologyReferral"
+    },
+    "NeurologyReferral": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "NeurologyVisit1"
+    },
+    "NeurologyVisit1": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "DiagnosticWorkup"
+    },
+    "DiagnosticWorkup": {
+      "type": "Simple",
+      "direct_transition": "DiagnosticWorkup_Action_1"
+    },
+    "LevodopaChallengeTest": {
+      "type": "Simple",
+      "direct_transition": "LevodopaChallengeTest_Action_1"
+    },
+    "DiagnosisDecision": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.85,
+          "transition": "ParkinsonsDiagnosis"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "EssentialTremorDiagnosis"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "OtherNeurologicDisorder"
+        }
+      ]
+    },
+    "EssentialTremorDiagnosis": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "609558009",
+          "display": "Essential tremor"
+        }
+      ],
+      "direct_transition": "Terminal"
+    },
+    "OtherNeurologicDisorder": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "230297002",
+          "display": "Multiple system atrophy"
+        }
+      ],
+      "direct_transition": "Terminal"
+    },
+    "ParkinsonsDiagnosis": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "49049000",
+          "display": "Parkinson's disease (disorder)"
+        },
+        {
+          "system": "ICD-10-CM",
+          "code": "G20",
+          "display": "Parkinson's disease"
+        }
+      ],
+      "assign_to_attribute": "has_parkinsons",
+      "direct_transition": "HoehnYahrStage1"
+    },
+    "HoehnYahrStage1": {
+      "type": "SetAttribute",
+      "attribute": "h_and_y_stage",
+      "value": 1,
+      "direct_transition": "StartLevodopaMonotherapy"
+    },
+    "StartLevodopaMonotherapy": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "724598",
+          "display": "carbidopa 25 MG / levodopa 100 MG Oral Tablet [Sinemet]"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "InitialResponsePeriod"
+    },
+    "InitialResponsePeriod": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 12,
+        "unit": "months"
+      },
+      "direct_transition": "TreatmentResponseAssessment"
+    },
+    "TreatmentResponseAssessment": {
+      "type": "Simple",
+      "direct_transition": "TreatmentResponseAssessment_Action_1"
+    },
+    "GoodResponse_HYStage2": {
+      "type": "SetAttribute",
+      "attribute": "pd_stage",
+      "value": "early_stable",
+      "direct_transition": "HoehnYahrStage2"
+    },
+    "ModerateResponse_HYStage2": {
+      "type": "SetAttribute",
+      "attribute": "pd_stage",
+      "value": "progressing",
+      "direct_transition": "HoehnYahrStage2"
+    },
+    "PoorResponse_HYStage2": {
+      "type": "SetAttribute",
+      "attribute": "pd_stage",
+      "value": "advanced",
+      "direct_transition": "HoehnYahrStage2"
+    },
+    "HoehnYahrStage2": {
+      "type": "SetAttribute",
+      "attribute": "h_and_y_stage",
+      "value": 2,
+      "direct_transition": "RegularNeurologyVisit"
+    },
+    "RegularNeurologyVisit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "NonMotorSymptomsAssessment"
+    },
+    "NonMotorSymptomsAssessment": {
+      "type": "Simple",
+      "direct_transition": "NonMotorSymptomsAssessment_Action_1_Gate"
+    },
+    "AddDopamineAgonist": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "859044",
+          "display": "pramipexole dihydrochloride 0.5 MG Oral Tablet"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "StablePeriod"
+    },
+    "AddCOMTInhibitor": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "317094",
+          "display": "entacapone 200 MG Oral Tablet"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "StablePeriod"
+    },
+    "StablePeriod": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 4,
+        "unit": "years"
+      },
+      "direct_transition": "DiseaseProgressionCheck"
+    },
+    "DiseaseProgressionCheck": {
+      "type": "Simple",
+      "direct_transition": "DiseaseProgressionCheck_Action_1"
+    },
+    "HoehnYahrStage3": {
+      "type": "SetAttribute",
+      "attribute": "h_and_y_stage",
+      "value": 3,
+      "direct_transition": "MotorComplications"
+    },
+    "MotorComplications": {
+      "type": "Simple",
+      "direct_transition": "MotorComplications_Action_1_Gate"
+    },
+    "MedicationAdjustment": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "dyskinesia_severe",
+            "operator": "==",
+            "value": true
+          },
+          "transition": "AddAmantadine"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "wearing_off",
+            "operator": "==",
+            "value": true
+          },
+          "transition": "AddMAOBInhibitor"
+        },
+        {
+          "transition": "AdvancedSymptoms"
+        }
+      ]
+    },
+    "AddAmantadine": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "849389",
+          "display": "amantadine hydrochloride 100 MG Oral Capsule"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "AdvancedSymptoms"
+    },
+    "AddMAOBInhibitor": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "608328",
+          "display": "rasagiline 1 MG Oral Tablet"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "AdvancedSymptoms"
+    },
+    "AdvancedSymptoms": {
+      "type": "Simple",
+      "direct_transition": "AdvancedSymptoms_Action_1"
+    },
+    "HoehnYahrStage4": {
+      "type": "SetAttribute",
+      "attribute": "h_and_y_stage",
+      "value": 4,
+      "direct_transition": "DBSEvaluation"
+    },
+    "DBSEvaluation": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "disease_duration_years",
+                "operator": ">=",
+                "value": 4
+              },
+              {
+                "condition_type": "Age",
+                "operator": "<=",
+                "quantity": 70,
+                "unit": "years"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "no_dementia",
+                "operator": "==",
+                "value": true
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "levodopa_response",
+                "operator": "==",
+                "value": true
+              }
+            ]
+          },
+          "transition": "DBS_Surgery"
+        },
+        {
+          "transition": "AdvancedTherapiesEvaluation"
+        }
+      ]
+    },
+    "DBS_Surgery": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "230861003",
+          "display": "Deep brain stimulation (procedure)"
+        },
+        {
+          "system": "CPT",
+          "code": "61867",
+          "display": "Placement of neurostimulator electrode arrays"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "PostDBSRecovery"
+    },
+    "PostDBSRecovery": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "DBSFollowUp"
+    },
+    "DBSFollowUp": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "remarks": [
+        "DBS programming follow-up. The previous version used 443254001 for 'Programming of",
+        "neurostimulator (procedure)' but no exact SNOMED concept was found in the IHTS browser.",
+        "Modelling this as a follow-up encounter rather than fabricating a procedure code is the",
+        "honest representation. If a SNOMED concept for neurostimulator programming/adjustment",
+        "is later identified (try browser term-search 'adjustment of implanted device'), add it",
+        "as a Procedure action within this encounter."
+      ],
+      "direct_transition": "AdvancedTherapiesEvaluation"
+    },
+    "AdvancedTherapiesEvaluation": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
+          "transition": "LCIG_Therapy"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "ApomorphinePump"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "PalliativeCareReferral"
+        }
+      ]
+    },
+    "LCIG_Therapy": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1599846",
+          "display": "carbidopa 4.63 MG/ML / levodopa 20 MG/ML Oral Suspension"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "PalliativeCareReferral"
+    },
+    "ApomorphinePump": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "199929",
+          "display": "apomorphine 10 MG/ML Injectable Solution"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "PalliativeCareReferral"
+    },
+    "DementiaOnset": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "52448006",
+          "display": "Dementia in Parkinson's disease (disorder)"
+        },
+        {
+          "system": "ICD-10-CM",
+          "code": "G31.83",
+          "display": "Dementia with Lewy bodies"
+        }
+      ],
+      "direct_transition": "HoehnYahrStage5"
+    },
+    "HoehnYahrStage5": {
+      "type": "SetAttribute",
+      "attribute": "h_and_y_stage",
+      "value": 5,
+      "direct_transition": "PalliativeCareReferral"
+    },
+    "PalliativeCareReferral": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306237005",
+          "display": "Referral to palliative care service (procedure)"
+        }
+      ],
+      "direct_transition": "MultidisciplinaryCare"
+    },
+    "MultidisciplinaryCare": {
+      "type": "Simple",
+      "direct_transition": "MultidisciplinaryCare_Action_1_Gate"
+    },
+    "AdvanceCarePlanning": {
+      "type": "CarePlanStart",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "713603004",
+          "display": "Advance care planning"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "remarks": [
+        "*** WARNING: PLACEHOLDER CODE — DO NOT USE IN PRODUCTION ***",
+        "",
+        "The previous version used 304250004 'Advance directive discussion (procedure)' which failed",
+        "Verhoeff. 713600000 was provisionally proposed but has now been confirmed to FAIL the Verhoeff",
+        "check digit — meaning it cannot be a valid SCTID either.",
+        "",
+        "ACTION REQUIRED before production ingestion:",
+        "1. Open browser.ihtsdotools.org",
+        "2. Term-search 'advance care planning' or 'discussion about advance care'",
+        "3. Locate an active SNOMED concept with semantic tag (procedure) or (regime/therapy)",
+        "4. Replace 713600000 in this state with the verified concept ID and FSN",
+        "5. Verify the replacement passes Verhoeff with the validator script",
+        "",
+        "If no suitable concept is found, options are:",
+        "(a) Remove this state entirely and capture advance-care-planning activity as a free-text",
+        "    annotation on the parent PalliativeCareReferral or MultidisciplinaryCare encounter.",
+        "(b) Use a parent concept like 'Counselling (procedure)' if browser-verifiable, accepting",
+        "    that the specificity is reduced.",
+        "",
+        "This placeholder is intentionally invalid (fails Verhoeff) so that any pipeline ingestion",
+        "WILL fail loudly rather than silently accept fabricated data."
+      ],
+      "direct_transition": "EndStageDisease"
+    },
+    "EndStageDisease": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 5,
+        "unit": "years"
+      },
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "Death"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "LongTermCare"
+        }
+      ]
+    },
+    "Death": {
+      "type": "Death",
+      "direct_transition": "Terminal",
+      "range": {
+        "low": 1,
+        "high": 24,
+        "unit": "months"
+      },
+      "referenced_by_attribute": "has_parkinsons"
+    },
+    "LongTermCare": {
+      "type": "Encounter",
+      "encounter_class": "nursing",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "remarks": [
+        "Long-term care facility admission. The previous version used 305689007 'Admission to",
+        "long-term care facility' which failed Verhoeff. No exact SNOMED match was found in IHTS.",
+        "Modelling this as an Encounter with encounter_class='nursing' (which Synthea uses for",
+        "nursing facility classification) plus the generic encounter code 185347001. The nursing",
+        "facility nature is captured in encounter_class, not in the SNOMED code itself."
+      ],
+      "direct_transition": "Death"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "EarlyMotorSymptoms_Action_1": {
+      "type": "Symptom",
+      "symptom": "Tremor",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "EarlyMotorSymptoms_Action_2"
+    },
+    "EarlyMotorSymptoms_Action_2": {
+      "type": "Symptom",
+      "symptom": "Bradykinesia",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "EarlyMotorSymptoms_Action_3"
+    },
+    "EarlyMotorSymptoms_Action_3": {
+      "type": "Symptom",
+      "symptom": "Muscle rigidity",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "PrimaryCareVisit"
+    },
+    "DiagnosticWorkup_Action_1": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "CPT",
+          "code": "78607",
+          "display": "DaTscan imaging"
+        }
+      ],
+      "remarks": [
+        "Dopamine transporter imaging for differential diagnosis.",
+        "CPT code not audited in SNOMED audit pass — verify separately."
+      ],
+      "direct_transition": "DiagnosticWorkup_Action_2_Gate"
+    },
+    "DiagnosticWorkup_Action_2_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "DiagnosticWorkup_Action_2",
+          "distribution": 0.8
+        },
+        {
+          "transition": "DiagnosticWorkup_Action_3",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "DiagnosticWorkup_Action_2": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "445794007",
+          "display": "Assessment using repeatable battery for the assessment of neuropsychological status (procedure)"
+        }
+      ],
+      "remarks": [
+        "IHTS-verified. NOTE: This code is RBANS-specific (Repeatable Battery for the Assessment",
+        "of Neuropsychological Status). If the module's intent is generic neuropsychological workup",
+        "rather than RBANS specifically, browser-search for a broader parent concept."
+      ],
+      "direct_transition": "DiagnosticWorkup_Action_3"
+    },
+    "DiagnosticWorkup_Action_3": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "77717-7",
+          "display": "Unified Parkinson's Disease Rating Scale (UPDRS) panel"
+        }
+      ],
+      "range": {
+        "low": 20,
+        "high": 40
+      },
+      "unit": "points",
+      "direct_transition": "LevodopaChallengeTest"
+    },
+    "LevodopaChallengeTest_Action_1": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "724598",
+          "display": "carbidopa 25 MG / levodopa 100 MG Oral Tablet [Sinemet]"
+        }
+      ],
+      "administration": true,
+      "direct_transition": "LevodopaChallengeTest_Action_2"
+    },
+    "LevodopaChallengeTest_Action_2": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "77717-7",
+          "display": "Unified Parkinson's Disease Rating Scale (UPDRS) panel"
+        }
+      ],
+      "vital_sign": "UPDRS_Score",
+      "remarks": [
+        "Post-levodopa UPDRS improvement >30% supports PD diagnosis"
+      ],
+      "range": {
+        "low": 10,
+        "high": 25
+      },
+      "unit": "points",
+      "direct_transition": "DiagnosisDecision"
+    },
+    "TreatmentResponseAssessment_Action_1": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "77717-7",
+          "display": "Unified Parkinson's Disease Rating Scale (UPDRS) panel"
+        }
+      ],
+      "vital_sign": "UPDRS_Score",
+      "range": {
+        "low": 15,
+        "high": 35
+      },
+      "unit": "points",
+      "direct_transition": "TreatmentResponseAssessment_Action_2"
+    },
+    "TreatmentResponseAssessment_Action_2": {
+      "type": "SetAttribute",
+      "attribute": "disease_duration_years",
+      "value": 1,
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "GoodResponse_HYStage2"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "ModerateResponse_HYStage2"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "PoorResponse_HYStage2"
+        }
+      ]
+    },
+    "NonMotorSymptomsAssessment_Action_1_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "NonMotorSymptomsAssessment_Action_1",
+          "distribution": 0.5
+        },
+        {
+          "transition": "NonMotorSymptomsAssessment_Action_2",
+          "distribution": 0.5
+        }
+      ]
+    },
+    "NonMotorSymptomsAssessment_Action_1": {
+      "type": "Symptom",
+      "symptom": "Depression",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "NonMotorSymptomsAssessment_Action_2_Gate"
+    },
+    "NonMotorSymptomsAssessment_Action_2_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "NonMotorSymptomsAssessment_Action_2",
+          "distribution": 0.6
+        },
+        {
+          "transition": "NonMotorSymptomsAssessment_Action_3",
+          "distribution": 0.4
+        }
+      ]
+    },
+    "NonMotorSymptomsAssessment_Action_2": {
+      "type": "Symptom",
+      "symptom": "Constipation",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "NonMotorSymptomsAssessment_Action_3_Gate"
+    },
+    "NonMotorSymptomsAssessment_Action_3_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "NonMotorSymptomsAssessment_Action_3",
+          "distribution": 0.4
+        },
+        {
+          "transition": "NonMotorSymptomsAssessment_Action_4",
+          "distribution": 0.6
+        }
+      ]
+    },
+    "NonMotorSymptomsAssessment_Action_3": {
+      "type": "Symptom",
+      "symptom": "Orthostatic hypotension",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "NonMotorSymptomsAssessment_Action_4_Gate"
+    },
+    "NonMotorSymptomsAssessment_Action_4_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "NonMotorSymptomsAssessment_Action_4",
+          "distribution": 0.3
+        },
+        {
+          "transition": "NonMotorSymptomsAssessment_Action_5",
+          "distribution": 0.7
+        }
+      ]
+    },
+    "NonMotorSymptomsAssessment_Action_4": {
+      "type": "Symptom",
+      "symptom": "REM sleep behavior disorder",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "NonMotorSymptomsAssessment_Action_5_Gate"
+    },
+    "NonMotorSymptomsAssessment_Action_5_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "NonMotorSymptomsAssessment_Action_5",
+          "distribution": 0.8
+        },
+        {
+          "transition": "AddDopamineAgonist",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "NonMotorSymptomsAssessment_Action_5": {
+      "type": "Symptom",
+      "symptom": "Loss of sense of smell",
+      "exact": {
+        "quantity": 1
+      },
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "pd_stage",
+            "operator": "==",
+            "value": "progressing"
+          },
+          "transition": "AddDopamineAgonist"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "pd_stage",
+            "operator": "==",
+            "value": "advanced"
+          },
+          "transition": "AddCOMTInhibitor"
+        },
+        {
+          "transition": "StablePeriod"
+        }
+      ]
+    },
+    "DiseaseProgressionCheck_Action_1": {
+      "type": "Counter",
+      "attribute": "disease_duration_years",
+      "action": "increment",
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "disease_duration_years",
+            "operator": ">=",
+            "value": 10
+          },
+          "distributions": [
+            {
+              "distribution": 0.6,
+              "transition": "DementiaOnset"
+            },
+            {
+              "distribution": 0.4,
+              "transition": "MotorComplications"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "disease_duration_years",
+            "operator": ">=",
+            "value": 5
+          },
+          "distributions": [
+            {
+              "distribution": 0.7,
+              "transition": "MotorComplications"
+            },
+            {
+              "distribution": 0.3,
+              "transition": "HoehnYahrStage3"
+            }
+          ]
+        },
+        {
+          "transition": "HoehnYahrStage3"
+        }
+      ]
+    },
+    "MotorComplications_Action_1_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "MotorComplications_Action_1",
+          "distribution": 0.7
+        },
+        {
+          "transition": "MotorComplications_Action_2",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "MotorComplications_Action_1": {
+      "type": "Symptom",
+      "symptom": "Dyskinesia",
+      "exact": {
+        "quantity": 1
+      },
+      "remarks": [
+        "Code switched from 64531003 to 9748009 per AAN PD Quality Measurement Set 2020.",
+        "Browser-confirm 9748009 if not already done."
+      ],
+      "direct_transition": "MotorComplications_Action_2_Gate"
+    },
+    "MotorComplications_Action_2_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "MotorComplications_Action_2",
+          "distribution": 0.8
+        },
+        {
+          "transition": "MotorComplications_Action_3",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "MotorComplications_Action_2": {
+      "type": "Symptom",
+      "symptom": "Motor fluctuations",
+      "exact": {
+        "quantity": 1
+      },
+      "remarks": [
+        "No exact SNOMED match for 'wearing-off phenomenon in PD'. Using 427488005",
+        "'On - off phenomenon' per AAN PD Quality Measurement Set 2020 — closely related",
+        "concept covering motor fluctuations on dopaminergic therapy. Browser-confirm before",
+        "production. Wearing-off and on-off phenomena are clinically distinct (wearing-off =",
+        "predictable end-of-dose decline; on-off = unpredictable switches) but the AAN",
+        "measurement set treats them as the same coded concept."
+      ],
+      "direct_transition": "MotorComplications_Action_3"
+    },
+    "MotorComplications_Action_3": {
+      "type": "SetAttribute",
+      "attribute": "wearing_off",
+      "value": true,
+      "direct_transition": "MedicationAdjustment"
+    },
+    "AdvancedSymptoms_Action_1": {
+      "type": "Symptom",
+      "symptom": "Gait instability",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "AdvancedSymptoms_Action_2_Gate"
+    },
+    "AdvancedSymptoms_Action_2_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "AdvancedSymptoms_Action_2",
+          "distribution": 0.6
+        },
+        {
+          "transition": "AdvancedSymptoms_Action_3",
+          "distribution": 0.4
+        }
+      ]
+    },
+    "AdvancedSymptoms_Action_2": {
+      "type": "Symptom",
+      "symptom": "Falls",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "AdvancedSymptoms_Action_3_Gate"
+    },
+    "AdvancedSymptoms_Action_3_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "AdvancedSymptoms_Action_3",
+          "distribution": 0.5
+        },
+        {
+          "transition": "HoehnYahrStage4",
+          "distribution": 0.5
+        }
+      ]
+    },
+    "AdvancedSymptoms_Action_3": {
+      "type": "Symptom",
+      "symptom": "Freezing of gait",
+      "exact": {
+        "quantity": 1
+      },
+      "remarks": [
+        "No PD-specific SNOMED concept exists for 'Freezing of gait in Parkinson disease'.",
+        "Using 443544006 'Freezing of gait' per AAN PD Quality Measurement Set 2020.",
+        "Browser-confirm before production."
+      ],
+      "direct_transition": "HoehnYahrStage4"
+    },
+    "MultidisciplinaryCare_Action_1_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "MultidisciplinaryCare_Action_1",
+          "distribution": 0.8
+        },
+        {
+          "transition": "MultidisciplinaryCare_Action_2",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "MultidisciplinaryCare_Action_1": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "385851006",
+          "display": "Chest physiotherapy assessment (procedure)"
+        }
+      ],
+      "remarks": [
+        "CAVEAT: 385851006 is the only IHTS-verified physiotherapy assessment concept and is",
+        "specifically chest physiotherapy. For PD, generic physiotherapy assessment is more",
+        "clinically appropriate than chest-specific. Browser-search for a broader concept under",
+        "'Physiotherapy procedure' if available, or accept this as a documented narrowing."
+      ],
+      "direct_transition": "MultidisciplinaryCare_Action_2_Gate"
+    },
+    "MultidisciplinaryCare_Action_2_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "MultidisciplinaryCare_Action_2",
+          "distribution": 0.7
+        },
+        {
+          "transition": "MultidisciplinaryCare_Action_3",
+          "distribution": 0.3
+        }
+      ]
+    },
+    "MultidisciplinaryCare_Action_2": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "410155007",
+          "display": "Occupational therapy assessment (procedure)"
+        }
+      ],
+      "direct_transition": "MultidisciplinaryCare_Action_3_Gate"
+    },
+    "MultidisciplinaryCare_Action_3_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "MultidisciplinaryCare_Action_3",
+          "distribution": 0.6
+        },
+        {
+          "transition": "AdvanceCarePlanning",
+          "distribution": 0.4
+        }
+      ]
+    },
+    "MultidisciplinaryCare_Action_3": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "410163008",
+          "display": "Speech therapy management (procedure)"
+        }
+      ],
+      "remarks": [
+        "410163008 is a service-management concept rather than a single therapy session.",
+        "If a per-session SNOMED concept is later required, browser-search 'speech and language",
+        "therapy procedure' for child concepts."
+      ],
+      "direct_transition": "AdvanceCarePlanning"
+    }
+  }
+}

@@ -1,0 +1,453 @@
+{
+  "name": "Systemic Lupus Erythematosus (SLE)",
+  "gmf_version": 2,
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "name": "Initial",
+      "direct_transition": "Age_Guard"
+    },
+    "Age_Guard": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 15,
+        "unit": "years"
+      },
+      "direct_transition": "Race_Ethnicity_Branch",
+      "name": "Age_Guard"
+    },
+    "Race_Ethnicity_Branch": {
+      "type": "Simple",
+      "name": "Race_Ethnicity_Branch",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "ethnicity",
+            "operator": "==",
+            "value": "hispanic"
+          },
+          "transition": "Set_Race_Hispanic"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "race",
+            "operator": "==",
+            "value": "black"
+          },
+          "transition": "Set_Race_Black"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "race",
+            "operator": "==",
+            "value": "asian"
+          },
+          "transition": "Set_Race_Asian"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "race",
+            "operator": "==",
+            "value": "native"
+          },
+          "transition": "Set_Race_Native"
+        },
+        {
+          "condition": {
+            "condition_type": "True"
+          },
+          "transition": "Set_Race_White"
+        }
+      ]
+    },
+    "Set_Race_Black": {
+      "type": "SetAttribute",
+      "name": "Set_Race_Black",
+      "attribute": "sle_race_group",
+      "value": "black",
+      "direct_transition": "Gender_Prevalence_Branch"
+    },
+    "Set_Race_Hispanic": {
+      "type": "SetAttribute",
+      "name": "Set_Race_Hispanic",
+      "attribute": "sle_race_group",
+      "value": "hispanic",
+      "direct_transition": "Gender_Prevalence_Branch"
+    },
+    "Set_Race_Asian": {
+      "type": "SetAttribute",
+      "name": "Set_Race_Asian",
+      "attribute": "sle_race_group",
+      "value": "asian",
+      "direct_transition": "Gender_Prevalence_Branch"
+    },
+    "Set_Race_Native": {
+      "type": "SetAttribute",
+      "name": "Set_Race_Native",
+      "attribute": "sle_race_group",
+      "value": "native",
+      "direct_transition": "Gender_Prevalence_Branch"
+    },
+    "Set_Race_White": {
+      "type": "SetAttribute",
+      "name": "Set_Race_White",
+      "attribute": "sle_race_group",
+      "value": "white",
+      "direct_transition": "Gender_Prevalence_Branch"
+    },
+    "Gender_Prevalence_Branch": {
+      "type": "Simple",
+      "name": "Gender_Prevalence_Branch",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "gender",
+            "operator": "==",
+            "value": "F"
+          },
+          "transition": "Female_SLE_Incidence_Delay"
+        },
+        {
+          "condition": {
+            "condition_type": "True"
+          },
+          "transition": "Male_SLE_Incidence_Delay"
+        }
+      ]
+    },
+    "Female_SLE_Incidence_Delay": {
+      "type": "Delay",
+      "name": "Female_SLE_Incidence_Delay",
+      "range": {
+        "low": 0,
+        "high": 30,
+        "unit": "years"
+      },
+      "direct_transition": "Female_Chance_of_SLE"
+    },
+    "Female_Chance_of_SLE": {
+      "type": "Simple",
+      "name": "Female_Chance_of_SLE",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "sle_race_group",
+            "operator": "==",
+            "value": "black"
+          },
+          "transition": "Female_SLE_Chance_Black"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "sle_race_group",
+            "operator": "==",
+            "value": "hispanic"
+          },
+          "transition": "Female_SLE_Chance_Hispanic"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "sle_race_group",
+            "operator": "==",
+            "value": "asian"
+          },
+          "transition": "Female_SLE_Chance_Asian"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "sle_race_group",
+            "operator": "==",
+            "value": "native"
+          },
+          "transition": "Female_SLE_Chance_Native"
+        },
+        {
+          "condition": {
+            "condition_type": "True"
+          },
+          "transition": "Female_SLE_Chance_White"
+        }
+      ]
+    },
+    "Male_SLE_Incidence_Delay": {
+      "type": "Delay",
+      "name": "Male_SLE_Incidence_Delay",
+      "range": {
+        "low": 0,
+        "high": 35,
+        "unit": "years"
+      },
+      "direct_transition": "Male_Chance_of_SLE"
+    },
+    "Male_Chance_of_SLE": {
+      "type": "Simple",
+      "name": "Male_Chance_of_SLE",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "sle_race_group",
+            "operator": "==",
+            "value": "black"
+          },
+          "transition": "Male_SLE_Chance_Black"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "sle_race_group",
+            "operator": "==",
+            "value": "hispanic"
+          },
+          "transition": "Male_SLE_Chance_Hispanic"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "sle_race_group",
+            "operator": "==",
+            "value": "asian"
+          },
+          "transition": "Male_SLE_Chance_Asian"
+        },
+        {
+          "condition": {
+            "condition_type": "True"
+          },
+          "transition": "Male_SLE_Chance_White"
+        }
+      ]
+    },
+    "Female_SLE_Chance_Black": {
+      "type": "Simple",
+      "name": "Female_SLE_Chance_Black",
+      "distributed_transition": [
+        {
+          "distribution": 0.034,
+          "transition": "Prodromal_Phase"
+        },
+        {
+          "distribution": 0.966,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Female_SLE_Chance_Hispanic": {
+      "type": "Simple",
+      "name": "Female_SLE_Chance_Hispanic",
+      "distributed_transition": [
+        {
+          "distribution": 0.015,
+          "transition": "Prodromal_Phase"
+        },
+        {
+          "distribution": 0.985,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Female_SLE_Chance_Asian": {
+      "type": "Simple",
+      "name": "Female_SLE_Chance_Asian",
+      "distributed_transition": [
+        {
+          "distribution": 0.012,
+          "transition": "Prodromal_Phase"
+        },
+        {
+          "distribution": 0.988,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Female_SLE_Chance_Native": {
+      "type": "Simple",
+      "name": "Female_SLE_Chance_Native",
+      "distributed_transition": [
+        {
+          "distribution": 0.02,
+          "transition": "Prodromal_Phase"
+        },
+        {
+          "distribution": 0.98,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Female_SLE_Chance_White": {
+      "type": "Simple",
+      "name": "Female_SLE_Chance_White",
+      "distributed_transition": [
+        {
+          "distribution": 0.01,
+          "transition": "Prodromal_Phase"
+        },
+        {
+          "distribution": 0.99,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Male_SLE_Chance_Black": {
+      "type": "Simple",
+      "name": "Male_SLE_Chance_Black",
+      "distributed_transition": [
+        {
+          "distribution": 0.012,
+          "transition": "Prodromal_Phase"
+        },
+        {
+          "distribution": 0.988,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Male_SLE_Chance_Hispanic": {
+      "type": "Simple",
+      "name": "Male_SLE_Chance_Hispanic",
+      "distributed_transition": [
+        {
+          "distribution": 0.006,
+          "transition": "Prodromal_Phase"
+        },
+        {
+          "distribution": 0.994,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Male_SLE_Chance_Asian": {
+      "type": "Simple",
+      "name": "Male_SLE_Chance_Asian",
+      "distributed_transition": [
+        {
+          "distribution": 0.005,
+          "transition": "Prodromal_Phase"
+        },
+        {
+          "distribution": 0.995,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Male_SLE_Chance_White": {
+      "type": "Simple",
+      "name": "Male_SLE_Chance_White",
+      "distributed_transition": [
+        {
+          "distribution": 0.004,
+          "transition": "Prodromal_Phase"
+        },
+        {
+          "distribution": 0.996,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Prodromal_Phase": {
+      "type": "Delay",
+      "name": "Prodromal_Phase",
+      "range": {
+        "low": 6,
+        "high": 36,
+        "unit": "months"
+      },
+      "direct_transition": "Diagnose_SLE"
+    },
+    "Diagnose_SLE": {
+      "type": "ConditionOnset",
+      "name": "Diagnose_SLE",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "55464009",
+          "display": "Systemic lupus erythematosus"
+        }
+      ],
+      "target_encounter": 0,
+      "direct_transition": "Diagnosis_Encounter"
+    },
+    "Diagnosis_Encounter": {
+      "type": "Encounter",
+      "name": "Diagnosis_Encounter",
+      "encounter_class": "ambulatory",
+      "direct_transition": "ANA_Test"
+    },
+    "ANA_Test": {
+      "type": "Observation",
+      "name": "ANA_Test",
+      "category": "laboratory",
+      "unit": "{titer}",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "29953-7",
+          "display": "Nuclear Ab [Titer] in Serum"
+        }
+      ],
+      "range": {
+        "low": 80,
+        "high": 640
+      },
+      "addresses": "Diagnose_SLE",
+      "direct_transition": "Start_HCQ"
+    },
+    "Start_HCQ": {
+      "type": "MedicationOrder",
+      "name": "Start_HCQ",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "979092",
+          "display": "hydroxychloroquine sulfate 200 MG Oral Tablet"
+        }
+      ],
+      "direct_transition": "Followup_Loop"
+    },
+    "Followup_Loop": {
+      "type": "Delay",
+      "name": "Followup_Loop",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Flare_Check"
+    },
+    "Flare_Check": {
+      "type": "Simple",
+      "name": "Flare_Check",
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
+          "transition": "SLE_Flare"
+        },
+        {
+          "distribution": 0.6,
+          "transition": "Followup_Loop"
+        }
+      ]
+    },
+    "SLE_Flare": {
+      "type": "Encounter",
+      "name": "SLE_Flare",
+      "encounter_class": "ambulatory",
+      "direct_transition": "Followup_Loop"
+    },
+    "Terminal": {
+      "type": "Terminal",
+      "name": "Terminal"
+    }
+  }
+}

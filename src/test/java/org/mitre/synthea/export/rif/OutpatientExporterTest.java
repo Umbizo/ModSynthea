@@ -48,7 +48,10 @@ public class OutpatientExporterTest {
     Config.set("exporter.bfd.require_code_maps", "false");
     exportDir = tempFolder.newFolder();
     Config.set("exporter.baseDirectory", exportDir.toString());
-    BB2RIFExporter.getInstance().prepareOutputFiles();
+    // rebind the writers so output lands in this test's directory even when the
+    // singleton was constructed by an earlier test class
+    BB2RIFExporter exporter = BB2RIFExporter.getInstance();
+    exporter.rifWriters = exporter.prepareOutputFiles();
   }
 
   @Test

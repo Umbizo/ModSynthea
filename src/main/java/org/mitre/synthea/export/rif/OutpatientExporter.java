@@ -34,8 +34,6 @@ public class OutpatientExporter extends RIFExporter {
    */
   long export(Person person, long startTime, long stopTime) throws IOException {
     long claimCount = 0;
-    System.out.println("*** 1. ENTERED OutpatientExporter.export() ***");
-
     for (HealthRecord.Encounter encounter : person.record.encounters) {
       if (encounter.stop < startTime || encounter.stop < CLAIM_CUTOFF) {
         continue;
@@ -49,25 +47,12 @@ public class OutpatientExporter extends RIFExporter {
 
       // Get subset of billable items
       List<Claim.ClaimEntry> billableItems = getBillableProcedureAndMedAdminItems(encounter);
-      System.out.println(
-          "Encounter " + encounter.start + " billable items = " + billableItems.size());
-
-      for (Claim.ClaimEntry lineItem : billableItems) {
-          System.out.println(
-              "  " + lineItem.entry.getClass().getSimpleName());
-      }
       Claim.ClaimEntry billableTotal = encounter.claim.new ClaimEntry(null);
       for (Claim.ClaimEntry lineItem: billableItems) {
         billableTotal.addCosts(lineItem);
       }
       if (billableTotal.getTotalClaimCost().compareTo(Claim.ZERO_CENTS) == 0) {
         continue;
-      }
-      System.out.println("Encounter: " + encounter.type);
-      System.out.println("Billable items: " + billableItems.size());
-
-      for (Claim.ClaimEntry item : billableItems) {
-          System.out.println(item.entry.getClass().getSimpleName());
       }
 
       long claimId = RIFExporter.nextClaimId.getAndDecrement();
@@ -154,68 +139,28 @@ public class OutpatientExporter extends RIFExporter {
             fieldValues.remove(BB2RIFStructure.OUTPATIENT.REV_CNTR_NDC_QTY);
             fieldValues.remove(BB2RIFStructure.OUTPATIENT.REV_CNTR_NDC_QTY_QLFR_CD);
           } else if (lineItem.entry instanceof HealthRecord.Medication) {
-            HealthRecord.Medication med =
-                (HealthRecord.Medication) lineItem.entry;
-            System.out.println(encounter.procedures.size());  
-
-            System.out.println("----- Medication -----");
-            System.out.println(encounter.medications.size());
-            System.out.println("System: " + med.codes.get(0).system);
-            System.out.println("Code: " + med.codes.get(0).code);
-            System.out.println("Display: " + med.codes.get(0).display);
-            System.out.println("Can map: "
-                + exporter.rxnormHcpcsMapper.canMap(med.codes.get(0)));
-
-	    System.out.println("Mapped HCPCS = " + hcpcsCode);
-
+            HealthRecord.Medication med = (HealthRecord.Medication) lineItem.entry;
             if (exporter.rxnormHcpcsMapper.canMap(med.codes.get(0))) {
-                hcpcsCode =
-                    exporter.rxnormHcpcsMapper.map(med.codes.get(0), person);
-            } else {                    
-                hcpcsCode = "T1502";
-            }
-
-            fieldValues.put(
-                BB2RIFStructure.OUTPATIENT.REV_CNTR,
-                "0636"
-            );
-
-            if (exporter.medicationCodeMapper.canMap(med.codes.get(0))) {
-                String ndcCode =
-                    exporter.medicationCodeMapper.map(
-                        med.codes.get(0), person);
-
-                fieldValues.put(
-                    BB2RIFStructure.OUTPATIENT.REV_CNTR_IDE_NDC_UPC_NUM,
-                    ndcCode
-                );
+              hcpcsCode = exporter.rxnormHcpcsMapper.map(med.codes.get(0), person);
             } else {
-                // don't let a previous line's NDC leak onto this line
-                fieldValues.remove(
-                    BB2RIFStructure.OUTPATIENT.REV_CNTR_IDE_NDC_UPC_NUM
-                );
+              hcpcsCode = "T1502"; // Administration of medication
             }
-
-            fieldValues.put(
-                BB2RIFStructure.OUTPATIENT.REV_CNTR_NDC_QTY,
-                "1"
-            );
-
-            fieldValues.put(
-                BB2RIFStructure.OUTPATIENT.REV_CNTR_NDC_QTY_QLFR_CD,
-                "UN"
-            );
-        }
-        
+            // Drugs requiring specific id
+            fieldValues.put(BB2RIFStructure.OUTPATIENT.REV_CNTR, "0636");
+            if (exporter.medicationCodeMapper.canMap(med.codes.get(0))) {
+              String ndcCode = exporter.medicationCodeMapper.map(med.codes.get(0), person);
+              fieldValues.put(BB2RIFStructure.OUTPATIENT.REV_CNTR_IDE_NDC_UPC_NUM, ndcCode);
+            } else {
+              // don't let a previous line's NDC leak onto this line
+              fieldValues.remove(BB2RIFStructure.OUTPATIENT.REV_CNTR_IDE_NDC_UPC_NUM);
+            }
+            fieldValues.put(BB2RIFStructure.OUTPATIENT.REV_CNTR_NDC_QTY, "1"); // 1 Unit
+            fieldValues.put(BB2RIFStructure.OUTPATIENT.REV_CNTR_NDC_QTY_QLFR_CD, "UN"); // Unit
+          }
 
           fieldValues.put(BB2RIFStructure.OUTPATIENT.CLM_LINE_NUM, Integer.toString(claimLine++));
           fieldValues.put(BB2RIFStructure.OUTPATIENT.REV_CNTR_DT,
                   RIFExporter.bb2DateFromTimestamp(lineItem.entry.start));
-          System.out.println(
-              "Writing HCPCS = " + hcpcsCode +
-              " rev center = " +
-              fieldValues.get(BB2RIFStructure.OUTPATIENT.REV_CNTR)
-          );
           fieldValues.put(BB2RIFStructure.OUTPATIENT.HCPCS_CD, hcpcsCode);
           setLineItemCosts(fieldValues, lineItem);
           exporter.rifWriters.writeValues(BB2RIFStructure.OUTPATIENT.class, fieldValues);

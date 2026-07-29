@@ -22592,5 +22592,167 @@
     {
       "code": "J9034"
     }
+  ],
+  "632": [
+    {
+      "code": "J9280",
+      "description": "mitomycin, 5 mg"
+    }
+  ],
+  "2555": [
+    {
+      "code": "J9060",
+      "description": "cisplatin, 10 mg"
+    }
+  ],
+  "3002": [
+    {
+      "code": "J9070",
+      "description": "cyclophosphamide, 100 mg"
+    }
+  ],
+  "3041": [
+    {
+      "code": "J9100",
+      "description": "cytarabine, 100 mg"
+    }
+  ],
+  "3639": [
+    {
+      "code": "J9000",
+      "description": "doxorubicin hydrochloride, 10 mg"
+    }
+  ],
+  "4179": [
+    {
+      "code": "J9181",
+      "description": "etoposide, 10 mg"
+    }
+  ],
+  "5657": [
+    {
+      "code": "J9208",
+      "description": "ifosfamide, 1 g"
+    }
+  ],
+  "40048": [
+    {
+      "code": "J9045",
+      "description": "carboplatin, 50 mg"
+    }
+  ],
+  "12574": [
+    {
+      "code": "J9201",
+      "description": "gemcitabine hydrochloride, 200 mg"
+    }
+  ],
+  "57308": [
+    {
+      "code": "J9351",
+      "description": "topotecan, 0.1 mg"
+    }
+  ],
+  "11202": [
+    {
+      "code": "J9370",
+      "description": "vincristine sulfate, 1 mg"
+    }
+  ],
+  "1726497": [
+    {
+      "code": "J9025",
+      "description": "azacitidine, 1 mg"
+    }
+  ],
+  "1547545": [
+    {
+      "code": "J9271",
+      "description": "pembrolizumab, 1 mg"
+    }
+  ],
+  "1792776": [
+    {
+      "code": "J9022",
+      "description": "atezolizumab, 10 mg"
+    }
+  ],
+  "1919503": [
+    {
+      "code": "J9173",
+      "description": "durvalumab, 10 mg"
+    }
+  ],
+  "1875534": [
+    {
+      "code": "J9023",
+      "description": "avelumab, 10 mg"
+    }
+  ],
+  "2277607": [
+    {
+      "code": "J9177",
+      "description": "enfortumab vedotin-ejfv, 0.25 mg"
+    }
+  ],
+  "1657066": [
+    {
+      "code": "J9035",
+      "description": "bevacizumab, 10 mg"
+    }
+  ],
+  "338036": [
+    {
+      "code": "J2506",
+      "description": "pegfilgrastim, 0.5 mg"
+    }
+  ],
+  "2549331": [
+    {
+      "code": "J2506",
+      "description": "pegfilgrastim, 0.5 mg"
+    }
+  ],
+  "385885": [
+    {
+      "code": "J0885",
+      "description": "epoetin alfa, non-ESRD use, 1000 units"
+    }
+  ],
+  "221050": [
+    {
+      "code": "J9030",
+      "description": "BCG live intravesical instillation, 1 mg"
+    }
+  ],
+  "752899": [
+    {
+      "code": "J9217",
+      "description": "leuprolide acetate depot, 7.5 mg"
+    }
+  ],
+  "860182": [
+    {
+      "code": "J0587",
+      "description": "rimabotulinumtoxinB, 100 units"
+    }
+  ],
+  "1665227": [
+    {
+      "code": "J0744",
+      "description": "ciprofloxacin for intravenous infusion, 200 mg"
+    }
+  ],
+  "2626143": [
+    {
+      "code": "J0174",
+      "description": "lecanemab-irmb, 1 mg"
+    }
+  ],
+  "2687966": [
+    {
+      "code": "J0175",
+      "description": "donanemab-azbt, 2 mg"
+    }
   ]
 }

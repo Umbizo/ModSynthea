@@ -937,6 +937,13 @@
     "Advanced_Staging_Encounter": {
       "type": "Encounter",
       "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
       "direct_transition": "Advanced_CT_Staging"
     },
     "Advanced_CT_Staging": {
@@ -1371,6 +1378,13 @@
     "Palliative_Radiation_Encounter": {
       "type": "Encounter",
       "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
       "direct_transition": "Palliative_Radiotherapy"
     },
     "Palliative_Radiation_Encounter_End": {
@@ -1380,6 +1394,13 @@
     "Staging_Encounter": {
       "type": "Encounter",
       "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
       "direct_transition": "Chest_CT_Staging"
     },
     "Trimodal_Treatment_Period": {
@@ -2346,6 +2367,13 @@
     "Intravesical_Therapy_Encounter": {
       "type": "Encounter",
       "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
       "direct_transition": "BCG_Induction"
     },
     "Late_Recurrence_Systemic": {
@@ -2628,6 +2656,13 @@
     "Radiation_Oncology_Encounter": {
       "type": "Encounter",
       "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
       "direct_transition": "Concurrent_Radiation"
     },
     "Radiation_Oncology_Encounter_End": {

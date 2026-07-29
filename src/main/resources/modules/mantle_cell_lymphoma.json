@@ -35,13 +35,11 @@
             "conditions": [
               {
                 "condition_type": "Gender",
-                "operator": "==",
-                "value": "M"
+                "gender": "M"
               },
               {
                 "condition_type": "Race",
-                "operator": "==",
-                "value": "white"
+                "race": "white"
               }
             ]
           },
@@ -59,8 +57,7 @@
         {
           "condition": {
             "condition_type": "Gender",
-            "operator": "==",
-            "value": "F"
+            "gender": "F"
           },
           "distributions": [
             {

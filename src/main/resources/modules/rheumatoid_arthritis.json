@@ -78,6 +78,13 @@
     "Primary_Care_Visit": {
       "type": "Encounter",
       "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for check up (procedure)"
+        }
+      ],
       "reason": "RA_Symptom5",
       "direct_transition": "Initial_Labs"
     },
@@ -287,6 +294,13 @@
     "Rheumatology_Referral": {
       "type": "Encounter",
       "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
       "direct_transition": "RA_CarePlan"
     },
     "RA_CarePlan": {

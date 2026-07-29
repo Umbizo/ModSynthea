@@ -540,7 +540,7 @@
     },
     "LongTermCare": {
       "type": "Encounter",
-      "encounter_class": "nursing",
+      "encounter_class": "snf",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -551,9 +551,9 @@
       "remarks": [
         "Long-term care facility admission. The previous version used 305689007 'Admission to",
         "long-term care facility' which failed Verhoeff. No exact SNOMED match was found in IHTS.",
-        "Modelling this as an Encounter with encounter_class='nursing' (which Synthea uses for",
-        "nursing facility classification) plus the generic encounter code 185347001. The nursing",
-        "facility nature is captured in encounter_class, not in the SNOMED code itself."
+        "Modelling this as an Encounter with encounter_class='snf' (EncounterType.SNF, Synthea's",
+        "skilled nursing facility classification) plus the generic encounter code 185347001. The",
+        "nursing facility nature is captured in encounter_class, not in the SNOMED code itself."
       ],
       "direct_transition": "Death"
     },

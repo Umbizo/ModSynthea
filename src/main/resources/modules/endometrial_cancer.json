@@ -43,8 +43,7 @@
               {
                 "condition_type": "Attribute",
                 "attribute": "obesity",
-                "operator": "==",
-                "value": true
+                "operator": "is not nil"
               },
               {
                 "condition_type": "Attribute",
@@ -119,7 +118,17 @@
             "system": "DICOM-DCM",
             "code": "US",
             "display": "Ultrasound"
-          }
+          },
+          "instances": [
+            {
+              "title": "Transvaginal ultrasound",
+              "sop_class": {
+                "system": "DICOM-SOP",
+                "code": "1.2.840.10008.5.1.4.1.1.6.1",
+                "display": "Ultrasound Image Storage"
+              }
+            }
+          ]
         }
       ],
       "direct_transition": "EndometrialSampling"
@@ -994,8 +1003,32 @@
       "procedure_code": {
         "system": "SNOMED-CT",
         "code": "77477000",
-        "display": "Magnetic resonance imaging of abdomen (procedure)"
+        "display": "Computerized axial tomography"
       },
+      "series": [
+        {
+          "body_site": {
+            "system": "SNOMED-CT",
+            "code": "113345001",
+            "display": "Abdominal structure (body structure)"
+          },
+          "modality": {
+            "system": "DICOM-DCM",
+            "code": "CT",
+            "display": "Computed Tomography"
+          },
+          "instances": [
+            {
+              "title": "CT of abdomen",
+              "sop_class": {
+                "system": "DICOM-SOP",
+                "code": "1.2.840.10008.5.1.4.1.1.2",
+                "display": "CT Image Storage"
+              }
+            }
+          ]
+        }
+      ],
       "direct_transition": "AdvancedDisease_Action_3_Gate"
     },
     "AdvancedDisease_Action_3_Gate": {
@@ -1018,6 +1051,30 @@
         "code": "399208008",
         "display": "Plain X-ray of chest (procedure)"
       },
+      "series": [
+        {
+          "body_site": {
+            "system": "SNOMED-CT",
+            "code": "51185008",
+            "display": "Thoracic structure (body structure)"
+          },
+          "modality": {
+            "system": "DICOM-DCM",
+            "code": "CR",
+            "display": "Computed Radiography"
+          },
+          "instances": [
+            {
+              "title": "Chest X-ray",
+              "sop_class": {
+                "system": "DICOM-SOP",
+                "code": "1.2.840.10008.5.1.4.1.1.1.1",
+                "display": "Digital X-Ray Image Storage – for Presentation"
+              }
+            }
+          ]
+        }
+      ],
       "direct_transition": "SystemicTherapy"
     }
   }

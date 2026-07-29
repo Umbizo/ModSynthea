@@ -382,6 +382,13 @@
       "type": "Encounter",
       "name": "Diagnosis_Encounter",
       "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
       "direct_transition": "ANA_Test"
     },
     "ANA_Test": {
@@ -443,6 +450,13 @@
       "type": "Encounter",
       "name": "SLE_Flare",
       "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
       "direct_transition": "Followup_Loop"
     },
     "Terminal": {

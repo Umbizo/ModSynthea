@@ -735,6 +735,9 @@
               "distribution": 0.788
             }
           ]
+        },
+        {
+          "transition": "Terminal"
         }
       ]
     },

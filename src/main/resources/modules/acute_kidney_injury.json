@@ -62,6 +62,13 @@
       "type": "Observation",
       "category": "laboratory",
       "assign_to_attribute": "creatinine",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2160-0",
+          "display": "Creatinine [Mass/volume] in Serum or Plasma"
+        }
+      ],
       "unit": "mg/dL",
       "range": {
         "low": 1.2,
@@ -174,6 +181,13 @@
     "AKI_Hospital_Admission": {
       "type": "Encounter",
       "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission (procedure)"
+        }
+      ],
       "direct_transition": "AKI_Hospital_Labs"
     },
     "AKI_Hospital_Labs": {
@@ -196,6 +210,13 @@
     "Nephrology_Followup": {
       "type": "Encounter",
       "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "390906007",
+          "display": "Follow-up encounter (procedure)"
+        }
+      ],
       "direct_transition": "Followup_Creatinine"
     },
     "Followup_Creatinine": {

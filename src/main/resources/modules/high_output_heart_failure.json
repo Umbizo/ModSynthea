@@ -32,8 +32,7 @@
               {
                 "condition_type": "Attribute",
                 "attribute": "anemia",
-                "operator": "==",
-                "value": true
+                "operator": "is not nil"
               },
               {
                 "condition_type": "Attribute",
@@ -488,8 +487,7 @@
       "direct_transition": "HighOutputHF_Decompensation_Action_5"
     },
     "HighOutputHF_Decompensation_Action_5": {
-      "type": "CallSubmodule",
-      "submodule": "treat_underlying_cause",
+      "type": "Simple",
       "direct_transition": "HighOutputHF_Maintenance"
     }
   }

@@ -422,57 +422,15 @@ public abstract class RIFExporter {
 
     billableItems.add(encounter.claim.mainEntry);
     billableItems.addAll(encounter.claim.items);
-    System.out.println("--------------------------------");
-    System.out.println("Encounter type: " + encounter.type);
-    System.out.println("Encounter medications: " + encounter.medications.size());
 
+    // Bridge administered medications into the list of billable items. Medications
+    // bill on their own claims rather than the encounter claim, so they are not
+    // present in encounter.claim.items.
     for (HealthRecord.Medication med : encounter.medications) {
-        System.out.println("Medication:");
-        System.out.println("  RxNorm = " + med.codes.get(0).code);
-        System.out.println("  Display = " + med.codes.get(0).display);
-        System.out.println("  administration = " + med.administration);
-        System.out.println("  claim = " + med.claim);
-        System.out.println("  mainEntry = "
-            + (med.claim == null ? "NULL"
-                : med.claim.mainEntry));
-    }
-
-    /*
-    * Bridge administered medications into the list of billable items.
-    */
-    for (HealthRecord.Medication med : encounter.medications) {
-
-      if (!med.administration) {
+      if (!med.administration || med.claim == null || med.claim.mainEntry == null) {
         continue;
       }
-
-      if (med.claim == null) {
-        System.out.println("Medication has NULL claim");
-        continue;
-      }
-
-      if (med.claim.mainEntry == null) {
-        System.out.println("Medication has NULL mainEntry");
-        continue;
-      }
-
       billableItems.add(med.claim.mainEntry);
-
-      System.out.println(
-          "Added medication claim: "
-          + med.codes.get(0).code
-          + " -> "
-          + med.codes.get(0).display);
-    }
-    for (HealthRecord.Medication med : encounter.medications) {
-
-        if (med.administration) {
-            billableItems.add(med.claim.mainEntry);
-
-            System.out.println(
-                "Added medication claim: "
-                + med.codes.get(0).code);
-        }
     }
     billableItems.removeIf(claimEntry -> {
       if (claimEntry.cost.compareTo(Claim.ZERO_CENTS) == 0) {
@@ -491,14 +449,6 @@ public abstract class RIFExporter {
       }
       return true; // anything else is dropped
     });
-    System.out.println("Billable items:");
-
-    for (Claim.ClaimEntry item : billableItems) {
-
-        System.out.println(
-            "  "
-            + item.entry.getClass().getSimpleName());
-    }
     return billableItems;
   }
 }

@@ -1125,6 +1125,13 @@
     "Stroke_Hospitalization": {
       "type": "Encounter",
       "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission (procedure)"
+        }
+      ],
       "reason": "Stroke_Event",
       "direct_transition": "Upgrade_To_High_Risk"
     },
@@ -1146,6 +1153,13 @@
     "MI_Hospitalization": {
       "type": "Encounter",
       "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission (procedure)"
+        }
+      ],
       "reason": "MI_Event",
       "direct_transition": "Upgrade_To_High_Risk"
     },
@@ -1183,6 +1197,13 @@
     "PE_Hospitalization": {
       "type": "Encounter",
       "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission (procedure)"
+        }
+      ],
       "reason": "PE_Event",
       "direct_transition": "Stop_Aspirin_For_Anticoagulation"
     },

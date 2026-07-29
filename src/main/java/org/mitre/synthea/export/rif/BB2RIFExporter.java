@@ -67,7 +67,7 @@ import org.mitre.synthea.world.geography.CMSStateCodeMapper;
  */
 public class BB2RIFExporter {
 
-  final RifWriters rifWriters;
+  RifWriters rifWriters; // not final so tests can redirect output to a fresh directory
   final StaticFieldConfig staticFieldConfig;
 
   final CodeMapper conditionCodeMapper;

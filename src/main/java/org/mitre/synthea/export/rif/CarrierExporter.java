@@ -202,8 +202,6 @@ public class CarrierExporter extends RIFExporter {
                 person.randInt(RIFExporter.cliaLabNumbers.length)];
         List<Claim.ClaimEntry> allItems =
             getBillableProcedureAndMedAdminItems(encounter);
-
-        System.out.println("Encounter " + encounter.start + " billable items = " + allItems.size());
         for (Claim.ClaimEntry lineItem : allItems) {
           String hcpcsCode = "";
           String ndcCode = "";
@@ -215,22 +213,15 @@ public class CarrierExporter extends RIFExporter {
               }
             }
           } else if (lineItem.entry instanceof HealthRecord.Medication) {
-              HealthRecord.Medication med = (HealthRecord.Medication) lineItem.entry;
-
-              System.out.println("----- Medication (Carrier) -----");
-              System.out.println("System: " + med.codes.get(0).system);
-              System.out.println("Code: " + med.codes.get(0).code);
-              System.out.println("Display: " + med.codes.get(0).display);
-              System.out.println("Can map HCPCS: " + exporter.rxnormHcpcsMapper.canMap(med.codes.get(0)));
-              System.out.println("Can map NDC: " + exporter.medicationCodeMapper.canMap(med.codes.get(0)));
-              if (exporter.rxnormHcpcsMapper.canMap(med.codes.get(0))) {
-                  hcpcsCode = exporter.rxnormHcpcsMapper.map(med.codes.get(0), person);
-              } else {
-                  hcpcsCode = "T1502";
-              }
-              if (exporter.medicationCodeMapper.canMap(med.codes.get(0))) {
-                  ndcCode = exporter.medicationCodeMapper.map(med.codes.get(0), person);
-              }
+            HealthRecord.Medication med = (HealthRecord.Medication) lineItem.entry;
+            if (exporter.rxnormHcpcsMapper.canMap(med.codes.get(0))) {
+              hcpcsCode = exporter.rxnormHcpcsMapper.map(med.codes.get(0), person);
+            } else {
+              hcpcsCode = "T1502"; // Administration of medication
+            }
+            if (exporter.medicationCodeMapper.canMap(med.codes.get(0))) {
+              ndcCode = exporter.medicationCodeMapper.map(med.codes.get(0), person);
+            }
           }
           if (icdReasonCode == null) {
             // If there is an icdReasonCode, then then LINE_ICD_DGNS_CD is already set.
@@ -292,7 +283,6 @@ public class CarrierExporter extends RIFExporter {
 
           // set the line number and write out field values
           fieldValues.put(BB2RIFStructure.CARRIER.LINE_NUM, Integer.toString(lineNum++));
-          System.out.println("Writing HCPCS = " + hcpcsCode + " NDC = " + ndcCode);
           exporter.rifWriters.writeValues(BB2RIFStructure.CARRIER.class, fieldValues);
         }
 

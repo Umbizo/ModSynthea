@@ -412,7 +412,7 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "Terminal_Delay",
+      "direct_transition": "Empagliflozin_Supply_Delay",
       "assign_to_attribute": "empagliflozin_10_mg_oral_tablet_rx"
     },
     "IVA": {

@@ -49,7 +49,7 @@
         }
       ],
       "assign_to_attribute": "hypertension_dx",
-      "direct_transition": "Set_BP_Not Controlled"
+      "direct_transition": "Assign_Hypertension_Severity"
     },
     "Hypertension_Followup_Encounter": {
       "type": "Encounter",
@@ -112,6 +112,9 @@
               "transition": "Delay 2_Month"
             }
           ]
+        },
+        {
+          "transition": "Delay 2_Month"
         }
       ]
     },
@@ -243,6 +246,13 @@
       "type": "Encounter",
       "wellness": true,
       "reason": "hypertension_screening_reason",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for symptom"
+        }
+      ],
       "direct_transition": "Diagnose_Hypertension"
     },
     "End_Wellness_Encounter": {
@@ -283,6 +293,9 @@
             "operator": "==",
             "value": false
           }
+        },
+        {
+          "transition": "Delay_One_Month"
         }
       ]
     },
@@ -337,6 +350,9 @@
               "transition": "Hypertension_Followup_Encounter"
             }
           ]
+        },
+        {
+          "transition": "Hypertension_Followup_Encounter"
         }
       ]
     },
@@ -384,12 +400,35 @@
             "operator": "==",
             "value": false
           },
-          "transition": "Prescribe_Medication_2"
+          "transition": "BMP_Lab"
         },
         {
           "transition": "End_Hypertension_Followup_Encounter"
         }
       ]
+    },
+    "BMP_Lab": {
+      "type": "DiagnosticReport",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "24323-8",
+          "display": "Basic metabolic panel"
+        }
+      ],
+      "observations": [
+        {
+          "category": "laboratory",
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "2951-2",
+              "display": "Sodium"
+            }
+          ]
+        }
+      ],
+      "direct_transition": "Prescribe_Medication_2"
     },
     "Record_BP_2": {
       "type": "MultiObservation",
@@ -552,6 +591,9 @@
               "distribution": 0.678
             }
           ]
+        },
+        {
+          "transition": "Hypertension_Followup_Encounter_2"
         }
       ]
     },
@@ -930,6 +972,36 @@
       "remarks": [
         "Looping back to Eventual_Hypertension will redraw from the years_until_hypertension_onset distribution. In effect this will eliminate a spike in 18 year olds (i.e., all the random sampling of 18 and under would all appear at age 18) and smooth the distribution (and average onset age) appropriately."
       ]
+    },
+    "Assign_Hypertension_Severity": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Set_Hypertension_Severe",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Set_Hypertension_Not_Severe",
+          "distribution": 0.8
+        }
+      ],
+      "remarks": [
+        "hypertension_severe was read by four transitions but never set, so no",
+        "branch could ever match and every patient errored out. Roughly 20% of",
+        "treated hypertensives meet a stage 2 threshold (SBP >= 160) in NHANES."
+      ]
+    },
+    "Set_Hypertension_Severe": {
+      "type": "SetAttribute",
+      "attribute": "hypertension_severe",
+      "value": true,
+      "direct_transition": "Set_BP_Not Controlled"
+    },
+    "Set_Hypertension_Not_Severe": {
+      "type": "SetAttribute",
+      "attribute": "hypertension_severe",
+      "value": false,
+      "direct_transition": "Set_BP_Not Controlled"
     }
   },
   "gmf_version": 1

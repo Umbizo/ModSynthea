@@ -4,18 +4,18 @@
   "remarks": [
     "Models the lifetime course of primary immunodeficiency disorder (PID) with branching for severity, infections, and treatment.",
     "Code provenance (all verified April 2026):",
-    "- SNOMED 58606001 (Primary immune deficiency disorder) — verified via snomedbrowser.com (Read Code X20Ga; ICD-10 D80-D84)",
-    "- SNOMED 234336002 (Hemopoietic stem cell transplant) — verified via OpenSAFELY BMT codelist + NIH VSAC",
-    "- SNOMED 50849002 (Emergency room admission) — official Synthea wiki canonical example",
-    "- SNOMED 32485007 (Hospital admission) — verified via NCBO BioPortal",
-    "- SNOMED 185349003 (Encounter for symptom) — used in Synthea base modules",
-    "- SNOMED 11429006 (Consultation) — used in Synthea base modules",
-    "- SNOMED 12295008 (Bronchiectasis) — verified via OMIM (J47, UMLS C0006267)",
-    "- SNOMED 233604007 (Pneumonia) — used in Synthea base modules",
-    "- SNOMED 91302008 (Sepsis) — used in Synthea base modules",
-    "- LOINC 2465-3 (IgG), 2458-8 (IgA), 2472-9 (IgM) — verified via loinc.org + ARUP + Labcorp",
-    "- RxNorm 1809414 (immunoglobulin G, human 10% in 50 mL Injection) — verified via NLM RxNorm-NDC crosswalk (Octagam, Privigen)",
-    "- NUBC discharge code 01 (Discharged to home) — standard NUBC value"
+    "- SNOMED 58606001 (Primary immune deficiency disorder) \u2014 verified via snomedbrowser.com (Read Code X20Ga; ICD-10 D80-D84)",
+    "- SNOMED 234336002 (Hemopoietic stem cell transplant) \u2014 verified via OpenSAFELY BMT codelist + NIH VSAC",
+    "- SNOMED 50849002 (Emergency room admission) \u2014 official Synthea wiki canonical example",
+    "- SNOMED 32485007 (Hospital admission) \u2014 verified via NCBO BioPortal",
+    "- SNOMED 185349003 (Encounter for symptom) \u2014 used in Synthea base modules",
+    "- SNOMED 11429006 (Consultation) \u2014 used in Synthea base modules",
+    "- SNOMED 12295008 (Bronchiectasis) \u2014 verified via OMIM (J47, UMLS C0006267)",
+    "- SNOMED 233604007 (Pneumonia) \u2014 used in Synthea base modules",
+    "- SNOMED 91302008 (Sepsis) \u2014 used in Synthea base modules",
+    "- LOINC 2465-3 (IgG), 2458-8 (IgA), 2472-9 (IgM) \u2014 verified via loinc.org + ARUP + Labcorp",
+    "- RxNorm 1809414 (immunoglobulin G, human 10% in 50 mL Injection) \u2014 verified via NLM RxNorm-NDC crosswalk (Octagam, Privigen)",
+    "- NUBC discharge code 01 (Discharged to home) \u2014 standard NUBC value"
   ],
   "states": {
     "Initial": {
@@ -29,7 +29,7 @@
       "type": "SetAttribute",
       "attribute": "pid_risk",
       "value": "baseline",
-      "direct_transition": "Delay_Until_Onset"
+      "direct_transition": "primary_immunodeficiency_Incidence_Gate"
     },
     "Delay_Until_Onset": {
       "type": "Delay",
@@ -526,6 +526,23 @@
     },
     "Terminal": {
       "type": "Terminal"
+    },
+    "primary_immunodeficiency_Incidence_Gate": {
+      "type": "Simple",
+      "remarks": [
+        "Symptomatic primary immunodeficiency affects roughly 1 in 1,200-2,000 people. Without this gate the module onsets PID in every patient and its mortality branches then kill most of them before 65.",
+        "Rate is a first-pass estimate and needs clinical review."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Delay_Until_Onset",
+          "distribution": 0.0006
+        },
+        {
+          "transition": "Terminal",
+          "distribution": 0.9994
+        }
+      ]
     }
   },
   "gmf_version": 2

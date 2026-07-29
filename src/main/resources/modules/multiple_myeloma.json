@@ -2,7 +2,7 @@
   "name": "Multiple Myeloma Claims Realistic",
   "remarks": [
     "Merged disease-natural-history and claims-utilization multiple myeloma module",
-    "Preserves MGUS → smoldering → active MM progression",
+    "Preserves MGUS \u2192 smoldering \u2192 active MM progression",
     "Adds Medicare oncology utilization realism for BB2 RIF generation"
   ],
   "states": {
@@ -120,7 +120,7 @@
       "type": "Simple",
       "distributed_transition": [
         {
-          "transition": "MGUS_Monitoring",
+          "transition": "MGUS_Progression_Check_Encounter_End",
           "distribution": 0.99
         },
         {
@@ -186,7 +186,7 @@
       "type": "Simple",
       "distributed_transition": [
         {
-          "transition": "Smoldering_Monitoring",
+          "transition": "Smoldering_Progression_Check_Encounter_End",
           "distribution": 0.9
         },
         {
@@ -376,7 +376,7 @@
       "type": "Simple",
       "distributed_transition": [
         {
-          "transition": "Stable_MM",
+          "transition": "CRAB_Check_Encounter_End",
           "distribution": 0.65
         },
         {
@@ -618,7 +618,7 @@
           "display": "Seen in Hospice"
         }
       ],
-      "direct_transition": "Terminal_MM"
+      "direct_transition": "Hospice_Visit_Encounter_End"
     },
     "Maintenance_Lenalidomide": {
       "type": "MedicationOrder",
@@ -631,7 +631,7 @@
           "display": "Lenalidomide"
         }
       ],
-      "direct_transition": "Maintenance_Lenalidomide_Delay"
+      "direct_transition": "Maintenance_Lenalidomide_Encounter_End"
     },
     "Maintenance_Lenalidomide_Delay": {
       "type": "Delay",
@@ -992,6 +992,26 @@
     "VRd_Regimen": {
       "type": "Simple",
       "direct_transition": "Bortezomib"
+    },
+    "MGUS_Progression_Check_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "MGUS_Monitoring"
+    },
+    "Smoldering_Progression_Check_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Smoldering_Monitoring"
+    },
+    "CRAB_Check_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Stable_MM"
+    },
+    "Hospice_Visit_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Terminal_MM"
+    },
+    "Maintenance_Lenalidomide_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Maintenance_Lenalidomide_Delay"
     }
   }
 }

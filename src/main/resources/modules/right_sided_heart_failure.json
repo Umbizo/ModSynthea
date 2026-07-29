@@ -50,7 +50,7 @@
           }
         ]
       },
-      "direct_transition": "Initial_Cardiology_Encounter"
+      "direct_transition": "right_sided_heart_failure_Incidence_Gate"
     },
     "Initial_Cardiology_Encounter": {
       "type": "Encounter",
@@ -911,6 +911,23 @@
       "type": "MedicationEnd",
       "referenced_by_attribute": "furosemide_40_mg_oral_tablet_rx_4",
       "direct_transition": "Ward_Encounter_End"
+    },
+    "right_sided_heart_failure_Incidence_Gate": {
+      "type": "Simple",
+      "remarks": [
+        "Isolated right-sided heart failure is uncommon; the risk-factor Guard alone does not bound how many of those patients go on to develop it.",
+        "Rate is a first-pass estimate and needs clinical review."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Initial_Cardiology_Encounter",
+          "distribution": 0.02
+        },
+        {
+          "transition": "Terminal",
+          "distribution": 0.98
+        }
+      ]
     }
   }
 }

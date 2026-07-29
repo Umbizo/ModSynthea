@@ -595,7 +595,7 @@
       "remarks": [
         "Temporary remission"
       ],
-      "direct_transition": "MCL_Relapse_Loop"
+      "direct_transition": "MCL_Remission_Encounter_End"
     },
     "MCL_Relapse_Loop": {
       "type": "Delay",
@@ -659,6 +659,10 @@
       "attribute": "lymphoma_type",
       "value": "MCL",
       "direct_transition": "MCL_Initial_Symptoms"
+    },
+    "MCL_Remission_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "MCL_Relapse_Loop"
     }
   },
   "gmf_version": 2

@@ -30,7 +30,7 @@
         "quantity": 50,
         "unit": "years"
       },
-      "direct_transition": "Initial_Cardiology_Encounter"
+      "direct_transition": "valvular_heart_failure_Incidence_Gate"
     },
     "Initial_Cardiology_Encounter": {
       "type": "Encounter",
@@ -795,6 +795,23 @@
       "type": "MedicationEnd",
       "referenced_by_attribute": "furosemide_40_mg_oral_tablet_rx_2",
       "direct_transition": "Inpatient_Mortality_Check"
+    },
+    "valvular_heart_failure_Incidence_Gate": {
+      "type": "Simple",
+      "remarks": [
+        "Moderate-to-severe valvular heart disease affects roughly 2-3% of adults (around 10% over 75). The age Guard alone admits every patient over 50, which made \"Congestive heart failure\" onset in 84% of the cohort.",
+        "Rate is a first-pass estimate and needs clinical review."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Initial_Cardiology_Encounter",
+          "distribution": 0.03
+        },
+        {
+          "transition": "Terminal",
+          "distribution": 0.97
+        }
+      ]
     }
   }
 }

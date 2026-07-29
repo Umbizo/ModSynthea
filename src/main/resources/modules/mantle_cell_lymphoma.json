@@ -1216,7 +1216,7 @@
           "display": "Ibrutinib"
         }
       ],
-      "direct_transition": "Ibrutinib_Monitoring"
+      "direct_transition": "Start_Ibrutinib_Encounter_End"
     },
     "Ibrutinib_Monitoring": {
       "type": "Delay",
@@ -1849,7 +1849,7 @@
     },
     "Clinical_Trial_Response": {
       "type": "Simple",
-      "direct_transition": "Extended_Remission"
+      "direct_transition": "Clinical_Trial_Response_Encounter_End"
     },
     "Clinical_Trial_Failure": {
       "type": "Simple",
@@ -1892,7 +1892,7 @@
     },
     "Salvage_Response": {
       "type": "Simple",
-      "direct_transition": "Extended_Remission"
+      "direct_transition": "Salvage_Response_Encounter_End"
     },
     "Extended_Remission": {
       "type": "Delay",
@@ -1911,7 +1911,7 @@
           "distribution": 0.7
         },
         {
-          "transition": "Long_Term_Control",
+          "transition": "Late_Stage_Outcome_Encounter_End",
           "distribution": 0.3
         }
       ]
@@ -1945,7 +1945,7 @@
           "distribution": 0.15
         },
         {
-          "transition": "Continue_Long_Term_Control",
+          "transition": "Elderly_Complications_Encounter_End",
           "distribution": 0.25
         }
       ]
@@ -1970,7 +1970,7 @@
           "display": "End of life care planning"
         }
       ],
-      "direct_transition": "Palliative_Symptom_Management"
+      "direct_transition": "Palliative_Care_Encounter_End"
     },
     "Palliative_Symptom_Management": {
       "type": "Delay",
@@ -2084,6 +2084,30 @@
     },
     "Terminal": {
       "type": "Terminal"
+    },
+    "Start_Ibrutinib_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Ibrutinib_Monitoring"
+    },
+    "Clinical_Trial_Response_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Extended_Remission"
+    },
+    "Salvage_Response_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Extended_Remission"
+    },
+    "Late_Stage_Outcome_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Long_Term_Control"
+    },
+    "Elderly_Complications_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Continue_Long_Term_Control"
+    },
+    "Palliative_Care_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Palliative_Symptom_Management"
     }
   },
   "gmf_version": 2

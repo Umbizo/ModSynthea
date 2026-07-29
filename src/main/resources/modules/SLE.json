@@ -420,7 +420,7 @@
           "display": "hydroxychloroquine sulfate 200 MG Oral Tablet"
         }
       ],
-      "direct_transition": "Followup_Loop"
+      "direct_transition": "Start_HCQ_Encounter_End"
     },
     "Followup_Loop": {
       "type": "Delay",
@@ -442,7 +442,7 @@
         },
         {
           "distribution": 0.6,
-          "transition": "Followup_Loop"
+          "transition": "Flare_Check_Encounter_End"
         }
       ]
     },
@@ -457,11 +457,23 @@
           "display": "Encounter for problem (procedure)"
         }
       ],
-      "direct_transition": "Followup_Loop"
+      "direct_transition": "SLE_Flare_Encounter_End"
     },
     "Terminal": {
       "type": "Terminal",
       "name": "Terminal"
+    },
+    "Start_HCQ_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Followup_Loop"
+    },
+    "Flare_Check_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Followup_Loop"
+    },
+    "SLE_Flare_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Followup_Loop"
     }
   }
 }

@@ -453,7 +453,7 @@
     },
     "Targeted_Therapy": {
       "type": "Simple",
-      "direct_transition": "Venetoclax_Therapy"
+      "direct_transition": "Initialize_AML_Monitor_Count"
     },
     "Supportive_Care": {
       "type": "Procedure",

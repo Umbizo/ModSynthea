@@ -766,7 +766,7 @@
     "Medication_Spironolactone_End": {
       "type": "MedicationEnd",
       "referenced_by_attribute": "spironolactone_rx",
-      "direct_transition": "Maintenance_Loop"
+      "direct_transition": "Initial_Encounter_End"
     },
     "Inpatient_Diuresis_Supply_Delay": {
       "type": "Delay",

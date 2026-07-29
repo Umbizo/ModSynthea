@@ -258,7 +258,7 @@
           ]
         }
       ],
-      "direct_transition": "InpatientAdmission_End"
+      "direct_transition": "Ceftriaxone_Order"
     },
     "OxygenSaturationInpatient": {
       "type": "Observation",

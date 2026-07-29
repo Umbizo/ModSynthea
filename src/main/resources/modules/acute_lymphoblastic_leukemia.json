@@ -785,7 +785,7 @@
         "low": 10,
         "high": 30
       },
-      "direct_transition": "Long_Term_Follow_Up"
+      "direct_transition": "Maintenance_Mercaptopurine"
     },
     "Long_Term_Follow_Up": {
       "type": "Delay",

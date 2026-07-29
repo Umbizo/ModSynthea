@@ -819,15 +819,15 @@
       "distributed_transition": [
         {
           "transition": "Isatuximab",
-          "distribution": 0.2
+          "distribution": 0.18
         },
         {
           "transition": "Carfilzomib",
-          "distribution": 0.2
+          "distribution": 0.18
         },
         {
           "transition": "Ixazomib",
-          "distribution": 0.2
+          "distribution": 0.18
         },
         {
           "transition": "Selinexor",
@@ -847,6 +847,10 @@
         },
         {
           "transition": "Belantamab",
+          "distribution": 0.06
+        },
+        {
+          "transition": "Elotuzumab",
           "distribution": 0.06
         }
       ]
@@ -888,7 +892,7 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": "83831-117",
+          "code": "3002",
           "display": "Cyclophosphamide"
         }
       ],

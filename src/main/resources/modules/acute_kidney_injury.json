@@ -159,7 +159,6 @@
     },
     "Dialysis": {
       "type": "Procedure",
-      "target_encounter": "AKI_Hospital_Admission",
       "codes": [
         {
           "system": "SNOMED-CT",

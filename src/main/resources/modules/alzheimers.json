@@ -270,7 +270,6 @@
     },
     "StartLecanemab": {
       "type": "MedicationOrder",
-      "target_encounter": "InfusionProgram",
       "administration": true,
       "codes": [
         {
@@ -307,7 +306,6 @@
     },
     "StartDonanemab": {
       "type": "MedicationOrder",
-      "target_encounter": "InfusionProgram",
       "administration": true,
       "codes": [
         {
@@ -379,7 +377,7 @@
           "display": "Encounter for problem"
         }
       ],
-      "direct_transition": "InfusionDelay"
+      "direct_transition": "InfusionProgram_Encounter_End"
     },
     "InfusionDelay": {
       "type": "Delay",
@@ -403,7 +401,7 @@
         },
         {
           "distribution": 0.2,
-          "transition": "MCIProgression"
+          "transition": "InfusionContinuation_Encounter_End"
         }
       ]
     },
@@ -416,7 +414,7 @@
           "display": "Magnetic resonance imaging of brain"
         }
       ],
-      "direct_transition": "InfusionDelay"
+      "direct_transition": "ARIA_MRISurveillance_Encounter_End"
     },
     "MCIProgression": {
       "type": "Delay",
@@ -432,7 +430,7 @@
         },
         {
           "distribution": 0.4,
-          "transition": "StableMCI"
+          "transition": "MCIProgression_Encounter_End"
         },
         {
           "distribution": 0.1,
@@ -454,7 +452,7 @@
         },
         {
           "distribution": 0.3,
-          "transition": "RemainMCI"
+          "transition": "StableMCI_Encounter_End"
         },
         {
           "distribution": 0.1,
@@ -469,7 +467,7 @@
         "high": 3,
         "unit": "years"
       },
-      "direct_transition": "MCIProgression"
+      "direct_transition": "RemainMCI_Encounter_End"
     },
     "RevertToNormal": {
       "type": "ConditionEnd",
@@ -590,7 +588,7 @@
         "high": 18,
         "unit": "points"
       },
-      "direct_transition": "AnnualMildReviewDelay"
+      "direct_transition": "AnnualMoCA_Encounter_End"
     },
     "AnnualMildReviewDelay": {
       "type": "Delay",
@@ -765,7 +763,7 @@
         },
         {
           "distribution": 0.1,
-          "transition": "FamilyCareAtHome"
+          "transition": "LongTermCareConsideration_Encounter_End"
         }
       ]
     },
@@ -896,7 +894,7 @@
           "distribution": 0.6
         },
         {
-          "transition": "ModerateStageFollowup",
+          "transition": "BehavioralSymptomsAssessment_Action_1_Gate_Encounter_End",
           "distribution": 0.4
         }
       ]
@@ -907,7 +905,7 @@
       "exact": {
         "quantity": 1
       },
-      "direct_transition": "ModerateStageFollowup"
+      "direct_transition": "BehavioralSymptomsAssessment_Action_1_Encounter_End"
     },
     "SevereSymptoms_Action_1": {
       "type": "Observation",
@@ -991,6 +989,46 @@
         "quantity": 1
       },
       "direct_transition": "AdvancedDiseaseFollowup"
+    },
+    "InfusionProgram_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "InfusionDelay"
+    },
+    "InfusionContinuation_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "MCIProgression"
+    },
+    "ARIA_MRISurveillance_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "InfusionDelay"
+    },
+    "MCIProgression_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "StableMCI"
+    },
+    "StableMCI_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "RemainMCI"
+    },
+    "RemainMCI_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "MCIProgression"
+    },
+    "AnnualMoCA_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "AnnualMildReviewDelay"
+    },
+    "LongTermCareConsideration_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "FamilyCareAtHome"
+    },
+    "BehavioralSymptomsAssessment_Action_1_Gate_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ModerateStageFollowup"
+    },
+    "BehavioralSymptomsAssessment_Action_1_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ModerateStageFollowup"
     }
   }
 }

@@ -353,7 +353,6 @@
       "type": "MedicationOrder",
       "reason": "acute_myeloid_leukemia",
       "administration": true,
-      "target_encounter": "AML_Diagnosis",
       "codes": [
         {
           "system": "RxNorm",
@@ -533,7 +532,6 @@
     },
     "Transfusion_Support": {
       "type": "Procedure",
-      "target_encounter": "AML_Diagnosis",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -583,7 +581,6 @@
     },
     "Bone_Marrow_Biopsy": {
       "type": "Procedure",
-      "target_encounter": "AML_Diagnosis",
       "codes": [
         {
           "system": "SNOMED-CT",

@@ -342,7 +342,6 @@
     },
     "TURBT_Procedure": {
       "type": "Procedure",
-      "target_encounter": "TURBT_Encounter",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -494,7 +493,6 @@
     "Single_Dose_Mitomycin": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Intravesical_Therapy_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -516,7 +514,6 @@
     },
     "BCG_Induction": {
       "type": "MedicationOrder",
-      "target_encounter": "Intravesical_Therapy_Encounter",
       "administration": true,
       "codes": [
         {
@@ -601,7 +598,6 @@
     "BCG_Maintenance": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Intravesical_Therapy_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -697,7 +693,6 @@
     },
     "Recurrence_TURBT": {
       "type": "Procedure",
-      "target_encounter": "TURBT_Encounter",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -734,7 +729,6 @@
     "Second_Line_BCG": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Intravesical_Therapy_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -773,7 +767,6 @@
     "Alternative_Intravesical": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Intravesical_Therapy_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -857,7 +850,6 @@
     },
     "Chest_CT_Staging": {
       "type": "Procedure",
-      "target_encounter": "Staging_Encounter",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -869,7 +861,6 @@
     },
     "Abdomen_Pelvis_CT": {
       "type": "Procedure",
-      "target_encounter": "Staging_Encounter",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -897,7 +888,6 @@
     },
     "Bone_Scan": {
       "type": "Procedure",
-      "target_encounter": "Staging_Encounter",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -948,7 +938,6 @@
     },
     "Advanced_CT_Staging": {
       "type": "Procedure",
-      "target_encounter": "Advanced_Staging_Encounter",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -1078,7 +1067,6 @@
     "Neoadjuvant_Chemotherapy": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -1309,7 +1297,6 @@
     "Adjuvant_Chemotherapy": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -1350,7 +1337,6 @@
     },
     "Trimodal_Chemotherapy": {
       "type": "MedicationOrder",
-      "target_encounter": "Medical_Oncology_Encounter",
       "administration": true,
       "codes": [
         {
@@ -1365,7 +1351,6 @@
     },
     "Concurrent_Radiation": {
       "type": "Procedure",
-      "target_encounter": "Radiation_Oncology_Encounter",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -1511,7 +1496,6 @@
     "First_Line_Chemotherapy": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -1614,7 +1598,6 @@
     "Maintenance_Therapy": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -1706,7 +1689,6 @@
     "Second_Line_Chemotherapy": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -1807,7 +1789,6 @@
     "Third_Line_Treatment": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -1863,7 +1844,6 @@
     "Palliative_Chemotherapy": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -2070,7 +2050,6 @@
     },
     "Repeat_TURBT": {
       "type": "Procedure",
-      "target_encounter": "TURBT_Encounter",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -2103,7 +2082,6 @@
     "Metastatic_Chemotherapy_Recurrence": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -2246,7 +2224,6 @@
           "display": "Palliative radiation therapy"
         }
       ],
-      "target_encounter": "Palliative_Radiation_Encounter",
       "direct_transition": "Palliative_Radiation_Encounter_End"
     },
     "Palliative_RT_Recovery": {
@@ -2379,7 +2356,6 @@
     "Late_Recurrence_Systemic": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "codes": [
         {
           "system": "RxNorm",

@@ -18,7 +18,7 @@
         "quantity": 50,
         "unit": "years"
       },
-      "direct_transition": "ProdromalPhase"
+      "direct_transition": "parkinsons_Incidence_Gate"
     },
     "ProdromalPhase": {
       "type": "Delay",
@@ -146,7 +146,7 @@
         }
       ],
       "reason": "has_parkinsons",
-      "direct_transition": "InitialResponsePeriod"
+      "direct_transition": "StartLevodopaMonotherapy_Encounter_End"
     },
     "InitialResponsePeriod": {
       "type": "Delay",
@@ -212,7 +212,7 @@
         }
       ],
       "reason": "has_parkinsons",
-      "direct_transition": "StablePeriod"
+      "direct_transition": "AddDopamineAgonist_Encounter_End"
     },
     "AddCOMTInhibitor": {
       "type": "MedicationOrder",
@@ -224,7 +224,7 @@
         }
       ],
       "reason": "has_parkinsons",
-      "direct_transition": "StablePeriod"
+      "direct_transition": "AddCOMTInhibitor_Encounter_End"
     },
     "StablePeriod": {
       "type": "Delay",
@@ -364,7 +364,7 @@
         }
       ],
       "reason": "has_parkinsons",
-      "direct_transition": "PostDBSRecovery"
+      "direct_transition": "DBS_Surgery_Encounter_End"
     },
     "PostDBSRecovery": {
       "type": "Delay",
@@ -486,11 +486,11 @@
       ],
       "reason": "has_parkinsons",
       "remarks": [
-        "*** WARNING: PLACEHOLDER CODE — DO NOT USE IN PRODUCTION ***",
+        "*** WARNING: PLACEHOLDER CODE \u2014 DO NOT USE IN PRODUCTION ***",
         "",
         "The previous version used 304250004 'Advance directive discussion (procedure)' which failed",
         "Verhoeff. 713600000 was provisionally proposed but has now been confirmed to FAIL the Verhoeff",
-        "check digit — meaning it cannot be a valid SCTID either.",
+        "check digit \u2014 meaning it cannot be a valid SCTID either.",
         "",
         "ACTION REQUIRED before production ingestion:",
         "1. Open browser.ihtsdotools.org",
@@ -508,7 +508,7 @@
         "This placeholder is intentionally invalid (fails Verhoeff) so that any pipeline ingestion",
         "WILL fail loudly rather than silently accept fabricated data."
       ],
-      "direct_transition": "EndStageDisease"
+      "direct_transition": "AdvanceCarePlanning_Encounter_End"
     },
     "EndStageDisease": {
       "type": "Delay",
@@ -595,7 +595,7 @@
       ],
       "remarks": [
         "Dopamine transporter imaging for differential diagnosis.",
-        "CPT code not audited in SNOMED audit pass — verify separately."
+        "CPT code not audited in SNOMED audit pass \u2014 verify separately."
       ],
       "direct_transition": "DiagnosticWorkup_Action_2_Gate"
     },
@@ -838,7 +838,7 @@
           "transition": "AddCOMTInhibitor"
         },
         {
-          "transition": "StablePeriod"
+          "transition": "NonMotorSymptomsAssessment_Action_5_Encounter_End"
         }
       ]
     },
@@ -934,7 +934,7 @@
       },
       "remarks": [
         "No exact SNOMED match for 'wearing-off phenomenon in PD'. Using 427488005",
-        "'On - off phenomenon' per AAN PD Quality Measurement Set 2020 — closely related",
+        "'On - off phenomenon' per AAN PD Quality Measurement Set 2020 \u2014 closely related",
         "concept covering motor fluctuations on dopaminergic therapy. Browser-confirm before",
         "production. Wearing-off and on-off phenomena are clinically distinct (wearing-off =",
         "predictable end-of-dose decline; on-off = unpredictable switches) but the AAN",
@@ -1088,6 +1088,47 @@
         "therapy procedure' for child concepts."
       ],
       "direct_transition": "AdvanceCarePlanning"
+    },
+    "StartLevodopaMonotherapy_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "InitialResponsePeriod"
+    },
+    "AddDopamineAgonist_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "StablePeriod"
+    },
+    "AddCOMTInhibitor_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "StablePeriod"
+    },
+    "DBS_Surgery_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "PostDBSRecovery"
+    },
+    "AdvanceCarePlanning_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "EndStageDisease"
+    },
+    "NonMotorSymptomsAssessment_Action_5_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "StablePeriod"
+    },
+    "parkinsons_Incidence_Gate": {
+      "type": "Simple",
+      "remarks": [
+        "Parkinson's disease affects roughly 1% of people over 60. The age Guard alone admits every patient over 50.",
+        "Rate is a first-pass estimate and needs clinical review."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "ProdromalPhase",
+          "distribution": 0.015
+        },
+        {
+          "transition": "Terminal",
+          "distribution": 0.985
+        }
+      ]
     }
   }
 }

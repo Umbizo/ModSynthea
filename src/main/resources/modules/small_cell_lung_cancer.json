@@ -283,7 +283,6 @@
     "Chemoradiation_Therapy": {
       "type": "MedicationOrder",
       "assign_to_attribute": "carboplatin_limited",
-      "target_encounter": "Medical_Oncology_Encounter",
       "administration": true,
       "codes": [
         {
@@ -297,7 +296,6 @@
     "Etoposide_Chemoradiation": {
       "type": "MedicationOrder",
       "assign_to_attribute": "etoposide_limited",
-      "target_encounter": "Medical_Oncology_Encounter",
       "administration": true,
       "codes": [
         {
@@ -321,7 +319,6 @@
     },
     "Chemotherapy_First_Line": {
       "type": "MedicationOrder",
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "carboplatin_extensive",
       "administration": true,
       "codes": [
@@ -335,7 +332,6 @@
     },
     "Etoposide_First_Line": {
       "type": "MedicationOrder",
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "etoposide_extensive",
       "administration": true,
       "codes": [
@@ -367,7 +363,6 @@
     "Durvalumab": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "durvalumab_tx",
       "codes": [
         {
@@ -386,7 +381,6 @@
     "Atezolizumab": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "atezolizumab_tx",
       "codes": [
         {
@@ -481,7 +475,6 @@
     "Second_Line_Therapy": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "topotecan_tx",
       "codes": [
         {

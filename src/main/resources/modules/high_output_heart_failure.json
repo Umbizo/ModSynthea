@@ -2,7 +2,7 @@
   "name": "high_output_heart_failure",
   "remarks": [
     "Simulates high-output heart failure in adults with risk factors such as anemia, hyperthyroidism, AV fistula, or pregnancy.",
-    "Updated with realistic incidence, symptoms, and diagnostics"
+    "Every encounter is closed by an EncounterEnd before any delay or loop: this module otherwise holds the engine's per-person encounter reservation for life, which blocks wellness visits and every other module's encounters."
   ],
   "states": {
     "Initial": {
@@ -56,7 +56,7 @@
           }
         ]
       },
-      "direct_transition": "OnsetHighOutputHF"
+      "direct_transition": "HighOutputHF_Incidence_Gate"
     },
     "OnsetHighOutputHF": {
       "type": "Simple",
@@ -239,7 +239,7 @@
           ]
         }
       ],
-      "direct_transition": "HighOutputHF_Maintenance"
+      "direct_transition": "HighOutputHF_Onset_Encounter_End"
     },
     "HighOutputHF_Maintenance_Actions_Action_1": {
       "type": "Encounter",
@@ -396,7 +396,7 @@
           "distribution": 0.6
         },
         {
-          "transition": "HighOutputHF_Maintenance",
+          "transition": "HighOutputHF_Maintenance_Encounter_End",
           "distribution": 0.4
         }
       ]
@@ -417,7 +417,7 @@
         "low": 50,
         "high": 70
       },
-      "direct_transition": "HighOutputHF_Maintenance"
+      "direct_transition": "HighOutputHF_Maintenance_Encounter_End"
     },
     "HighOutputHF_Decompensation_Action_1": {
       "type": "Encounter",
@@ -438,7 +438,7 @@
       "exact": {
         "quantity": 1
       },
-      "direct_transition": "HighOutputHF_Decompensation_Action_3"
+      "direct_transition": "HighOutputHF_ED_Encounter_End"
     },
     "HighOutputHF_Decompensation_Action_3": {
       "type": "Encounter",
@@ -484,11 +484,59 @@
           ]
         }
       ],
-      "direct_transition": "HighOutputHF_Decompensation_Action_5"
+      "direct_transition": "HighOutputHF_Inpatient_LOS"
     },
     "HighOutputHF_Decompensation_Action_5": {
       "type": "Simple",
       "direct_transition": "HighOutputHF_Maintenance"
+    },
+    "HighOutputHF_Incidence_Gate": {
+      "type": "Simple",
+      "remarks": [
+        "High-output heart failure is rare even among patients with the",
+        "risk factors above; without this gate the Guard admits the",
+        "majority of the population. Rate needs clinical review."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "OnsetHighOutputHF",
+          "distribution": 0.02
+        },
+        {
+          "transition": "Terminal",
+          "distribution": 0.98
+        }
+      ]
+    },
+    "HighOutputHF_Onset_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "HighOutputHF_Maintenance"
+    },
+    "HighOutputHF_Maintenance_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "HighOutputHF_Maintenance"
+    },
+    "HighOutputHF_ED_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "HighOutputHF_Decompensation_Action_3"
+    },
+    "HighOutputHF_Inpatient_LOS": {
+      "type": "Delay",
+      "remarks": [
+        "Length of stay for a decompensation admission. The inpatient",
+        "encounter is deliberately open across this delay -- that is the",
+        "stay itself -- and is closed immediately after."
+      ],
+      "range": {
+        "low": 3,
+        "high": 7,
+        "unit": "days"
+      },
+      "direct_transition": "HighOutputHF_Inpatient_Encounter_End"
+    },
+    "HighOutputHF_Inpatient_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "HighOutputHF_Decompensation_Action_5"
     }
   }
 }

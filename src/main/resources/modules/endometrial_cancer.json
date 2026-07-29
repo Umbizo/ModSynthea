@@ -73,7 +73,7 @@
           }
         ]
       },
-      "direct_transition": "SymptomDevelopment"
+      "direct_transition": "endometrial_cancer_Incidence_Gate"
     },
     "SymptomDevelopment": {
       "type": "Delay",
@@ -194,7 +194,7 @@
           "display": "medroxyprogesterone acetate 10 MG Oral Tablet"
         }
       ],
-      "direct_transition": "FollowUpBiopsy"
+      "direct_transition": "ProgesteroneTherapy_Encounter_End"
     },
     "FollowUpBiopsy": {
       "type": "Delay",
@@ -355,7 +355,7 @@
       "type": "Counter",
       "attribute": "surveillance_visits",
       "action": "increment",
-      "direct_transition": "SurveillanceLowRisk"
+      "direct_transition": "ContinueSurveillance_Encounter_End"
     },
     "LongTermSurveillance": {
       "type": "Delay",
@@ -396,7 +396,7 @@
           "display": "Interstitial radiation source application; complex"
         }
       ],
-      "direct_transition": "SurveillanceIntermediateRisk"
+      "direct_transition": "VaginalBrachytherapy_Encounter_End"
     },
     "EBRT_Therapy": {
       "type": "Procedure",
@@ -407,11 +407,11 @@
           "display": "Radiation treatment management, 5 treatments"
         }
       ],
-      "direct_transition": "SurveillanceIntermediateRisk"
+      "direct_transition": "EBRT_Therapy_Encounter_End"
     },
     "ObservationIntermediateRisk": {
       "type": "Simple",
-      "direct_transition": "SurveillanceIntermediateRisk"
+      "direct_transition": "ObservationIntermediateRisk_Encounter_End"
     },
     "SurveillanceIntermediateRisk": {
       "type": "Delay",
@@ -464,11 +464,11 @@
           "display": "paclitaxel 6 MG/ML Injectable Solution"
         }
       ],
-      "direct_transition": "SurveillanceHighRisk"
+      "direct_transition": "AdjuvantChemotherapy_Encounter_End"
     },
     "RadiationOnly": {
       "type": "Simple",
-      "direct_transition": "SurveillanceHighRisk"
+      "direct_transition": "RadiationOnly_Encounter_End"
     },
     "SurveillanceHighRisk": {
       "type": "Delay",
@@ -514,7 +514,7 @@
           "display": "paclitaxel 6 MG/ML Injectable Solution"
         }
       ],
-      "direct_transition": "ResponseEvaluation"
+      "direct_transition": "ChemotherapyAdvanced_Encounter_End"
     },
     "HormonalTherapy": {
       "type": "MedicationOrder",
@@ -525,7 +525,7 @@
           "display": "megestrol acetate 40 MG Oral Tablet"
         }
       ],
-      "direct_transition": "ResponseEvaluation"
+      "direct_transition": "HormonalTherapy_Encounter_End"
     },
     "TargetedTherapy": {
       "type": "MedicationOrder",
@@ -536,7 +536,7 @@
           "display": "4 ML pembrolizumab 25 MG/ML Injection"
         }
       ],
-      "direct_transition": "ResponseEvaluation"
+      "direct_transition": "TargetedTherapy_Encounter_End"
     },
     "ResponseEvaluation": {
       "type": "Delay",
@@ -570,11 +570,11 @@
     },
     "ResponsePartial": {
       "type": "Simple",
-      "direct_transition": "ContinueTherapy"
+      "direct_transition": "ResponsePartial_Encounter_End"
     },
     "StableDisease": {
       "type": "Simple",
-      "direct_transition": "ContinueTherapy"
+      "direct_transition": "StableDisease_Encounter_End"
     },
     "ProgressiveDisease": {
       "type": "Simple",
@@ -587,14 +587,14 @@
         "high": 4,
         "unit": "months"
       },
-      "direct_transition": "ResponseEvaluation"
+      "direct_transition": "ContinueTherapy_Encounter_End"
     },
     "MaintenanceTherapy": {
       "type": "Simple",
       "distributed_transition": [
         {
           "distribution": 0.6,
-          "transition": "ObservationMaintenance"
+          "transition": "MaintenanceTherapy_Encounter_End"
         },
         {
           "distribution": 0.4,
@@ -609,7 +609,7 @@
         "high": 6,
         "unit": "months"
       },
-      "direct_transition": "SurveillanceAdvanced"
+      "direct_transition": "ObservationMaintenance_Encounter_End"
     },
     "MaintenanceHormonalTherapy": {
       "type": "MedicationOrder",
@@ -620,7 +620,7 @@
           "display": "megestrol acetate 40 MG Oral Tablet"
         }
       ],
-      "direct_transition": "SurveillanceAdvanced"
+      "direct_transition": "MaintenanceHormonalTherapy_Encounter_End"
     },
     "SecondLineTherapy": {
       "type": "Simple",
@@ -652,7 +652,7 @@
           "display": "doxorubicin Injectable Solution"
         }
       ],
-      "direct_transition": "ResponseEvaluation"
+      "direct_transition": "SecondLineChemotherapy_Encounter_End"
     },
     "Immunotherapy": {
       "type": "MedicationOrder",
@@ -663,7 +663,7 @@
           "display": "4 ML pembrolizumab 25 MG/ML Injection"
         }
       ],
-      "direct_transition": "ResponseEvaluation"
+      "direct_transition": "Immunotherapy_Encounter_End"
     },
     "ClinicalTrial": {
       "type": "Procedure",
@@ -674,7 +674,7 @@
           "display": "Clinical trial participation (procedure)"
         }
       ],
-      "direct_transition": "ResponseEvaluation"
+      "direct_transition": "ClinicalTrial_Encounter_End"
     },
     "PalliativeCareOnly": {
       "type": "Encounter",
@@ -686,7 +686,7 @@
           "display": "Admission to hospice (procedure)"
         }
       ],
-      "direct_transition": "EndOfLife"
+      "direct_transition": "PalliativeCareOnly_Encounter_End"
     },
     "SurveillanceAdvanced": {
       "type": "Delay",
@@ -703,7 +703,7 @@
             "operator": ">=",
             "value": 5
           },
-          "transition": "LongTermRemission"
+          "transition": "SurveillanceAdvanced_Encounter_End"
         },
         {
           "transition": "RecurrenceCheck"
@@ -753,7 +753,7 @@
       "type": "Counter",
       "attribute": "years_no_recurrence",
       "action": "increment",
-      "direct_transition": "SurveillanceAdvanced"
+      "direct_transition": "NoEvidenceDisease_Encounter_End"
     },
     "SalvageTherapy": {
       "type": "Simple",
@@ -781,7 +781,7 @@
           "display": "Radiation treatment management, 5 treatments"
         }
       ],
-      "direct_transition": "ResponseEvaluation"
+      "direct_transition": "RadiationSalvage_Encounter_End"
     },
     "SurgicalSalvage": {
       "type": "Procedure",
@@ -792,7 +792,7 @@
           "display": "Resection (tumor debulking) of ovarian, peritoneal, or omental tumor"
         }
       ],
-      "direct_transition": "ResponseEvaluation"
+      "direct_transition": "SurgicalSalvage_Encounter_End"
     },
     "LongTermRemission": {
       "type": "Delay",
@@ -909,7 +909,7 @@
           "display": "Total abdominal hysterectomy with bilateral salpingo-oophorectomy"
         }
       ],
-      "direct_transition": "SurveillanceLowRisk"
+      "direct_transition": "SurgeryOnly_Action_1_Encounter_End"
     },
     "PhysicalExamSurveillance_Action_1_Gate": {
       "type": "Simple",
@@ -945,7 +945,7 @@
           "transition": "ContinueSurveillance"
         },
         {
-          "transition": "LongTermSurveillance"
+          "transition": "PhysicalExamSurveillance_Action_1_Encounter_End"
         }
       ]
     },
@@ -1069,13 +1069,134 @@
               "sop_class": {
                 "system": "DICOM-SOP",
                 "code": "1.2.840.10008.5.1.4.1.1.1.1",
-                "display": "Digital X-Ray Image Storage – for Presentation"
+                "display": "Digital X-Ray Image Storage \u2013 for Presentation"
               }
             }
           ]
         }
       ],
       "direct_transition": "SystemicTherapy"
+    },
+    "ProgesteroneTherapy_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "FollowUpBiopsy"
+    },
+    "ContinueSurveillance_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SurveillanceLowRisk"
+    },
+    "VaginalBrachytherapy_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SurveillanceIntermediateRisk"
+    },
+    "EBRT_Therapy_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SurveillanceIntermediateRisk"
+    },
+    "ObservationIntermediateRisk_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SurveillanceIntermediateRisk"
+    },
+    "AdjuvantChemotherapy_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SurveillanceHighRisk"
+    },
+    "RadiationOnly_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SurveillanceHighRisk"
+    },
+    "ChemotherapyAdvanced_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ResponseEvaluation"
+    },
+    "HormonalTherapy_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ResponseEvaluation"
+    },
+    "TargetedTherapy_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ResponseEvaluation"
+    },
+    "ResponsePartial_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ContinueTherapy"
+    },
+    "StableDisease_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ContinueTherapy"
+    },
+    "ContinueTherapy_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ResponseEvaluation"
+    },
+    "MaintenanceTherapy_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ObservationMaintenance"
+    },
+    "ObservationMaintenance_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SurveillanceAdvanced"
+    },
+    "MaintenanceHormonalTherapy_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SurveillanceAdvanced"
+    },
+    "SecondLineChemotherapy_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ResponseEvaluation"
+    },
+    "Immunotherapy_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ResponseEvaluation"
+    },
+    "ClinicalTrial_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ResponseEvaluation"
+    },
+    "PalliativeCareOnly_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "EndOfLife"
+    },
+    "SurveillanceAdvanced_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "LongTermRemission"
+    },
+    "NoEvidenceDisease_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SurveillanceAdvanced"
+    },
+    "RadiationSalvage_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ResponseEvaluation"
+    },
+    "SurgicalSalvage_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ResponseEvaluation"
+    },
+    "SurgeryOnly_Action_1_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SurveillanceLowRisk"
+    },
+    "PhysicalExamSurveillance_Action_1_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "LongTermSurveillance"
+    },
+    "endometrial_cancer_Incidence_Gate": {
+      "type": "Simple",
+      "remarks": [
+        "Lifetime endometrial cancer risk is about 3% in women. The Guard already selects women 50+ with risk factors; this gate scales that pool down to a realistic share (measured 15.9% of women at 0.25, so 0.05 lands near 3%).",
+        "Rate is a first-pass estimate and needs clinical review."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "SymptomDevelopment",
+          "distribution": 0.05
+        },
+        {
+          "transition": "Terminal",
+          "distribution": 0.95
+        }
+      ]
     }
   }
 }

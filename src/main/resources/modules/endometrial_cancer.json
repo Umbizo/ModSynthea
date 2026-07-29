@@ -1184,17 +1184,17 @@
     "endometrial_cancer_Incidence_Gate": {
       "type": "Simple",
       "remarks": [
-        "Lifetime endometrial cancer risk is about 3% in women. The Guard already selects women 50+ with risk factors; this gate scales that pool down to a realistic share.",
+        "Lifetime endometrial cancer risk is about 3% in women. The Guard already selects women 50+ with risk factors; this gate scales that pool down to a realistic share (measured 15.9% of women at 0.25, so 0.05 lands near 3%).",
         "Rate is a first-pass estimate and needs clinical review."
       ],
       "distributed_transition": [
         {
           "transition": "SymptomDevelopment",
-          "distribution": 0.25
+          "distribution": 0.05
         },
         {
           "transition": "Terminal",
-          "distribution": 0.75
+          "distribution": 0.95
         }
       ]
     }

@@ -353,7 +353,6 @@
         }
       ],
       "administration": true,
-      "target_encounter": "ALL_Induction_Admission",
       "direct_transition": "Prednisone"
     },
     "Prednisone": {
@@ -383,7 +382,6 @@
     },
     "Bone_Marrow_Biopsy": {
       "type": "Procedure",
-      "target_encounter": "ALL_Induction_Admission",
       "codes": [
         {
           "system": "SNOMED-CT",

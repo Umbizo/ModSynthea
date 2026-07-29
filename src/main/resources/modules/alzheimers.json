@@ -270,7 +270,6 @@
     },
     "StartLecanemab": {
       "type": "MedicationOrder",
-      "target_encounter": "InfusionProgram",
       "administration": true,
       "codes": [
         {
@@ -307,7 +306,6 @@
     },
     "StartDonanemab": {
       "type": "MedicationOrder",
-      "target_encounter": "InfusionProgram",
       "administration": true,
       "codes": [
         {

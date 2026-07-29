@@ -274,7 +274,6 @@
     },
     "Bortezomib": {
       "type": "MedicationOrder",
-      "target_encounter": "Induction_Chemotherapy_Encounter",
       "administration": true,
       "codes": [
         {
@@ -309,7 +308,6 @@
     },
     "Daratumumab": {
       "type": "MedicationOrder",
-      "target_encounter": "Induction_Chemotherapy_Encounter",
       "administration": true,
       "codes": [
         {
@@ -408,7 +406,6 @@
     },
     "Zoledronic_Maintenance": {
       "type": "MedicationOrder",
-      "target_encounter": "MM_Longitudinal_Monitoring",
       "administration": true,
       "codes": [
         {
@@ -537,7 +534,6 @@
     },
     "Zoledronic_Acid": {
       "type": "MedicationOrder",
-      "target_encounter": "Hypercalcemia_Hospitalization",
       "administration": true,
       "codes": [
         {
@@ -653,7 +649,6 @@
     },
     "Ixazomib": {
       "type": "MedicationOrder",
-      "target_encounter": "Salvage_Therapy_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -687,7 +682,6 @@
     },
     "Pomalidomide": {
       "type": "MedicationOrder",
-      "target_encounter": "Salvage_Therapy_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -710,7 +704,6 @@
     },
     "Selinexor": {
       "type": "MedicationOrder",
-      "target_encounter": "Salvage_Therapy_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -733,7 +726,6 @@
     },
     "Carfilzomib": {
       "type": "MedicationOrder",
-      "target_encounter": "Salvage_Therapy_Encounter",
       "administration": true,
       "codes": [
         {
@@ -746,7 +738,6 @@
     },
     "Isatuximab": {
       "type": "MedicationOrder",
-      "target_encounter": "Salvage_Therapy_Encounter",
       "administration": true,
       "codes": [
         {
@@ -764,7 +755,6 @@
     },
     "Teclistamab": {
       "type": "MedicationOrder",
-      "target_encounter": "Salvage_Therapy_Encounter",
       "administration": true,
       "codes": [
         {
@@ -777,7 +767,6 @@
     },
     "Talquetamab": {
       "type": "MedicationOrder",
-      "target_encounter": "Salvage_Therapy_Encounter",
       "administration": true,
       "codes": [
         {
@@ -790,7 +779,6 @@
     },
     "Elranatamab": {
       "type": "MedicationOrder",
-      "target_encounter": "Salvage_Therapy_Encounter",
       "administration": true,
       "codes": [
         {
@@ -803,7 +791,6 @@
     },
     "Belantamab": {
       "type": "MedicationOrder",
-      "target_encounter": "Salvage_Therapy_Encounter",
       "administration": true,
       "codes": [
         {
@@ -872,7 +859,6 @@
     },
     "Carfilzomib_Induction": {
       "type": "MedicationOrder",
-      "target_encounter": "Induction_Chemotherapy_Encounter",
       "administration": true,
       "codes": [
         {
@@ -904,7 +890,6 @@
     },
     "Elotuzumab": {
       "type": "MedicationOrder",
-      "target_encounter": "Salvage_Therapy_Encounter",
       "administration": true,
       "codes": [
         {
@@ -917,7 +902,6 @@
     },
     "Epoetin_Alfa": {
       "type": "MedicationOrder",
-      "target_encounter": "MM_Longitudinal_Monitoring",
       "administration": true,
       "codes": [
         {
@@ -968,7 +952,6 @@
     "Pegfilgrastim": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "MM_Longitudinal_Monitoring",
       "codes": [
         {
           "system": "RxNorm",

@@ -214,7 +214,6 @@
     "RICE_Rituximab": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "rice_rituximab",
       "codes": [
         {
@@ -233,7 +232,6 @@
     "Ifosfamide": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "ifosfamide_tx",
       "codes": [
         {
@@ -252,7 +250,6 @@
     "Carboplatin_Salvage": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "carboplatin_salvage",
       "codes": [
         {
@@ -271,7 +268,6 @@
     "Etoposide_Salvage": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "etoposide_salvage",
       "codes": [
         {
@@ -290,7 +286,6 @@
     "RDHAP_Rituximab": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "rdhap_rituximab",
       "codes": [
         {
@@ -309,7 +304,6 @@
     "Cisplatin": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "cisplatin_tx",
       "codes": [
         {
@@ -328,7 +322,6 @@
     "Cytarabine": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "cytarabine_tx",
       "codes": [
         {
@@ -562,7 +555,6 @@
     "Rituximab": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "rituximab_tx",
       "codes": [
         {
@@ -581,7 +573,6 @@
     "Cyclophosphamide": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "cyclophosphamide_tx",
       "codes": [
         {
@@ -600,7 +591,6 @@
     "Doxorubicin": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "doxorubicin_tx",
       "codes": [
         {
@@ -619,7 +609,6 @@
     "Vincristine": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "vincristine_tx",
       "codes": [
         {
@@ -637,7 +626,6 @@
     },
     "Prednisone": {
       "type": "MedicationOrder",
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "prednisone_tx",
       "codes": [
         {
@@ -669,7 +657,6 @@
     "Pegfilgrastim": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Medical_Oncology_Encounter",
       "assign_to_attribute": "pegfilgrastim_tx",
       "codes": [
         {

@@ -887,7 +887,6 @@
     "Prescribe_Peg_Interferon": {
       "type": "MedicationOrder",
       "administration": true,
-      "target_encounter": "Follow_Up_Encounter",
       "reason": "PV_Condition_Onset",
       "remarks": [
         "FIX 14: Ropeginterferon alfa-2b (Besremi) is FDA-approved Nov 2021 for PV",
@@ -1024,12 +1023,12 @@
       "type": "Simple",
       "remarks": [
         "FIX 12: Haemorrhagic event added. Per-cycle probabilities (3-month cycle):",
-        "  Thrombosis:    ~1.6%/yr  → 0.004/cycle",
-        "  Post-PV MF:   ~0.8%/yr  → 0.002/cycle",
-        "  AML:          ~0.4%/yr  → 0.001/cycle",
-        "  HU resistance: ~0.4%/yr → 0.001/cycle",
-        "  Haemorrhage:  ~1.2%/yr  → 0.003/cycle",
-        "  Stable:        remainder → 0.989/cycle"
+        "  Thrombosis:    ~1.6%/yr  \u2192 0.004/cycle",
+        "  Post-PV MF:   ~0.8%/yr  \u2192 0.002/cycle",
+        "  AML:          ~0.4%/yr  \u2192 0.001/cycle",
+        "  HU resistance: ~0.4%/yr \u2192 0.001/cycle",
+        "  Haemorrhage:  ~1.2%/yr  \u2192 0.003/cycle",
+        "  Stable:        remainder \u2192 0.989/cycle"
       ],
       "complex_transition": [
         {
@@ -1460,7 +1459,7 @@
         "  - Bone marrow fibrosis grade MF-2 or MF-3",
         "  - >=2 of: anaemia, leukoerythroblastic film, splenomegaly >=5cm,",
         "    constitutional symptoms (weight loss >10%, night sweats, fever >37.5C)",
-        "Management: ruxolitinib (symptom/splenomegaly control) ± allogeneic SCT."
+        "Management: ruxolitinib (symptom/splenomegaly control) \u00b1 allogeneic SCT."
       ],
       "codes": [
         {
@@ -1554,7 +1553,6 @@
       "type": "MedicationOrder",
       "reason": "PV_Condition_Onset",
       "administration": true,
-      "target_encounter": "Follow_Up_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -1723,7 +1721,7 @@
     "AML_Management": {
       "type": "Simple",
       "remarks": [
-        "AML from PV: poor prognosis. Intensive 7+3 induction ± allogeneic SCT.",
+        "AML from PV: poor prognosis. Intensive 7+3 induction \u00b1 allogeneic SCT.",
         "Many patients ineligible due to age/comorbidities; best supportive care.",
         "Model: 70% die within simulation; 30% survive short-term."
       ],

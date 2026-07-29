@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -441,7 +442,11 @@ public class HealthRecord implements Serializable {
         duration = BigDecimal.valueOf(Utilities.convertTime(durationUOM, duration.longValue()));
 
         BigDecimal quantityPerPeriod = amount.multiply(frequency);
-        BigDecimal periodsPerDuration = duration.divide(period);
+        // A duration need not be a whole number of dosing periods (weekly doses
+        // for a month, a patch every third day for ten days). Without a rounding
+        // context those ratios throw ArithmeticException out of divide, which
+        // propagates up and loses the whole patient.
+        BigDecimal periodsPerDuration = duration.divide(period, MathContext.DECIMAL64);
         BigDecimal quantity =  quantityPerPeriod.multiply(periodsPerDuration);
         return quantity.longValue();
       }

@@ -149,4 +149,34 @@ public class HealthRecordTest {
     long quantity = medication.getQuantity();
     Assert.assertEquals(180, quantity);
   }
+
+  /**
+   * A duration that is not a whole number of dosing periods must still yield a
+   * quantity. These two ratios are taken from modules in this repo:
+   * hiv/hiv_oi_prophylaxis prescribes weekly doses for one month (30/7 periods)
+   * and the opioid module prescribes a patch every three days for ten days
+   * (10/3 periods). Both used to throw ArithmeticException out of
+   * BigDecimal.divide and kill the patient mid-generation.
+   */
+  @Test
+  public void testMedicationQuantityWithNonTerminatingPeriodRatio() {
+    Person person = new Person(0L);
+    setProvider(person);
+    person.attributes.put(Person.BIRTHDATE, time);
+    person.coverage.setPlanToNoInsurance(time);
+
+    // 2 doses once a week, for one month -> 30/7 = 4.28... periods -> 8 doses
+    Medication weekly = person.record.medicationStart(time, "weekly-for-a-month", true);
+    weekly.prescriptionDetails = new com.google.gson.JsonParser().parse(
+        "{\"dosage\":{\"amount\":2,\"frequency\":1,\"period\":1,\"unit\":\"weeks\"},"
+        + "\"duration\":{\"quantity\":1,\"unit\":\"months\"}}").getAsJsonObject();
+    Assert.assertEquals(8, weekly.getQuantity());
+
+    // 1 patch every 3 days, for 10 days -> 10/3 = 3.33... periods -> 3 patches
+    Medication everyThirdDay = person.record.medicationStart(time, "patch", true);
+    everyThirdDay.prescriptionDetails = new com.google.gson.JsonParser().parse(
+        "{\"dosage\":{\"amount\":1,\"frequency\":1,\"period\":3,\"unit\":\"days\"},"
+        + "\"duration\":{\"quantity\":10,\"unit\":\"days\"}}").getAsJsonObject();
+    Assert.assertEquals(3, everyThirdDay.getQuantity());
+  }
 }

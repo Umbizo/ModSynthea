@@ -189,6 +189,11 @@ public class OutpatientExporter extends RIFExporter {
                     BB2RIFStructure.OUTPATIENT.REV_CNTR_IDE_NDC_UPC_NUM,
                     ndcCode
                 );
+            } else {
+                // don't let a previous line's NDC leak onto this line
+                fieldValues.remove(
+                    BB2RIFStructure.OUTPATIENT.REV_CNTR_IDE_NDC_UPC_NUM
+                );
             }
 
             fieldValues.put(

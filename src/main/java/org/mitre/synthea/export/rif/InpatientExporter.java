@@ -181,7 +181,11 @@ public class InpatientExporter extends RIFExporter {
           } else if (lineItem.entry instanceof HealthRecord.Medication) {
             HealthRecord.Medication med = (HealthRecord.Medication) lineItem.entry;
             if (med.administration) {
-              hcpcsCode = "T1502";  // Administration of medication
+              if (exporter.rxnormHcpcsMapper.canMap(med.codes.get(0))) {
+                hcpcsCode = exporter.rxnormHcpcsMapper.map(med.codes.get(0), person);
+              } else {
+                hcpcsCode = "T1502";  // Administration of medication
+              }
               // Pharmacy-general classification
               fieldValues.put(BB2RIFStructure.INPATIENT.REV_CNTR, "0250");
               fieldValues.put(BB2RIFStructure.INPATIENT.REV_CNTR_NDC_QTY, "1"); // 1 Unit

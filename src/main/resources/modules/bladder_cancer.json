@@ -3,39 +3,34 @@
   "states": {
     "Initial": {
       "type": "Initial",
-      "direct_transition": "Initial_Delay"
+      "direct_transition": "Initial_Risk_Delay"
     },
-    "Age_Check": {
-      "type": "Guard",
-      "allow": {
-        "condition_type": "Age",
-        "operator": ">=",
-        "quantity": 45,
-        "unit": "years"
+    "Initial_Risk_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 365,
+        "unit": "days"
       },
       "direct_transition": "Gender_Check"
     },
     "Gender_Check": {
       "type": "Simple",
-      "remarks": [
-        "Bladder cancer is 3-4x more common in men"
-      ],
-      "distributed_transition": [
+      "conditional_transition": [
         {
           "transition": "Male_Risk_Assessment",
-          "distribution": 0.75
+          "condition": {
+            "condition_type": "Gender",
+            "gender": "M"
+          }
         },
         {
-          "transition": "Female_Risk_Assessment",
-          "distribution": 0.25
+          "transition": "Female_Risk_Assessment"
         }
       ]
     },
     "Male_Risk_Assessment": {
       "type": "Simple",
-      "remarks": [
-        "Assess male-specific risk factors"
-      ],
       "distributed_transition": [
         {
           "transition": "High_Risk_Male",
@@ -49,9 +44,6 @@
     },
     "Female_Risk_Assessment": {
       "type": "Simple",
-      "remarks": [
-        "Assess female-specific risk factors"
-      ],
       "distributed_transition": [
         {
           "transition": "High_Risk_Female",
@@ -65,67 +57,99 @@
     },
     "High_Risk_Male": {
       "type": "Simple",
-      "remarks": [
-        "High-risk males: smokers, occupational exposure, family history"
-      ],
       "distributed_transition": [
         {
-          "transition": "Develop_Bladder_Cancer",
+          "transition": "Bladder_Cancer_Begins",
           "distribution": 0.008
         },
         {
-          "transition": "Terminal",
+          "transition": "High_Risk_Male_Annual_Delay",
           "distribution": 0.992
         }
       ]
     },
+    "High_Risk_Male_Annual_Delay": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 1,
+        "unit": "years"
+      },
+      "direct_transition": "High_Risk_Male"
+    },
     "Standard_Risk_Male": {
       "type": "Simple",
-      "remarks": [
-        "Standard risk males"
-      ],
       "distributed_transition": [
         {
-          "transition": "Develop_Bladder_Cancer",
+          "transition": "Bladder_Cancer_Begins",
           "distribution": 0.0025
         },
         {
-          "transition": "Terminal",
+          "transition": "Standard_Risk_Male_Annual_Delay",
           "distribution": 0.9975
         }
       ]
     },
+    "Standard_Risk_Male_Annual_Delay": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 1,
+        "unit": "years"
+      },
+      "direct_transition": "Standard_Risk_Male"
+    },
     "High_Risk_Female": {
       "type": "Simple",
-      "remarks": [
-        "High-risk females: smokers, chronic UTIs, chemotherapy exposure"
-      ],
       "distributed_transition": [
         {
-          "transition": "Develop_Bladder_Cancer",
+          "transition": "Bladder_Cancer_Begins",
           "distribution": 0.002
         },
         {
-          "transition": "Terminal",
+          "transition": "High_Risk_Female_Annual_Delay",
           "distribution": 0.998
         }
       ]
     },
+    "High_Risk_Female_Annual_Delay": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 1,
+        "unit": "years"
+      },
+      "direct_transition": "High_Risk_Female"
+    },
     "Standard_Risk_Female": {
       "type": "Simple",
-      "remarks": [
-        "Standard risk females"
-      ],
       "distributed_transition": [
         {
-          "transition": "Develop_Bladder_Cancer",
+          "transition": "Bladder_Cancer_Begins",
           "distribution": 0.0008
         },
         {
-          "transition": "Terminal",
+          "transition": "Standard_Risk_Female_Annual_Delay",
           "distribution": 0.9992
         }
       ]
+    },
+    "Standard_Risk_Female_Annual_Delay": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 1,
+        "unit": "years"
+      },
+      "direct_transition": "Standard_Risk_Female"
+    },
+    "Bladder_Cancer_Begins": {
+      "type": "Simple",
+      "direct_transition": "Initial_Symptoms"
+    },
+    "Annual_Risk_Delay": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 1,
+        "unit": "years"
+      },
+      "direct_transition": "Gender_Check"
     },
     "Develop_Bladder_Cancer": {
       "type": "ConditionOnset",
@@ -338,7 +362,7 @@
       "remarks": [
         "Tumor detected on cystoscopy"
       ],
-      "direct_transition": "TURBT_Procedure"
+      "direct_transition": "TURBT_Encounter"
     },
     "TURBT_Procedure": {
       "type": "Procedure",
@@ -353,6 +377,139 @@
     },
     "TURBT_Encounter_End": {
       "type": "EncounterEnd",
+      "direct_transition": "Select_Bladder_Cancer_Site"
+    },
+    "Select_Bladder_Cancer_Site": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Bladder_Cancer_Trigone",
+          "distribution": 0.08
+        },
+        {
+          "transition": "Bladder_Cancer_Dome",
+          "distribution": 0.08
+        },
+        {
+          "transition": "Bladder_Cancer_Lateral_Wall",
+          "distribution": 0.25
+        },
+        {
+          "transition": "Bladder_Cancer_Anterior_Wall",
+          "distribution": 0.06
+        },
+        {
+          "transition": "Bladder_Cancer_Posterior_Wall",
+          "distribution": 0.15
+        },
+        {
+          "transition": "Bladder_Cancer_Neck",
+          "distribution": 0.06
+        },
+        {
+          "transition": "Bladder_Cancer_Ureteric_Orifice",
+          "distribution": 0.07
+        },
+        {
+          "transition": "Bladder_Cancer_Urachus",
+          "distribution": 0.01
+        },
+        {
+          "transition": "Bladder_Cancer_Overlapping",
+          "distribution": 0.04
+        },
+        {
+          "transition": "Bladder_Cancer_Unspecified",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "Bladder_Cancer_Trigone": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "94109006",
+          "display": "Malignant neoplasm of trigone of bladder"
+        }
+      ],
+      "direct_transition": "Pathology_Results"
+    },
+    "Bladder_Cancer_Dome": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "449803009",
+          "display": "Malignant neoplasm of dome of bladder"
+        }
+      ],
+      "direct_transition": "Pathology_Results"
+    },
+    "Bladder_Cancer_Lateral_Wall": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "93863000",
+          "display": "Malignant neoplasm of lateral wall of bladder"
+        }
+      ],
+      "direct_transition": "Pathology_Results"
+    },
+    "Bladder_Cancer_Anterior_Wall": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "93675008",
+          "display": "Malignant neoplasm of anterior wall of bladder"
+        }
+      ],
+      "direct_transition": "Pathology_Results"
+    },
+    "Bladder_Cancer_Posterior_Wall": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "93972009",
+          "display": "Malignant neoplasm of posterior wall of bladder"
+        }
+      ],
+      "direct_transition": "Pathology_Results"
+    },
+    "Bladder_Cancer_Neck": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "94124002",
+          "display": "Malignant neoplasm of bladder neck"
+        }
+      ],
+      "direct_transition": "Pathology_Results"
+    },
+    "Bladder_Cancer_Ureteric_Orifice": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "94122003",
+          "display": "Malignant neoplasm of ureteric orifice"
+        }
+      ],
+      "direct_transition": "Pathology_Results"
+    },
+    "Bladder_Cancer_Urachus": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "363456000",
+          "display": "Malignant neoplasm of urachus"
+        }
+      ],
       "direct_transition": "Pathology_Results"
     },
     "Pathology_Results": {
@@ -386,6 +543,28 @@
           "distribution": 0.05
         }
       ]
+    },
+    "Bladder_Cancer_Overlapping": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "ICD10",
+          "code": "C67.8",
+          "display": "Malignant neoplasm of overlapping sites of bladder"
+        }
+      ],
+      "direct_transition": "Pathology_Results"
+    },
+    "Bladder_Cancer_Unspecified": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "ICD10",
+          "code": "C67.9",
+          "display": "Malignant neoplasm of bladder, unspecified"
+        }
+      ],
+      "direct_transition": "Pathology_Results"
     },
     "Ta_Low_Grade": {
       "type": "ConditionOnset",
@@ -881,7 +1060,7 @@
           "distribution": 0.3
         },
         {
-          "transition": "MIBC_Stage_Determination",
+          "transition": "Staging_Encounter_End",
           "distribution": 0.7
         }
       ]
@@ -895,7 +1074,7 @@
           "display": "Bone scan"
         }
       ],
-      "direct_transition": "MIBC_Stage_Determination"
+      "direct_transition": "Staging_Encounter_End"
     },
     "MIBC_Stage_Determination": {
       "type": "Simple",
@@ -2801,11 +2980,11 @@
     "Initial_Delay": {
       "type": "Delay",
       "range": {
-        "low": 90,
-        "high": 3650,
+        "low": 0,
+        "high": 365,
         "unit": "days"
       },
-      "direct_transition": "Age_Check"
+      "direct_transition": "Gender_Check"
     },
     "Terminal": {
       "type": "Terminal"

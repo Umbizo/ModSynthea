@@ -9,40 +9,39 @@
     "Prevalence: 0.67-10.3 per 100,000 (using 2 per 100,000)"
   ],
   "states": {
-    "Initial": {
-      "type": "Initial",
-      "direct_transition": "Age_Check"
-    },
-    "Age_Check": {
-      "type": "Guard",
-      "allow": {
-        "condition_type": "Age",
-        "operator": ">=",
-        "quantity": 18,
-        "unit": "years"
-      },
-      "direct_transition": "CIDP_Incidence_Check"
-    },
     "CIDP_Incidence_Check": {
       "type": "Simple",
       "distributed_transition": [
         {
-          "distribution": 2e-05,
+          "distribution": 0.002,
           "transition": "CIDP_Onset"
         },
         {
-          "distribution": 0.99998,
+          "distribution": 0.998,
           "transition": "Terminal"
         }
       ]
     },
     "CIDP_Onset": {
-      "type": "Encounter",
+      "type": "ConditionOnset",
       "codes": [
         {
           "system": "SNOMED-CT",
           "code": "128209004",
           "display": "Chronic inflammatory demyelinating polyradiculoneuropathy"
+        }
+      ],
+      "assign_to_attribute": "cidp_condition",
+      "direct_transition": "CIDP_Diagnostic_Encounter"
+    },
+    "CIDP_Diagnostic_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for examination"
         }
       ],
       "direct_transition": "Diagnostic_Workup"

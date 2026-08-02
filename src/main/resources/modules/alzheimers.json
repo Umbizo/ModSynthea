@@ -313,7 +313,7 @@
         "high": 3,
         "unit": "years"
       },
-      "direct_transition": "RemainMCI_Encounter_End"
+      "direct_transition": "MCIProgression"
     },
     "RevertToNormal": {
       "type": "ConditionEnd",

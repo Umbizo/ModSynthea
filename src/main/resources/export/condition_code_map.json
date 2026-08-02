@@ -943,62 +943,6 @@
     {
       "code": "A41.9",
       "description": "Sepsis, unspecified organism"
-    },
-    {
-      "code": "C91",
-      "description": "ACUTE LYMPHOBLASTIC LEUKEMIA"
-    },
-    {
-      "code": "C91.00",
-      "description": "ACUTE LYMPHOBLASTIC LEUKEMIA NOT HAVING ACHIEVED REMISSION"
-    },
-    {
-      "code": "C91.02",
-      "description": "ACUTE LYMPHOBLASTIC LEUKEMIA, IN RELAPSE"
-    },
-    {
-      "code": "C91.01",
-      "description": "ACUTE LYMPHOBLASTIC LEUKEMIA, IN REMISSION"
-    },
-    {
-      "code": "C79.11",
-      "description": "SECONDARY MALIGNANT NEOPLASM OF BLADDER"
-    },
-    {
-      "code": "C44.59",
-      "description": "OTHER SPECIFIED MALIGNANT NEOPLASM OF SKIN OF TRUNK"
-    },
-    {
-      "code": "C05.8",
-      "description": "MALIGNANT NEOPLASM OF OVERLAPPING SITES OF PALATE"
-    },
-    {
-      "code": "C83.71",
-      "description": "BURKITT LYMPHOMA, LYMPH NODES OF HEAD, FACE, AND NECK"
-    },
-    {
-      "code": "C81.23",
-      "description": "MIXED CELLULARITY HODGKIN LYMPHOMA, INTRA-ABDOMINAL LYMPH NODES"
-    },
-    {
-      "code": "C50.022",
-      "description": "MALIGNANT NEOPLASM OF NIPPLE AND AREOLA, LEFT MALE BREAST"
-    },
-    {
-      "code": "C04.1",
-      "description": "MALIGNANT NEOPLASM OF LATERAL FLOOR OF MOUTH"
-    },
-    {
-      "code": "C93.12",
-      "description": "CHRONIC MYELOMONOCYTIC LEUKEMIA, IN RELAPSE"
-    },
-    {
-      "code": "C94.41",
-      "description": "ACUTE PANMYELOSIS WITH MYELOFIBROSIS, IN REMISSION"
-    },
-    {
-      "code": "C44.10",
-      "description": "UNSPECIFIED MALIGNANT NEOPLASM OF SKIN OF EYELID, INCLUDING CANTHUS"
     }
   ],
   "233606009": [

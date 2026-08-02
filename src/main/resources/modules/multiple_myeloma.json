@@ -272,40 +272,6 @@
       ],
       "direct_transition": "Induction_Regimen"
     },
-    "Bortezomib": {
-      "type": "MedicationOrder",
-      "administration": true,
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "402243",
-          "display": "Bortezomib"
-        }
-      ],
-      "direct_transition": "Lenalidomide"
-    },
-    "Lenalidomide": {
-      "type": "MedicationOrder",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "342369",
-          "display": "Lenalidomide"
-        }
-      ],
-      "direct_transition": "Dexamethasone"
-    },
-    "Dexamethasone": {
-      "type": "MedicationOrder",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "197583",
-          "display": "Dexamethasone"
-        }
-      ],
-      "direct_transition": "Daratumumab"
-    },
     "Daratumumab": {
       "type": "MedicationOrder",
       "administration": true,
@@ -316,7 +282,7 @@
           "display": "Daratumumab"
         }
       ],
-      "direct_transition": "Transplant_Eligibility"
+      "direct_transition": "Post_Induction_Supportive_Care"
     },
     "MM_Longitudinal_Monitoring": {
       "type": "Encounter",
@@ -424,7 +390,7 @@
           "distribution": 0.4
         },
         {
-          "transition": "Blood_Transfusion",
+          "transition": "Transfusion_Encounter",
           "distribution": 0.6
         }
       ]
@@ -857,6 +823,17 @@
       ],
       "direct_transition": "TMP_SMX"
     },
+    "TMP_SMX": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "198335",
+          "display": "Sulfamethoxazole/Trimethoprim"
+        }
+      ],
+      "direct_transition": "Transplant_Eligibility"
+    },
     "Carfilzomib_Induction": {
       "type": "MedicationOrder",
       "administration": true,
@@ -867,11 +844,31 @@
           "display": "Carfilzomib"
         }
       ],
-      "direct_transition": "Lenalidomide"
+      "direct_transition": "Lenalidomide_KRd"
     },
-    "CyBorD_Regimen": {
-      "type": "Simple",
-      "direct_transition": "Cyclophosphamide"
+
+    "Lenalidomide_KRd": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "342369",
+          "display": "Lenalidomide"
+        }
+      ],
+      "direct_transition": "Dexamethasone_KRd"
+    },
+
+    "Dexamethasone_KRd": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "197583",
+          "display": "Dexamethasone"
+        }
+      ],
+      "direct_transition": "Post_Induction_Supportive_Care"
     },
     "Cyclophosphamide": {
       "type": "MedicationOrder",
@@ -882,11 +879,35 @@
           "display": "Cyclophosphamide"
         }
       ],
-      "direct_transition": "Bortezomib"
+      "direct_transition": "Bortezomib_CyBorD"
     },
-    "DaraVRd_Regimen": {
+
+    "Bortezomib_CyBorD": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "402243",
+          "display": "Bortezomib"
+        }
+      ],
+      "direct_transition": "Dexamethasone_CyBorD"
+    },
+    "Post_Induction_Supportive_Care": {
       "type": "Simple",
-      "direct_transition": "Bortezomib"
+      "direct_transition": "Acyclovir"
+    },
+    "Dexamethasone_CyBorD": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "197583",
+          "display": "Dexamethasone"
+        }
+      ],
+      "direct_transition": "Post_Induction_Supportive_Care"
     },
     "Elotuzumab": {
       "type": "MedicationOrder",
@@ -961,20 +982,90 @@
       ],
       "direct_transition": "Maintenance_Lenalidomide"
     },
-    "TMP_SMX": {
+    "VRd_Regimen": {
+      "type": "Simple",
+      "direct_transition": "Bortezomib_VRd"
+    },
+
+    "DaraVRd_Regimen": {
+      "type": "Simple",
+      "direct_transition": "Bortezomib_DaraVRd"
+    },
+    "CyBorD_Regimen": {
+      "type": "Simple",
+      "direct_transition": "Cyclophosphamide"
+    },
+    "Bortezomib_VRd": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "402243",
+          "display": "Bortezomib"
+        }
+      ],
+      "direct_transition": "Lenalidomide_VRd"
+    },
+
+    "Lenalidomide_VRd": {
       "type": "MedicationOrder",
       "codes": [
         {
           "system": "RxNorm",
-          "code": "198335",
-          "display": "Sulfamethoxazole/Trimethoprim"
+          "code": "342369",
+          "display": "Lenalidomide"
         }
       ],
-      "direct_transition": "MM_Longitudinal_Monitoring"
+      "direct_transition": "Dexamethasone_VRd"
     },
-    "VRd_Regimen": {
-      "type": "Simple",
-      "direct_transition": "Bortezomib"
+
+    "Dexamethasone_VRd": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "197583",
+          "display": "Dexamethasone"
+        }
+      ],
+      "direct_transition": "Post_Induction_Supportive_Care"
+    },
+    "Bortezomib_DaraVRd": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "402243",
+          "display": "Bortezomib"
+        }
+      ],
+      "direct_transition": "Lenalidomide_DaraVRd"
+    },
+
+    "Lenalidomide_DaraVRd": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "342369",
+          "display": "Lenalidomide"
+        }
+      ],
+      "direct_transition": "Dexamethasone_DaraVRd"
+    },
+
+    "Dexamethasone_DaraVRd": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "197583",
+          "display": "Dexamethasone"
+        }
+      ],
+      "direct_transition": "Daratumumab"
     },
     "MGUS_Progression_Check_Encounter_End": {
       "type": "EncounterEnd",

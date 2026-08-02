@@ -757,68 +757,6 @@
       "description": "PNEUMOCOCCAL MENINGITIS"
     }
   ],
-  "277534002": [
-    {
-      "code": "C95.90",
-      "description": "Leukemia, unspecified"
-    },
-    {
-      "code": "C91.01",
-      "description": "ACUTE LYMPHOBLASTIC LEUKEMIA, IN REMISSION"
-    },
-    {
-      "code": "C91.02",
-      "description": "ACUTE LYMPHOBLASTIC LEUKEMIA, IN RELAPSE"
-    },
-    {
-      "code": "C91",
-      "description": "ACUTE LYMPHOBLASTIC LEUKEMIA"
-    },
-    {
-      "code": "C91.00",
-      "description": "ACUTE LYMPHOBLASTIC LEUKEMIA NOT HAVING ACHIEVED REMISSION"
-    },
-    {
-      "code": "C63.2",
-      "description": "MALIGNANT NEOPLASM OF SCROTUM"
-    },
-    {
-      "code": "C44.00",
-      "description": "UNSPECIFIED MALIGNANT NEOPLASM OF SKIN OF LIP"
-    },
-    {
-      "code": "C02.1",
-      "description": "MALIGNANT NEOPLASM OF BORDER OF TONGUE"
-    },
-    {
-      "code": "C78.2",
-      "description": "SECONDARY MALIGNANT NEOPLASM OF PLEURA"
-    },
-    {
-      "code": "C50.3",
-      "description": "MALIGNANT NEOPLASM OF LOWER-INNER QUADRANT OF BREAST"
-    },
-    {
-      "code": "C40.11",
-      "description": "MALIGNANT NEOPLASM OF SHORT BONES OF RIGHT UPPER LIMB"
-    },
-    {
-      "code": "C67.1",
-      "description": "MALIGNANT NEOPLASM OF DOME OF BLADDER"
-    },
-    {
-      "code": "C22.3",
-      "description": "ANGIOSARCOMA OF LIVER"
-    },
-    {
-      "code": "C44.22",
-      "description": "SQUAMOUS CELL CARCINOMA OF SKIN OF EAR AND EXTERNAL AURICULAR CANAL"
-    },
-    {
-      "code": "C50.919",
-      "description": "MALIGNANT NEOPLASM OF UNSPECIFIED SITE OF UNSPECIFIED FEMALE BREAST"
-    }
-  ],
   "12301000132103": [
     {
       "code": "C91.02",

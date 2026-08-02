@@ -5,6 +5,12 @@
       "description": "High output heart failure"
     }
   ],
+  "91856007": [
+    {
+      "code": "C91.01",
+      "description": "Acute lymphoblastic leukemia in remission"
+    }
+  ],
   "10335000": [
     {
       "code": "I50.810",

@@ -17,7 +17,7 @@
         "high": 1825,
         "unit": "days"
       },
-      "direct_transition": "CheckAgeRisk"
+      "direct_transition": "PreclinicalPhase"
     },
     "PreclinicalPhase": {
       "type": "Delay",
@@ -298,29 +298,7 @@
         },
         {
           "distribution": 0.4,
-          "transition": "MCIProgression_Encounter_End"
-        },
-        {
-          "distribution": 0.1,
-          "transition": "RevertToNormal"
-        }
-      ]
-    },
-    "StableMCI": {
-      "type": "Delay",
-      "range": {
-        "low": 2,
-        "high": 5,
-        "unit": "years"
-      },
-      "distributed_transition": [
-        {
-          "distribution": 0.6,
-          "transition": "MildDementia"
-        },
-        {
-          "distribution": 0.3,
-          "transition": "StableMCI_Encounter_End"
+          "transition": "RemainMCI"
         },
         {
           "distribution": 0.1,
@@ -851,18 +829,6 @@
     "ARIA_MRISurveillance_Encounter_End": {
       "type": "EncounterEnd",
       "direct_transition": "InfusionDelay"
-    },
-    "MCIProgression_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "StableMCI"
-    },
-    "StableMCI_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "RemainMCI"
-    },
-    "RemainMCI_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "MCIProgression"
     },
     "AnnualMoCA_Encounter_End": {
       "type": "EncounterEnd",

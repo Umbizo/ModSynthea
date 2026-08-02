@@ -548,8 +548,8 @@
       "type": "ConditionOnset",
       "codes": [
         {
-          "system": "ICD10",
-          "code": "C67.8",
+          "system": "SNOMED-CT",
+          "code": "188247000",
           "display": "Malignant neoplasm of overlapping sites of bladder"
         }
       ],
@@ -559,8 +559,8 @@
       "type": "ConditionOnset",
       "codes": [
         {
-          "system": "ICD10",
-          "code": "C67.9",
+          "system": "SNOMED-CT",
+          "code": "399326009",
           "display": "Malignant neoplasm of bladder, unspecified"
         }
       ],

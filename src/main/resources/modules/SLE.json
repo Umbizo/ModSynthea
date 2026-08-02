@@ -5,18 +5,7 @@
     "Initial": {
       "type": "Initial",
       "name": "Initial",
-      "direct_transition": "Age_Guard"
-    },
-    "Age_Guard": {
-      "type": "Guard",
-      "allow": {
-        "condition_type": "Age",
-        "operator": ">=",
-        "quantity": 15,
-        "unit": "years"
-      },
-      "direct_transition": "Race_Ethnicity_Branch",
-      "name": "Age_Guard"
+      "direct_transition": "Race_Ethnicity_Branch"
     },
     "Race_Ethnicity_Branch": {
       "type": "Simple",
@@ -127,7 +116,7 @@
       "name": "Female_SLE_Incidence_Delay",
       "range": {
         "low": 0,
-        "high": 30,
+        "high": 1,
         "unit": "years"
       },
       "direct_transition": "Female_Chance_of_SLE"
@@ -185,7 +174,7 @@
       "name": "Male_SLE_Incidence_Delay",
       "range": {
         "low": 0,
-        "high": 35,
+        "high": 1,
         "unit": "years"
       },
       "direct_transition": "Male_Chance_of_SLE"

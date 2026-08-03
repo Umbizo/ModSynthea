@@ -9,6 +9,10 @@
     "Prevalence: 0.67-10.3 per 100,000 (using 2 per 100,000)"
   ],
   "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "CIDP_Incidence_Check"
+    },
     "CIDP_Incidence_Check": {
       "type": "Simple",
       "distributed_transition": [
@@ -50,8 +54,8 @@
       "type": "Procedure",
       "codes": [
         {
-          "system": "LOINC",
-          "code": "29755-6",
+          "system": "SNOMED-CT",
+          "code": "164721007",
           "display": "Nerve conduction study"
         }
       ],

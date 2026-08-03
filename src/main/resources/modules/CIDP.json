@@ -199,6 +199,7 @@
     },
     "Adjust_Treatment": {
       "type": "Encounter",
+      "encounter_class": "ambulatory",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -262,6 +263,7 @@
     },
     "Regular_Monitoring": {
       "type": "Encounter",
+      "encounter_class": "ambulatory",
       "codes": [
         {
           "system": "SNOMED-CT",

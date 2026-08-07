@@ -6207,16 +6207,8 @@
       "description": "Drug or chemical induced diabetes mellitus with diabetic chronic kidney disease"
     },
     {
-      "code": "E11.22",
-      "description": "Type 2 diabetes mellitus with diabetic chronic kidney disease"
-    },
-    {
       "code": "E10.22",
       "description": "Type 1 diabetes mellitus with diabetic chronic kidney disease"
-    },
-    {
-      "code": "I13.10",
-      "description": "Hypertensive heart and chronic kidney disease without heart failure, with stage 1 through stage 4 chronic kidney disease, or unspecified chronic kidney disease"
     },
     {
       "code": "I13.10",
@@ -6235,28 +6227,12 @@
       "description": "Chronic kidney disease, stage 2 (mild)"
     },
     {
-      "code": "N18.2",
-      "description": "Chronic kidney disease, stage 2 (mild)"
-    },
-    {
-      "code": "N18.2",
-      "description": "Chronic kidney disease, stage 2 (mild)"
-    },
-    {
-      "code": "N18.2",
-      "description": "Chronic kidney disease, stage 2 (mild)"
-    },
-    {
       "code": "E11.22",
       "description": "Type 2 diabetes mellitus with diabetic chronic kidney disease"
     },
     {
       "code": "T50.905",
       "description": "Adverse effect of unspecified drugs, medicaments and biological substances, episode of care unspecified"
-    },
-    {
-      "code": "N18.2",
-      "description": "Chronic kidney disease, stage 2 (mild)"
     }
   ],
   "431857002": [

@@ -7247,5 +7247,71 @@
       "code": "72158",
       "description": "MRI spine with contrast"
     }
+  ],
+  "170245002": [
+    {
+      "code": "99429",
+      "description": "Unlisted preventive medicine service (school health screening exam)"
+    }
+  ],
+  "308481009": [
+    {
+      "code": "99452",
+      "description": "Interprofessional referral service(s) provided by a treating/requesting physician or other qualified health care professional, 30 minutes"
+    }
+  ],
+  "84100007": [
+    {
+      "code": "99202",
+      "description": "Office or other outpatient visit, new patient, straightforward medical decision making (history-taking component)"
+    }
+  ],
+  "417656005": [
+    {
+      "code": "99202",
+      "description": "Office or other outpatient visit, new patient, straightforward medical decision making (postural exam component, bundled into E/M)"
+    }
+  ],
+  "183830008": [
+    {
+      "code": "99452",
+      "description": "Interprofessional referral service(s) provided by a treating/requesting physician or other qualified health care professional, 30 minutes"
+    }
+  ],
+  "1290953004": [
+    {
+      "code": "72082",
+      "description": "Radiologic examination, spine, entire thoracic and lumbar, including skull, cervical and sacral spine if performed (eg, scoliosis evaluation), 2-3 views"
+    }
+  ],
+  "122869004": [
+    {
+      "code": "76140",
+      "description": "Consultation on X-ray examination made elsewhere, written report (Cobb angle measurement from prior imaging)"
+    }
+  ],
+  "737617004": [
+    {
+      "code": "99452",
+      "description": "Interprofessional referral service(s) provided by a treating/requesting physician or other qualified health care professional, 30 minutes"
+    }
+  ],
+  "78429003": [
+    {
+      "code": "99452",
+      "description": "Interprofessional referral service(s) provided by a treating/requesting physician or other qualified health care professional, 30 minutes"
+    }
+  ],
+  "183444007": [
+    {
+      "code": "99452",
+      "description": "Interprofessional referral service(s) provided by a treating/requesting physician or other qualified health care professional, 30 minutes"
+    }
+  ],
+  "770695002": [
+    {
+      "code": "99452",
+      "description": "Interprofessional referral service(s) provided by a treating/requesting physician or other qualified health care professional, 30 minutes"
+    }
   ]
 }

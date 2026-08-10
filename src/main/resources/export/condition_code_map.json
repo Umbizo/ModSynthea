@@ -8842,5 +8842,11 @@
       "code": "C67.9",
       "description": "Malignant neoplasm of bladder, unspecified"
     }
+  ],
+  "203646004": [
+    {
+      "code": "M41.129",
+      "description": "Adolescent idiopathic scoliosis, site unspecified"
+    }
   ]
 }

@@ -855,6 +855,10 @@
     {
       "code": "C8930",
       "description": "Transthoracic echocardiography, with contrast, or without contrast followed by with contrast, real-time with image documentation (2d), includes m-mode recording, when performed, during rest and cardiovascular stress test using treadmill, bicycle exerci..."
+    },
+    {
+      "code": "93306",
+      "description": "Echocardiography, transthoracic, real-time with image documentation (2D), includes M-mode recording, complete, with spectral and color flow Doppler"
     }
   ],
   "442921007": [
@@ -1175,8 +1179,8 @@
   ],
   "40403005": [
     {
-      "code": "C9741",
-      "description": "Right heart catheterization with implantation of wireless pressure sensor in the pulmonary artery, including any type of measurement, angiography, imaging supervision, interpretation, and report"
+      "code": "93503",
+      "description": "Right heart catheterization"
     }
   ],
   "59180001": [
@@ -7212,6 +7216,12 @@
     {
       "code": "99245",
       "description": "Office or other outpatient consultation for a new or established patient, comprehensive"
+    }
+  ],
+  "432769002": [
+    {
+      "code": "71045",
+      "description": "Portable chest x-ray"
     }
   ]
 }

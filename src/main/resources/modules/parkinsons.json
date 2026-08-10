@@ -171,6 +171,15 @@
         }
       ],
       "reason": "has_parkinsons",
+      "chronic": true,
+      "remarks": [
+        "Task 2.2 fix round 1 (review finding): added chronic:true. This is",
+        "ongoing lifelong PD therapy, not a one-off order -- without chronic:true",
+        "the engine's wellness-visit renewal mechanism (State.java:963,",
+        "person.chronicMedications) never touches it, so it exports exactly one",
+        "claim per patient ever, for a drug taken for the rest of the patient's",
+        "life. Same idiom/precedent as Task 1.7's GDMT chronic-medication fix."
+      ],
       "direct_transition": "StartLevodopaMonotherapy_Encounter_End"
     },
     "InitialResponsePeriod": {
@@ -256,6 +265,10 @@
         }
       ],
       "reason": "has_parkinsons",
+      "chronic": true,
+      "remarks": [
+        "Task 2.2 fix round 1: chronic:true, same reasoning as StartLevodopaMonotherapy."
+      ],
       "direct_transition": "AddDopamineAgonist_Encounter_End"
     },
     "AddCOMTInhibitor": {
@@ -268,6 +281,10 @@
         }
       ],
       "reason": "has_parkinsons",
+      "chronic": true,
+      "remarks": [
+        "Task 2.2 fix round 1: chronic:true, same reasoning as StartLevodopaMonotherapy."
+      ],
       "direct_transition": "AddCOMTInhibitor_Encounter_End"
     },
     "StablePeriod": {
@@ -329,6 +346,10 @@
         }
       ],
       "reason": "has_parkinsons",
+      "chronic": true,
+      "remarks": [
+        "Task 2.2 fix round 1: chronic:true, same reasoning as StartLevodopaMonotherapy."
+      ],
       "direct_transition": "AdvancedSymptoms"
     },
     "AddMAOBInhibitor": {
@@ -341,6 +362,10 @@
         }
       ],
       "reason": "has_parkinsons",
+      "chronic": true,
+      "remarks": [
+        "Task 2.2 fix round 1: chronic:true, same reasoning as StartLevodopaMonotherapy."
+      ],
       "direct_transition": "AdvancedSymptoms"
     },
     "AdvancedSymptoms": {
@@ -552,6 +577,12 @@
         }
       ],
       "reason": "has_parkinsons",
+      "chronic": true,
+      "remarks": [
+        "Task 2.2 fix round 1: chronic:true, same reasoning as StartLevodopaMonotherapy",
+        "-- LCIG (Duopa) is a continuous, ongoing advanced-therapy infusion, not a",
+        "one-off order."
+      ],
       "direct_transition": "PalliativeCareReferral"
     },
     "ApomorphinePump": {
@@ -564,6 +595,11 @@
         }
       ],
       "reason": "has_parkinsons",
+      "chronic": true,
+      "remarks": [
+        "Task 2.2 fix round 1: chronic:true, same reasoning as StartLevodopaMonotherapy",
+        "-- apomorphine pump is ongoing advanced-therapy, not a one-off order."
+      ],
       "direct_transition": "PalliativeCareReferral"
     },
     "DementiaOnset": {
@@ -571,22 +607,46 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "52448006",
-          "display": "Dementia in Parkinson's disease (disorder)"
+          "code": "425390006",
+          "display": "Dementia associated with Parkinson's Disease (disorder)"
         }
       ],
       "remarks": [
-        "Task 2.2 fix: dropped the inline ICD-10-CM G31.83 code (bad-system scanner",
-        "gap -- GMF module states may only carry SNOMED-CT/RxNorm/LOINC/CVX/DICOM).",
-        "Considered recoding the SNOMED itself to the fix brief's candidate 80098002",
-        "'Lewy body dementia' (verified real/active/Verhoeff-valid via Ontoserver",
-        "$lookup), but rejected it: 52448006 'Dementia in Parkinson's disease' is",
-        "already mapped in condition_code_map.json -> G20.A1 'Parkinson's disease",
-        "with dementia, without dyskinesia or fluctuations', which is a more",
-        "clinically precise ICD-10-CM target for this exact scenario (dementia",
-        "arising in a diagnosed PD patient) than G31.83 (Lewy body dementia -- a",
-        "related but formally distinct diagnostic entity). No export-map change",
-        "needed; the correct mapping already existed."
+        "Task 2.2 fix round 1 (review correction): dropped the inline ICD-10-CM",
+        "G31.83 code (bad-system scanner gap -- GMF module states may only carry",
+        "SNOMED-CT/RxNorm/LOINC/CVX/DICOM).",
+        "",
+        "CORRECTION to the first-pass fix: 52448006's FSN is generic 'Dementia",
+        "(disorder)', NOT 'Dementia in Parkinson's disease' as both the pre-existing",
+        "display text and my original remark here claimed -- re-verified via",
+        "Ontoserver $lookup (r4.ontoserver.csiro.au): 52448006 FSN = 'Dementia",
+        "(disorder)', a generic, etiology-agnostic dementia concept. My original",
+        "rejection of the fix brief's 80098002 candidate on the grounds that 52448006",
+        "was 'already mapped to G20.A1, a more clinically precise target' was also",
+        "wrong on a second count: G20.A1 is 'Parkinson's disease without dyskinesia,",
+        "without mention of fluctuations' (ICD-10-CM's 2023 G20 expansion, which is",
+        "about dyskinesia/motor-fluctuation documentation, NOT dementia at all) --",
+        "unrelated to cognitive status, confirmed via icd10data.com/sprypt.com.",
+        "",
+        "Recoded to 425390006 'Dementia associated with Parkinson's Disease",
+        "(disorder)' -- verified via Ontoserver: active, International Edition core",
+        "module (900000000000207008), Verhoeff-valid, FSN matches exactly what this",
+        "state models (PD-specific dementia, not generic dementia and not Lewy body",
+        "dementia). Mapped to ICD-10-CM F02.80 'Dementia in other diseases",
+        "classified elsewhere, unspecified severity, without behavioral disturbance,",
+        "psychotic disturbance, mood disturbance, and anxiety' in",
+        "condition_code_map.json -- the standard ICD-10-CM manifestation code for",
+        "dementia due to Parkinson's disease (correct combination-coding practice",
+        "pairs this with a G20 etiology code on the same claim; this module's",
+        "condition_code_map.json only carries a single target per SNOMED code, so",
+        "F02.80 alone is the single best-fit billable choice at this module's level",
+        "of granularity -- it doesn't track dementia severity or behavioral",
+        "disturbance separately). Verified current/billable for 2026 via",
+        "icd10data.com, pabau.com, icdcodes.ai, icdlist.com, unboundmedicine.com",
+        "(5 independent sources agree on description and billable status).",
+        "",
+        "The stale 52448006 -> G20.A1 condition_code_map.json row is now orphaned",
+        "(grep-confirmed: 52448006 was only ever used by this state) and removed."
       ],
       "direct_transition": "HoehnYahrStage5"
     },

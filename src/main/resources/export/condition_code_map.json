@@ -6897,10 +6897,10 @@
       "description": "Manual Therapy Techniques Treatment of Integumentary System - Whole Body"
     }
   ],
-  "52448006": [
+  "425390006": [
     {
-      "code": "G20.A1",
-      "description": "Parkinson's disease with dementia, without dyskinesia or fluctuations"
+      "code": "F02.80",
+      "description": "Dementia in other diseases classified elsewhere, unspecified severity, without behavioral disturbance"
     }
   ],
   "52734007": [

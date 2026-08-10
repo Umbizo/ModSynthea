@@ -519,6 +519,7 @@ procedure->HCPCS,Cardiac_Assessment,710839006 Assessment of cardiac status using
 procedure->HCPCS,Diagnostic_Assessment,165197003 Diagnostic assessment (procedure),myocardial_infarction.json
 procedure->HCPCS,CT Guided Biopsy,274319000 Percutaneous needle biopsy of lung,non_small_cell_lung_cancer.json
 procedure->HCPCS,Bronchoscopy,10847001 Bronchoscopy,non_small_cell_lung_cancer.json
+bad-gmf,Staging,SetAttribute non-scalar value,non_small_cell_lung_cancer.json
 procedure->HCPCS,Surgical Resection,119000 Thoracoscopic partial lobectomy of lung,non_small_cell_lung_cancer.json
 med->NDC,Adjuvant Chemotherapy,56946 paclitaxel,non_small_cell_lung_cancer.json
 med->NDC,Adjuvant Chemotherapy,40048 carboplatin,non_small_cell_lung_cancer.json
@@ -526,6 +527,8 @@ med->NDC,Targeted Therapy,1721560 osimertinib,non_small_cell_lung_cancer.json
 med->NDC,Immunotherapy,1547545 pembrolizumab,non_small_cell_lung_cancer.json
 procedure->HCPCS,Genetic_Testing,405824009 Genetic testing,ovarian_cancer.json
 procedure->HCPCS,Enhanced_Screening,426491001 Transvaginal ultrasound of female genital tract,ovarian_cancer.json
+bad-gmf,Set_Cancer_Stage,SetAttribute non-scalar value,ovarian_cancer.json
+bad-gmf,Set_ECOG_Status,SetAttribute non-scalar value,ovarian_cancer.json
 procedure->HCPCS,Primary_Surgery,116028008 Salpingo-oophorectomy,ovarian_cancer.json
 med->NDC,Neoadjuvant_Chemotherapy,40048 Carboplatin,ovarian_cancer.json
 med->NDC,Neoadjuvant_Chemotherapy,56946 Paclitaxel,ovarian_cancer.json
@@ -562,6 +565,7 @@ bad-system,GeriatricComplications,ICD-10-CM:J15.7 Pneumonia due to Mycoplasma pn
 bad-gmf,CBC_Inpatient,Observation raw value block,pneumonia.json
 bad-gmf,CRP_Inpatient,Observation raw value block,pneumonia.json
 med->NDC,ACEi_Therapy,29046 Lisinopril,polycystic_kidney_disease.json
+bad-gmf,Advance_CKD_Stage,SetAttribute non-scalar value,polycystic_kidney_disease.json
 procedure->HCPCS,Peritoneal_Dialysis_Start,14684005 Peritoneal dialysis,polycystic_kidney_disease.json
 procedure->HCPCS,JAK2_Mutation_Test,405824009 Genetic testing (procedure),polycythemia_vera.json
 procedure->HCPCS,Initial_Phlebotomy,396540005 Phlebotomy,polycythemia_vera.json
@@ -638,6 +642,8 @@ procedure->HCPCS,Hematopoietic_Stem_Cell_Transplant,58390007 Allogeneic bone mar
 procedure->HCPCS,Prostate_MRI,2690005 Magnetic resonance imaging of pelvis,prostate_cancer.json
 procedure->HCPCS,MRI_Fusion_Biopsy,447395005 MRI guided biopsy of prostate,prostate_cancer.json
 procedure->HCPCS,Prostate_Biopsy,65575008 Biopsy of prostate,prostate_cancer.json
+bad-gmf,Risk_Stratification,SetAttribute non-scalar value,prostate_cancer.json
+bad-gmf,Staging_Workup,SetAttribute non-scalar value,prostate_cancer.json
 procedure->HCPCS,Radical_Prostatectomy,26294005 Radical prostatectomy,prostate_cancer.json
 procedure->HCPCS,Radiation_Therapy,785706005 Hypofractionated radiation therapy of prostate (procedure),prostate_cancer.json
 med->NDC,Combined_Modality,42375 leuprolide,prostate_cancer.json

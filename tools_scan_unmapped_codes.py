@@ -49,8 +49,11 @@ def main():
             rows.append(('parse-error', '', str(e), rel)); continue
         for sname, st in (mod.get('states') or {}).items():
             t = st.get('type')
-            if t == 'SetAttribute' and 'value_set' in st:
-                rows.append(('bad-gmf', sname, 'SetAttribute value_set', rel))
+            if t == 'SetAttribute':
+                if 'value_set' in st:
+                    rows.append(('bad-gmf', sname, 'SetAttribute non-scalar value (value_set)', rel))
+                elif isinstance(st.get('value'), dict):
+                    rows.append(('bad-gmf', sname, 'SetAttribute non-scalar value', rel))
             if t == 'Observation' and isinstance(st.get('value'), dict):
                 rows.append(('bad-gmf', sname, 'Observation raw value block', rel))
             for c in st.get('codes', []) or []:

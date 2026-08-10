@@ -1,0 +1,54 @@
+# Fork-module disease-monoculture universe for tools_smoke_check.py --top-share-universe
+# Generated 2026-08-10 for the Phase 1 gate (docs/superpowers/plans/2026-08-10-phase1-gate.txt)
+# Command used to derive the module list:
+#   git diff --name-only feffd500..HEAD -- src/main/resources/modules/
+# For each surviving .json in that list, every ConditionOnset state codes[].code
+# was extracted (sorted, deduplicated). Regenerate by re-running that diff against
+# the current branch tip and re-extracting; the file is not auto-generated at gate time.
+# 46 unique codes from 14 touched fork modules.
+1228957006
+1229852009
+1229859000
+1229864001
+1259051000
+1259237005
+128209004
+128462008
+1371415000
+17964000
+188247000
+192071009
+233604007
+255108000
+263855007
+26929004
+27942005
+28770003
+314964006
+34020007
+363346000
+363418001
+363456000
+386805003
+399056007
+399068003
+399326009
+412734009
+425066001
+425231005
+443487006
+449803009
+46177005
+46970008
+59621000
+698306007
+765330003
+88805009
+92546004
+93675008
+93796005
+93863000
+93972009
+94109006
+94122003
+94124002

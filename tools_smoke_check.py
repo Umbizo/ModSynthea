@@ -57,6 +57,22 @@ def get(row, cmap, name):
     return row.get(key)
 
 
+def read_code_universe(path):
+    """Read a one-code-per-line universe file: blank lines and lines starting
+    with '#' (comments, e.g. a generating-command header) are ignored."""
+    if not os.path.exists(path):
+        print(f"ERROR: missing --top-share-universe file {path}", file=sys.stderr)
+        sys.exit(2)
+    codes = set()
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            codes.add(line)
+    return codes
+
+
 def read_table(path, required):
     if not os.path.exists(path):
         print(f"ERROR: missing {path}", file=sys.stderr)
@@ -147,7 +163,20 @@ def main():
                           'denominator); these codes still count normally for every '
                           'other check (e.g. legitimate high-frequency administrative '
                           'codes like med_rec\'s "Medication review due" that would '
-                          'otherwise permanently jam the monoculture gate)')
+                          'otherwise permanently jam the monoculture gate). Superseded '
+                          'by --top-share-universe for the gates, kept for back-compat.')
+    ap.add_argument('--top-share-universe',
+                     help='path to a file of condition codes (one per line; blank lines '
+                          'and lines starting with "#" ignored) that restricts which '
+                          'codes are eligible to hold the "top" seat in the '
+                          '--top-share-max computation. The denominator is unchanged '
+                          '(still all condition rows, minus any --exclude-codes) -- only '
+                          'the candidate pool for the numerator is restricted. Use this '
+                          'to catch a single fork-module disease becoming a monoculture '
+                          'without being jammed by legitimately-common stock/SDOH codes '
+                          '(employment status, social isolation, gingivitis, etc.) that '
+                          'dominate raw row counts at full-lifetime export but are not '
+                          'the kind of defect this check exists to catch.')
     ap.add_argument('--out', default='output/smoke/csv',
                      help='directory containing patients/conditions/encounters.csv '
                           '(default output/smoke/csv)')
@@ -248,17 +277,36 @@ def main():
 
     exclude_set = {c.strip() for c in (args.exclude_codes or '').split(',') if c.strip()}
     top_counts = {c: n for c, n in cond_code_counts.items() if c not in exclude_set}
-    top_total = sum(top_counts.values())
-    if top_total:
-        top_code, top_count = max(top_counts.items(), key=lambda kv: kv[1])
+    top_total = sum(top_counts.values())  # denominator: all condition rows, minus excludes
+
+    universe = None
+    if args.top_share_universe:
+        universe = read_code_universe(args.top_share_universe)
+        candidate_counts = {c: n for c, n in top_counts.items() if c in universe}
+    else:
+        candidate_counts = top_counts
+
+    if top_total and candidate_counts:
+        top_code, top_count = max(candidate_counts.items(), key=lambda kv: kv[1])
         top_share = top_count / top_total
-        excl_note = ''
+        notes = []
         if exclude_set:
             dropped = total_condition_rows - top_total
-            excl_note = (f" (excluding {len(exclude_set)} code(s) "
+            notes.append(f"excluding {len(exclude_set)} code(s) "
                           f"{{{', '.join(sorted(exclude_set))}}}, {dropped} rows dropped "
-                          f"from this computation only)")
-        print(f"top condition code{excl_note}: {top_code} ({top_count}/{top_total} rows)")
+                          f"from this computation only")
+        if universe is not None:
+            notes.append(f"candidate pool restricted to {len(universe)} code(s) from "
+                          f"--top-share-universe {args.top_share_universe} "
+                          f"(denominator unchanged, still {top_total} rows)")
+        note = f" ({'; '.join(notes)})" if notes else ''
+        print(f"top condition code{note}: {top_code} ({top_count}/{top_total} rows)")
+    elif top_total and universe is not None:
+        # universe given but none of its codes appear in the data at all
+        top_share = 0.0
+        print(f"top condition code (candidate pool restricted to {len(universe)} code(s) "
+              f"from --top-share-universe {args.top_share_universe}: none present in data): "
+              f"n/a (0/{top_total} rows)")
     else:
         top_share = None
     check("top condition code share", top_share, None, args.top_share_max, violations)

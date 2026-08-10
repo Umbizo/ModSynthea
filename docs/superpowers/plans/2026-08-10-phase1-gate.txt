@@ -1,0 +1,581 @@
+PHASE 1 GATE — ModSynthea audit remediation
+Repo: /Users/ollie/dev/ModSynthea
+Branch: fix/module-audit-remediation (confirmed via `git branch --show-current`)
+Commit at gate time: 0490cebd (fix(bladder_cancer): ever-smoker risk gate, SEER-anchored incidence)
+Run date: 2026-08-10, 19:36-19:45 BST
+Population requested: -p 1000 (seed 4444, exporter.years_of_history=0, csv export, fhir export off)
+
+====================================================================
+1. PRE-FLIGHT
+====================================================================
+$ git branch --show-current
+fix/module-audit-remediation
+
+$ df -h .
+Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on
+/dev/disk2s5   228Gi   165Gi    20Gi    90%    1.9M  207M    1%   /System/Volumes/Data
+
+20GB free, comfortably above the ~9GB requirement. Did not need to
+manually clear output/smoke (tools_smoke_gen.sh does `rm -rf output/smoke`
+itself before generating). Pre-existing output/smoke_run.log was a stale
+prior run (default ~400 pop, "You've just generated 723 patients!",
+finished 19:01, no process running) — overwritten by this gate's run.
+
+====================================================================
+2. GENERATION
+====================================================================
+Command: nohup ./tools_smoke_gen.sh 1000 > /tmp/gate_gen_wrapper.log 2>&1 &
+Polled via background wait-loop on `pgrep -f run_synthea` (per-instructions
+foreground polling substituted with a Bash run_in_background wait command
+since long leading `sleep` calls are blocked by the harness; functionally
+equivalent — I never awaited it via a plain foreground sleep).
+
+Result: BUILD SUCCESSFUL in 1m 7s (total wall time for the run ~9 minutes
+including Gradle bootstrap).
+
+Tail of output/smoke_run.log:
+    1000 -- Armando772 Smith67 (89 y/o M) Ludlow, Massachusetts  (125403)
+    Records: total=1765, alive=976, dead=789
+    RNG=1000
+    Clinician RNG=5647
+
+    You've just generated 1765 patients!
+    ...
+    BUILD SUCCESSFUL in 1m 7s
+    4 actionable tasks: 3 executed, 1 up-to-date
+
+Exported CSVs: output/smoke/csv/{patients,conditions,encounters,medications}.csv
+patients.csv: 1765 data rows (882 F / 883 M)
+conditions.csv: 333,348 data rows
+encounters.csv: 579,358 data rows
+Disk after run: 16GB free (down from 20GB pre-run, ~4GB consumed — no
+disk-pressure incident).
+
+NOTE: `-p 1000` did not yield exactly 1000 patient rows; the engine
+generates additional dead/discarded attempts while filling the alive
+quota, exporting 1765 total records (976 alive + 789 dead). This is
+consistent with prior task-ledger runs at this population scale and is
+not itself a defect under investigation here.
+
+====================================================================
+3. EXCEPTION CENSUS
+====================================================================
+Total exception lines in output/smoke_run.log: 24 (all java.lang.NullPointerException;
+zero ClassCastException, zero "cancer_stage"/"LinkedTreeMap" mentions, zero
+"103735009" mentions anywhere in the log).
+
+Reconstruction method: parsed the full log as a sequence of top-level
+"java.lang.NullPointerException[...]" header lines each followed by zero or
+more "\tat ..." frame lines (frames do not interleave across different
+exceptions because Throwable.printStackTrace(PrintStream) is `synchronized`
+on the target stream — every "\tat" line was attributed to the nearest
+preceding, still-open header). Of 24 exceptions:
+
+  11 had a complete attributable stack trace (message + engine frame):
+     - 2x  "Cannot invoke Object.hashCode() because key is null"
+           at State$Symptom.process(State.java:2354)
+           -> person.setSymptom(module, cause, symptom, ...) with symptom==null
+           => KNOWN RESIDUAL CLASS: Symptom states missing `symptom` field
+              (Tasks 2.12/3.x). Confirmed in-family by source inspection.
+
+     - 1x  "Cannot assign field 'stop' because 'medication' is null"
+           at State$MedicationEnd.process(State.java:1624)
+           -> referencedByAttribute set, but person.attributes.get(...) returned
+              null (MedicationOrder never fired for that attribute)
+           => KNOWN RESIDUAL CLASS: MedicationEnd-with-unset-attribute states
+              (18 modules, Tasks 2.12/3.x). Confirmed in-family by source
+              inspection.
+
+     - 5x  "Cannot invoke java.util.List.get(int) because this.codes is null"
+           at State$Observation.process(State.java:2036)
+     - 3x  "Cannot invoke java.util.List.get(int) because this.codes is null"
+           at State$MultiObservation.process(State.java:2137)
+           => *** NOT ON THE APPROVED KNOWN-RESIDUAL LIST ***  (see section 3a)
+
+  13 were bare "java.lang.NullPointerException" with NO message and NO
+     stack frames at all (not even the generic thread-pool frames). All 13
+     cluster in the second half of the log (lines 1192-2279, i.e. after the
+     first ~650 patients had been generated). Investigated and ruled out:
+     output-interleaving (Throwable.printStackTrace is stream-synchronized,
+     so genuine frame loss to interleaving isn't possible); the only
+     plausible explanation found is JVM "OmitStackTraceInFastThrow" JIT
+     optimization eliding both message and trace on a hot, repeatedly-thrown
+     exception shape after warm-up — which would make these likely
+     duplicates of one of the four shapes above, but this could NOT be
+     confirmed. Treated conservatively as UNCLASSIFIED, not silently folded
+     into "known."
+
+--------------------------------------------------------------------
+3a. NEW EXCEPTION CLASS — flagged prominently, per gate instructions
+--------------------------------------------------------------------
+"this.codes is null" NullPointerException in State$Observation.process /
+State$MultiObservation.process is a fourth NPE family, structurally
+identical in kind to the two approved NPE families (a state omits a
+required JSON field that the engine assumes is always present) but is
+NOT one of the three exception classes pre-approved for this gate
+(ClassCastException/cancer_stage, Symptom NPE, MedicationEnd NPE,
+103735009). Per gate instructions ("Anything OUTSIDE these classes =
+gate failure, report it prominently") this is reported as a gate
+failure.
+
+Root-caused by static scan (no `codes` key on any Observation/
+MultiObservation/DiagnosticReport state, top-level or nested inside an
+`observations` array, across every module):
+
+  rheumatoid_arthritis.json          : Joint_Count_Assessment   (Observation)
+  non_small_cell_lung_cancer.json    : Present Symptoms         (MultiObservation)
+  non_small_cell_lung_cancer.json    : Pathology                (MultiObservation)
+  non_small_cell_lung_cancer.json    : Molecular Testing        (MultiObservation)
+
+These are exactly the 4 states that exist tree-wide with this shape (scan
+found no other matches), so the 8 confirmed occurrences (5 Observation +
+3 MultiObservation) are these 4 states firing repeatedly across the run;
+some/all of the 13 unclassified bare NPEs are also plausibly this family.
+
+Context for the controller: this root cause was already identified during
+Task 1.1's review as the "Observation states silently drop
+assign_to_attribute" engine fact, with rheumatoid_arthritis[Joint_Count_Assessment]
+explicitly named and scheduled for Task 2.5 (progress.md line 20). It is a
+real, already-tracked Phase-2 defect — just not one of the three classes
+listed in *this* gate's pre-approval, so it is surfaced here as instructed
+rather than silently absorbed. non_small_cell_lung_cancer's three
+MultiObservation states are a related but previously-undocumented instance
+of the same defect pattern in a module already known to be broken
+(Task 2.1 covers a *different* state in the same file, "Staging").
+
+====================================================================
+4. CHECKER SUITE
+====================================================================
+
+--- Prostate (399068003), M, eligible 55+, share 0.06-0.18, mean-enc>=30, top-share<=0.05 excl 314529007,66383009 ---
+$ python3 tools_smoke_check.py --code 399068003 --sex M --eligible-min-age 55 \
+    --min-share 0.06 --max-share 0.18 --mean-encounters-min 30 --top-share-max 0.05 \
+    --exclude-codes 314529007,66383009
+eligible population (code=399068003, sex=M, min-age=55.0): n=777, n_with_dx=80
+share of dx 399068003 in eligible pop: 0.103  min=0.060 [OK]  max=0.180 [OK]
+onset age samples for dx 399068003 in eligible pop: n=80
+onset age p5 for dx 399068003: 55.8
+onset age p95 for dx 399068003: 67.8
+mean encounters/patient: 328.25  min=30.00 [OK]
+top condition code (excluding 2 code(s) {314529007, 66383009}, 108006 rows dropped from
+this computation only): 73595000 (26395/225342 rows)
+top condition code share: 0.117  max=0.050 [FAIL]
+
+FAIL: 1 bound(s) violated:
+  - top condition code share = 0.117 > max 0.050
+Exit code: 1
+
+  => Prostate share, PASS (0.103, well inside 0.06-0.18).
+  => Mean encounters/patient PASS (328.25 >= 30).
+  => Top-share FAIL. New dominant stock code at 1000-pop scale: 73595000
+     "Stress (finding)" (26,395/225,342 = 11.7% of all condition rows after
+     excluding the two codes the baseline (400-pop) run calibrated against).
+     This is a different stock/benign recurring code than the one the
+     exclude-list was tuned for — the checker command run is EXACTLY the one
+     specified in the gate procedure, unmodified. Reported as-is: FAIL.
+
+--- Bladder (255108000), M, share 0.01-0.06 ---
+$ python3 tools_smoke_check.py --code 255108000 --sex M --min-share 0.01 --max-share 0.06
+eligible population (code=255108000, sex=M, min-age=0.0): n=883, n_with_dx=16
+share of dx 255108000 in eligible pop: 0.018  min=0.010 [OK]  max=0.060 [OK]
+onset age samples for dx 255108000 in eligible pop: n=16
+onset age p5 for dx 255108000: 51.5
+onset age p95 for dx 255108000: 94.4
+PASS: all requested bounds satisfied
+Exit code: 0
+
+Raw male dx count (script cross-check against conditions.csv joined to
+patients.csv gender): 16 unique male patients with code 255108000.
+Expectation ~18, hard floor ~8.7 → 16 is within range. PASS.
+
+--- Pancreatic (363418001 — read from pancreatic_cancer.json's Pancreatic_Cancer_Onset
+    state, "Malignant tumor of pancreas"), share 0.003-0.03 ---
+$ python3 tools_smoke_check.py --code 363418001 --min-share 0.003 --max-share 0.03
+eligible population (code=363418001, sex=any, min-age=0.0): n=1765, n_with_dx=9
+share of dx 363418001 in eligible pop: 0.005  min=0.003 [OK]  max=0.030 [OK]
+onset age samples for dx 363418001 in eligible pop: n=9
+onset age p5 for dx 363418001: 57.3
+onset age p95 for dx 363418001: 84.8
+PASS: all requested bounds satisfied
+Exit code: 0
+  => PASS, satisfies the Task 1.8 review's stated Phase-7.2 re-test condition
+     (1000-pop floor 0.003).
+
+--- Alzheimers (26929004), eligible 65+, max-share 0.15 ---
+$ python3 tools_smoke_check.py --code 26929004 --eligible-min-age 65 --max-share 0.15
+eligible population (code=26929004, sex=any, min-age=65.0): n=1339, n_with_dx=222
+share of dx 26929004 in eligible pop: 0.166  max=0.150 [FAIL]
+onset age samples for dx 26929004 in eligible pop: n=222
+onset age p5 for dx 26929004: 69.3
+onset age p95 for dx 26929004: 88.1
+FAIL: 1 bound(s) violated:
+  - share of dx 26929004 in eligible pop = 0.166 > max 0.150
+Exit code: 1
+  => FAIL. 0.166 vs 0.15 ceiling (~11% relative overage).
+
+--- Pneumonia (233604007), share 0.10-0.45, min-onset-age 1 ---
+$ python3 tools_smoke_check.py --code 233604007 --min-share 0.10 --max-share 0.45 --min-onset-age 1
+eligible population (code=233604007, sex=any, min-age=0.0): n=1765, n_with_dx=647
+share of dx 233604007 in eligible pop: 0.367  min=0.100 [OK]  max=0.450 [OK]
+onset age p5 for dx 233604007: 2.1  min=1.0 [OK]
+onset age p95 for dx 233604007: 81.6
+PASS: all requested bounds satisfied
+Exit code: 0
+
+--- Informational only (no bounds) ---
+MCL 443487006:            n_with_dx=0    (share 0.000, n eligible=1765)
+CIDP 128209004:           n_with_dx=1    (share 0.001, n eligible=1765)
+Ovarian 93796005 (F only):n_with_dx=6    (share 0.007, n eligible F=882)
+ADPKD 765330003:          n_with_dx=2    (share 0.001, n eligible=1765)
+
+====================================================================
+5. STRUCTURAL SPOT-CHECKS
+====================================================================
+Blank/zero-duration encounters (output/smoke/csv/encounters.csv, 579,358 rows):
+  blank STOP:                 0
+  zero-duration (STOP==START): 0
+  => PASS. No encounter-lock-style artifacts in the 1000-pop CSVs.
+
+Mean encounters/patient: 328.25 (from checker output; total_encounters /
+total_patients = 579358 / 1765).
+  Reference: baseline task ledger cites "healthy reference ~940" at
+  400-pop lifetime scale (docs/superpowers/plans/2026-08-10-baseline-smoke.txt,
+  "mean encounters/patient: 941.79"). 328.25 is a large (~65%) drop from
+  that reference. No bound was specified for this metric in the gate
+  procedure (only the 30-floor catastrophic-collapse check, which passes
+  by >10x), so this is reported as informational, not a FAIL — but it is
+  a notable divergence worth the controller's attention. Plausible
+  non-bug explanation: population composition at 1000-target scale
+  includes many short-lived pediatric decedents visible in the log (ages
+  1, 4, 7, 11, DECEASED) that the smaller 400-pop baseline run may not
+  have sampled as heavily, each contributing very few lifetime encounters
+  and pulling the population mean down; not confirmed against the
+  original baseline run's raw data since that run's CSVs were overwritten
+  by subsequent runs. Flagged, not investigated further (out of this
+  gate's scope).
+
+GDMT medication spans for CHF patients (codes: empagliflozin 1545658,
+ivabradine 1649485, sacubitril/valsartan 1656356, digoxin 197604,
+carvedilol 200033, spironolactone 313096, furosemide 313988, lisinopril
+314077, hydralazine/isosorbide 905377, losartan 979492 — read from
+src/main/resources/modules/heart/chf_meds*.json):
+  Raw medication rows matching GDMT codes: 17,086 (564 with blank STOP,
+  i.e. still active at sim end — normal for chronic meds, not a defect
+  signal the way blank encounter STOPs would be).
+  Raw per-row duration (each row = one annual renewal, per the engine's
+  documented chronic-med annual-renewal behavior): median 49 days
+  (expected to be short; each row is one dispense cycle, not the full
+  course).
+  Per-patient-per-drug MERGED course duration (consecutive/overlapping
+  rows within a 2-day gap coalesced into one continuous course): n=877
+  courses, median 379 days, p25=30d, p75=1865d.
+  => PASS (median merged course 379d > 300d threshold).
+
+====================================================================
+6. VERDICT (superseded — see section 7 for controller adjudication and
+   the FINAL verdict in section 8)
+====================================================================
+GATE_FAIL (initial pass, pre-adjudication)
+
+Failing criteria:
+  1. NEW exception class outside the three pre-approved known-residual
+     classes: State$Observation / State$MultiObservation "this.codes is
+     null" NPE (rheumatoid_arthritis.json:Joint_Count_Assessment;
+     non_small_cell_lung_cancer.json: Present Symptoms, Pathology,
+     Molecular Testing). 8/24 exceptions definitively attributed to this
+     family; up to 13 more unattributed bare NPEs cannot be ruled out
+     either way.
+  2. Checker FAIL: top condition code share = 0.117 > max 0.050 (prostate
+     command, code 73595000 "Stress (finding)" newly dominant at 1000-pop
+     scale, not covered by the baseline's exclude-list).
+  3. Checker FAIL: Alzheimers share = 0.166 > max 0.150 (eligible 65+).
+
+Passing criteria:
+  - Generation completed (BUILD SUCCESSFUL, 1765 records / 976 alive /
+    789 dead, no crash, no disk exhaustion).
+  - Zero ClassCastException, zero 103735009 mentions anywhere in the log
+    (the two other known-residual classes were absent this run, not just
+    tolerated).
+  - Prostate share 0.103 (0.06-0.18) PASS.
+  - Mean encounters/patient 328.25 >= 30 floor PASS.
+  - Bladder share 0.018 (0.01-0.06) PASS; raw male count 16 vs exp ~18 /
+    floor ~8.7 PASS.
+  - Pancreatic share 0.005 (0.003-0.03) PASS.
+  - Pneumonia share 0.367 (0.10-0.45), onset p5 2.1 (>=1) PASS.
+  - 0 blank-STOP encounters, 0 zero-duration encounters PASS.
+  - GDMT merged median course 379d > 300d PASS.
+
+====================================================================
+7. CONTROLLER ADJUDICATION (2026-08-10, same day) — re-verified on the
+   EXISTING output/smoke CSVs, no regeneration
+====================================================================
+
+Ruling 1 — top-share / 73595000: adjudicated as a stock benign recurrent
+(same class as 314529007 med-rec and 66383009 gingivitis). Re-ran with
+--exclude-codes 314529007,66383009,73595000:
+
+$ python3 tools_smoke_check.py --code 399068003 --sex M --eligible-min-age 55 \
+    --min-share 0.06 --max-share 0.18 --mean-encounters-min 30 --top-share-max 0.05 \
+    --exclude-codes 314529007,66383009,73595000 --out output/smoke/csv
+eligible population (code=399068003, sex=M, min-age=55.0): n=777, n_with_dx=80
+share of dx 399068003 in eligible pop: 0.103  min=0.060 [OK]  max=0.180 [OK]
+mean encounters/patient: 328.25  min=30.00 [OK]
+top condition code (excluding 3 code(s) {314529007, 66383009, 73595000},
+134401 rows dropped from this computation only): 160903007 (23373/198947 rows)
+top condition code share: 0.117  max=0.050 [FAIL]
+Exit code: 1
+
+RESULT: does NOT pass. A fourth stock code takes over as dominant:
+160903007 "Full-time employment (finding)" at essentially the SAME
+share (0.117) as before. Per the controller's explicit contingency
+("if ANOTHER stock benign code still exceeds 0.05, report it back
+rather than adding more excludes yourself") this is reported back, not
+self-authorized.
+
+Full ranked breakdown (all condition codes, no exclusions, 333,348 total
+rows) shows this is not a one-off — it's a family of generic Synthea
+stock/SDOH "finding" codes that each individually clear 5% of all
+condition rows at full-lifetime (years_of_history=0), 1000-pop scale:
+
+  314529007  77985  23.39%  Medication review due (situation)      [excluded]
+  66383009   30021   9.01%  Gingivitis (disorder)                  [excluded]
+  73595000   26395   7.92%  Stress (finding)                       [excluded, this ruling]
+  160903007  23373   7.01%  Full-time employment (finding)         [NOT excluded -- reported]
+  160904001  15984   4.79%  Part-time employment (finding)
+  444814009  13120   3.94%  Viral sinusitis (disorder)
+  741062008   9059   2.72%  Not in labor force (finding)
+  18718003    8970   2.69%  Gingival disease (disorder)
+  422650009   8922   2.68%  Social isolation (finding)
+  423315002   8888   2.67%  Limited social contact (finding)
+  195662009   7664   2.30%  Acute viral pharyngitis (disorder)
+  109570002   7147   2.14%  Primary dental caries (disorder)
+  10509002    6281   1.88%  Acute bronchitis (disorder)
+  72892002    6146   1.84%  Normal pregnancy (finding)
+  706893006   5609   1.68%  Victim of intimate partner abuse (finding)
+
+Structural note for the controller: excluding the top-share leader each
+time does not converge toward PASS, because the check's denominator
+(total condition rows, minus excluded codes) shrinks along with the
+numerator -- the *next* code's share against the smaller pool doesn't
+reliably drop below 5% just because more codes were removed. This
+metric may need to move from "grow the exclude-list" to something more
+structural (e.g. restricting the top-share population to
+disease/pathology codes only, or scoring share per-patient rather than
+per-row) if the pattern continues past 160903007. Not resolved here --
+flagged for the controller's exclude-list or metric-design decision.
+
+Ruling 2 — Alzheimers interim ceiling 0.20: re-ran with the relaxed bound.
+
+$ python3 tools_smoke_check.py --code 26929004 --eligible-min-age 65 \
+    --max-share 0.20 --out output/smoke/csv
+eligible population (code=26929004, sex=any, min-age=65.0): n=1339, n_with_dx=222
+share of dx 26929004 in eligible pop: 0.166  max=0.200 [OK]
+PASS: all requested bounds satisfied
+
+RESULT: PASS. 0.166 is the measured stock-dementia double-diagnosis
+overlap on top of the custom module's isolated ~7.8% (Task 1.6 finding),
+against the interim 0.20 gate ceiling. RULING RECORDED: this is an
+interim ceiling only -- the Phase 7 gate (7.2) restores the intentional
+0.15 ceiling once coordination Tasks 4.2/5.2 resolve the double-diagnosis
+overlap between the custom module and stock dementia.json.
+
+Ruling 3 — NPE classification, with owners:
+  - 2x Symptom "key is null" (State.java:2354)      -> KNOWN (Tasks 2.12/3.x)
+  - 1x MedicationEnd "medication is null" (State.java:1624) -> KNOWN (Tasks 2.12/3.x)
+  - 5x Observation "this.codes is null" (State.java:2036), root state
+    rheumatoid_arthritis.json:Joint_Count_Assessment -> KNOWN, owner Task 2.5
+  - 3x MultiObservation "this.codes is null" (State.java:2137), root
+    states non_small_cell_lung_cancer.json: Present Symptoms, Pathology,
+    Molecular Testing -> KNOWN, owner Tasks 2.1/4.1
+  - 13x bare NullPointerException (no message, no frames) -> classified
+    as suspected trace-elision duplicates of the above known classes,
+    per controller ruling. Cheap bound attempted (temporal clustering,
+    since exact attribution isn't recoverable from a frame-less
+    exception): of the 11 fully-attributed exceptions, 10 occur in the
+    FIRST ~40% of the exception zone (log lines 377-1406) with only 1
+    bare exception interleaved in that span; of the 13 bare exceptions,
+    12 occur in the LATTER ~60% (lines 1657-2279) with only 1 fully-
+    attributed exception (line 2170) interleaved there. This sharp
+    before/after split is consistent with JIT "OmitStackTraceInFastThrow"
+    trace elision kicking in once State$Observation/State$MultiObservation
+    /State$Symptom/State$MedicationEnd.process become hot compiled
+    methods partway through the run -- supporting (not proving) that the
+    13 bare NPEs are duplicates of the 4 known shapes, not a 5th unknown
+    family. A naive proportional split using the attributed 3-known:8-new
+    ratio (27%:73%) would prorate the 13 as ~3.5 known / ~9.5 new, but
+    this is an arithmetic guess, not a measurement -- recorded as
+    context only, not as a claimed count.
+
+Ruling 4 — mean encounters/patient: 328.25 (reported as 328) is recorded
+as the new healthy post-Phase-1 reference. The prior ~940 figure
+(docs/superpowers/plans/2026-08-10-baseline-smoke.txt, Task 0.3) was
+measured pre-Phase-1 and reflected lock-loop churn -- e.g. prostate's
+ungated annual PSA visits generating excess encounter volume before the
+Task 1.1 fix gated screening uptake. 328 is the figure to compare future
+runs against, not 940.
+
+====================================================================
+8. FINAL VERDICT (superseded — see sections 9-10 for the fork-universe
+   ruling and the TRUE final verdict)
+====================================================================
+GATE_FAIL — one criterion still open after adjudication.
+
+RESOLVED by adjudication:
+  - Alzheimers share: PASS under interim 0.20 ceiling (ruling 2).
+  - NPE census: all 24 exceptions now have an owner or a documented,
+    reasoned "known-family" classification (ruling 3) -- no longer
+    treated as an unclassified new-defect risk.
+  - Mean encounters/patient: 328 recorded as the new reference, not a
+    regression (ruling 4).
+
+STILL FAILING:
+  - Top condition code share, even with the controller-authorized
+    3-code exclude list (314529007, 66383009, 73595000): 0.117 > 0.05,
+    now driven by 160903007 "Full-time employment (finding)". This was
+    explicitly anticipated as a possible outcome by the controller's own
+    contingency instruction ("report it back rather than adding more
+    excludes yourself") -- reported here, not resolved. Gate cannot
+    close on this criterion without a further controller ruling
+    (authorize excluding 160903007 too, accept a different metric, or
+    accept a higher top-share-max for full-lifetime 1000-pop runs).
+
+Per the gate procedure and the controller's explicit reply contract
+("if anything still fails, GATE_FAIL with specifics and do not commit")
+-- NOT COMMITTING. The plan document
+(docs/superpowers/plans/2026-08-10-module-audit-remediation.md) was
+still edited (locally, uncommitted) to carry the 3-code exclude list per
+the controller's authorization -- that ruling stands independently of
+the open 160903007 question -- but neither it nor this artifact has
+been committed pending the next ruling.
+
+====================================================================
+9. SECOND CONTROLLER RULING — top-share metric redesign
+   (2026-08-10, same day) — re-verified on the EXISTING output/smoke
+   CSVs, no regeneration
+====================================================================
+
+The controller reviewed the ranked-breakdown finding from section 7 and
+ruled the exclude-list approach a dead end: the offenders are a
+systemic family of stock SDOH codes that legitimately dominate raw row
+counts at full-lifetime export, not a short fixed list that could ever
+be fully enumerated. Since the top-share check's actual purpose is
+catching a FORK-module disease monoculture (the HOHF I50.83=98%
+incident that motivated this whole remediation), the metric was
+redefined rather than patched again.
+
+Change 1 — tools_smoke_check.py: added `--top-share-universe FILE`. When
+given, the top-share check's *candidate pool* for the "top" seat is
+restricted to codes listed in FILE (one code per line; blank lines and
+`#`-prefixed comment lines ignored); the *denominator* is unchanged --
+still all condition rows (minus any `--exclude-codes`, which remains
+supported for back-compat but is no longer used by the gates). This
+directly targets "does any ONE fork-disease code dominate the
+population's conditions" instead of "does any ONE code of any kind
+dominate raw row counts" (which was always going to be won by
+frequently-re-asserted stock/SDOH findings at full-lifetime scale).
+
+Change 2 — universe file generated at
+docs/superpowers/plans/2026-08-10-fork-condition-codes.txt:
+
+$ git diff --name-only feffd500..HEAD -- src/main/resources/modules/
+CIDP.json, alzheimers.json, bladder_cancer.json,
+congestive_heart_failure.json, heart/chf_meds.json,
+heart/chf_meds_hfref_nyha2.json, heart/chf_meds_hfref_nyha3.json,
+heart/chf_meds_hfref_nyha4.json, mantle_cell_lymphoma.json,
+ovarian_cancer.json, pancreatic_cancer.json, pneumonia.json,
+polycystic_kidney_disease.json, prostate_cancer.json
+(14 files, all survive at HEAD -- none deleted)
+
+For each surviving .json, every ConditionOnset state's codes[].code was
+extracted, deduplicated, and sorted: 46 unique codes (the four
+chf_meds*.json protocol submodules contribute no ConditionOnset states
+of their own; all 46 codes come from the other 10 disease modules).
+File committed alongside this artifact with a comment header recording
+the generating command, per the controller's instruction.
+
+Change 3 — re-ran the top-share check on the SAME existing CSVs
+(output/smoke/csv from the original 1000-pop run; no regeneration):
+
+$ python3 tools_smoke_check.py --code 399068003 --sex M --eligible-min-age 55 \
+    --min-share 0.06 --max-share 0.18 --mean-encounters-min 30 --top-share-max 0.05 \
+    --top-share-universe docs/superpowers/plans/2026-08-10-fork-condition-codes.txt \
+    --out output/smoke/csv
+eligible population (code=399068003, sex=M, min-age=55.0): n=777, n_with_dx=80
+share of dx 399068003 in eligible pop: 0.103  min=0.060 [OK]  max=0.180 [OK]
+mean encounters/patient: 328.25  min=30.00 [OK]
+top condition code (candidate pool restricted to 46 code(s) from
+--top-share-universe docs/superpowers/plans/2026-08-10-fork-condition-codes.txt
+(denominator unchanged, still 333348 rows)): 59621000 (821/333348 rows)
+top condition code share: 0.002  max=0.050 [OK]
+
+PASS: all requested bounds satisfied
+Exit code: 0
+
+RESULT: PASS, by a wide margin. Top fork code within the universe is
+59621000 "Essential hypertension" (polycystic_kidney_disease.json:
+Hypertension_Onset) at 0.0025 share (821/333,348 rows) -- not pneumonia
+or CHF as the controller's own hypothesis expected, though those are a
+close second and sixth respectively. Full ranked top-10 within the
+universe (denominator still the full 333,348 condition rows):
+
+  59621000     821  0.0025  Essential hypertension (PKD comorbidity)
+  233604007    811  0.0024  Pneumonia
+  26929004     222  0.0007  Alzheimer's disease
+  698306007    206  0.0006  Awaiting kidney transplant (PKD)
+  386805003    164  0.0005  Cognitive impairment (finding) (alzheimers.json)
+  88805009     132  0.0004  Chronic congestive heart failure
+  46177005      82  0.0002  End-stage renal disease (PKD)
+  399068003     80  0.0002  Malignant neoplasm of prostate
+  46970008      63  0.0002  Pneumonia caused by Mycoplasma pneumoniae
+  34020007      39  0.0001  Pneumonia caused by Streptococcus
+
+7 of the 46 universe codes have zero occurrences in this run's data
+(low-incidence fork diseases not drawn in this particular 1000-pop
+sample -- e.g. MCL, ARPKD infant onset -- consistent with their
+Poisson-rare expected rates, not a defect). No fork-module code comes
+remotely close to the 0.05 ceiling; the two orders of magnitude of
+headroom (0.0025 vs 0.05) is strong evidence the encounter-starvation /
+disease-monoculture defect class this check exists to catch (the HOHF
+I50.83=98% incident) is genuinely eliminated across all ten Phase-1
+modules, not just narrowly squeaking under a threshold.
+
+====================================================================
+10. TRUE FINAL VERDICT
+====================================================================
+GATE_PASS
+
+All criteria resolved:
+  - Prostate share 0.103 (0.06-0.18) PASS.
+  - Mean encounters/patient 328.25 >= 30 floor PASS; 328 recorded as the
+    new post-Phase-1 healthy reference (ruling 4, section 7).
+  - Top condition code share (fork-module universe): 0.0025 << 0.05
+    PASS (ruling, section 9) -- supersedes the exclude-codes approach
+    entirely; the plan doc's Phase 1 gate and Task 7.2 lines were
+    updated to the universe invocation.
+  - Bladder share 0.018 (0.01-0.06) PASS; raw male count 16 vs exp ~18 /
+    floor ~8.7 PASS.
+  - Pancreatic share 0.005 (0.003-0.03) PASS.
+  - Alzheimers share 0.166, PASS under the interim 0.20 ceiling (ruling
+    2, section 7); Phase 7 gate (Task 7.2) restores the intentional
+    0.15 ceiling once coordination Tasks 4.2/5.2 land.
+  - Pneumonia share 0.367 (0.10-0.45), onset p5 2.1 (>=1) PASS.
+  - Zero ClassCastException, zero 103735009 mentions anywhere in the
+    1000-pop log.
+  - All 24 NPEs classified: 3 known (Symptom x2, MedicationEnd x1,
+    Tasks 2.12/3.x), 8 known with named owners (Observation/
+    MultiObservation "codes is null": rheumatoid_arthritis.json
+    Joint_Count_Assessment -> Task 2.5; non_small_cell_lung_cancer.json
+    Present Symptoms/Pathology/Molecular Testing -> Tasks 2.1/4.1), 13
+    unattributable bare NPEs recorded as suspected trace-elision
+    duplicates of the above (temporal-clustering evidence in section 7,
+    ruling 3 -- not proof, but no basis to treat as a genuine 5th
+    unknown class).
+  - 0 blank-STOP encounters, 0 zero-duration encounters PASS.
+  - GDMT merged median course 379d > 300d PASS.
+  - Generation completed cleanly (BUILD SUCCESSFUL, 1765 records / 976
+    alive / 789 dead, no crash, no disk exhaustion).
+
+Per the controller's instruction: committing tools_smoke_check.py
+(--top-share-universe feature), the universe file, this gate artifact,
+and the plan document as:
+  chore(audit): phase 1 gate - encounter starvation eliminated (fork-universe top-share)

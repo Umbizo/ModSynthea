@@ -246,6 +246,24 @@
         }
       },
       "unit": "weeks",
+      "direct_transition": "End_Corticosteroids_Course"
+    },
+    "End_Corticosteroids_Course": {
+      "type": "MedicationEnd",
+      "remarks": [
+        "Corticosteroids_Therapy is a fixed-course induction taper (typical CIDP",
+        "prednisone course/taper ~8-12 weeks), not a chronic maintenance drug --",
+        "it needs a MedicationEnd (Global Constraint 6), unlike IVIG",
+        "(administration: true, single row per firing) or Second_Line_Treatment",
+        "(chronic: true azathioprine). Reuses the existing ~12wk",
+        "Treatment_Response_Assessment Delay -- already the right duration for a",
+        "steroid taper -- rather than adding a new delay. This state is on the",
+        "shared path for all three initial-treatment arms; medicationEndByState",
+        "(HealthRecord.java:1602-1618) is a safe no-op for patients who took",
+        "IVIG or plasma exchange instead of corticosteroids (no matching",
+        "medication entry found -> nothing happens)."
+      ],
+      "medication_order": "Corticosteroids_Therapy",
       "direct_transition": "Treatment_Response_Decision"
     },
     "Treatment_Response_Decision": {

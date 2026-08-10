@@ -11,6 +11,12 @@
       "description": "Diagnostic bone marrow; biopsy(ies)"
     }
   ],
+  "396540005": [
+    {
+      "code": "99195",
+      "description": "Phlebotomy, therapeutic (separate procedure)"
+    }
+  ],
   "164721007": [
     {
       "code": "95910",

@@ -7397,5 +7397,62 @@
       "code": "77427",
       "description": "Radiation treatment management, 5 treatments"
     }
+  ],
+  "10847001": [
+    {
+      "code": "31622",
+      "description": "Bronchoscopy, rigid or flexible, including fluoroscopic guidance, when performed; diagnostic, with cell washing, when performed (separate procedure)",
+      "weight": "0.30"
+    },
+    {
+      "code": "31625",
+      "description": "Bronchoscopy, rigid or flexible, including fluoroscopic guidance, when performed; with bronchial or endobronchial biopsy(s), single or multiple sites",
+      "weight": "0.30"
+    },
+    {
+      "code": "31629",
+      "description": "Bronchoscopy, rigid or flexible, including fluoroscopic guidance, when performed; with transbronchial needle aspiration biopsy(s), trachea, main stem and/or lobar bronchus(i)",
+      "weight": "0.20"
+    },
+    {
+      "code": "31652",
+      "description": "Bronchoscopy, rigid or flexible, including fluoroscopic guidance, when performed; with endobronchial ultrasound (EBUS) guided transtracheal and/or transbronchial sampling, one or two mediastinal and/or hilar lymph node stations or structures",
+      "weight": "0.20"
+    }
+  ],
+  "274319000": [
+    {
+      "code": "32408",
+      "description": "Core needle biopsy, lung or mediastinum, percutaneous, including imaging guidance, when performed"
+    }
+  ],
+  "75935006": [
+    {
+      "code": "32663",
+      "description": "Thoracoscopy, surgical; with lobectomy, total or segmental",
+      "weight": "0.80"
+    },
+    {
+      "code": "32480",
+      "description": "Removal of lung, other than pneumonectomy; single lobe (lobectomy)",
+      "weight": "0.20"
+    }
+  ],
+  "1287742003": [
+    {
+      "code": "77412",
+      "description": "Radiation treatment delivery, >=1 MeV; complex",
+      "weight": "0.50"
+    },
+    {
+      "code": "77427",
+      "description": "Radiation treatment management, 5 treatments",
+      "weight": "0.30"
+    },
+    {
+      "code": "77407",
+      "description": "Radiation treatment delivery, >=1 MeV; intermediate",
+      "weight": "0.20"
+    }
   ]
 }

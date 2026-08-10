@@ -261300,5 +261300,15 @@
       "code": "00480357101",
       "description": "mycophenolate mofetil 500 MG Oral Tablet"
     }
+  ],
+  "1721581": [
+    {
+      "code": "00310135030",
+      "description": "osimertinib 80 MG Oral Tablet [Tagrisso]"
+    },
+    {
+      "code": "00310125130",
+      "description": "osimertinib 80 MG Oral Tablet [Tagrisso]"
+    }
   ]
 }

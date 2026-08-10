@@ -1,132 +1,774 @@
 {
-  "name": "Non-Small Cell Lung Cancer Module",
+  "name": "Non-Small Cell Lung Cancer",
+  "gmf_version": 2,
   "remarks": [
-    "Simulation of NSCLC including subtypes, staging, molecular testing, and treatment pathways"
+    "Non-small cell lung cancer: smoking-gated incidence, symptomatic or",
+    "incidental presentation, tissue diagnosis with histology / PD-L1 /",
+    "molecular profiling, stage-directed treatment (resection, SBRT,",
+    "chemoradiation with durvalumab consolidation, and first-line systemic",
+    "therapy for metastatic disease), surveillance, recurrence and terminal",
+    "decline.",
+    "",
+    "REWRITE (Task 4.1). The pre-fix module ran its ENTIRE course in a single",
+    "instant at birth for 0.1% of newborns: 23 states, no Delay, no Guard, no",
+    "ConditionOnset, no Death, two Encounters and zero EncounterEnds. It never",
+    "diagnosed anybody - the lung-cancer SNOMED concepts rode as observation",
+    "codes inside a pathology MultiObservation, which never enters",
+    "person.record.present and never reaches condition_code_map, so it emitted",
+    "chemotherapy with no diagnosis attached. Task 2.1 defused its two crash",
+    "landmines (a value_set dict on SetAttribute; three MultiObservations with",
+    "no top-level codes) and deferred everything else here.",
+    "",
+    "ENCOUNTER DISCIPLINE: ModSynthea gives each person a single encounter",
+    "reservation. Every Encounter opened here reaches an EncounterEnd before",
+    "any Delay or Guard, and every Delay sits between an EncounterEnd and the",
+    "next Encounter. The only two Delays inside an open encounter are",
+    "Surgical_Stay (inpatient length of stay) and Hospice_Stay (hospice",
+    "benefit period).",
+    "",
+    "CALIBRATION (per-state remarks carry the arithmetic and the citations):",
+    "- Incidence is gated on EVER-smoker status, re-tested every annual pass:",
+    "  2.0e-4/5.0e-4/9.0e-4/7.0e-4 per year for ever-smokers at 50-59/60-69/",
+    "  70-79/80+, and 1.0e-5/2.5e-5/2.0e-5 for never-smokers, giving a median",
+    "  onset age of ~71 and a population lifetime risk of ~0.9%.",
+    "- Stage at diagnosis I 24% / II 8% / III 20% / IV 48%, against SEER",
+    "  2018-2022 (localised 26%, regional 22%, distant 52%).",
+    "- Recurrence hazards are back-solved from 5-year survival by stage of",
+    "  ~65% / 45% / 20% / 5%.",
+    "",
+    "ATTRIBUTES (all module-local; none is read by any other module):",
+    "  Non-Small Cell Lung Cancer  - ConditionOnset entry set at diagnosis and",
+    "                                used as the `reason` pointer on every",
+    "                                post-diagnosis encounter, procedure and",
+    "                                medication so RIF claim lines carry a",
+    "                                diagnosis",
+    "  Recurrent Non-Small Cell Lung Cancer - recurrence onset entry, and the",
+    "                                stacking guard for that onset",
+    "  nsclc_stage                 - I | II | III | IV, a plain string",
+    "                                (renamed from the shared `cancer_stage`",
+    "                                per the Task 5.4 contract)",
+    "  nsclc_histology             - adenocarcinoma | squamous_cell_carcinoma",
+    "                                | large_cell_carcinoma (renamed from the",
+    "                                shared `histology`)",
+    "  nsclc_smoking_status        - ever | never, frozen at onset",
+    "  nsclc_egfr / nsclc_alk / nsclc_ros1 - molecular results",
+    "  nsclc_pdl1_tps              - PD-L1 tumour proportion score, 0-100",
+    "  nsclc_ecog                  - ECOG performance status 0..3",
+    "  nsclc_disease_status        - sustained_remission | recurrent |",
+    "                                immunotherapy_course_completed",
+    "  nsclc_systemic_lines        - systemic therapy lines started (loop cap)",
+    "  nsclc_tki_status            - active | stopped",
+    "  nsclc_chemo_cycles, nsclc_io_cycles, nsclc_crt_weeks,",
+    "  nsclc_durvalumab_cycles, nsclc_second_line_cycles,",
+    "  nsclc_sbrt_fractions, nsclc_surveillance_visits - loop counters"
   ],
   "states": {
     "Initial": {
       "type": "Initial",
-      "direct_transition": "Check Lung Cancer Probability"
+      "direct_transition": "Onset_Age_Guard"
     },
-    "Check Lung Cancer Probability": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.001,
-          "transition": "Symptom Onset"
-        },
-        {
-          "distribution": 0.999,
-          "transition": "Terminal"
-        }
-      ]
-    },
-    "Symptom Onset": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.85,
-          "transition": "Present Symptoms"
-        },
-        {
-          "distribution": 0.15,
-          "transition": "Incidental Finding"
-        }
-      ]
-    },
-    "Present Symptoms": {
-      "type": "MultiObservation",
+    "Onset_Age_Guard": {
+      "type": "Guard",
       "remarks": [
-        "Hotfix (Task 2.1): added the top-level `codes` this ObservationGroup requires. MultiObservation.process() reads codes.get(0).code with no null check; without a top-level codes array every patient who reaches this state throws a NullPointerException ('this.codes is null') and the whole in-progress patient record is silently discarded. This is a crash fix only -- diagnosis/onset/coding gaps are deferred to the Task 4.1 rewrite."
+        "Non-small cell lung cancer before 50 is rare (about 5% of US cases)",
+        "and is not modelled here; the reroll loop below starts at 50 and the",
+        "band table puts the median onset at ~71, matching the SEER median",
+        "age at lung cancer diagnosis of 70-71."
       ],
-      "category": "exam",
-      "codes": [
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 50,
+        "unit": "years"
+      },
+      "direct_transition": "Annual_Reroll_Delay"
+    },
+    "Annual_Reroll_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "A bare annual incidence reroll: it generates NO health-record activity.",
+        "There is no lung cancer screening arm here on purpose - low-dose CT",
+        "screening is a separate care pathway and adding it to this module would",
+        "double-count with the stock screening modules. The pre-fix module ran",
+        "the entire disease course at birth with no Delay anywhere in the graph."
+      ],
+      "range": {
+        "low": 11,
+        "high": 13,
+        "unit": "months"
+      },
+      "direct_transition": "Smoking_Status_Router"
+    },
+    "Smoking_Status_Router": {
+      "type": "Simple",
+      "remarks": [
+        "EVER-smoker test, re-evaluated on every annual pass rather than once,",
+        "because the flag only accrues with age: LifecycleModule.startSmoking",
+        "sets `smoker` at 16 and quitSmoking then clears it back to false at",
+        "~1% per 7-day timestep while stamping `quit smoking age`. Testing",
+        "`smoker == true` alone therefore selects almost nobody over 50",
+        "(P(still flagged at 45) ~ 2.6e-07); the ever-smoker set",
+        "Or(smoker == true, `quit smoking age` is not nil) is ~37% of the",
+        "cohort. Same idiom as bladder_cancer.json and",
+        "lung_cancer/lung_cancer_probabilities.json. Utilities.compare handles",
+        "`is not nil` before its null check, so both legs are null-safe.",
+        "Cigarette smoking causes ~80-90% of US lung cancers; ever-smokers",
+        "carry roughly 10-30x the never-smoker hazard (US Surgeon General,",
+        "The Health Consequences of Smoking, 2014)."
+      ],
+      "conditional_transition": [
         {
-          "system": "SNOMED-CT",
-          "code": "418799008",
-          "display": "Symptom (finding)"
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "smoker",
+                "operator": "==",
+                "value": true
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "quit smoking age",
+                "operator": "is not nil"
+              }
+            ]
+          },
+          "transition": "Ever_Smoker_Onset_Check"
+        },
+        {
+          "transition": "Never_Smoker_Onset_Check"
         }
+      ]
+    },
+    "Ever_Smoker_Onset_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Age-banded annual NSCLC incidence for ever-smokers. Bands are listed",
+        "OLDEST FIRST because ComplexTransition.follow takes the first",
+        "condition that evaluates true.",
+        "  50-59  2.0e-4     60-69  5.0e-4",
+        "  70-79  9.0e-4     80+    7.0e-4",
+        "Person-year average over 50+ is ~5e-4, the calibration anchor pinned",
+        "by the remediation plan; the band shape follows the SEER 2017-2021",
+        "age gradient (lung cancer incidence rises from ~30/100,000 at 50-54",
+        "to a ~200/100,000 peak at 75-79 and falls back at 85+).",
+        "Cumulative for an ever-smoker who survives to 90 = 2.27%.",
+        "NOTE (see the task report): SEER-implied ever-smoker rates are ~4-5x",
+        "these values (~3.6e-3 at 70-74 after attributing 88% of the 85% of",
+        "lung cancers that are non-small cell to the 37% ever-smoker stratum).",
+        "The lower pinned anchor is retained deliberately: lung_cancer.json,",
+        "veteran_lung_cancer.json and small_cell_lung_cancer.json all also",
+        "produce lung cancer in this fork, so this module's rate is not the",
+        "population rate. Cross-module coordination is Task 5.2's job."
       ],
-      "observations": [
+      "complex_transition": [
         {
-          "codes": [
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 80,
+            "unit": "years"
+          },
+          "distributions": [
             {
-              "system": "SNOMED-CT",
-              "code": "49727002",
-              "display": "Cough (finding)"
+              "transition": "Ever_Smoker_Onset",
+              "distribution": 0.0007
+            },
+            {
+              "transition": "Annual_Reroll_Delay",
+              "distribution": 0.9993
             }
           ]
         },
         {
-          "codes": [
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 70,
+            "unit": "years"
+          },
+          "distributions": [
             {
-              "system": "SNOMED-CT",
-              "code": "66857006",
-              "display": "Hemoptysis"
+              "transition": "Ever_Smoker_Onset",
+              "distribution": 0.0009
+            },
+            {
+              "transition": "Annual_Reroll_Delay",
+              "distribution": 0.9991
             }
-          ],
-          "probability": 0.3
+          ]
         },
         {
-          "codes": [
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 60,
+            "unit": "years"
+          },
+          "distributions": [
             {
-              "system": "SNOMED-CT",
-              "code": "29857009",
-              "display": "Chest pain"
+              "transition": "Ever_Smoker_Onset",
+              "distribution": 0.0005
+            },
+            {
+              "transition": "Annual_Reroll_Delay",
+              "distribution": 0.9995
             }
-          ],
-          "probability": 0.4
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "transition": "Ever_Smoker_Onset",
+              "distribution": 0.0002
+            },
+            {
+              "transition": "Annual_Reroll_Delay",
+              "distribution": 0.9998
+            }
+          ]
+        }
+      ]
+    },
+    "Never_Smoker_Onset_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Never-smokers: 1.0e-5 (50-64), 2.5e-5 (65-79), 2.0e-5 (80+), a",
+        "person-year average over 50+ of ~2e-5 (the pinned anchor) and 0.073%",
+        "cumulative to 90. Lung cancer in never-smokers is a real and largely",
+        "adenocarcinoma-shaped disease - 10-15% of US lung cancers and more in",
+        "women (Sun, Nat Rev Cancer 2007) - so this arm exists rather than",
+        "being closed off, but it carries ~25x less hazard than the",
+        "ever-smoker arm at every age."
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 80,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "transition": "Never_Smoker_Onset",
+              "distribution": 2e-05
+            },
+            {
+              "transition": "Annual_Reroll_Delay",
+              "distribution": 0.99998
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 65,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "transition": "Never_Smoker_Onset",
+              "distribution": 2.5e-05
+            },
+            {
+              "transition": "Annual_Reroll_Delay",
+              "distribution": 0.999975
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "transition": "Never_Smoker_Onset",
+              "distribution": 1e-05
+            },
+            {
+              "transition": "Annual_Reroll_Delay",
+              "distribution": 0.99999
+            }
+          ]
+        }
+      ]
+    },
+    "Ever_Smoker_Onset": {
+      "type": "Simple",
+      "remarks": [
+        "Biological onset. Histology mix for smoking-associated NSCLC:",
+        "squamous cell carcinoma is strongly smoking-linked and is ~30% of",
+        "NSCLC, adenocarcinoma ~55%, large cell / NSCLC-NOS ~10%",
+        "(WHO Classification of Thoracic Tumours, 5th ed 2021; Kenfield,",
+        "Tob Control 2008)."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Set_Smoking_Status_Ever_Adenocarcinoma",
+          "distribution": 0.55
+        },
+        {
+          "transition": "Set_Smoking_Status_Ever_Squamous",
+          "distribution": 0.35
+        },
+        {
+          "transition": "Set_Smoking_Status_Ever_Large_Cell",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "Never_Smoker_Onset": {
+      "type": "Simple",
+      "remarks": [
+        "Never-smoker NSCLC is overwhelmingly adenocarcinoma (Sun, Nat Rev",
+        "Cancer 2007; Subramanian, J Clin Oncol 2007)."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Set_Smoking_Status_Never_Adenocarcinoma",
+          "distribution": 0.85
+        },
+        {
+          "transition": "Set_Smoking_Status_Never_Squamous",
+          "distribution": 0.1
+        },
+        {
+          "transition": "Set_Smoking_Status_Never_Large_Cell",
+          "distribution": 0.05
+        }
+      ]
+    },
+    "Set_Smoking_Status_Ever_Adenocarcinoma": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_smoking_status",
+      "value": "ever",
+      "direct_transition": "Set_Histology_Adenocarcinoma_Ever"
+    },
+    "Set_Histology_Adenocarcinoma_Ever": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_histology",
+      "value": "adenocarcinoma",
+      "direct_transition": "EGFR_Status_Router"
+    },
+    "Set_Smoking_Status_Ever_Squamous": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_smoking_status",
+      "value": "ever",
+      "direct_transition": "Set_Histology_Squamous_Ever"
+    },
+    "Set_Histology_Squamous_Ever": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_histology",
+      "value": "squamous_cell_carcinoma",
+      "direct_transition": "EGFR_Status_Router"
+    },
+    "Set_Smoking_Status_Ever_Large_Cell": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_smoking_status",
+      "value": "ever",
+      "direct_transition": "Set_Histology_Large_Cell_Ever"
+    },
+    "Set_Histology_Large_Cell_Ever": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_histology",
+      "value": "large_cell_carcinoma",
+      "direct_transition": "EGFR_Status_Router"
+    },
+    "Set_Smoking_Status_Never_Adenocarcinoma": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_smoking_status",
+      "value": "never",
+      "direct_transition": "Set_Histology_Adenocarcinoma_Never"
+    },
+    "Set_Histology_Adenocarcinoma_Never": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_histology",
+      "value": "adenocarcinoma",
+      "direct_transition": "EGFR_Status_Router"
+    },
+    "Set_Smoking_Status_Never_Squamous": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_smoking_status",
+      "value": "never",
+      "direct_transition": "Set_Histology_Squamous_Never"
+    },
+    "Set_Histology_Squamous_Never": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_histology",
+      "value": "squamous_cell_carcinoma",
+      "direct_transition": "EGFR_Status_Router"
+    },
+    "Set_Smoking_Status_Never_Large_Cell": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_smoking_status",
+      "value": "never",
+      "direct_transition": "Set_Histology_Large_Cell_Never"
+    },
+    "Set_Histology_Large_Cell_Never": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_histology",
+      "value": "large_cell_carcinoma",
+      "direct_transition": "EGFR_Status_Router"
+    },
+    "EGFR_Status_Router": {
+      "type": "Simple",
+      "remarks": [
+        "Sensitising EGFR mutations are present in ~15% of US NSCLC",
+        "adenocarcinomas overall but ~40-50% of never-smoker adenocarcinomas,",
+        "and are rare in squamous and large cell disease (Kris, JAMA",
+        "2014;311:1998 - Lung Cancer Mutation Consortium; Shigematsu, J Natl",
+        "Cancer Inst 2005;97:339). Assigned as biology at onset, then",
+        "REPORTED later by the molecular panel - the pre-fix module ordered",
+        "EGFR/ALK/ROS1 tests whose results nothing ever set or read."
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "nsclc_histology",
+                "operator": "==",
+                "value": "adenocarcinoma"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "nsclc_smoking_status",
+                "operator": "==",
+                "value": "never"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "transition": "Set_EGFR_Positive",
+              "distribution": 0.45
+            },
+            {
+              "transition": "Set_EGFR_Negative",
+              "distribution": 0.55
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_histology",
+            "operator": "==",
+            "value": "adenocarcinoma"
+          },
+          "distributions": [
+            {
+              "transition": "Set_EGFR_Positive",
+              "distribution": 0.12
+            },
+            {
+              "transition": "Set_EGFR_Negative",
+              "distribution": 0.88
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "transition": "Set_EGFR_Positive",
+              "distribution": 0.01
+            },
+            {
+              "transition": "Set_EGFR_Negative",
+              "distribution": 0.99
+            }
+          ]
+        }
+      ]
+    },
+    "Set_EGFR_Positive": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_egfr",
+      "value": "positive",
+      "direct_transition": "Set_ALK_Result"
+    },
+    "Set_EGFR_Negative": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_egfr",
+      "value": "negative",
+      "direct_transition": "Set_ALK_Result"
+    },
+    "Set_ALK_Result": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_alk",
+      "remarks": [
+        "ALK rearrangements (~4% of adenocarcinomas) and ROS1 fusions (~1-2%) are",
+        "reported as NEGATIVE for everyone. Their targeted therapies (alectinib,",
+        "entrectinib/crizotinib) are not modelled, and issuing a positive result",
+        "and then treating the patient with chemo-immunotherapy would be a worse",
+        "fidelity error than not modelling the subtype at all. The tests",
+        "themselves are still performed and billed, which is correct: >90% of",
+        "real panels are negative for these two markers."
+      ],
+      "value": "negative",
+      "direct_transition": "Set_ROS1_Result"
+    },
+    "Set_ROS1_Result": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_ros1",
+      "value": "negative",
+      "direct_transition": "PDL1_Expression_Router"
+    },
+    "PDL1_Expression_Router": {
+      "type": "Simple",
+      "remarks": [
+        "PD-L1 tumour proportion score at diagnosis: TPS >=50% in ~30%, 1-49%",
+        "in ~30%, <1% in ~40% of advanced NSCLC screened for the KEYNOTE",
+        "programme (Mok, Lancet 2019;393:1819 - KEYNOTE-042; Reck, NEJM",
+        "2016;375:1823 - KEYNOTE-024). The score drives the stage IV regimen",
+        "choice below."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Set_PDL1_High",
+          "distribution": 0.3
+        },
+        {
+          "transition": "Set_PDL1_Intermediate",
+          "distribution": 0.3
+        },
+        {
+          "transition": "Set_PDL1_Negative",
+          "distribution": 0.4
+        }
+      ]
+    },
+    "Set_PDL1_High": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_pdl1_tps",
+      "range": {
+        "low": 50.0,
+        "high": 100.0,
+        "decimals": 0
+      },
+      "direct_transition": "Presentation_Delay"
+    },
+    "Set_PDL1_Intermediate": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_pdl1_tps",
+      "range": {
+        "low": 1.0,
+        "high": 49.0,
+        "decimals": 0
+      },
+      "direct_transition": "Presentation_Delay"
+    },
+    "Set_PDL1_Negative": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_pdl1_tps",
+      "value": 0,
+      "direct_transition": "Presentation_Delay"
+    },
+    "Presentation_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Interval between biological onset and clinical presentation. Lung cancer",
+        "symptoms are non-specific and the reported patient interval from first",
+        "symptom to presentation is a median of ~1-3 months (Corner, Thorax",
+        "2006;61:1000)."
+      ],
+      "range": {
+        "low": 30,
+        "high": 180,
+        "unit": "days"
+      },
+      "direct_transition": "Presentation_Router"
+    },
+    "Presentation_Router": {
+      "type": "Simple",
+      "remarks": [
+        "About 15% of lung cancers are found incidentally on imaging done for",
+        "another reason; the rest present symptomatically (Quadrelli, J Thorac",
+        "Oncol 2015)."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Symptom_Cough",
+          "distribution": 0.85
+        },
+        {
+          "transition": "Diagnostic_Workup_Visit",
+          "distribution": 0.15
+        }
+      ]
+    },
+    "Symptom_Cough": {
+      "type": "Symptom",
+      "symptom": "Cough",
+      "remarks": [
+        "Cough is the commonest presenting symptom of lung cancer",
+        "(~50-75% of patients at diagnosis)."
+      ],
+      "range": {
+        "low": 25,
+        "high": 60
+      },
+      "direct_transition": "Symptom_Dyspnea"
+    },
+    "Symptom_Dyspnea": {
+      "type": "Symptom",
+      "symptom": "Dyspnea",
+      "probability": 0.6,
+      "range": {
+        "low": 25,
+        "high": 70
+      },
+      "direct_transition": "Symptom_Weight_Loss"
+    },
+    "Symptom_Weight_Loss": {
+      "type": "Symptom",
+      "symptom": "Weight loss",
+      "probability": 0.5,
+      "range": {
+        "low": 20,
+        "high": 60
+      },
+      "direct_transition": "Symptom_Chest_Pain"
+    },
+    "Symptom_Chest_Pain": {
+      "type": "Symptom",
+      "symptom": "Chest pain",
+      "probability": 0.4,
+      "range": {
+        "low": 20,
+        "high": 60
+      },
+      "direct_transition": "Symptom_Hemoptysis"
+    },
+    "Symptom_Hemoptysis": {
+      "type": "Symptom",
+      "symptom": "Hemoptysis",
+      "probability": 0.35,
+      "remarks": [
+        "Haemoptysis occurs in ~20-35% of lung cancers at",
+        "presentation and is the most specific of the group."
+      ],
+      "range": {
+        "low": 30,
+        "high": 80
+      },
+      "direct_transition": "Diagnostic_Workup_Visit"
+    },
+    "Diagnostic_Workup_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
         }
       ],
-      "direct_transition": "Initial Imaging"
+      "remarks": [
+        "The diagnosis is not yet made, so no `reason` pointer can be set on",
+        "this encounter - `reason` resolves against a ConditionOnset that",
+        "has not fired yet. Every post-diagnosis encounter below carries it."
+      ],
+      "direct_transition": "Diagnostic_Chest_Xray"
     },
-    "Incidental Finding": {
-      "type": "Encounter",
+    "Diagnostic_Chest_Xray": {
+      "type": "Procedure",
       "codes": [
         {
           "system": "SNOMED-CT",
           "code": "399208008",
-          "display": "Plain chest X-ray"
+          "display": "Plain X-ray of chest"
         }
       ],
-      "direct_transition": "Initial Imaging"
+      "direct_transition": "Diagnostic_Chest_CT"
     },
-    "Initial Imaging": {
+    "Diagnostic_Chest_CT": {
       "type": "Procedure",
+      "remarks": [
+        "SNOMED 169069000 'CT of chest' replaces the pre-fix",
+        "77477000 'Computed tomography', a generic concept mapped to",
+        "HCPCS S8092 (electron beam CT). The new hcpcs_code_map row",
+        "sends this to CPT 71260/71250."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "77477000",
-          "display": "CT scan of thorax"
+          "code": "169069000",
+          "display": "CT of chest"
         }
       ],
-      "direct_transition": "Biopsy"
+      "direct_transition": "End_Diagnostic_Workup_Visit"
     },
-    "Biopsy": {
-      "type": "Simple",
-      "distributed_transition": [
+    "End_Diagnostic_Workup_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Biopsy_Scheduling_Delay"
+    },
+    "Biopsy_Scheduling_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 7,
+        "high": 21,
+        "unit": "days"
+      },
+      "direct_transition": "Biopsy_Visit"
+    },
+    "Biopsy_Visit": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
         {
-          "distribution": 0.7,
-          "transition": "CT Guided Biopsy"
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "Biopsy_Approach_Router"
+    },
+    "Biopsy_Approach_Router": {
+      "type": "Simple",
+      "remarks": [
+        "Squamous cell carcinoma is typically central and endobronchially",
+        "visible, so it is usually sampled bronchoscopically; adenocarcinoma",
+        "is typically peripheral and is usually sampled by percutaneous",
+        "image-guided core needle biopsy (Rivera, Chest 2013;143:e142S -",
+        "ACCP diagnosis guideline)."
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_histology",
+            "operator": "==",
+            "value": "squamous_cell_carcinoma"
+          },
+          "distributions": [
+            {
+              "transition": "Bronchoscopic_Biopsy",
+              "distribution": 0.7
+            },
+            {
+              "transition": "Percutaneous_Needle_Biopsy",
+              "distribution": 0.3
+            }
+          ]
         },
         {
-          "distribution": 0.3,
-          "transition": "Bronchoscopy"
+          "distributions": [
+            {
+              "transition": "Bronchoscopic_Biopsy",
+              "distribution": 0.3
+            },
+            {
+              "transition": "Percutaneous_Needle_Biopsy",
+              "distribution": 0.7
+            }
+          ]
         }
       ]
     },
-    "CT Guided Biopsy": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "274319000",
-          "display": "Percutaneous needle biopsy of lung"
-        }
-      ],
-      "direct_transition": "Pathology"
-    },
-    "Bronchoscopy": {
+    "Bronchoscopic_Biopsy": {
       "type": "Procedure",
       "codes": [
         {
@@ -135,63 +777,99 @@
           "display": "Bronchoscopy"
         }
       ],
-      "direct_transition": "Pathology"
+      "direct_transition": "End_Biopsy_Visit"
     },
-    "Pathology": {
+    "Percutaneous_Needle_Biopsy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "274319000",
+          "display": "Needle biopsy of lung"
+        }
+      ],
+      "direct_transition": "End_Biopsy_Visit"
+    },
+    "End_Biopsy_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Pathology_Delay"
+    },
+    "Pathology_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 7,
+        "unit": "days"
+      },
+      "direct_transition": "Diagnosis_Visit"
+    },
+    "Diagnosis_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "Pathology_Report"
+    },
+    "Pathology_Report": {
       "type": "MultiObservation",
       "remarks": [
-        "Hotfix (Task 2.1): added the top-level `codes` this ObservationGroup requires (see Present Symptoms remark for the crash mechanism). Crash fix only; histology/coding gaps deferred to Task 4.1."
+        "The pathology report as OBSERVATIONS with LOINC codes. The pre-fix",
+        "state carried the three lung-cancer SNOMED condition concepts",
+        "(254626006 / 254634000 / 254629004) as observation codes, which is",
+        "why the module produced no diagnosis at all: Observation rows never",
+        "enter person.record.present and never reach condition_code_map. The",
+        "histology now lives in `nsclc_histology` and is reported through",
+        "LOINC 33731-1; the diagnosis is the ConditionOnset below.",
+        "The pre-fix PD-L1 code 85319-2 was wrong - that LOINC is 'HER2 Ag in",
+        "Breast cancer specimen'. 83053-9 is the PD-L1 tumour proportion",
+        "score."
       ],
       "category": "laboratory",
       "codes": [
         {
           "system": "LOINC",
           "code": "22637-3",
-          "display": "Pathology report final diagnosis"
+          "display": "Pathology report final diagnosis Narrative"
         }
       ],
       "observations": [
         {
-          "codes": [
-            {
-              "system": "SNOMED-CT",
-              "code": "254626006",
-              "display": "Adenocarcinoma of lung"
-            },
-            {
-              "system": "SNOMED-CT",
-              "code": "254634000",
-              "display": "Squamous cell carcinoma of lung"
-            },
-            {
-              "system": "SNOMED-CT",
-              "code": "254629004",
-              "display": "Large cell carcinoma of lung"
-            }
-          ]
-        },
-        {
+          "category": "laboratory",
           "codes": [
             {
               "system": "LOINC",
-              "code": "85319-2",
-              "display": "PD-L1 [Presence] in Tissue"
+              "code": "33731-1",
+              "display": "Histology type in Cancer specimen Narrative"
             }
-          ]
+          ],
+          "attribute": "nsclc_histology"
+        },
+        {
+          "category": "laboratory",
+          "codes": [
+            {
+              "system": "LOINC",
+              "code": "83053-9",
+              "display": "Cells.programmed cell death ligand 1/Viable tumor cells in Tissue by Immune stain"
+            }
+          ],
+          "attribute": "nsclc_pdl1_tps",
+          "unit": "%"
         }
       ],
-      "direct_transition": "Set Histology"
+      "direct_transition": "Molecular_Panel"
     },
-    "Set Histology": {
-      "type": "SetAttribute",
-      "attribute": "histology",
-      "value": "Adenocarcinoma of lung",
-      "direct_transition": "Molecular Testing"
-    },
-    "Molecular Testing": {
+    "Molecular_Panel": {
       "type": "MultiObservation",
       "remarks": [
-        "Hotfix (Task 2.1): added the top-level `codes` this ObservationGroup requires (see Present Symptoms remark for the crash mechanism). Crash fix only; marker/coding gaps deferred to Task 4.1."
+        "Broad molecular profiling is standard for non-squamous NSCLC and is",
+        "billed as a real laboratory event (NCCN NSCLC guideline). ROS1 is",
+        "now LOINC 102038-7; the pre-fix 81406-4 is not a LOINC code."
       ],
       "category": "laboratory",
       "codes": [
@@ -203,152 +881,1864 @@
       ],
       "observations": [
         {
+          "category": "laboratory",
           "codes": [
             {
               "system": "LOINC",
               "code": "21665-5",
-              "display": "EGFR gene mutations found [Identifier] in Blood or Tissue by Molecular genetics method"
+              "display": "EGFR gene mutations found [Identifier] in Blood or Tissue by Molecular genetics method Nominal"
             }
-          ]
+          ],
+          "attribute": "nsclc_egfr"
         },
         {
+          "category": "laboratory",
           "codes": [
             {
               "system": "LOINC",
               "code": "78205-2",
               "display": "ALK gene rearrangements [Presence] in Blood or Tissue by FISH"
             }
-          ]
+          ],
+          "attribute": "nsclc_alk"
         },
         {
+          "category": "laboratory",
           "codes": [
             {
               "system": "LOINC",
-              "code": "81406-4",
-              "display": "ROS1 gene rearrangement"
+              "code": "102038-7",
+              "display": "ROS proto-oncogene 1 mutations found [Identifier] in Blood or Tissue by Molecular genetics method Nominal"
             }
-          ]
+          ],
+          "attribute": "nsclc_ros1"
         }
       ],
-      "direct_transition": "Staging"
+      "direct_transition": "Diagnose_NSCLC"
     },
-    "Staging": {
-      "type": "SetAttribute",
+    "Diagnose_NSCLC": {
+      "type": "ConditionOnset",
       "remarks": [
-        "Hotfix (Task 2.1): value_set parses to a Gson LinkedTreeMap, and a later Map-vs-String compare threw a ClassCastException that crashed generation for every patient who reached this state. Replaced with a single modal stage as a crash fix only. Task 4.1's rewrite restores a proper stage distribution via distributed_transition into separate SetAttribute states."
+        "THE diagnosis the pre-fix module never made. SNOMED 254637007",
+        "'Non-small cell lung cancer', which condition_code_map sends to",
+        "ICD-10-CM C34.90. One code for every histology - the histology is an",
+        "attribute and a LOINC observation, so downstream counts are not",
+        "fragmented across three SNOMEDs. Outside every loop: a person can",
+        "only be diagnosed once."
       ],
-      "attribute": "cancer_stage",
-      "value": "IIIA",
-      "direct_transition": "Early Stage Check"
-    },
-    "Early Stage Check": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.3,
-          "transition": "Surgical Resection"
-        },
-        {
-          "distribution": 0.7,
-          "transition": "Chemoradiation"
-        }
-      ]
-    },
-    "Surgical Resection": {
-      "type": "Procedure",
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "119000",
-          "display": "Thoracoscopic partial lobectomy of lung"
+          "code": "254637007",
+          "display": "Non-small cell lung cancer"
         }
       ],
-      "direct_transition": "Adjuvant Therapy Check"
+      "assign_to_attribute": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Staging_PET_CT"
     },
-    "Adjuvant Therapy Check": {
+    "Staging_PET_CT": {
+      "type": "Procedure",
+      "remarks": [
+        "FDG-PET/CT is standard for staging a new NSCLC before any",
+        "curative-intent treatment decision."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "82918005",
+          "display": "Positron emission tomography"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Stage_Router"
+    },
+    "Stage_Router": {
       "type": "Simple",
+      "remarks": [
+        "Stage at diagnosis. SEER 2018-2022 for NSCLC: localised ~26%,",
+        "regional ~22%, distant ~52%. Replaces the pre-fix `Staging` state,",
+        "whose `value_set` dict deserialised to a Gson LinkedTreeMap and threw",
+        "'Cannot compare LinkedTreeMap to String' on every later stage test",
+        "(Task 2.1 defused it by pinning every patient to stage IIIA)."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.4,
-          "transition": "Adjuvant Chemotherapy"
+          "transition": "Set_Stage_I",
+          "distribution": 0.24
         },
         {
-          "distribution": 0.6,
-          "transition": "Surveillance"
+          "transition": "Set_Stage_II",
+          "distribution": 0.08
+        },
+        {
+          "transition": "Set_Stage_III",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Set_Stage_IV",
+          "distribution": 0.48
         }
       ]
     },
-    "Adjuvant Chemotherapy": {
+    "Set_Stage_I": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_stage",
+      "value": "I",
+      "direct_transition": "Stage_Observation"
+    },
+    "Set_Stage_II": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_stage",
+      "value": "II",
+      "direct_transition": "Stage_Observation"
+    },
+    "Set_Stage_III": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_stage",
+      "value": "III",
+      "direct_transition": "Stage_Observation"
+    },
+    "Set_Stage_IV": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_stage",
+      "value": "IV",
+      "direct_transition": "Stage_Observation"
+    },
+    "Stage_Observation": {
+      "type": "Observation",
+      "remarks": [
+        "`nsclc_stage` is a plain string, so it can be compared with '=='",
+        "everywhere below and rendered here without a unit. The attribute was",
+        "renamed from the shared `cancer_stage` (also written by",
+        "ovarian_cancer.json and pancreatic_cancer.json) per the Task 5.4",
+        "contract; this rewrite is the rename point."
+      ],
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "21908-9",
+          "display": "Stage group.clinical Cancer"
+        }
+      ],
+      "attribute": "nsclc_stage",
+      "direct_transition": "ECOG_Router"
+    },
+    "ECOG_Router": {
+      "type": "Simple",
+      "remarks": [
+        "Performance status at diagnosis, weighted worse than a clinical-trial",
+        "population because this is a Medicare-age lung cancer cohort: ECOG 0",
+        "30%, 1 45%, 2 20%, 3 5%."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Set_ECOG_0",
+          "distribution": 0.3
+        },
+        {
+          "transition": "Set_ECOG_1",
+          "distribution": 0.45
+        },
+        {
+          "transition": "Set_ECOG_2",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Set_ECOG_3",
+          "distribution": 0.05
+        }
+      ]
+    },
+    "Set_ECOG_0": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_ecog",
+      "value": 0,
+      "direct_transition": "Cancer_Care_Plan"
+    },
+    "Set_ECOG_1": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_ecog",
+      "value": 1,
+      "direct_transition": "Cancer_Care_Plan"
+    },
+    "Set_ECOG_2": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_ecog",
+      "value": 2,
+      "direct_transition": "Cancer_Care_Plan"
+    },
+    "Set_ECOG_3": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_ecog",
+      "value": 3,
+      "direct_transition": "Cancer_Care_Plan"
+    },
+    "Cancer_Care_Plan": {
+      "type": "CarePlanStart",
+      "remarks": [
+        "SNOMED 736252007 'Cancer care plan', the concept colorectal_cancer",
+        "and veteran_prostate_cancer already use. The pre-fix module used",
+        "394888000 for its 'Oncology followup' care plan; that concept's FSN",
+        "is 'Hormone replacement therapy requested' (verified against the",
+        "SNOMED CT International release), so every NSCLC patient was given an",
+        "HRT care plan."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "736252007",
+          "display": "Cancer care plan"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "End_Diagnosis_Visit"
+    },
+    "End_Diagnosis_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Treatment_Planning_Delay"
+    },
+    "Treatment_Planning_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 14,
+        "high": 28,
+        "unit": "days"
+      },
+      "direct_transition": "Treatment_Decision"
+    },
+    "Treatment_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "Stage-directed therapy. The pre-fix module split 30/70 between",
+        "surgery and chemoradiation for everybody, with stage pinned to a",
+        "constant, and then chose between osimertinib and pembrolizumab on a",
+        "coin flip that ignored the molecular results."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "nsclc_stage",
+                "operator": "==",
+                "value": "I"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "nsclc_stage",
+                "operator": "==",
+                "value": "II"
+              }
+            ]
+          },
+          "transition": "Operability_Router"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_stage",
+            "operator": "==",
+            "value": "III"
+          },
+          "transition": "Stage_III_Decision"
+        },
+        {
+          "transition": "Systemic_Therapy_Entry"
+        }
+      ]
+    },
+    "Operability_Router": {
+      "type": "Simple",
+      "remarks": [
+        "15-25% of stage I-II NSCLC in a Medicare-age population is medically",
+        "inoperable (COPD, cardiac disease, frailty) and is treated with",
+        "stereotactic body radiotherapy instead of resection (Timmerman, JAMA",
+        "2010;303:1070 - RTOG 0236; NCCN NSCLC guideline)."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Preoperative_Visit",
+          "distribution": 0.8
+        },
+        {
+          "transition": "Start_SBRT",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "Preoperative_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Pulmonary_Function_Test"
+    },
+    "Pulmonary_Function_Test": {
+      "type": "Procedure",
+      "remarks": [
+        "Pulmonary function testing is mandatory before lung resection."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "127783003",
+          "display": "Spirometry"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "End_Preoperative_Visit"
+    },
+    "End_Preoperative_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Surgery_Scheduling_Delay"
+    },
+    "Surgery_Scheduling_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 7,
+        "high": 21,
+        "unit": "days"
+      },
+      "direct_transition": "Surgical_Admission"
+    },
+    "Surgical_Admission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Lobectomy"
+    },
+    "Lobectomy": {
+      "type": "Procedure",
+      "remarks": [
+        "Anatomic lobectomy with mediastinal nodal sampling is the standard",
+        "curative resection for operable NSCLC, and the video-assisted",
+        "thoracoscopic approach is now the majority of US cases. The pre-fix",
+        "code 119000 is 'Thoracoscopic PARTIAL lobectomy', a sublobar",
+        "resection, and was unmapped."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "75935006",
+          "display": "Thoracoscopic lobectomy of lung"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Surgical_Stay"
+    },
+    "Surgical_Stay": {
+      "type": "Delay",
+      "remarks": [
+        "Genuine inpatient length of stay after VATS lobectomy (median 4 days).",
+        "One of only two Delays in this module that sit inside an open encounter;",
+        "both are on classes where the linter's length-of-stay carve-out applies."
+      ],
+      "range": {
+        "low": 3,
+        "high": 7,
+        "unit": "days"
+      },
+      "direct_transition": "End_Surgical_Admission"
+    },
+    "End_Surgical_Admission": {
+      "type": "EncounterEnd",
+      "direct_transition": "Postoperative_Recovery"
+    },
+    "Postoperative_Recovery": {
+      "type": "Delay",
+      "range": {
+        "low": 28,
+        "high": 42,
+        "unit": "days"
+      },
+      "direct_transition": "Adjuvant_Decision"
+    },
+    "Adjuvant_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "Adjuvant platinum doublet chemotherapy improves survival in resected",
+        "stage II-IIIA and not in stage IA (Pignon, J Clin Oncol 2008;26:3552",
+        "- LACE meta-analysis; NCCN). Uptake is further limited by age and",
+        "performance status in a Medicare population."
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_stage",
+            "operator": "==",
+            "value": "I"
+          },
+          "distributions": [
+            {
+              "transition": "Start_Adjuvant_Chemotherapy",
+              "distribution": 0.1
+            },
+            {
+              "transition": "Enter_Surveillance",
+              "distribution": 0.9
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_stage",
+            "operator": "==",
+            "value": "II"
+          },
+          "distributions": [
+            {
+              "transition": "Start_Adjuvant_Chemotherapy",
+              "distribution": 0.65
+            },
+            {
+              "transition": "Enter_Surveillance",
+              "distribution": 0.35
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "transition": "Start_Adjuvant_Chemotherapy",
+              "distribution": 0.8
+            },
+            {
+              "transition": "Enter_Surveillance",
+              "distribution": 0.2
+            }
+          ]
+        }
+      ]
+    },
+    "Start_Adjuvant_Chemotherapy": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_chemo_cycles",
+      "value": 0,
+      "direct_transition": "Adjuvant_Cycle_Visit"
+    },
+    "Adjuvant_Cycle_Visit": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "remarks": [
+        "One closed outpatient encounter per 21-day cycle, so every infusion",
+        "lands on its own claim with its own date of service."
+      ],
+      "direct_transition": "Adjuvant_Carboplatin"
+    },
+    "Adjuvant_Carboplatin": {
       "type": "MedicationOrder",
-      "direct_transition": "Surveillance",
+      "remarks": [
+        "Clinician-administered infusion: administration:true routes this to a",
+        "professional/outpatient claim line through rxnorm_hcpcs_map (J9045)",
+        "instead of a Part D dispensing event, and administration rows cannot",
+        "stack, so no MedicationEnd is needed. Carboplatin-paclitaxel rather",
+        "than the trial-standard cisplatin doublet because carboplatin is the",
+        "platinum actually used in older adjuvant patients."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "40048",
+          "display": "Carboplatin"
+        }
+      ],
+      "administration": true,
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Adjuvant_Paclitaxel"
+    },
+    "Adjuvant_Paclitaxel": {
+      "type": "MedicationOrder",
       "codes": [
         {
           "system": "RxNorm",
           "code": "56946",
-          "display": "paclitaxel"
+          "display": "Paclitaxel"
+        }
+      ],
+      "administration": true,
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Count_Adjuvant_Cycle"
+    },
+    "Count_Adjuvant_Cycle": {
+      "type": "Counter",
+      "attribute": "nsclc_chemo_cycles",
+      "action": "increment",
+      "direct_transition": "End_Adjuvant_Cycle_Visit"
+    },
+    "End_Adjuvant_Cycle_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Adjuvant_Cycle_Check"
+    },
+    "Adjuvant_Cycle_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Four cycles is the standard adjuvant course (LACE)."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_chemo_cycles",
+            "operator": ">=",
+            "value": 4
+          },
+          "transition": "Enter_Surveillance"
         },
         {
-          "system": "RxNorm",
-          "code": "40048",
-          "display": "carboplatin"
+          "transition": "Adjuvant_Cycle_Delay"
         }
       ]
     },
-    "Chemoradiation": {
+    "Adjuvant_Cycle_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 20,
+        "high": 22,
+        "unit": "days"
+      },
+      "direct_transition": "Adjuvant_Cycle_Visit"
+    },
+    "Start_SBRT": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_sbrt_fractions",
+      "remarks": [
+        "Stereotactic body radiotherapy for medically inoperable",
+        "early-stage disease: 3-5 fractions over 1-2 weeks. Each",
+        "fraction is a separately billed outpatient visit."
+      ],
+      "value": 0,
+      "direct_transition": "SBRT_Fraction_Visit"
+    },
+    "SBRT_Fraction_Visit": {
       "type": "Encounter",
+      "encounter_class": "outpatient",
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "169400008",
-          "display": "Radiochemotherapy via intravenous route (procedure"
+          "code": "185347001",
+          "display": "Encounter for problem"
         }
       ],
-      "direct_transition": "Systemic Therapy Check"
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "SBRT_Fraction"
     },
-    "Systemic Therapy Check": {
-      "type": "Simple",
-      "distributed_transition": [
+    "SBRT_Fraction": {
+      "type": "Procedure",
+      "codes": [
         {
-          "distribution": 0.6,
-          "transition": "Targeted Therapy"
+          "system": "SNOMED-CT",
+          "code": "1287742003",
+          "display": "Radiotherapy"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Count_SBRT_Fraction"
+    },
+    "Count_SBRT_Fraction": {
+      "type": "Counter",
+      "attribute": "nsclc_sbrt_fractions",
+      "action": "increment",
+      "direct_transition": "End_SBRT_Fraction_Visit"
+    },
+    "End_SBRT_Fraction_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "SBRT_Fraction_Check"
+    },
+    "SBRT_Fraction_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_sbrt_fractions",
+            "operator": ">=",
+            "value": 5
+          },
+          "transition": "Enter_Surveillance"
         },
         {
-          "distribution": 0.4,
-          "transition": "Immunotherapy"
+          "transition": "SBRT_Interfraction_Delay"
         }
       ]
     },
-    "Targeted Therapy": {
+    "SBRT_Interfraction_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 4,
+        "unit": "days"
+      },
+      "direct_transition": "SBRT_Fraction_Visit"
+    },
+    "Stage_III_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "A minority of stage IIIA disease is resected as part of a",
+        "multimodality plan; the majority of stage III is unresectable and is",
+        "treated with concurrent chemoradiation (NCCN NSCLC guideline)."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Preoperative_Visit",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Start_Chemoradiation",
+          "distribution": 0.8
+        }
+      ]
+    },
+    "Start_Chemoradiation": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_crt_weeks",
+      "remarks": [
+        "Concurrent chemoradiation, 60 Gy in 30 fractions over six weeks",
+        "with weekly carboplatin + paclitaxel (Bradley, Lancet Oncol",
+        "2015;16:187 - RTOG 0617). Modelled as ONE closed outpatient",
+        "encounter per treatment WEEK carrying that week's radiotherapy",
+        "and chemotherapy, rather than one per daily fraction: this",
+        "under-counts radiotherapy delivery lines about fivefold and is",
+        "recorded as a known limitation in the task report."
+      ],
+      "value": 0,
+      "direct_transition": "CRT_Week_Visit"
+    },
+    "CRT_Week_Visit": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "CRT_Radiotherapy"
+    },
+    "CRT_Radiotherapy": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "1287742003",
+          "display": "Radiotherapy"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "CRT_Carboplatin"
+    },
+    "CRT_Carboplatin": {
       "type": "MedicationOrder",
-      "direct_transition": "Surveillance",
       "codes": [
         {
           "system": "RxNorm",
-          "code": "1721560",
-          "display": "osimertinib"
+          "code": "40048",
+          "display": "Carboplatin"
+        }
+      ],
+      "administration": true,
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "CRT_Paclitaxel"
+    },
+    "CRT_Paclitaxel": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "56946",
+          "display": "Paclitaxel"
+        }
+      ],
+      "administration": true,
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Count_CRT_Week"
+    },
+    "Count_CRT_Week": {
+      "type": "Counter",
+      "attribute": "nsclc_crt_weeks",
+      "action": "increment",
+      "direct_transition": "End_CRT_Week_Visit"
+    },
+    "End_CRT_Week_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "CRT_Week_Check"
+    },
+    "CRT_Week_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_crt_weeks",
+            "operator": ">=",
+            "value": 6
+          },
+          "transition": "Post_CRT_Recovery_Delay"
+        },
+        {
+          "transition": "CRT_Interval_Delay"
         }
       ]
     },
-    "Immunotherapy": {
+    "CRT_Interval_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 8,
+        "unit": "days"
+      },
+      "direct_transition": "CRT_Week_Visit"
+    },
+    "Post_CRT_Recovery_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 21,
+        "high": 35,
+        "unit": "days"
+      },
+      "direct_transition": "Durvalumab_Decision"
+    },
+    "Durvalumab_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "Consolidation durvalumab after chemoradiation for unresectable stage",
+        "III (Antonia, NEJM 2017;377:1919 and 2018;379:2342 - PACIFIC).",
+        "Roughly two thirds of patients who complete chemoradiation go on to",
+        "consolidation; the rest are excluded by progression or toxicity."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Start_Durvalumab_Consolidation",
+          "distribution": 0.65
+        },
+        {
+          "transition": "Enter_Surveillance",
+          "distribution": 0.35
+        }
+      ]
+    },
+    "Start_Durvalumab_Consolidation": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_durvalumab_cycles",
+      "value": 0,
+      "direct_transition": "Durvalumab_Cycle_Visit"
+    },
+    "Durvalumab_Cycle_Visit": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Durvalumab_Infusion"
+    },
+    "Durvalumab_Infusion": {
       "type": "MedicationOrder",
-      "direct_transition": "Surveillance",
+      "remarks": [
+        "rxnorm_hcpcs_map already carries 1919503 -> J9173."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1919503",
+          "display": "Durvalumab"
+        }
+      ],
+      "administration": true,
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Count_Durvalumab_Cycle"
+    },
+    "Count_Durvalumab_Cycle": {
+      "type": "Counter",
+      "attribute": "nsclc_durvalumab_cycles",
+      "action": "increment",
+      "direct_transition": "End_Durvalumab_Cycle_Visit"
+    },
+    "End_Durvalumab_Cycle_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Durvalumab_Cycle_Check"
+    },
+    "Durvalumab_Cycle_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Up to 12 months of q4w consolidation, i.e. 12 cycles."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_durvalumab_cycles",
+            "operator": ">=",
+            "value": 12
+          },
+          "transition": "Enter_Surveillance"
+        },
+        {
+          "transition": "Durvalumab_Cycle_Delay"
+        }
+      ]
+    },
+    "Durvalumab_Cycle_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 27,
+        "high": 29,
+        "unit": "days"
+      },
+      "direct_transition": "Durvalumab_Cycle_Visit"
+    },
+    "Systemic_Therapy_Entry": {
+      "type": "Counter",
+      "attribute": "nsclc_systemic_lines",
+      "action": "increment",
+      "direct_transition": "Systemic_Line_Cap_Check"
+    },
+    "Systemic_Line_Cap_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Entry point for stage IV disease AND for recurrence after",
+        "curative-intent treatment - recurrent NSCLC is treated as metastatic",
+        "disease. The line counter bounds the loop: after a fourth systemic",
+        "line the patient goes to best supportive care instead."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_systemic_lines",
+            "operator": ">=",
+            "value": 4
+          },
+          "transition": "Progressive_Disease_Delay"
+        },
+        {
+          "transition": "Systemic_Regimen_Router"
+        }
+      ]
+    },
+    "Systemic_Regimen_Router": {
+      "type": "Simple",
+      "remarks": [
+        "First-line regimen choice, driven by the molecular and PD-L1 results",
+        "this module actually records:",
+        "  EGFR-mutant, TKI-naive  -> osimertinib (FLAURA, Soria NEJM 2018)",
+        "  PD-L1 TPS >= 50%        -> pembrolizumab monotherapy (KEYNOTE-024)",
+        "  otherwise               -> pembrolizumab + platinum doublet",
+        "                             (KEYNOTE-189 nonsquamous / -407 squamous)",
+        "EGFR-mutant disease is tested FIRST because those patients derive",
+        "little benefit from checkpoint blockade regardless of PD-L1."
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "nsclc_egfr",
+                "operator": "==",
+                "value": "positive"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "nsclc_tki_status",
+                "operator": "is nil"
+              }
+            ]
+          },
+          "transition": "Osimertinib_Start_Visit"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_pdl1_tps",
+            "operator": ">=",
+            "value": 50
+          },
+          "transition": "Start_Pembrolizumab_Monotherapy"
+        },
+        {
+          "transition": "Start_Chemoimmunotherapy"
+        }
+      ]
+    },
+    "Osimertinib_Start_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Osimertinib_Order"
+    },
+    "Osimertinib_Order": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Osimertinib is an ORAL third-generation EGFR TKI the patient takes at",
+        "home, so it is a dispensed prescription (Part D), NOT",
+        "administration:true. The code is the RxNorm SCD 1721581, not the",
+        "ingredient 1721560 the pre-fix module used, because only a clinical",
+        "drug concept resolves to an NDC for the PDE export. Continued until",
+        "progression, then closed by Stop_Osimertinib."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1721581",
+          "display": "osimertinib 80 MG Oral Tablet"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Set_TKI_Active"
+    },
+    "Set_TKI_Active": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_tki_status",
+      "value": "active",
+      "direct_transition": "End_Osimertinib_Start_Visit"
+    },
+    "End_Osimertinib_Start_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "TKI_Followup_Delay"
+    },
+    "TKI_Followup_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 85,
+        "high": 95,
+        "unit": "days"
+      },
+      "direct_transition": "TKI_Followup_Visit"
+    },
+    "TKI_Followup_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "TKI_Surveillance_CT"
+    },
+    "TKI_Surveillance_CT": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "169069000",
+          "display": "CT of chest"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "TKI_Progression_Check"
+    },
+    "TKI_Progression_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Median progression-free survival on first-line osimertinib is 18.9",
+        "months (FLAURA, Soria NEJM 2018;378:113). On this three-month",
+        "restaging pass, p = 1 - 0.5^(1/6.3) = 0.104."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Stop_Osimertinib",
+          "distribution": 0.104
+        },
+        {
+          "transition": "End_TKI_Followup_Visit",
+          "distribution": 0.896
+        }
+      ]
+    },
+    "Stop_Osimertinib": {
+      "type": "MedicationEnd",
+      "remarks": [
+        "medication_order resolves through HealthRecord.medicationEndByState,",
+        "which is a no-op if the order is absent, and this state is reachable",
+        "only from the arm that started it."
+      ],
+      "medication_order": "Osimertinib_Order",
+      "direct_transition": "Set_TKI_Stopped"
+    },
+    "Set_TKI_Stopped": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_tki_status",
+      "value": "stopped",
+      "direct_transition": "End_TKI_Followup_Visit"
+    },
+    "End_TKI_Followup_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "TKI_Status_Router"
+    },
+    "TKI_Status_Router": {
+      "type": "Simple",
+      "remarks": [
+        "Both branches of the restaging visit close the encounter before this",
+        "router, so the progression path never crosses a Delay with the visit",
+        "still open."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_tki_status",
+            "operator": "==",
+            "value": "stopped"
+          },
+          "transition": "Second_Line_Decision"
+        },
+        {
+          "transition": "TKI_Followup_Delay"
+        }
+      ]
+    },
+    "Start_Pembrolizumab_Monotherapy": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_io_cycles",
+      "remarks": [
+        "KEYNOTE-024 (Reck, NEJM 2016;375:1823): pembrolizumab",
+        "monotherapy for PD-L1 TPS >= 50% advanced NSCLC, 200 mg",
+        "q3w for up to 35 cycles."
+      ],
+      "value": 0,
+      "direct_transition": "Pembrolizumab_Mono_Cycle_Visit"
+    },
+    "Pembrolizumab_Mono_Cycle_Visit": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Pembrolizumab_Mono_Infusion"
+    },
+    "Pembrolizumab_Mono_Infusion": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "rxnorm_hcpcs_map already carries 1547545 -> J9271."
+      ],
       "codes": [
         {
           "system": "RxNorm",
           "code": "1547545",
-          "display": "pembrolizumab"
+          "display": "Pembrolizumab"
+        }
+      ],
+      "administration": true,
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Count_Pembrolizumab_Mono_Cycle"
+    },
+    "Count_Pembrolizumab_Mono_Cycle": {
+      "type": "Counter",
+      "attribute": "nsclc_io_cycles",
+      "action": "increment",
+      "direct_transition": "End_Pembrolizumab_Mono_Cycle_Visit"
+    },
+    "End_Pembrolizumab_Mono_Cycle_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Pembrolizumab_Mono_Cycle_Check"
+    },
+    "Pembrolizumab_Mono_Cycle_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_io_cycles",
+            "operator": ">=",
+            "value": 35
+          },
+          "transition": "IO_Course_Completed"
+        },
+        {
+          "transition": "Pembrolizumab_Mono_Progression_Check"
         }
       ]
     },
-    "Surveillance": {
+    "Pembrolizumab_Mono_Progression_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Median PFS on pembrolizumab monotherapy is 7.7 months (KEYNOTE-024);",
+        "on a 21-day cycle, p = 1 - 0.5^(1/13.4) = 0.0602."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Second_Line_Decision",
+          "distribution": 0.0602
+        },
+        {
+          "transition": "Pembrolizumab_Mono_Cycle_Delay",
+          "distribution": 0.9398
+        }
+      ]
+    },
+    "Pembrolizumab_Mono_Cycle_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 20,
+        "high": 22,
+        "unit": "days"
+      },
+      "direct_transition": "Pembrolizumab_Mono_Cycle_Visit"
+    },
+    "Start_Chemoimmunotherapy": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_io_cycles",
+      "remarks": [
+        "Pembrolizumab + platinum doublet: four induction cycles then",
+        "pembrolizumab maintenance to 35 cycles. Nonsquamous disease",
+        "gets carboplatin + pemetrexed with pemetrexed continued into",
+        "maintenance (KEYNOTE-189, Gandhi NEJM 2018;378:2078); squamous",
+        "disease gets carboplatin + paclitaxel with no chemotherapy",
+        "maintenance (KEYNOTE-407, Paz-Ares NEJM 2018;379:2040)."
+      ],
+      "value": 0,
+      "direct_transition": "Chemoimmunotherapy_Cycle_Visit"
+    },
+    "Chemoimmunotherapy_Cycle_Visit": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Chemo_IO_Pembrolizumab"
+    },
+    "Chemo_IO_Pembrolizumab": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1547545",
+          "display": "Pembrolizumab"
+        }
+      ],
+      "administration": true,
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Chemo_IO_Regimen_Router"
+    },
+    "Chemo_IO_Regimen_Router": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_histology",
+            "operator": "==",
+            "value": "squamous_cell_carcinoma"
+          },
+          "transition": "Squamous_Induction_Check"
+        },
+        {
+          "transition": "Nonsquamous_Induction_Check"
+        }
+      ]
+    },
+    "Squamous_Induction_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Four induction cycles: the counter is incremented after the",
+        "drugs, so cycles 0-3 carry chemotherapy."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_io_cycles",
+            "operator": "<",
+            "value": 4
+          },
+          "transition": "Squamous_Carboplatin"
+        },
+        {
+          "transition": "Count_Chemoimmunotherapy_Cycle"
+        }
+      ]
+    },
+    "Squamous_Carboplatin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "40048",
+          "display": "Carboplatin"
+        }
+      ],
+      "administration": true,
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Squamous_Paclitaxel"
+    },
+    "Squamous_Paclitaxel": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "56946",
+          "display": "Paclitaxel"
+        }
+      ],
+      "administration": true,
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Count_Chemoimmunotherapy_Cycle"
+    },
+    "Nonsquamous_Induction_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_io_cycles",
+            "operator": "<",
+            "value": 4
+          },
+          "transition": "Nonsquamous_Carboplatin"
+        },
+        {
+          "transition": "Maintenance_Pemetrexed"
+        }
+      ]
+    },
+    "Nonsquamous_Carboplatin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "40048",
+          "display": "Carboplatin"
+        }
+      ],
+      "administration": true,
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Nonsquamous_Pemetrexed"
+    },
+    "Nonsquamous_Pemetrexed": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "The SCD 1728072 is the concept rxnorm_hcpcs_map carries for",
+        "J9305; the RxNorm ingredient for pemetrexed is not in that map."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1728072",
+          "display": "pemetrexed 500 MG Injection"
+        }
+      ],
+      "administration": true,
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Count_Chemoimmunotherapy_Cycle"
+    },
+    "Maintenance_Pemetrexed": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1728072",
+          "display": "pemetrexed 500 MG Injection"
+        }
+      ],
+      "administration": true,
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Count_Chemoimmunotherapy_Cycle"
+    },
+    "Count_Chemoimmunotherapy_Cycle": {
+      "type": "Counter",
+      "attribute": "nsclc_io_cycles",
+      "action": "increment",
+      "direct_transition": "End_Chemoimmunotherapy_Cycle_Visit"
+    },
+    "End_Chemoimmunotherapy_Cycle_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Chemoimmunotherapy_Cycle_Check"
+    },
+    "Chemoimmunotherapy_Cycle_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_io_cycles",
+            "operator": ">=",
+            "value": 35
+          },
+          "transition": "IO_Course_Completed"
+        },
+        {
+          "transition": "Chemoimmunotherapy_Progression_Check"
+        }
+      ]
+    },
+    "Chemoimmunotherapy_Progression_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Median PFS with pembrolizumab + platinum-pemetrexed is 9.0 months",
+        "(KEYNOTE-189); on a 21-day cycle, p = 1 - 0.5^(1/13.04) = 0.0517."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Second_Line_Decision",
+          "distribution": 0.0517
+        },
+        {
+          "transition": "Chemoimmunotherapy_Cycle_Delay",
+          "distribution": 0.9483
+        }
+      ]
+    },
+    "Chemoimmunotherapy_Cycle_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 20,
+        "high": 22,
+        "unit": "days"
+      },
+      "direct_transition": "Chemoimmunotherapy_Cycle_Visit"
+    },
+    "IO_Course_Completed": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_disease_status",
+      "remarks": [
+        "Completing all 35 cycles is roughly two years of disease control",
+        "and is the mechanism by which a small tail of stage IV patients",
+        "reaches five-year survival. They fall into the surveillance loop",
+        "below, where the stage IV recurrence hazard still applies."
+      ],
+      "value": "immunotherapy_course_completed",
+      "direct_transition": "Enter_Surveillance"
+    },
+    "Second_Line_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "Only a minority of patients who progress on first-line therapy are",
+        "well enough for a further cytotoxic line; ECOG 3 goes straight to",
+        "best supportive care (real-world second-line receipt in advanced",
+        "NSCLC is ~40-60%)."
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_ecog",
+            "operator": ">=",
+            "value": 3
+          },
+          "transition": "Progressive_Disease_Delay"
+        },
+        {
+          "distributions": [
+            {
+              "transition": "Start_Second_Line_Docetaxel",
+              "distribution": 0.6
+            },
+            {
+              "transition": "Progressive_Disease_Delay",
+              "distribution": 0.4
+            }
+          ]
+        }
+      ]
+    },
+    "Start_Second_Line_Docetaxel": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_second_line_cycles",
+      "remarks": [
+        "Single-agent docetaxel remains the standard cytotoxic",
+        "second line after platinum and a checkpoint inhibitor."
+      ],
+      "value": 0,
+      "direct_transition": "Second_Line_Cycle_Visit"
+    },
+    "Second_Line_Cycle_Visit": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Second_Line_Docetaxel"
+    },
+    "Second_Line_Docetaxel": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "rxnorm_hcpcs_map already carries 72962 -> J9171."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "72962",
+          "display": "Docetaxel"
+        }
+      ],
+      "administration": true,
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Count_Second_Line_Cycle"
+    },
+    "Count_Second_Line_Cycle": {
+      "type": "Counter",
+      "attribute": "nsclc_second_line_cycles",
+      "action": "increment",
+      "direct_transition": "End_Second_Line_Cycle_Visit"
+    },
+    "End_Second_Line_Cycle_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Second_Line_Cycle_Check"
+    },
+    "Second_Line_Cycle_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_second_line_cycles",
+            "operator": ">=",
+            "value": 4
+          },
+          "transition": "Second_Line_Outcome_Delay"
+        },
+        {
+          "transition": "Second_Line_Cycle_Delay"
+        }
+      ]
+    },
+    "Second_Line_Cycle_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 20,
+        "high": 22,
+        "unit": "days"
+      },
+      "direct_transition": "Second_Line_Cycle_Visit"
+    },
+    "Second_Line_Outcome_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 21,
+        "high": 35,
+        "unit": "days"
+      },
+      "direct_transition": "Second_Line_Outcome"
+    },
+    "Second_Line_Outcome": {
+      "type": "Simple",
+      "remarks": [
+        "Docetaxel in this setting has an objective response rate of ~10% and",
+        "a median PFS of ~3-4 months, so most of this arm progresses; the 10%",
+        "who respond re-enter surveillance rather than dying on schedule."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Enter_Surveillance",
+          "distribution": 0.1
+        },
+        {
+          "transition": "Progressive_Disease_Delay",
+          "distribution": 0.9
+        }
+      ]
+    },
+    "Enter_Surveillance": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_surveillance_visits",
+      "value": 0,
+      "direct_transition": "Surveillance_Interval_Delay"
+    },
+    "Surveillance_Interval_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "NCCN surveillance after definitive therapy: history, examination",
+        "and chest CT every six months for the first 2-3 years, then",
+        "annually. Modelled as a uniform six-month pass."
+      ],
+      "range": {
+        "low": 5,
+        "high": 7,
+        "unit": "months"
+      },
+      "direct_transition": "Count_Surveillance_Visit"
+    },
+    "Count_Surveillance_Visit": {
+      "type": "Counter",
+      "attribute": "nsclc_surveillance_visits",
+      "action": "increment",
+      "direct_transition": "Surveillance_Visit"
+    },
+    "Surveillance_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Surveillance_CT"
+    },
+    "Surveillance_CT": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "169069000",
+          "display": "CT of chest"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "End_Surveillance_Visit"
+    },
+    "End_Surveillance_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Recurrence_Check"
+    },
+    "Recurrence_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Stage-specific annual recurrence/progression hazard converted to this",
+        "six-month pass with p_pass = 1 - (1 - p_annual)^0.5:",
+        "  stage I    12.5%/yr -> 0.0646     stage II  27%/yr -> 0.1456",
+        "  stage III  52%/yr   -> 0.3072     stage IV  50%/yr -> 0.2929",
+        "The annual figures are back-solved from the 5-year survival this",
+        "module is required to reproduce (~65/40/15/5% for stage I/II/III/IV,",
+        "SEER 2014-2020 relative survival by AJCC stage). Recurrence to death",
+        "takes ~18-24 months in this graph (first line ~9 months + second line",
+        "~3 + progression 1-4 + hospice ~2), so 5-year cause-specific",
+        "mortality is approximately P(recur within 3 years) x 0.9:",
+        "  I 0.33 x 0.9 = 30% dead -> 70% alive",
+        "  II 0.61 x 0.9 = 55%     -> 45% alive",
+        "  III 0.89 x 0.9 = 80%    -> 20% alive",
+        "  IV: first-line progression is near-certain, only the 35-cycle",
+        "      immunotherapy completers reach five years -> ~5% alive.",
+        "The pre-fix module had no recurrence, no progression and no death at",
+        "all: every patient ended in a care plan and stopped."
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_stage",
+            "operator": "==",
+            "value": "I"
+          },
+          "distributions": [
+            {
+              "transition": "Recurrence_Workup_Delay",
+              "distribution": 0.0646
+            },
+            {
+              "transition": "Remission_Duration_Check",
+              "distribution": 0.9354
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_stage",
+            "operator": "==",
+            "value": "II"
+          },
+          "distributions": [
+            {
+              "transition": "Recurrence_Workup_Delay",
+              "distribution": 0.1456
+            },
+            {
+              "transition": "Remission_Duration_Check",
+              "distribution": 0.8544
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_stage",
+            "operator": "==",
+            "value": "III"
+          },
+          "distributions": [
+            {
+              "transition": "Recurrence_Workup_Delay",
+              "distribution": 0.3072
+            },
+            {
+              "transition": "Remission_Duration_Check",
+              "distribution": 0.6928
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "transition": "Recurrence_Workup_Delay",
+              "distribution": 0.2929
+            },
+            {
+              "transition": "Remission_Duration_Check",
+              "distribution": 0.7071
+            }
+          ]
+        }
+      ]
+    },
+    "Remission_Duration_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Ten six-month passes is five recurrence-free years: a genuine",
+        "remission exit. The person leaves the module alive and competing",
+        "mortality becomes the lifecycle module's business."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_surveillance_visits",
+            "operator": ">=",
+            "value": 10
+          },
+          "transition": "Sustained_Remission_Discharge"
+        },
+        {
+          "transition": "Surveillance_Interval_Delay"
+        }
+      ]
+    },
+    "Sustained_Remission_Discharge": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_disease_status",
+      "value": "sustained_remission",
+      "direct_transition": "Terminal"
+    },
+    "Recurrence_Workup_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 7,
+        "high": 21,
+        "unit": "days"
+      },
+      "direct_transition": "Recurrence_Visit"
+    },
+    "Recurrence_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Recurrence_Onset_Guard"
+    },
+    "Recurrence_Onset_Guard": {
+      "type": "Simple",
+      "remarks": [
+        "Stacking guard: Recurrent_Disease sits inside a loop a person can",
+        "re-enter, so the ConditionOnset only fires while its",
+        "assign_to_attribute target is still nil."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "Recurrent Non-Small Cell Lung Cancer",
+            "operator": "is nil"
+          },
+          "transition": "Recurrent_Disease"
+        },
+        {
+          "transition": "End_Recurrence_Visit"
+        }
+      ]
+    },
+    "Recurrent_Disease": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "1259237005",
+          "display": "Recurrent malignant neoplasm"
+        }
+      ],
+      "assign_to_attribute": "Recurrent Non-Small Cell Lung Cancer",
+      "direct_transition": "End_Recurrence_Visit"
+    },
+    "End_Recurrence_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Set_Disease_Status_Recurrent"
+    },
+    "Set_Disease_Status_Recurrent": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_disease_status",
+      "remarks": [
+        "Recurrent NSCLC is treated as metastatic disease, so it",
+        "re-enters the shared systemic-therapy entry rather than",
+        "duplicating the regimen logic."
+      ],
+      "value": "recurrent",
+      "direct_transition": "Systemic_Therapy_Entry"
+    },
+    "Progressive_Disease_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Interval from documented progression to the palliative-care",
+        "handoff."
+      ],
+      "range": {
+        "low": 30,
+        "high": 120,
+        "unit": "days"
+      },
+      "direct_transition": "Palliative_Care_Visit"
+    },
+    "Palliative_Care_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Palliative_Care_Plan"
+    },
+    "Palliative_Care_Plan": {
       "type": "CarePlanStart",
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "394888000",
-          "display": "Oncology followup (regime/therapy)"
+          "code": "103735009",
+          "display": "Palliative care"
         }
       ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "End_Palliative_Care_Visit"
+    },
+    "End_Palliative_Care_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Hospice_Interval_Delay"
+    },
+    "Hospice_Interval_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 14,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Hospice_Visit"
+    },
+    "Hospice_Visit": {
+      "type": "Encounter",
+      "encounter_class": "hospice",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "305336008",
+          "display": "Admission to hospice"
+        }
+      ],
+      "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Hospice_Stay"
+    },
+    "Hospice_Stay": {
+      "type": "Delay",
+      "remarks": [
+        "A bounded hospice benefit period - the second and last Delay allowed to",
+        "sit inside an open encounter here, well under the linter's 90-day",
+        "warning threshold."
+      ],
+      "range": {
+        "low": 21,
+        "high": 45,
+        "unit": "days"
+      },
+      "direct_transition": "End_Hospice_Visit"
+    },
+    "End_Hospice_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Terminal_Decline_Check"
+    },
+    "Terminal_Decline_Check": {
+      "type": "Simple",
+      "remarks": [
+        "About 1.8 benefit periods on average (~2-3 months from hospice",
+        "enrolment to death), consistent with the median hospice length of",
+        "stay for lung cancer decedents. Death is recorded with the encounter",
+        "ALREADY CLOSED and is separated from the recurrence event by a full",
+        "systemic line, the progression interval and hospice - never the same",
+        "instant."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Death_From_NSCLC",
+          "distribution": 0.55
+        },
+        {
+          "transition": "Hospice_Interval_Delay",
+          "distribution": 0.45
+        }
+      ]
+    },
+    "Death_From_NSCLC": {
+      "type": "Death",
+      "remarks": [
+        "condition_onset, not bare codes, so this state can never take",
+        "the null-codes path that produces the tree's NPE family."
+      ],
+      "condition_onset": "Diagnose_NSCLC",
       "direct_transition": "Terminal"
     },
     "Terminal": {

@@ -11,7 +11,7 @@
           },
           "distributions": [
             {
-              "transition": "AML_Already_Present_Check",
+              "transition": "Cancerous",
               "distribution": 0.002
             },
             {
@@ -27,7 +27,7 @@
           },
           "distributions": [
             {
-              "transition": "AML_Already_Present_Check",
+              "transition": "Cancerous",
               "distribution": 0.003
             },
             {
@@ -46,6 +46,13 @@
     },
     "Levofloxacin": {
       "type": "MedicationOrder",
+      "remarks": [
+        "Oral tablet dispensed as a prescription, not administered. `administration: true`",
+        "routes this through the J-code/HCPCS path, which has no code for an oral",
+        "levofloxacin tablet -- the drug silently vanished from every export. The RxNorm",
+        "CUI 199885 already has NDC rows in export/medication_code_map.json, so the",
+        "dispensed-Rx (PDE) path maps cleanly without this flag."
+      ],
       "codes": [
         {
           "system": "RxNorm",
@@ -55,7 +62,6 @@
       ],
       "chronic": false,
       "assign_to_attribute": "levofloxacin",
-      "administration": true,
       "reason": "Acute_Myeloid_Leukemia_AML",
       "prescription": {
         "dosage": {
@@ -471,7 +477,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_2": {
       "type": "Delay",
@@ -482,7 +488,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_3": {
       "type": "Delay",
@@ -493,7 +499,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_4": {
       "type": "Delay",
@@ -504,7 +510,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_5": {
       "type": "Delay",
@@ -515,7 +521,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_6": {
       "type": "Delay",
@@ -526,7 +532,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_7": {
       "type": "Delay",
@@ -537,7 +543,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_8": {
       "type": "Delay",
@@ -548,7 +554,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_9": {
       "type": "Delay",
@@ -559,7 +565,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_10": {
       "type": "Delay",
@@ -570,7 +576,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_11": {
       "type": "Delay",
@@ -581,7 +587,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_12": {
       "type": "Delay",
@@ -592,7 +598,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_13": {
       "type": "Delay",
@@ -603,7 +609,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_14": {
       "type": "Delay",
@@ -614,7 +620,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_15": {
       "type": "Delay",
@@ -625,7 +631,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_16": {
       "type": "Delay",
@@ -636,7 +642,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_17": {
       "type": "Delay",
@@ -647,7 +653,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_18": {
       "type": "Delay",
@@ -658,7 +664,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_19": {
       "type": "Delay",
@@ -669,7 +675,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_20": {
       "type": "Delay",
@@ -680,7 +686,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_21": {
       "type": "Delay",
@@ -691,7 +697,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_0": {
       "type": "Delay",
@@ -702,7 +708,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Acute_Myeloid_Leukemia_AML": {
       "type": "ConditionOnset",
@@ -882,13 +888,21 @@
           "transition": "Terminal"
         },
         {
-          "transition": "Cancerous"
+          "transition": "Acute_Myeloid_Leukemia_AML"
         }
       ],
       "remarks": [
-        "Two modules in this repo onset SNOMED 91861009. Without this check a",
-        "patient can receive two independent AML diagnoses and two unrelated",
-        "treatment courses, roughly doubling apparent AML prevalence."
+        "Five modules in this repo onset SNOMED 91861009 (this one, acute_myeloid_leukemia,",
+        "acute_lymphoblastic_leukemia, myelodysplastic_syndromes, polycythemia_vera).",
+        "Without this check a patient can receive two independent AML diagnoses and two",
+        "unrelated treatment courses, roughly doubling apparent AML prevalence.",
+        "Re-anchored here (immediately before this module's own onset, at the age drawn",
+        "by Cancerous/Delay_N) rather than at the birth-instant it used to run at: a",
+        "check performed at age 0 can only catch a diagnosis that predates birth, which",
+        "is impossible, so it was a permanent no-op. Checking right before this module's",
+        "own onset -- which is also what gates entry into the chemo/prophylaxis encounter",
+        "below -- actually catches the case where a sibling module diagnosed the patient",
+        "with AML sometime during the 0-21 year window this module spent waiting."
       ]
     }
   },

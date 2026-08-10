@@ -29,16 +29,20 @@
     "dementia', Am J Psychiatry 1982;139(9):1136-1139; Reisberg B, 'Functional",
     "assessment staging (FAST)', Psychopharmacol Bull 1988;24(4):653-659).",
     "Converting mean durations to annual hazards gives ~40%/yr mild->moderate and",
-    "~33%/yr moderate->severe. Stage-specific competing mortality (5%/yr mild,",
-    "10%/yr moderate, 20%/yr community-severe, ~30%/yr in long-term care) is",
-    "taken from the elevated all-cause mortality reported across dementia",
-    "severity (Todd S, Barr S, Roberts M, Passmore AP, 'Survival in dementia and",
-    "predictors of mortality: a review', Int J Geriatr Psychiatry",
-    "2013;28(11):1109-1124) and, for the advanced/long-term-care arm, from",
-    "Mitchell SL, Teno JM, Kiely DK, et al., 'The clinical course of advanced",
-    "dementia', N Engl J Med 2009;361(16):1529-1538 (median survival ~1.3 years",
-    "after meeting advanced-dementia criteria). The resulting mean survival from",
-    "AD diagnosis is ~6.0 years by graph arithmetic (see the Task 4.2 report for",
+    "~33%/yr moderate->severe. Stage-specific competing mortality is taken from",
+    "the elevated all-cause mortality reported across dementia severity (Todd S,",
+    "Barr S, Roberts M, Passmore AP, 'Survival in dementia and predictors of",
+    "mortality: a review', Int J Geriatr Psychiatry 2013;28(11):1109-1124) and,",
+    "for the advanced/long-term-care arm, from Mitchell SL, Teno JM, Kiely DK,",
+    "et al., 'The clinical course of advanced dementia', N Engl J Med",
+    "2009;361(16):1529-1538 (median survival ~1.3 years after meeting",
+    "advanced-dementia criteria). In the mild and moderate stages death is a",
+    "single branch (5%/yr and 10%/yr); from the severe stage onward it is split",
+    "between dying without hospice (13%/yr community-severe, ~21.7%/yr in",
+    "long-term care) and electing hospice first (30%/yr and ~49.7%/yr), because",
+    "hospice here is a route to death rather than an additional endpoint.",
+    "The resulting mean survival from",
+    "AD diagnosis is ~5.6 years by graph arithmetic (see the Task 4.2 report for",
     "the full computation), inside the 4-8 year range the Alzheimer's Association",
     "commonly cites. These are calibration approximations, not literature-exact",
     "replications, and they were NOT fitted to a simulated cohort -- per-task",
@@ -239,6 +243,18 @@
           "code": "113091000",
           "display": "Magnetic resonance imaging of brain"
         }
+      ],
+      "remarks": [
+        "TASK 6.1 EXPORT-MAP FLAG (recorded here because this module is the row's",
+        "only consumer): 113091000's hcpcs_code_map row is [S8035 'Magnetic",
+        "source imaging', S8042 'MRI, low-field']. Neither is a payable brain-MRI",
+        "code -- brain MRI is CPT 70551 (without contrast) / 70552 (with) /",
+        "70553 (without and with). 113091000 is used ONLY in this module, in",
+        "three states (BrainMRI, Baseline_ARIA_MRI, ARIA_MRISurveillance), so",
+        "6.1 can re-weight or replace the row with no effect on any other",
+        "module. Task 4.2 grew the row's traffic (two states to three, and the",
+        "anti-amyloid infusion loop fires ARIA_MRISurveillance ~3 times per",
+        "treated patient), which raises the value of fixing it."
       ],
       "direct_transition": "End_MCI_Workup_Visit"
     },
@@ -1292,13 +1308,16 @@
         }
       ],
       "remarks": [
-        "Task 4.2 recode. The previous code 225358003 ('Assessment after fall') is",
-        "a valid active concept but its hcpcs_code_map row maps it to G0282",
-        "(electrical stimulation for wound care) and S9097 (home visit for wound",
-        "care) -- i.e. every fall assessment in this module was billing as wound",
-        "care. That map row is shared with gallstones.json and injuries.json, so",
-        "it is left alone here and flagged for the Task 6.1 export-map sweep;",
-        "this module moves to 762993000 'Assessment using Morse Fall Scale'",
+        "Task 4.2 recode, reasoning corrected in fix round 1. The previous code",
+        "here was 225358003 under the display 'Assessment after fall'. That",
+        "display was fabricated: 225358003 is an active concept whose real",
+        "SNOMED display is 'Wound care' (Ontoserver CodeSystem/$lookup). Its",
+        "hcpcs_code_map row -> G0282 (electrical stimulation for wound care) /",
+        "S9097 (home visit for wound care) is therefore CORRECT, and",
+        "gallstones.json and injuries.json use that code and row correctly. The",
+        "defect was only ever this module's wrong display and wrong choice of",
+        "concept -- so the row must NOT be touched by the Task 6.1 sweep.",
+        "Fixed by moving to 762993000 'Assessment using Morse Fall Scale'",
         "(verified active via Ontoserver $lookup, Verhoeff-valid), which already",
         "has its own hcpcs_code_map row -> M1069. No new map row needed."
       ],
@@ -1341,16 +1360,31 @@
       "type": "Delay",
       "remarks": [
         "Annual reroll for community-dwelling severe patients. 35%/yr entry into",
-        "long-term care, 20%/yr death, 12%/yr direct hospice election. Pre-4.2",
-        "there was no annual severe cycle: institutionalisation was effectively",
-        "certain on the first pass.",
-        "The hospice rate is set with the module's other hospice branch so that",
-        "~25% of this module's diagnosed patients elect hospice before death.",
-        "That is deliberately below the ~50%+ hospice use reported among Medicare",
-        "dementia decedents: in a full-tree run this module is not the only route",
-        "into hospice (home_hospice_snf.json and hospice_treatment.json's own",
-        "days_until_death branch also elect), so calibrating this module alone to",
-        "the population figure would overshoot. Named as an assumption."
+        "long-term care, 13%/yr death without hospice, 30%/yr direct hospice",
+        "election. Pre-4.2 there was no annual severe cycle: institutionalisation",
+        "was effectively certain on the first pass.",
+        "HOSPICE RATE, corrected in fix round 1. The rate is set together with",
+        "NursingHome_Period_Check's so that ~48% of this module's AD decedents",
+        "elect hospice, matching the ~50% hospice use reported among Medicare",
+        "dementia decedents. The previous 12%/5% pair gave ~25% and was justified",
+        "by the claim that home_hospice_snf.json and hospice_treatment.json add",
+        "elections on top. That claim was FALSE and is retracted: this module's",
+        "patients cannot reach either external route. home_hospice_snf.json's",
+        "Hospice Check gates its Alzheimers branch on `Type of Alzheimer's`,",
+        "which only stock dementia.json ever sets; and hospice_treatment.json's",
+        "second Guard branch reads `days_until_death`, which LifecycleModule",
+        "only writes once Person.DEATHDATE exists (LifecycleModule.java:993-998)",
+        "-- this module's Death state kills immediately, so that attribute is",
+        "never a usable pre-death predictor here. This module's own election is",
+        "therefore the entire rate.",
+        "Renormalisation: hospice is a competing ROUTE to death, not an extra",
+        "endpoint (every election reaches Death_From_Alzheimers ~55 days later),",
+        "so the direct-death branch was cut 20%->13% as the hospice branch rose",
+        "12%->30%, and the stay-in-place branch absorbs the rest. Net effect on",
+        "the module's calibration: mean survival from AD diagnosis moves from",
+        "6.0 to 5.6 years, still inside the cited 4-8 year range, and mean",
+        "long-term-care residence moves from 1.9 to 1.2 years, closer to the",
+        "~1.3 year median in Mitchell SL et al., NEJM 2009;361:1529-38."
       ],
       "range": {
         "low": 350,
@@ -1363,15 +1397,15 @@
           "transition": "Set_Long_Term_Care"
         },
         {
-          "distribution": 0.2,
+          "distribution": 0.13,
           "transition": "Death_From_Alzheimers"
         },
         {
-          "distribution": 0.12,
+          "distribution": 0.3,
           "transition": "Hospice_Transition"
         },
         {
-          "distribution": 0.33,
+          "distribution": 0.22,
           "transition": "Severe_Stage_Visit"
         }
       ]
@@ -1459,20 +1493,24 @@
       "type": "Simple",
       "remarks": [
         "Per ~92-day cycle (a 20-30 day covered period plus a 60-75 day gap).",
-        "8.5% death and 5% hospice election per cycle give a mean long-term-care",
-        "residence of ~1.9 years with ~37% of residents electing hospice before",
-        "death -- the same order as the advanced-dementia course described in",
-        "Mitchell SL et al., NEJM 2009;361:1529-38. 4% per cycle routes back",
-        "through the acute-complication roll (a hospitalisation from the",
-        "facility), which returns here via Severe_Living_Setting_Check."
+        "Fix round 1 raised hospice election 5% -> 16% per cycle and cut death",
+        "without hospice 8.5% -> 6% to renormalise (see Severe_Stage_Annual_Check",
+        "for the reasoning and the retraction of the earlier justification).",
+        "73% of long-term-care residents now elect hospice before death, and mean",
+        "residence is ~1.2 years, close to the ~1.3 year median survival in",
+        "advanced dementia reported by Mitchell SL et al., NEJM 2009;361:1529-38",
+        "(the previous 1.9 years overshot it). Direct death without hospice is",
+        "~21.7%/yr. 4% per cycle routes back through the acute-complication roll",
+        "(a hospitalisation from the facility), which returns here via",
+        "Severe_Living_Setting_Check and is not an exit."
       ],
       "distributed_transition": [
         {
-          "distribution": 0.085,
+          "distribution": 0.06,
           "transition": "Death_From_Alzheimers"
         },
         {
-          "distribution": 0.05,
+          "distribution": 0.16,
           "transition": "Hospice_Transition"
         },
         {
@@ -1480,7 +1518,7 @@
           "transition": "Severe_Complication_Check"
         },
         {
-          "distribution": 0.825,
+          "distribution": 0.74,
           "transition": "NursingHome_Visit"
         }
       ]

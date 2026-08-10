@@ -101,6 +101,22 @@
         "quantity": 6,
         "unit": "months"
       },
+      "remarks": [
+        "Stage D progression arithmetic (audit 2026-08-10, task 2.8): the",
+        "original per-pass value of 0.065 on the 'Progress to Stage D'",
+        "branch below (this Delay fires every 6 months, so ~0.065 per pass)",
+        "is ~3x the progression-to-stage-D rate reported in this module's",
+        "own cited source (ref #10 in the module-level remarks:",
+        "Kalogeropoulos et al. 2017, JACC: Heart Failure, 'Progression to",
+        "stage D heart failure among outpatients with stage C heart failure",
+        "and reduced ejection fraction'). Corrected: 0.065 / 3 =",
+        "0.021666666666666667 per 6-month pass (~4.3%/yr), matching the",
+        "cited source. The freed-up 0.043333... probability mass is",
+        "redistributed proportionally across the other two branches",
+        "(Potential CHF Flare : Followup CHF Encounter, originally 0.5 :",
+        "0.435) so their relative likelihood is unchanged: each scaled by",
+        "(1 - 0.021666666666666667) / (1 - 0.065) = 1.0463458110516932."
+      ],
       "complex_transition": [
         {
           "condition": {
@@ -144,15 +160,15 @@
           "distributions": [
             {
               "transition": "Progress to Stage D",
-              "distribution": 0.065
+              "distribution": 0.021666666666666667
             },
             {
               "transition": "Potential CHF Flare",
-              "distribution": 0.5
+              "distribution": 0.5231729055258466
             },
             {
               "transition": "Followup CHF Encounter",
-              "distribution": 0.43500000000000005
+              "distribution": 0.45516042780748667
             }
           ]
         },

@@ -24,8 +24,7 @@
         "condition_type": "Age",
         "operator": ">=",
         "quantity": 50,
-        "unit": "years",
-        "value": 0
+        "unit": "years"
       },
       "direct_transition": "MGUS_Risk"
     },
@@ -686,17 +685,23 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "113091000",
-          "display": "Magnetic resonance imaging"
+          "code": "241648005",
+          "display": "MRI of lumbar spine"
         }
       ],
       "remarks": [
-        "Task 2.9: recoded from CPT 72158 (MRI spine with contrast) to the",
-        "generic SNOMED MRI procedure 113091000 -- no body-site-specific",
-        "spine-MRI SNOMED concept was found with confidence, so this",
-        "deliberately understates specificity rather than guess a code.",
-        "CPT 72158 preserved as the HCPCS billing mapping in",
-        "export/hcpcs_code_map.json (new row added in this commit)."
+        "Task 2.9 fix round (review 2026-08-10): recoded from CPT 72158",
+        "(MRI spine with contrast) to SNOMED 241648005 (MRI of lumbar",
+        "spine) -- CPT 72158 is specifically the lumbar-spine",
+        "without-then-with-contrast study, so this is the region-matched",
+        "concept, not the generic 113091000 'Magnetic resonance imaging'",
+        "used in the original commit -- that reused a top-level JSON key",
+        "already owned by a pre-existing row (113091000 -> S8035/S8042)",
+        "used by alzheimers.json's BrainMRI/ARIA_MRISurveillance states,",
+        "and Gson's duplicate-key resolution is last-wins with no guard,",
+        "so it silently rebound every alzheimers brain MRI to bill as",
+        "spine-with-contrast. 241648005 gets its own new map row -> CPT",
+        "72158; the pre-existing 113091000 row is untouched."
       ],
       "direct_transition": "Fracture_Hospitalization_LOS"
     },

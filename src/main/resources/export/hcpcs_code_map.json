@@ -7472,5 +7472,47 @@
       "code": "92100",
       "description": "Serial tonometry with multiple measurements of intraocular pressure over an extended time period with interpretation and report, unilateral or bilateral"
     }
+  ],
+  "16830007": [
+    {
+      "code": "99173",
+      "description": "Screening test of visual acuity, quantitative, bilateral"
+    }
+  ],
+  "410451008": [
+    {
+      "code": "92499",
+      "description": "Unlisted ophthalmological service or procedure"
+    }
+  ],
+  "410453006": [
+    {
+      "code": "92225",
+      "description": "Ophthalmoscopy, extended, with retinal drawing (eg, for retinal detachment, melanoma), with interpretation and report; initial"
+    }
+  ],
+  "700070005": [
+    {
+      "code": "92134",
+      "description": "Scanning computerized ophthalmic diagnostic imaging, posterior segment, with interpretation and report, unilateral or bilateral"
+    }
+  ],
+  "172581008": [
+    {
+      "code": "92235",
+      "description": "Fluorescein angiography (includes multiframe imaging) with interpretation and report, unilateral or bilateral"
+    }
+  ],
+  "418551006": [
+    {
+      "code": "67028",
+      "description": "Intravitreal injection of a pharmacologic agent (separate procedure)"
+    }
+  ],
+  "410007005": [
+    {
+      "code": "G9043",
+      "description": "Rehabilitation services for low vision by certified low vision rehabilitation therapist, direct one-on-one contact, each 15 minutes"
+    }
   ]
 }

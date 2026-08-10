@@ -8,7 +8,47 @@
     "The module includes risk factors, progression from dry AMD, diagnostic procedures,",
     "and current treatment modalities including anti-VEGF therapy.",
     "References: AAO Retina/Vitreous Panel. Preferred Practice Pattern Guidelines.",
-    "Age-Related Macular Degeneration. San Francisco, CA: American Academy of Ophthalmology; 2019."
+    "Age-Related Macular Degeneration. San Francisco, CA: American Academy of Ophthalmology; 2019.",
+    "",
+    "Remediation notes (module-audit-remediation, task 3.6):",
+    " - Dry AMD onset was previously an age-tiered 5-25% chance PER 1-3 YEAR pass, compounding at",
+    "   every re-roll (Age_Based_AMD_Risk -> No_AMD_Development -> loop) and pushing cumulative",
+    "   incidence past 90% by age 85 -- roughly 10x the ~8-11% lifetime early-AMD prevalence reported",
+    "   for a 55+ cohort (e.g. Beaver Dam Eye Study, Klein et al.). Replaced with a flat 0.8%/year",
+    "   hazard (Dry_AMD_Annual_Roll) starting at age 55 (Dry_AMD_Age_Guard), checked on an exact",
+    "   1-year Delay so no interval-compounding correction is needed (p_pass = p_annual when",
+    "   Delta t = 1 year). This is a simplified flat-hazard calibration target, not a literal fit to",
+    "   the age-stratified epidemiology curve, and is intentionally conservative (real incidence",
+    "   rises with age); documented here so nobody downstream mistakes it for a SEER-grade rate.",
+    " - Dry-to-wet conversion was a single one-shot roll after a random 1-5 year monitoring delay,",
+    "   and its \"no conversion\" branch (No_AMD_Development, shared with the dry-onset loop above)",
+    "   looped back into the DRY-onset check instead of re-checking wet conversion -- so a diagnosed",
+    "   dry-AMD patient who didn't convert on the first roll could be re-diagnosed with dry AMD a",
+    "   second time. Replaced with its own ongoing annual hazard (Wet_Conversion_Wait ->",
+    "   Wet_Conversion_Risk_Check), moderate tier 1.5%/year (the brief's target rate), with modest",
+    "   smoking/family-history stratification (low 1.2%/yr, high 2.5%/yr) retained from the original",
+    "   risk-factor assessment logic -- broadly consistent with the ~1-3%/year annual conversion",
+    "   rates reported across AMD natural-history cohorts.",
+    " - Dry AMD was previously recorded via a bare ConditionOnset with no encounter open at all",
+    "   (HealthRecord.currentEncounter falls back to the last encounter that happened to be open at",
+    "   that simulated instant, or synthesizes a same-instant wellness encounter -- neither reflects",
+    "   an actual visit). Now recorded inside a closed ambulatory encounter",
+    "   (Dry_AMD_Diagnosis_Encounter / End_Dry_AMD_Diagnosis_Encounter).",
+    " - Anti-VEGF treatment previously stopped for good after the 3-injection loading phase",
+    "   (Loading_Phase_Wait capped injection_count < 3 and never returned to dosing afterward --",
+    "   every treated patient reverted to observation-only follow-up for the rest of their life).",
+    "   Replaced with an ongoing q4-8-week maintenance loop (Anti_VEGF_Maintenance_Wait ->",
+    "   Anti_VEGF_Maintenance_Visit -> ... -> loop), matching AAO PPP treat-and-extend / fixed-",
+    "   interval anti-VEGF regimens, which continue indefinitely rather than for a fixed 3 doses.",
+    " - aflibercept/ranibizumab/bevacizumab RxCUIs were RxNorm SCDCs (ingredient+strength",
+    "   components, no dose form) rather than dispensable SCDs: 1232151 (\"aflibercept 40 MG/ML\") ->",
+    "   1232154 (SCD \"0.05 ML aflibercept 40 MG/ML Injection\", maps to HCPCS J0178); 643191",
+    "   (\"ranibizumab 10 MG/ML\") -> 643193 (SCD \"0.05 ML ranibizumab 10 MG/ML Injection\", maps to",
+    "   HCPCS J2778, added to export/rxnorm_hcpcs_map.json by this task -- it was not previously",
+    "   scanned); 437105 (\"bevacizumab 25 MG/ML\") -> 1657066 (SCD \"4 ML bevacizumab 25 MG/ML",
+    "   Injection\", maps to HCPCS J9035 -- the code real-world claims use for off-label intravitreal",
+    "   Avastin, since there is no distinct FDA-approved intravitreal bevacizumab HCPCS code). All",
+    "   three verified via RxNav rxcui/{id}/historystatus."
   ],
   "states": {
     "Initial": {
@@ -95,7 +135,7 @@
           }
         },
         {
-          "transition": "Age_Based_AMD_Risk"
+          "transition": "Dry_AMD_Age_Guard"
         }
       ]
     },
@@ -103,72 +143,55 @@
       "type": "SetAttribute",
       "attribute": "has_dry_amd",
       "value": true,
-      "direct_transition": "Dry_AMD_Monitoring_Period"
+      "direct_transition": "Wet_Conversion_Wait"
     },
-    "Age_Based_AMD_Risk": {
-      "type": "Simple",
-      "conditional_transition": [
-        {
-          "transition": "Very_High_Age_Risk",
-          "condition": {
-            "condition_type": "Age",
-            "operator": ">=",
-            "quantity": 75,
-            "unit": "years"
-          }
-        },
-        {
-          "transition": "High_Age_Risk",
-          "condition": {
-            "condition_type": "Age",
-            "operator": ">=",
-            "quantity": 65,
-            "unit": "years"
-          }
-        },
-        {
-          "transition": "Standard_Age_Risk"
-        }
-      ]
+    "Dry_AMD_Age_Guard": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 55,
+        "unit": "years"
+      },
+      "direct_transition": "Dry_AMD_Annual_Wait"
     },
-    "Very_High_Age_Risk": {
+    "Dry_AMD_Annual_Wait": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 1,
+        "unit": "years"
+      },
+      "direct_transition": "Dry_AMD_Annual_Roll"
+    },
+    "Dry_AMD_Annual_Roll": {
       "type": "Simple",
       "distributed_transition": [
         {
-          "transition": "Develop_Dry_AMD_First",
-          "distribution": 0.25
+          "transition": "Dry_AMD_Diagnosis_Encounter",
+          "distribution": 0.008
         },
         {
-          "transition": "No_AMD_Development",
-          "distribution": 0.75
+          "transition": "Dry_AMD_Annual_Wait",
+          "distribution": 0.992
         }
+      ],
+      "remarks": [
+        "Flat 0.8%/year dry-AMD hazard from age 55, checked on an exact 1-year Delay (see module",
+        "remarks for why this replaces the old age-tiered compounding design)."
       ]
     },
-    "High_Age_Risk": {
-      "type": "Simple",
-      "distributed_transition": [
+    "Dry_AMD_Diagnosis_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "dry_amd_diagnosis",
+      "codes": [
         {
-          "transition": "Develop_Dry_AMD_First",
-          "distribution": 0.15
-        },
-        {
-          "transition": "No_AMD_Development",
-          "distribution": 0.85
+          "system": "SNOMED-CT",
+          "code": "36228007",
+          "display": "Ophthalmologic examination and evaluation"
         }
-      ]
-    },
-    "Standard_Age_Risk": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "transition": "Develop_Dry_AMD_First",
-          "distribution": 0.05
-        },
-        {
-          "transition": "No_AMD_Development",
-          "distribution": 0.95
-        }
-      ]
+      ],
+      "direct_transition": "Develop_Dry_AMD_First"
     },
     "Develop_Dry_AMD_First": {
       "type": "ConditionOnset",
@@ -185,22 +208,25 @@
       "type": "SetAttribute",
       "attribute": "has_dry_amd",
       "value": true,
-      "direct_transition": "Dry_AMD_Monitoring_Period"
+      "direct_transition": "End_Dry_AMD_Diagnosis_Encounter"
     },
-    "Dry_AMD_Monitoring_Period": {
+    "End_Dry_AMD_Diagnosis_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Wet_Conversion_Wait"
+    },
+    "Wet_Conversion_Wait": {
       "type": "Delay",
-      "range": {
-        "low": 1,
-        "high": 5,
+      "exact": {
+        "quantity": 1,
         "unit": "years"
       },
-      "direct_transition": "Wet_AMD_Risk_Assessment"
+      "direct_transition": "Wet_Conversion_Risk_Check"
     },
-    "Wet_AMD_Risk_Assessment": {
+    "Wet_Conversion_Risk_Check": {
       "type": "Simple",
       "conditional_transition": [
         {
-          "transition": "High_Risk_Wet_AMD_Development",
+          "transition": "High_Risk_Wet_Conversion_Roll",
           "condition": {
             "condition_type": "And",
             "conditions": [
@@ -220,89 +246,90 @@
           }
         },
         {
-          "transition": "Moderate_Risk_Wet_AMD_Development",
+          "transition": "Moderate_Risk_Wet_Conversion_Roll",
           "condition": {
-            "condition_type": "Attribute",
-            "attribute": "has_dry_amd",
-            "operator": "==",
-            "value": true
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "amd_risk_factor_smoking",
+                "operator": "==",
+                "value": true
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "amd_family_history",
+                "operator": "==",
+                "value": true
+              }
+            ]
           }
         },
         {
-          "transition": "Low_Risk_Wet_AMD_Development"
+          "transition": "Low_Risk_Wet_Conversion_Roll"
         }
       ]
     },
-    "High_Risk_Wet_AMD_Development": {
+    "High_Risk_Wet_Conversion_Roll": {
       "type": "Simple",
       "distributed_transition": [
         {
           "transition": "Early_Wet_AMD_Symptoms",
-          "distribution": 0.2
+          "distribution": 0.025
         },
         {
-          "transition": "No_AMD_Development",
-          "distribution": 0.8
+          "transition": "Wet_Conversion_Wait",
+          "distribution": 0.975
         }
       ]
     },
-    "Moderate_Risk_Wet_AMD_Development": {
+    "Moderate_Risk_Wet_Conversion_Roll": {
       "type": "Simple",
       "distributed_transition": [
         {
           "transition": "Early_Wet_AMD_Symptoms",
-          "distribution": 0.15
+          "distribution": 0.015
         },
         {
-          "transition": "No_AMD_Development",
-          "distribution": 0.85
+          "transition": "Wet_Conversion_Wait",
+          "distribution": 0.985
         }
       ]
     },
-    "Low_Risk_Wet_AMD_Development": {
+    "Low_Risk_Wet_Conversion_Roll": {
       "type": "Simple",
       "distributed_transition": [
         {
           "transition": "Early_Wet_AMD_Symptoms",
-          "distribution": 0.03
+          "distribution": 0.012
         },
         {
-          "transition": "No_AMD_Development",
-          "distribution": 0.97
+          "transition": "Wet_Conversion_Wait",
+          "distribution": 0.988
         }
       ]
     },
     "Early_Wet_AMD_Symptoms": {
-      "type": "Observation",
-      "category": "survey",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "246636008",
-          "display": "Distorted vision"
-        }
-      ],
-      "value_code": {
-        "system": "SNOMED-CT",
-        "code": "52101004",
-        "display": "Present"
+      "type": "Symptom",
+      "symptom": "Distorted Vision",
+      "range": {
+        "low": 10,
+        "high": 30
       },
-      "direct_transition": "Central_Vision_Loss_Symptom"
+      "direct_transition": "Central_Vision_Loss_Symptom",
+      "remarks": [
+        "Symptom (not Observation): this fires before the patient has sought care, so no encounter",
+        "is open yet. Symptom states track internal severity and never touch the health record, so",
+        "unlike Observation they do not need an open encounter to avoid mis-attributing to a stale",
+        "or synthetic encounter."
+      ]
     },
     "Central_Vision_Loss_Symptom": {
-      "type": "Observation",
-      "category": "survey",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "246636008",
-          "display": "Central vision loss"
-        }
-      ],
-      "value_code": {
-        "system": "SNOMED-CT",
-        "code": "52101004",
-        "display": "Present"
+      "type": "Symptom",
+      "symptom": "Central Vision Loss",
+      "range": {
+        "low": 20,
+        "high": 50
       },
       "direct_transition": "Seek_Medical_Care_Delay"
     },
@@ -536,8 +563,8 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": "1232151",
-          "display": "aflibercept 40 MG/ML"
+          "code": "1232154",
+          "display": "0.05 ML aflibercept 40 MG/ML Injection"
         }
       ],
       "administration": true,
@@ -548,8 +575,8 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": "437105",
-          "display": "bevacizumab 25 MG/ML"
+          "code": "1657066",
+          "display": "4 ML bevacizumab 25 MG/ML Injection"
         }
       ],
       "administration": true,
@@ -560,8 +587,8 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": "643191",
-          "display": "ranibizumab 10 MG/ML"
+          "code": "643193",
+          "display": "0.05 ML ranibizumab 10 MG/ML Injection"
         }
       ],
       "administration": true,
@@ -589,8 +616,8 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": "643191",
-          "display": "ranibizumab 10 MG/ML"
+          "code": "643193",
+          "display": "0.05 ML ranibizumab 10 MG/ML Injection"
         }
       ],
       "administration": true,
@@ -601,8 +628,8 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": "1232151",
-          "display": "aflibercept 40 MG/ML"
+          "code": "1232154",
+          "display": "0.05 ML aflibercept 40 MG/ML Injection"
         }
       ],
       "administration": true,
@@ -613,8 +640,8 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": "437105",
-          "display": "bevacizumab 25 MG/ML"
+          "code": "1657066",
+          "display": "4 ML bevacizumab 25 MG/ML Injection"
         }
       ],
       "administration": true,
@@ -792,14 +819,184 @@
     },
     "End_Assessment_Encounter": {
       "type": "EncounterEnd",
-      "direct_transition": "Long_Term_Management"
+      "direct_transition": "Anti_VEGF_Maintenance_Wait"
     },
-    "Long_Term_Management": {
+    "Anti_VEGF_Maintenance_Wait": {
       "type": "Delay",
       "range": {
-        "low": 6,
-        "high": 12,
+        "low": 4,
+        "high": 8,
         "unit": "weeks"
+      },
+      "direct_transition": "Anti_VEGF_Maintenance_Visit",
+      "remarks": [
+        "Ongoing anti-VEGF maintenance dosing, q4-8 weeks indefinitely -- this loop has no exit",
+        "back to a treatment-free monitoring-only state and no lifetime injection cap; it runs for",
+        "the rest of the patient's life (or until Maintenance_GA_Development ends active treatment)."
+      ]
+    },
+    "Anti_VEGF_Maintenance_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "wet_amd_maintenance",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "390906007",
+          "display": "Follow-up retinal examination"
+        }
+      ],
+      "direct_transition": "Maintenance_OCT"
+    },
+    "Maintenance_OCT": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "700070005",
+          "display": "Optical coherence tomography of retina [procedure]"
+        }
+      ],
+      "direct_transition": "Maintenance_Disease_Status_Check"
+    },
+    "Maintenance_Disease_Status_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Maintenance_Stable",
+          "distribution": 0.8
+        },
+        {
+          "transition": "Maintenance_Progression_Noted",
+          "distribution": 0.15
+        },
+        {
+          "transition": "Maintenance_GA_Development",
+          "distribution": 0.05
+        }
+      ]
+    },
+    "Maintenance_Stable": {
+      "type": "Simple",
+      "direct_transition": "Maintenance_Injection"
+    },
+    "Maintenance_Progression_Noted": {
+      "type": "SetAttribute",
+      "attribute": "treatment_phase",
+      "value": "modified",
+      "direct_transition": "Maintenance_Injection",
+      "remarks": [
+        "Distinct from Modified_Treatment_Planning (used only by Partial_Treatment_Response) so",
+        "this state is never reached with the encounter already closed -- Modified_Treatment_Planning",
+        "used to be reached from both an open-encounter context and, via the old shared",
+        "Disease_Progression_Detected path, a closed-encounter context after a double EncounterEnd."
+      ]
+    },
+    "Maintenance_Injection": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "418551006",
+          "display": "Intravitreal injection of anti-VEGF agent"
+        }
+      ],
+      "direct_transition": "Maintenance_Anti_VEGF_Medication"
+    },
+    "Maintenance_Anti_VEGF_Medication": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Maintenance_Ranibizumab_Order",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Maintenance_Aflibercept_Order",
+          "distribution": 0.4
+        },
+        {
+          "transition": "Maintenance_Bevacizumab_Order",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "Maintenance_Ranibizumab_Order": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "643193",
+          "display": "0.05 ML ranibizumab 10 MG/ML Injection"
+        }
+      ],
+      "administration": true,
+      "direct_transition": "Maintenance_Increment_Counter"
+    },
+    "Maintenance_Aflibercept_Order": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1232154",
+          "display": "0.05 ML aflibercept 40 MG/ML Injection"
+        }
+      ],
+      "administration": true,
+      "direct_transition": "Maintenance_Increment_Counter"
+    },
+    "Maintenance_Bevacizumab_Order": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1657066",
+          "display": "4 ML bevacizumab 25 MG/ML Injection"
+        }
+      ],
+      "administration": true,
+      "direct_transition": "Maintenance_Increment_Counter"
+    },
+    "Maintenance_Increment_Counter": {
+      "type": "Counter",
+      "attribute": "injection_count",
+      "action": "increment",
+      "direct_transition": "End_Maintenance_Encounter"
+    },
+    "End_Maintenance_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Anti_VEGF_Maintenance_Wait"
+    },
+    "Maintenance_GA_Development": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "414875008",
+          "display": "Nonexudative age-related macular degeneration"
+        }
+      ],
+      "direct_transition": "End_Maintenance_Encounter_GA"
+    },
+    "End_Maintenance_Encounter_GA": {
+      "type": "EncounterEnd",
+      "direct_transition": "Advanced_Disease_Management"
+    },
+    "Conservative_Management": {
+      "type": "SetAttribute",
+      "attribute": "treatment_type",
+      "value": "conservative",
+      "direct_transition": "End_Conservative_Encounter"
+    },
+    "End_Conservative_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Conservative_Follow_Up"
+    },
+    "Conservative_Follow_Up": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
       },
       "direct_transition": "Regular_Follow_Up_Encounter"
     },
@@ -821,21 +1018,27 @@
       "distributed_transition": [
         {
           "transition": "Stable_Disease_Status",
-          "distribution": 0.7
+          "distribution": 0.5
         },
         {
           "transition": "Disease_Progression_Detected",
-          "distribution": 0.2
+          "distribution": 0.35
         },
         {
           "transition": "Geographic_Atrophy_Development",
-          "distribution": 0.1
+          "distribution": 0.15
         }
+      ],
+      "remarks": [
+        "Untreated (Conservative_Management, ~15% of diagnoses) natural history is worse than the",
+        "anti-VEGF-treated arm's Maintenance_Disease_Status_Check (80/15/5): unchecked CNV growth",
+        "without anti-VEGF therapy carries substantially higher progression and geographic-atrophy",
+        "rates than treated eyes."
       ]
     },
     "Stable_Disease_Status": {
       "type": "EncounterEnd",
-      "direct_transition": "Long_Term_Management"
+      "direct_transition": "Conservative_Follow_Up"
     },
     "Disease_Progression_Detected": {
       "type": "Observation",
@@ -856,7 +1059,18 @@
     },
     "End_Progression_Encounter": {
       "type": "EncounterEnd",
-      "direct_transition": "Modified_Treatment_Planning"
+      "direct_transition": "Conservative_Modified_Planning"
+    },
+    "Conservative_Modified_Planning": {
+      "type": "SetAttribute",
+      "attribute": "treatment_phase",
+      "value": "modified",
+      "direct_transition": "Conservative_Follow_Up",
+      "remarks": [
+        "Distinct state from Modified_Treatment_Planning/Maintenance_Progression_Noted -- this one",
+        "is reached only after End_Progression_Encounter has already closed the encounter, so it",
+        "must never share a name with a state reached while an encounter is still open."
+      ]
     },
     "Geographic_Atrophy_Development": {
       "type": "ConditionOnset",
@@ -909,34 +1123,6 @@
     "End_Rehabilitation_Encounter": {
       "type": "EncounterEnd",
       "direct_transition": "Terminal"
-    },
-    "Conservative_Management": {
-      "type": "SetAttribute",
-      "attribute": "treatment_type",
-      "value": "conservative",
-      "direct_transition": "End_Conservative_Encounter"
-    },
-    "End_Conservative_Encounter": {
-      "type": "EncounterEnd",
-      "direct_transition": "Conservative_Follow_Up"
-    },
-    "Conservative_Follow_Up": {
-      "type": "Delay",
-      "range": {
-        "low": 3,
-        "high": 6,
-        "unit": "months"
-      },
-      "direct_transition": "Regular_Follow_Up_Encounter"
-    },
-    "No_AMD_Development": {
-      "type": "Delay",
-      "range": {
-        "low": 1,
-        "high": 3,
-        "unit": "years"
-      },
-      "direct_transition": "Age_Based_AMD_Risk"
     },
     "Terminal": {
       "type": "Terminal"

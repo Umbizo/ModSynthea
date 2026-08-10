@@ -22881,5 +22881,11 @@
       "code": "J2405",
       "description": "Injection, ondansetron hydrochloride, per 1 mg"
     }
+  ],
+  "643193": [
+    {
+      "code": "J2778",
+      "description": "Injection, ranibizumab, 0.1 mg"
+    }
   ]
 }

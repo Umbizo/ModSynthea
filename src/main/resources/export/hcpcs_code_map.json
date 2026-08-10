@@ -15,6 +15,18 @@
       "description": "Renal dialysis (procedure)"
     }
   ],
+  "14684005": [
+    {
+      "code": "90945",
+      "description": "Dialysis procedure other than hemodialysis (peritoneal dialysis, hemofiltration, or other continuous renal replacement therapies), with single physician evaluation",
+      "weight": "0.3"
+    },
+    {
+      "code": "90947",
+      "description": "Dialysis procedure other than hemodialysis requiring repeated physician evaluations, with or without substantial revision of dialysis prescription",
+      "weight": "0.7"
+    }
+  ],
   "710824005": [
     {
       "code": "96156",

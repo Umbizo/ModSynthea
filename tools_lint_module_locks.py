@@ -9,12 +9,12 @@ EncounterModule stops scheduling wellness/urgent-care visits for that person
 re-entering its own Encounter state releases it.
 
 CRITICAL  fires in three cases: (1) an ambulatory/outpatient/virtual/urgentcare/
-          wellness encounter (or one with no encounter_class -- it silently
-          defaults to ambulatory) can reach a Delay >= 1 day or a Guard before
-          reaching a closer (EncounterEnd/Terminal/Death) or re-entering an
-          Encounter; (2) an inpatient/snf/hospice/other encounter can never
-          reach a closer at all -- held until Terminal/Death, or forever if the
-          module loops; (3) while any encounter is open, a state named
+          wellness/emergency/home encounter (or one with no encounter_class --
+          it silently defaults to ambulatory) can reach a Delay >= 1 day or a
+          Guard before reaching a closer (EncounterEnd/Terminal/Death) or
+          re-entering an Encounter; (2) an inpatient/snf/hospice encounter can
+          never reach a closer at all -- held until Terminal/Death, or forever
+          if the module loops; (3) while any encounter is open, a state named
           `*_Supply_Delay` is reachable -- the banned medication-supply-delay
           idiom, which is never a legitimate length of stay. This is the class
           of defect that flattened carrier/DME/hospice volume in the 2026-07-29
@@ -30,6 +30,11 @@ UNIT_MS = {"seconds": 1000, "minutes": 60_000, "hours": 3_600_000,
            "days": DAY, "weeks": 7 * DAY, "months": 30 * DAY, "years": 365 * DAY}
 # classes where an open encounter spanning days is a modelling error
 AMBULATORY = {"ambulatory", "outpatient", "virtual", "urgentcare", "wellness"}
+# emergency (ED) and home-health visits are also same-day encounters, not
+# multi-day admissions -- a handoff to a genuine inpatient stay already
+# counts as a closer via same-module Encounter re-entry, so these get the
+# strict closed-before-blocked rule too, not the permissive inpatient one.
+STRICT_CLASSES = AMBULATORY | {"emergency", "home"}
 CLOSERS = {"EncounterEnd", "Terminal", "Death"}
 
 
@@ -94,9 +99,9 @@ def closes_before_block(states, start):
 
 
 def walk_closer_reachable(states, start):
-    """For inpatient/snf/hospice (and other non-ambulatory) classes: is any
-    closer (EncounterEnd/Terminal/Death) reachable at all from `start`, and
-    does the path cross a Delay > 90 days while the encounter is still open?
+    """For inpatient/snf/hospice classes: is any closer (EncounterEnd/
+    Terminal/Death) reachable at all from `start`, and does the path cross a
+    Delay > 90 days while the encounter is still open?
     """
     seen, stack = set(), list(targets(states[start]))
     reaches_closer, long_delays = False, []
@@ -117,7 +122,8 @@ def walk_closer_reachable(states, start):
         if t == 'Delay':
             ms = delay_ms(v)
             if ms > 90 * DAY:
-                long_delays.append((name, v.get('range') or v.get('exact') or {}))
+                long_delays.append((name, v.get('range') or v.get('exact')
+                                    or v.get('distribution') or {}))
         stack.extend(targets(v))
     return reaches_closer, long_delays
 
@@ -160,7 +166,7 @@ def analyze(path):
             findings.append(('CRITICAL', k,
                               f'{name} (Supply_Delay idiom) reachable while open', cls))
 
-        if cls in AMBULATORY or cls == '':
+        if cls in STRICT_CLASSES or cls == '':
             closes_first, blockers = closes_before_block(states, k)
             if not closes_first:
                 for name, t in blockers:
@@ -213,4 +219,5 @@ if __name__ == '__main__':
     here = os.path.dirname(os.path.abspath(__file__))
     d = sys.argv[1] if len(sys.argv) > 1 else \
         os.path.join(here, 'src', 'main', 'resources', 'modules')
-    sys.exit(main(d))
+    only = set(sys.argv[2:]) if len(sys.argv) > 2 else None
+    sys.exit(main(d, only))

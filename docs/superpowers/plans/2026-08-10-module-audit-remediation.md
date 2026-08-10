@@ -43,6 +43,8 @@ Lint findings in **stock** modules (self_harm, veteran_ptsd, veteran_self_harm `
 
 **Post-upgrade (Task 0.1, 2026-08-10):** `python3 tools_lint_module_locks.py` → **CRITICAL=62 WARNING=0** across the tree, using the closed-before-blocked and Supply_Delay-idiom rules (mantle_cell_lymphoma's `Clinical_Trial_Treatment`/`Salvage_Chemotherapy` and the chf_meds/right_sided/valvular `*_Supply_Delay` findings are now CRITICAL; congestive_heart_failure's hospice `Encounter → scheduled Death → Terminal` pattern is not flagged).
 
+**Post-upgrade, fix round 1 (Task 0.1, 2026-08-10):** `python3 tools_lint_module_locks.py` → **CRITICAL=67 WARNING=0**. `emergency` and `home` encounter classes are now strict-classed (same closed-before-blocked rule as ambulatory, not the permissive inpatient/snf/hospice one) — this surfaces 3 additional stock-module locks: `sepsis.json:Sepsis_ED_Encounter`, `gallstones.json:Cholecystitis_Encounter`, `injuries.json:ED_Visit_For_Spinal_Injury`. These are expected and out of scope (stock modules, triaged later, not edited); no other deltas versus the CRITICAL=62 baseline above.
+
 ---
 
 ## Phase 0 — Verification harness

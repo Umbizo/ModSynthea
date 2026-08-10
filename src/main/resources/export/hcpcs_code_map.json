@@ -7343,5 +7343,29 @@
       "code": "60521",
       "description": "Thymectomy, partial or total; sternal split or transthoracic approach, without radical mediastinal dissection"
     }
+  ],
+  "116140006": [
+    {
+      "code": "58150",
+      "description": "Total abdominal hysterectomy (corpus and cervix), with or without removal of tube(s), with or without removal of ovary(s)"
+    }
+  ],
+  "414575003": [
+    {
+      "code": "58571",
+      "description": "Laparoscopy, surgical, with total hysterectomy, for uterus 250 g or less; with removal of tube(s) and/or ovary(s)"
+    }
+  ],
+  "709491003": [
+    {
+      "code": "G0294",
+      "description": "Noncovered procedure(s) using either no anesthesia or local anesthesia only, in a medicare qualifying clinical trial, per day"
+    }
+  ],
+  "238302003": [
+    {
+      "code": "58960",
+      "description": "Resection (tumor debulking) of ovarian, peritoneal, or omental tumor"
+    }
   ]
 }

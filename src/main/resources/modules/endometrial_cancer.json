@@ -1,10 +1,53 @@
 {
   "name": "Endometrial Cancer Module",
   "remarks": [
-    "Simulates endometrial cancer development, diagnosis, treatment, and surveillance",
-    "Includes risk factors, staging, treatment pathways, and recurrence monitoring",
-    "Models both early-stage and advanced disease with appropriate interventions"
+    "Simulates endometrial cancer development, diagnosis, treatment, and surveillance.",
+    "Includes risk factors, staging, treatment pathways, and recurrence monitoring.",
+    "Models both early-stage and advanced disease with appropriate interventions.",
+    "",
+    "2026-08 remediation: the pre-fix module opened only 3 real Encounters",
+    "(PrimaryCareEvaluation, FollowUpVisit, PalliativeCareOnly) against 25",
+    "EncounterEnd states -- most of the diagnosis-to-treatment cascade had",
+    "no coherent encounter model at all: EndometrialCancerDiagnosis and",
+    "everything downstream of it (staging surgery, every risk-tier's",
+    "therapy, systemic therapy, response evaluation, second-line/salvage",
+    "therapy, recurrence surveillance) was reachable both with",
+    "PrimaryCareEvaluation's ambulatory encounter still open (a single",
+    "office visit silently absorbing major surgery, radiation, and chemo",
+    "over what the record shows as zero elapsed time) and, via the",
+    "hyperplasia-progression path, with nothing open at all -- and every",
+    "one of those 25 EncounterEnds fired with different context depending",
+    "on which path led there. This version closes PrimaryCareEvaluation",
+    "explicitly right after the diagnostic biopsy, so every downstream",
+    "cluster (staging surgery, each risk tier's radiation/chemo/hormonal",
+    "therapy, second-line and salvage therapy, periodic surveillance",
+    "visits) opens and closes its own dedicated encounter -- the same",
+    "one-cluster-per-clinical-action model used throughout",
+    "ovarian_cancer.json and bladder_cancer.json.",
+    "",
+    "Also fixed: a duplicate hysterectomy on the low-risk arm (the",
+    "staging surgery already performs the definitive hysterectomy+BSO;",
+    "the old 'SurgeryOnly' state gave low-risk patients a second one);",
+    "8 CPT-system procedure codes recoded to SNOMED with matching",
+    "hcpcs_code_map.json rows; a genuine SNOMED miscoding (446096008 is",
+    "'Perennial allergic rhinitis', not 'clinical trial participation',",
+    "and collided with allergic_rhinitis.json's correct use of that same",
+    "code -- see ClinicalTrial's remarks); LocalRecurrence recoded off",
+    "'Widespread metastatic malignant neoplastic disease' to the",
+    "correctly-scoped 'Recurrent tumour'; per-pass recurrence rate",
+    "corrected from 35%/pass to 0.9%/pass (~13% cumulative over 5",
+    "years); the two separate pembrolizumab order paths consolidated",
+    "into one administered state; and the module's 8 open-ended",
+    "'stackable' medication orders given administration:true (the 5 IV",
+    "chemo/immunotherapy drugs -- discrete administered doses need",
+    "neither a stacking guard nor a MedicationEnd) or chronic:true plus",
+    "an attribute guard and, for the one genuinely fixed-course drug",
+    "(progesterone for hyperplasia), an explicit MedicationEnd.",
+    "",
+    "cancer_stage attribute name (endometrial_cancer_stage) is",
+    "unchanged from the pre-fix module -- kept stable per task 5.4."
   ],
+  "gmf_version": 2,
   "states": {
     "Initial": {
       "type": "Initial",
@@ -75,6 +118,23 @@
       },
       "direct_transition": "endometrial_cancer_Incidence_Gate"
     },
+    "endometrial_cancer_Incidence_Gate": {
+      "type": "Simple",
+      "remarks": [
+        "Lifetime endometrial cancer risk is about 3% in women. The Guard already selects women 50+ with risk factors; this gate scales that pool down to a realistic share (measured 15.9% of women at 0.25, so 0.05 lands near 3%).",
+        "Rate is a first-pass estimate and needs clinical review."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "SymptomDevelopment",
+          "distribution": 0.05
+        },
+        {
+          "transition": "Terminal",
+          "distribution": 0.95
+        }
+      ]
+    },
     "SymptomDevelopment": {
       "type": "Delay",
       "range": {
@@ -87,743 +147,6 @@
     "PresentingSymptoms": {
       "type": "Simple",
       "direct_transition": "PresentingSymptoms_Action_1_Gate"
-    },
-    "PrimaryCareEvaluation": {
-      "type": "Encounter",
-      "encounter_class": "ambulatory",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "185347001",
-          "display": "Encounter for problem (procedure)"
-        }
-      ],
-      "direct_transition": "TransvaginalUltrasound"
-    },
-    "TransvaginalUltrasound": {
-      "type": "ImagingStudy",
-      "procedure_code": {
-        "system": "SNOMED-CT",
-        "code": "429915000",
-        "display": "Transvaginal ultrasonography of pelvis"
-      },
-      "series": [
-        {
-          "body_site": {
-            "system": "SNOMED-CT",
-            "code": "35039007",
-            "display": "Uterus"
-          },
-          "modality": {
-            "system": "DICOM-DCM",
-            "code": "US",
-            "display": "Ultrasound"
-          },
-          "instances": [
-            {
-              "title": "Transvaginal ultrasound",
-              "sop_class": {
-                "system": "DICOM-SOP",
-                "code": "1.2.840.10008.5.1.4.1.1.6.1",
-                "display": "Ultrasound Image Storage"
-              }
-            }
-          ]
-        }
-      ],
-      "direct_transition": "EndometrialSampling"
-    },
-    "EndometrialSampling": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "CPT",
-          "code": "58100",
-          "display": "Endometrial sampling (biopsy) with or without endocervical sampling (biopsy), without cervical dilation, any method"
-        }
-      ],
-      "direct_transition": "PathologyResults"
-    },
-    "PathologyResults": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.8,
-          "transition": "EndometrialCancerDiagnosis"
-        },
-        {
-          "distribution": 0.15,
-          "transition": "EndometrialHyperplasia"
-        },
-        {
-          "distribution": 0.05,
-          "transition": "BenignFindings"
-        }
-      ]
-    },
-    "EndometrialHyperplasia": {
-      "type": "ConditionOnset",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "237072009",
-          "display": "Endometrial hyperplasia"
-        }
-      ],
-      "direct_transition": "HyperplasiaManagement"
-    },
-    "HyperplasiaManagement": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.7,
-          "transition": "ProgesteroneTherapy"
-        },
-        {
-          "distribution": 0.3,
-          "transition": "Hysterectomy_Hyperplasia"
-        }
-      ]
-    },
-    "ProgesteroneTherapy": {
-      "type": "MedicationOrder",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "1000114",
-          "display": "medroxyprogesterone acetate 10 MG Oral Tablet"
-        }
-      ],
-      "direct_transition": "ProgesteroneTherapy_Encounter_End"
-    },
-    "FollowUpBiopsy": {
-      "type": "Delay",
-      "range": {
-        "low": 3,
-        "high": 6,
-        "unit": "months"
-      },
-      "distributed_transition": [
-        {
-          "distribution": 0.6,
-          "transition": "RegressionToNormal"
-        },
-        {
-          "distribution": 0.3,
-          "transition": "PersistentHyperplasia"
-        },
-        {
-          "distribution": 0.1,
-          "transition": "ProgressionToCancer"
-        }
-      ]
-    },
-    "RegressionToNormal": {
-      "type": "ConditionEnd",
-      "direct_transition": "Terminal"
-    },
-    "PersistentHyperplasia": {
-      "type": "Simple",
-      "direct_transition": "Hysterectomy_Hyperplasia"
-    },
-    "ProgressionToCancer": {
-      "type": "ConditionEnd",
-      "direct_transition": "EndometrialCancerDiagnosis"
-    },
-    "Hysterectomy_Hyperplasia": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "CPT",
-          "code": "58571",
-          "display": "Laparoscopy, surgical, with total hysterectomy, for uterus 250 g or less"
-        }
-      ],
-      "direct_transition": "Terminal"
-    },
-    "BenignFindings": {
-      "type": "ConditionEnd",
-      "direct_transition": "Terminal"
-    },
-    "EndometrialCancerDiagnosis": {
-      "type": "ConditionOnset",
-      "assign_to_attribute": "endometrial_cancer",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "93781006",
-          "display": "Primary malignant neoplasm of endometrium (disorder)"
-        },
-        {
-          "system": "ICD-10-CM",
-          "code": "C54.1",
-          "display": "Malignant neoplasm of endometrium"
-        }
-      ],
-      "direct_transition": "SurgicalStaging"
-    },
-    "SurgicalStaging": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "CPT",
-          "code": "58570",
-          "display": "Laparoscopy, surgical, with total hysterectomy, for uterus 250 g or less; with bilateral salpingo-oophorectomy"
-        }
-      ],
-      "direct_transition": "SurgicalPathology"
-    },
-    "SurgicalPathology": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.7,
-          "transition": "StageIA"
-        },
-        {
-          "distribution": 0.15,
-          "transition": "StageIB"
-        },
-        {
-          "distribution": 0.1,
-          "transition": "StageII"
-        },
-        {
-          "distribution": 0.05,
-          "transition": "StageIII_IV"
-        }
-      ]
-    },
-    "StageIA": {
-      "type": "SetAttribute",
-      "attribute": "endometrial_cancer_stage",
-      "value": "IA",
-      "direct_transition": "LowRiskDisease"
-    },
-    "StageIB": {
-      "type": "SetAttribute",
-      "attribute": "endometrial_cancer_stage",
-      "value": "IB",
-      "direct_transition": "IntermediateRiskDisease"
-    },
-    "StageII": {
-      "type": "SetAttribute",
-      "attribute": "endometrial_cancer_stage",
-      "value": "II",
-      "direct_transition": "HighIntermediateRiskDisease"
-    },
-    "StageIII_IV": {
-      "type": "SetAttribute",
-      "attribute": "endometrial_cancer_stage",
-      "value": "III_IV",
-      "direct_transition": "AdvancedDisease"
-    },
-    "LowRiskDisease": {
-      "type": "Simple",
-      "direct_transition": "LowRiskDisease_Action_1"
-    },
-    "SurgeryOnly": {
-      "type": "Simple",
-      "direct_transition": "SurgeryOnly_Action_1"
-    },
-    "SurveillanceLowRisk": {
-      "type": "Delay",
-      "range": {
-        "low": 3,
-        "high": 4,
-        "unit": "months"
-      },
-      "direct_transition": "FollowUpVisit"
-    },
-    "FollowUpVisit": {
-      "type": "Encounter",
-      "encounter_class": "ambulatory",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "185389009",
-          "display": "Follow-up encounter (procedure)"
-        }
-      ],
-      "direct_transition": "PhysicalExamSurveillance"
-    },
-    "PhysicalExamSurveillance": {
-      "type": "Simple",
-      "direct_transition": "PhysicalExamSurveillance_Action_1_Gate"
-    },
-    "ContinueSurveillance": {
-      "type": "Counter",
-      "attribute": "surveillance_visits",
-      "action": "increment",
-      "direct_transition": "ContinueSurveillance_Encounter_End"
-    },
-    "LongTermSurveillance": {
-      "type": "Delay",
-      "range": {
-        "low": 6,
-        "high": 12,
-        "unit": "months"
-      },
-      "direct_transition": "FollowUpVisit"
-    },
-    "IntermediateRiskDisease": {
-      "type": "Simple",
-      "direct_transition": "IntermediateRiskDisease_Action_1"
-    },
-    "ConsiderAdjuvantTherapy": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.6,
-          "transition": "VaginalBrachytherapy"
-        },
-        {
-          "distribution": 0.3,
-          "transition": "ObservationIntermediateRisk"
-        },
-        {
-          "distribution": 0.1,
-          "transition": "EBRT_Therapy"
-        }
-      ]
-    },
-    "VaginalBrachytherapy": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "CPT",
-          "code": "77776",
-          "display": "Interstitial radiation source application; complex"
-        }
-      ],
-      "direct_transition": "VaginalBrachytherapy_Encounter_End"
-    },
-    "EBRT_Therapy": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "CPT",
-          "code": "77427",
-          "display": "Radiation treatment management, 5 treatments"
-        }
-      ],
-      "direct_transition": "EBRT_Therapy_Encounter_End"
-    },
-    "ObservationIntermediateRisk": {
-      "type": "Simple",
-      "direct_transition": "ObservationIntermediateRisk_Encounter_End"
-    },
-    "SurveillanceIntermediateRisk": {
-      "type": "Delay",
-      "range": {
-        "low": 3,
-        "high": 6,
-        "unit": "months"
-      },
-      "direct_transition": "FollowUpVisit"
-    },
-    "HighIntermediateRiskDisease": {
-      "type": "Simple",
-      "direct_transition": "HighIntermediateRiskDisease_Action_1"
-    },
-    "AdjuvantRadiationTherapy": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "CPT",
-          "code": "77427",
-          "display": "Radiation treatment management, 5 treatments"
-        }
-      ],
-      "direct_transition": "ConsiderChemotherapy"
-    },
-    "ConsiderChemotherapy": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.5,
-          "transition": "AdjuvantChemotherapy"
-        },
-        {
-          "distribution": 0.5,
-          "transition": "RadiationOnly"
-        }
-      ]
-    },
-    "AdjuvantChemotherapy": {
-      "type": "MedicationOrder",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "378363",
-          "display": "carboplatin Injectable Solution"
-        },
-        {
-          "system": "RxNorm",
-          "code": "312199",
-          "display": "paclitaxel 6 MG/ML Injectable Solution"
-        }
-      ],
-      "direct_transition": "AdjuvantChemotherapy_Encounter_End"
-    },
-    "RadiationOnly": {
-      "type": "Simple",
-      "direct_transition": "RadiationOnly_Encounter_End"
-    },
-    "SurveillanceHighRisk": {
-      "type": "Delay",
-      "range": {
-        "low": 2,
-        "high": 4,
-        "unit": "months"
-      },
-      "direct_transition": "FollowUpVisit"
-    },
-    "AdvancedDisease": {
-      "type": "Simple",
-      "direct_transition": "AdvancedDisease_Action_1"
-    },
-    "SystemicTherapy": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.7,
-          "transition": "ChemotherapyAdvanced"
-        },
-        {
-          "distribution": 0.2,
-          "transition": "HormonalTherapy"
-        },
-        {
-          "distribution": 0.1,
-          "transition": "TargetedTherapy"
-        }
-      ]
-    },
-    "ChemotherapyAdvanced": {
-      "type": "MedicationOrder",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "378363",
-          "display": "carboplatin Injectable Solution"
-        },
-        {
-          "system": "RxNorm",
-          "code": "312199",
-          "display": "paclitaxel 6 MG/ML Injectable Solution"
-        }
-      ],
-      "direct_transition": "ChemotherapyAdvanced_Encounter_End"
-    },
-    "HormonalTherapy": {
-      "type": "MedicationOrder",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "860221",
-          "display": "megestrol acetate 40 MG Oral Tablet"
-        }
-      ],
-      "direct_transition": "HormonalTherapy_Encounter_End"
-    },
-    "TargetedTherapy": {
-      "type": "MedicationOrder",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "1657750",
-          "display": "4 ML pembrolizumab 25 MG/ML Injection"
-        }
-      ],
-      "direct_transition": "TargetedTherapy_Encounter_End"
-    },
-    "ResponseEvaluation": {
-      "type": "Delay",
-      "range": {
-        "low": 2,
-        "high": 4,
-        "unit": "months"
-      },
-      "distributed_transition": [
-        {
-          "distribution": 0.4,
-          "transition": "ResponseComplete"
-        },
-        {
-          "distribution": 0.3,
-          "transition": "ResponsePartial"
-        },
-        {
-          "distribution": 0.2,
-          "transition": "StableDisease"
-        },
-        {
-          "distribution": 0.1,
-          "transition": "ProgressiveDisease"
-        }
-      ]
-    },
-    "ResponseComplete": {
-      "type": "Simple",
-      "direct_transition": "MaintenanceTherapy"
-    },
-    "ResponsePartial": {
-      "type": "Simple",
-      "direct_transition": "ResponsePartial_Encounter_End"
-    },
-    "StableDisease": {
-      "type": "Simple",
-      "direct_transition": "StableDisease_Encounter_End"
-    },
-    "ProgressiveDisease": {
-      "type": "Simple",
-      "direct_transition": "SecondLineTherapy"
-    },
-    "ContinueTherapy": {
-      "type": "Delay",
-      "range": {
-        "low": 2,
-        "high": 4,
-        "unit": "months"
-      },
-      "direct_transition": "ContinueTherapy_Encounter_End"
-    },
-    "MaintenanceTherapy": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.6,
-          "transition": "MaintenanceTherapy_Encounter_End"
-        },
-        {
-          "distribution": 0.4,
-          "transition": "MaintenanceHormonalTherapy"
-        }
-      ]
-    },
-    "ObservationMaintenance": {
-      "type": "Delay",
-      "range": {
-        "low": 3,
-        "high": 6,
-        "unit": "months"
-      },
-      "direct_transition": "ObservationMaintenance_Encounter_End"
-    },
-    "MaintenanceHormonalTherapy": {
-      "type": "MedicationOrder",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "860221",
-          "display": "megestrol acetate 40 MG Oral Tablet"
-        }
-      ],
-      "direct_transition": "MaintenanceHormonalTherapy_Encounter_End"
-    },
-    "SecondLineTherapy": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.4,
-          "transition": "SecondLineChemotherapy"
-        },
-        {
-          "distribution": 0.3,
-          "transition": "Immunotherapy"
-        },
-        {
-          "distribution": 0.2,
-          "transition": "ClinicalTrial"
-        },
-        {
-          "distribution": 0.1,
-          "transition": "PalliativeCareOnly"
-        }
-      ]
-    },
-    "SecondLineChemotherapy": {
-      "type": "MedicationOrder",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "374376",
-          "display": "doxorubicin Injectable Solution"
-        }
-      ],
-      "direct_transition": "SecondLineChemotherapy_Encounter_End"
-    },
-    "Immunotherapy": {
-      "type": "MedicationOrder",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "1657750",
-          "display": "4 ML pembrolizumab 25 MG/ML Injection"
-        }
-      ],
-      "direct_transition": "Immunotherapy_Encounter_End"
-    },
-    "ClinicalTrial": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "446096008",
-          "display": "Clinical trial participation (procedure)"
-        }
-      ],
-      "direct_transition": "ClinicalTrial_Encounter_End"
-    },
-    "PalliativeCareOnly": {
-      "type": "Encounter",
-      "encounter_class": "hospice",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "305336008",
-          "display": "Admission to hospice (procedure)"
-        }
-      ],
-      "direct_transition": "PalliativeCareOnly_Encounter_End"
-    },
-    "SurveillanceAdvanced": {
-      "type": "Delay",
-      "range": {
-        "low": 3,
-        "high": 6,
-        "unit": "months"
-      },
-      "complex_transition": [
-        {
-          "condition": {
-            "condition_type": "Attribute",
-            "attribute": "years_no_recurrence",
-            "operator": ">=",
-            "value": 5
-          },
-          "transition": "SurveillanceAdvanced_Encounter_End"
-        },
-        {
-          "transition": "RecurrenceCheck"
-        }
-      ]
-    },
-    "RecurrenceCheck": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.2,
-          "transition": "LocalRecurrence"
-        },
-        {
-          "distribution": 0.15,
-          "transition": "DistantRecurrence"
-        },
-        {
-          "distribution": 0.65,
-          "transition": "NoEvidenceDisease"
-        }
-      ]
-    },
-    "LocalRecurrence": {
-      "type": "ConditionOnset",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "405843009",
-          "display": "Widespread metastatic malignant neoplastic disease (disorder)"
-        }
-      ],
-      "direct_transition": "SalvageTherapy"
-    },
-    "DistantRecurrence": {
-      "type": "ConditionOnset",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "128462008",
-          "display": "Metastatic malignant neoplasm (disorder)"
-        }
-      ],
-      "direct_transition": "SystemicTherapy"
-    },
-    "NoEvidenceDisease": {
-      "type": "Counter",
-      "attribute": "years_no_recurrence",
-      "action": "increment",
-      "direct_transition": "NoEvidenceDisease_Encounter_End"
-    },
-    "SalvageTherapy": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.5,
-          "transition": "RadiationSalvage"
-        },
-        {
-          "distribution": 0.3,
-          "transition": "SurgicalSalvage"
-        },
-        {
-          "distribution": 0.2,
-          "transition": "SystemicTherapy"
-        }
-      ]
-    },
-    "RadiationSalvage": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "CPT",
-          "code": "77427",
-          "display": "Radiation treatment management, 5 treatments"
-        }
-      ],
-      "direct_transition": "RadiationSalvage_Encounter_End"
-    },
-    "SurgicalSalvage": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "CPT",
-          "code": "58960",
-          "display": "Resection (tumor debulking) of ovarian, peritoneal, or omental tumor"
-        }
-      ],
-      "direct_transition": "SurgicalSalvage_Encounter_End"
-    },
-    "LongTermRemission": {
-      "type": "Delay",
-      "range": {
-        "low": 1,
-        "high": 2,
-        "unit": "years"
-      },
-      "direct_transition": "FollowUpVisit"
-    },
-    "EndOfLife": {
-      "type": "Delay",
-      "range": {
-        "low": 3,
-        "high": 12,
-        "unit": "months"
-      },
-      "direct_transition": "Death"
-    },
-    "Death": {
-      "type": "Death",
-      "direct_transition": "Terminal",
-      "range": {
-        "low": 1,
-        "high": 6,
-        "unit": "months"
-      },
-      "referenced_by_attribute": "endometrial_cancer"
-    },
-    "Terminal": {
-      "type": "Terminal"
     },
     "PresentingSymptoms_Action_1_Gate": {
       "type": "Simple",
@@ -888,6 +211,381 @@
       },
       "direct_transition": "PrimaryCareEvaluation"
     },
+    "PrimaryCareEvaluation": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "TransvaginalUltrasound"
+    },
+    "TransvaginalUltrasound": {
+      "type": "ImagingStudy",
+      "procedure_code": {
+        "system": "SNOMED-CT",
+        "code": "429915000",
+        "display": "Transvaginal ultrasonography of pelvis"
+      },
+      "series": [
+        {
+          "body_site": {
+            "system": "SNOMED-CT",
+            "code": "35039007",
+            "display": "Uterus"
+          },
+          "modality": {
+            "system": "DICOM-DCM",
+            "code": "US",
+            "display": "Ultrasound"
+          },
+          "instances": [
+            {
+              "title": "Transvaginal ultrasound",
+              "sop_class": {
+                "system": "DICOM-SOP",
+                "code": "1.2.840.10008.5.1.4.1.1.6.1",
+                "display": "Ultrasound Image Storage"
+              }
+            }
+          ]
+        }
+      ],
+      "direct_transition": "EndometrialSampling"
+    },
+    "EndometrialSampling": {
+      "type": "Procedure",
+      "reason": "endometrial_cancer",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "386802000",
+          "display": "Endometrial biopsy"
+        }
+      ],
+      "remarks": [
+        "Recoded from CPT 58100 (a CPT code, not SNOMED, sitting directly in",
+        "the codes array -- one of the module's 8 CPT-system procedures) to",
+        "SNOMED 386802000 'Endometrial biopsy', verified active via Ontoserver",
+        "2026-08-10. hcpcs_code_map.json already carries a 386802000 row",
+        "(HCPCS G9823), so no new export row was needed."
+      ],
+      "direct_transition": "PrimaryCareEvaluation_Encounter_End"
+    },
+    "PrimaryCareEvaluation_Encounter_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "The pre-fix module left this ambulatory encounter open through the",
+        "entire diagnosis-to-treatment cascade. Depending on path, downstream",
+        "EncounterEnds either closed this still-open encounter well after",
+        "major surgery/radiation/chemo had already happened 'inside' one",
+        "office visit, or -- on the hyperplasia-then-progression path, where",
+        "ProgesteroneTherapy_Encounter_End had already closed it -- fired with",
+        "nothing open at all. Close explicitly here, right after the biopsy,",
+        "so EndometrialCancerDiagnosis is always reached in the same (closed)",
+        "context regardless of path, and every downstream cluster opens its",
+        "own encounter."
+      ],
+      "direct_transition": "PathologyResults"
+    },
+    "PathologyResults": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.8,
+          "transition": "EndometrialCancerDiagnosis"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "EndometrialHyperplasia"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "BenignFindings"
+        }
+      ]
+    },
+    "BenignFindings": {
+      "type": "ConditionEnd",
+      "direct_transition": "Terminal"
+    },
+    "EndometrialHyperplasia": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "237072009",
+          "display": "Endometrial hyperplasia"
+        }
+      ],
+      "direct_transition": "HyperplasiaManagement"
+    },
+    "HyperplasiaManagement": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "ProgesteroneTherapy_Encounter"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "Hysterectomy_Hyperplasia_Encounter"
+        }
+      ]
+    },
+    "ProgesteroneTherapy_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "ProgesteroneTherapy"
+    },
+    "ProgesteroneTherapy": {
+      "type": "MedicationOrder",
+      "reason": "EndometrialHyperplasia",
+      "assign_to_attribute": "progesterone_therapy",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1000114",
+          "display": "medroxyprogesterone acetate 10 MG Oral Tablet"
+        }
+      ],
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 1,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 90,
+          "unit": "days"
+        }
+      },
+      "direct_transition": "ProgesteroneTherapy_Encounter_End"
+    },
+    "ProgesteroneTherapy_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "FollowUpBiopsy"
+    },
+    "FollowUpBiopsy": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "End_ProgesteroneTherapy"
+    },
+    "End_ProgesteroneTherapy": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "progesterone_therapy",
+      "remarks": [
+        "Re-biopsy at the end of the progestin course is the natural point",
+        "to end the fixed-course medication order -- previously never ended",
+        "at all (one of the module's 8 stackable open-ended med orders)."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "RegressionToNormal"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "PersistentHyperplasia"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "ProgressionToCancer"
+        }
+      ]
+    },
+    "RegressionToNormal": {
+      "type": "ConditionEnd",
+      "direct_transition": "Terminal"
+    },
+    "PersistentHyperplasia": {
+      "type": "Simple",
+      "direct_transition": "Hysterectomy_Hyperplasia_Encounter"
+    },
+    "ProgressionToCancer": {
+      "type": "ConditionEnd",
+      "direct_transition": "EndometrialCancerDiagnosis"
+    },
+    "Hysterectomy_Hyperplasia_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission (procedure)"
+        }
+      ],
+      "direct_transition": "Hysterectomy_Hyperplasia"
+    },
+    "Hysterectomy_Hyperplasia": {
+      "type": "Procedure",
+      "reason": "EndometrialHyperplasia",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "116140006",
+          "display": "Total hysterectomy"
+        }
+      ],
+      "remarks": [
+        "Recoded from CPT 58571 to SNOMED 116140006 'Total hysterectomy',",
+        "verified active via Ontoserver 2026-08-10. No bilateral salpingo-",
+        "oophorectomy implied -- that's reserved for the cancer-staging",
+        "surgery (SurgicalStaging, 414575003 below), a clinically distinct,",
+        "more extensive procedure. Reached from two paths: hyperplasia",
+        "managed surgically up front, or persistent hyperplasia after a",
+        "failed progestin course -- both are the same operation."
+      ],
+      "direct_transition": "Hysterectomy_Hyperplasia_Stay"
+    },
+    "Hysterectomy_Hyperplasia_Stay": {
+      "type": "Delay",
+      "remarks": [
+        "Genuine inpatient length of stay after hysterectomy, allowed to sit",
+        "inside an open inpatient encounter (matching ovarian_cancer.json's",
+        "Primary_Surgery_Stay idiom)."
+      ],
+      "range": {
+        "low": 1,
+        "high": 3,
+        "unit": "days"
+      },
+      "direct_transition": "Hysterectomy_Hyperplasia_Encounter_End"
+    },
+    "Hysterectomy_Hyperplasia_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Terminal"
+    },
+    "EndometrialCancerDiagnosis": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "endometrial_cancer",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "93781006",
+          "display": "Primary malignant neoplasm of endometrium (disorder)"
+        }
+      ],
+      "remarks": [
+        "Dropped the inline ICD-10-CM C54.1 code (a bad-system entry -- ICD-10-",
+        "CM does not belong in a module's codes array). condition_code_map.json",
+        "already maps 93781006 -> C54.1, so the export-time ICD lookup is",
+        "unaffected; only the redundant/invalid inline code was removed."
+      ],
+      "direct_transition": "SurgicalStaging_Encounter"
+    },
+    "SurgicalStaging_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission (procedure)"
+        }
+      ],
+      "direct_transition": "SurgicalStaging"
+    },
+    "SurgicalStaging": {
+      "type": "Procedure",
+      "reason": "endometrial_cancer",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "414575003",
+          "display": "Laparoscopic total abdominal hysterectomy and bilateral salpingo-oophorectomy"
+        }
+      ],
+      "remarks": [
+        "Recoded from CPT 58570 to SNOMED 414575003, verified active via",
+        "Ontoserver 2026-08-10. This is the definitive surgery: total",
+        "hysterectomy + BSO + staging. The pre-fix module additionally gave",
+        "the low-risk (Stage IA) arm its own separate 'SurgeryOnly' hysterectomy",
+        "(SNOMED 116144002) later in the pathway -- a second, duplicate",
+        "hysterectomy on the same patient. That state has been removed: this",
+        "surgery IS the surgery-only management for low-risk disease: once",
+        "pathology confirms Stage IA, nothing further is needed."
+      ],
+      "direct_transition": "SurgicalStaging_Stay"
+    },
+    "SurgicalStaging_Stay": {
+      "type": "Delay",
+      "remarks": [
+        "Genuine inpatient length of stay after staging surgery, allowed to",
+        "sit inside an open inpatient encounter."
+      ],
+      "range": {
+        "low": 2,
+        "high": 4,
+        "unit": "days"
+      },
+      "direct_transition": "SurgicalPathology"
+    },
+    "SurgicalPathology": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "StageIA"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "StageIB"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "StageII"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "StageIII_IV"
+        }
+      ]
+    },
+    "StageIA": {
+      "type": "SetAttribute",
+      "attribute": "endometrial_cancer_stage",
+      "value": "IA",
+      "direct_transition": "LowRiskDisease"
+    },
+    "StageIB": {
+      "type": "SetAttribute",
+      "attribute": "endometrial_cancer_stage",
+      "value": "IB",
+      "direct_transition": "IntermediateRiskDisease"
+    },
+    "StageII": {
+      "type": "SetAttribute",
+      "attribute": "endometrial_cancer_stage",
+      "value": "II",
+      "direct_transition": "HighIntermediateRiskDisease"
+    },
+    "StageIII_IV": {
+      "type": "SetAttribute",
+      "attribute": "endometrial_cancer_stage",
+      "value": "III_IV",
+      "direct_transition": "AdvancedDisease"
+    },
+    "LowRiskDisease": {
+      "type": "Simple",
+      "direct_transition": "LowRiskDisease_Action_1"
+    },
     "LowRiskDisease_Action_1": {
       "type": "Observation",
       "category": "exam",
@@ -898,56 +596,29 @@
           "display": "Pathology report cancer staging"
         }
       ],
-      "direct_transition": "SurgeryOnly"
+      "direct_transition": "StagingReview_Encounter_End_LowRisk"
     },
-    "SurgeryOnly_Action_1": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "116144002",
-          "display": "Total abdominal hysterectomy with bilateral salpingo-oophorectomy"
-        }
+    "StagingReview_Encounter_End_LowRisk": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Closes SurgicalStaging_Encounter. Low-risk (Stage IA) disease is",
+        "surgery-only -- the staging surgery above already was the definitive",
+        "treatment, so surveillance starts directly (no second hysterectomy)."
       ],
-      "direct_transition": "SurgeryOnly_Action_1_Encounter_End"
+      "direct_transition": "SurveillanceLowRisk"
     },
-    "PhysicalExamSurveillance_Action_1_Gate": {
+    "SurveillanceLowRisk": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 4,
+        "unit": "months"
+      },
+      "direct_transition": "FollowUpVisit"
+    },
+    "IntermediateRiskDisease": {
       "type": "Simple",
-      "distributed_transition": [
-        {
-          "transition": "PhysicalExamSurveillance_Action_1",
-          "distribution": 0.9
-        },
-        {
-          "transition": "ContinueSurveillance",
-          "distribution": 0.1
-        }
-      ]
-    },
-    "PhysicalExamSurveillance_Action_1": {
-      "type": "Observation",
-      "category": "exam",
-      "codes": [
-        {
-          "system": "LOINC",
-          "code": "30954-2",
-          "display": "Relevant physical findings"
-        }
-      ],
-      "complex_transition": [
-        {
-          "condition": {
-            "condition_type": "Attribute",
-            "attribute": "surveillance_visits",
-            "operator": "<",
-            "value": 5
-          },
-          "transition": "ContinueSurveillance"
-        },
-        {
-          "transition": "PhysicalExamSurveillance_Action_1_Encounter_End"
-        }
-      ]
+      "direct_transition": "IntermediateRiskDisease_Action_1"
     },
     "IntermediateRiskDisease_Action_1": {
       "type": "Observation",
@@ -959,7 +630,116 @@
           "display": "Pathology report cancer staging"
         }
       ],
+      "direct_transition": "StagingReview_Encounter_End_Intermediate"
+    },
+    "StagingReview_Encounter_End_Intermediate": {
+      "type": "EncounterEnd",
       "direct_transition": "ConsiderAdjuvantTherapy"
+    },
+    "ConsiderAdjuvantTherapy": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "VaginalBrachytherapy_Encounter"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "ObservationIntermediateRisk"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "EBRT_Therapy_Encounter"
+        }
+      ]
+    },
+    "VaginalBrachytherapy_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "VaginalBrachytherapy"
+    },
+    "VaginalBrachytherapy": {
+      "type": "Procedure",
+      "reason": "endometrial_cancer",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "384692006",
+          "display": "Intracavitary brachytherapy"
+        }
+      ],
+      "remarks": [
+        "Recoded from CPT 77776 to SNOMED 384692006, verified active via",
+        "Ontoserver 2026-08-10. Vaginal cuff brachytherapy for endometrial",
+        "cancer is delivered via an intracavitary vaginal cylinder applicator,",
+        "not the interstitial technique CPT 77776 actually describes -- no",
+        "pre-coordinated 'vaginal cuff brachytherapy' SNOMED concept exists",
+        "(searched; only applicator-device concepts like 464859007 do), so",
+        "the general active intracavitary-brachytherapy concept is used."
+      ],
+      "direct_transition": "VaginalBrachytherapy_Encounter_End"
+    },
+    "VaginalBrachytherapy_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SurveillanceIntermediateRisk"
+    },
+    "ObservationIntermediateRisk": {
+      "type": "Simple",
+      "direct_transition": "SurveillanceIntermediateRisk"
+    },
+    "EBRT_Therapy_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "EBRT_Therapy"
+    },
+    "EBRT_Therapy": {
+      "type": "Procedure",
+      "reason": "endometrial_cancer",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "33195004",
+          "display": "External beam radiation therapy procedure"
+        }
+      ],
+      "remarks": [
+        "Recoded from CPT 77427 to SNOMED 33195004, verified active via",
+        "Ontoserver 2026-08-10. Same SNOMED concept reused by",
+        "AdjuvantRadiationTherapy and RadiationSalvage below -- all three are",
+        "the same real-world external-beam radiation-management encounter."
+      ],
+      "direct_transition": "EBRT_Therapy_Encounter_End"
+    },
+    "EBRT_Therapy_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SurveillanceIntermediateRisk"
+    },
+    "SurveillanceIntermediateRisk": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "FollowUpVisit"
+    },
+    "HighIntermediateRiskDisease": {
+      "type": "Simple",
+      "direct_transition": "HighIntermediateRiskDisease_Action_1"
     },
     "HighIntermediateRiskDisease_Action_1": {
       "type": "Observation",
@@ -971,7 +751,98 @@
           "display": "Pathology report cancer staging"
         }
       ],
+      "direct_transition": "StagingReview_Encounter_End_HighIntermediate"
+    },
+    "StagingReview_Encounter_End_HighIntermediate": {
+      "type": "EncounterEnd",
+      "direct_transition": "AdjuvantRadiation_Encounter"
+    },
+    "AdjuvantRadiation_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
       "direct_transition": "AdjuvantRadiationTherapy"
+    },
+    "AdjuvantRadiationTherapy": {
+      "type": "Procedure",
+      "reason": "endometrial_cancer",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "33195004",
+          "display": "External beam radiation therapy procedure"
+        }
+      ],
+      "direct_transition": "ConsiderChemotherapy"
+    },
+    "ConsiderChemotherapy": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "AdjuvantChemotherapy"
+        },
+        {
+          "distribution": 0.5,
+          "transition": "RadiationOnly"
+        }
+      ]
+    },
+    "AdjuvantChemotherapy": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "reason": "endometrial_cancer",
+      "remarks": [
+        "Administered IV chemo (carboplatin + paclitaxel), not a standing",
+        "prescription -- was an open-ended MedicationOrder with no",
+        "administration flag, chronic flag, duration, or End (one of the 8",
+        "stackable open-ended med orders). Both RxCUIs already map to",
+        "HCPCS J-codes in rxnorm_hcpcs_map.json (J9045/J9267)."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "378363",
+          "display": "carboplatin Injectable Solution"
+        },
+        {
+          "system": "RxNorm",
+          "code": "312199",
+          "display": "paclitaxel 6 MG/ML Injectable Solution"
+        }
+      ],
+      "direct_transition": "AdjuvantChemotherapy_Encounter_End"
+    },
+    "AdjuvantChemotherapy_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SurveillanceHighRisk"
+    },
+    "RadiationOnly": {
+      "type": "Simple",
+      "direct_transition": "RadiationOnly_Encounter_End"
+    },
+    "RadiationOnly_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SurveillanceHighRisk"
+    },
+    "SurveillanceHighRisk": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 4,
+        "unit": "months"
+      },
+      "direct_transition": "FollowUpVisit"
+    },
+    "AdvancedDisease": {
+      "type": "Simple",
+      "direct_transition": "AdvancedDisease_Action_1"
     },
     "AdvancedDisease_Action_1": {
       "type": "Observation",
@@ -981,6 +852,22 @@
           "system": "LOINC",
           "code": "21905-5",
           "display": "Pathology report cancer staging"
+        }
+      ],
+      "direct_transition": "StagingReview_Encounter_End_Advanced"
+    },
+    "StagingReview_Encounter_End_Advanced": {
+      "type": "EncounterEnd",
+      "direct_transition": "Metastatic_Workup_Encounter"
+    },
+    "Metastatic_Workup_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
         }
       ],
       "direct_transition": "AdvancedDisease_Action_2_Gate"
@@ -1039,7 +926,7 @@
           "distribution": 0.9
         },
         {
-          "transition": "SystemicTherapy",
+          "transition": "Metastatic_Workup_Encounter_End",
           "distribution": 0.1
         }
       ]
@@ -1075,105 +962,717 @@
           ]
         }
       ],
+      "direct_transition": "Metastatic_Workup_Encounter_End"
+    },
+    "Metastatic_Workup_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "SystemicTherapy"
     },
-    "ProgesteroneTherapy_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "FollowUpBiopsy"
+    "SystemicTherapy": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.7,
+          "transition": "ChemotherapyAdvanced_Encounter"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "HormonalTherapy_Guard"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "Pembrolizumab_Encounter"
+        }
+      ]
     },
-    "ContinueSurveillance_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "SurveillanceLowRisk"
+    "ChemotherapyAdvanced_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "ChemotherapyAdvanced"
     },
-    "VaginalBrachytherapy_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "SurveillanceIntermediateRisk"
-    },
-    "EBRT_Therapy_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "SurveillanceIntermediateRisk"
-    },
-    "ObservationIntermediateRisk_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "SurveillanceIntermediateRisk"
-    },
-    "AdjuvantChemotherapy_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "SurveillanceHighRisk"
-    },
-    "RadiationOnly_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "SurveillanceHighRisk"
+    "ChemotherapyAdvanced": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "reason": "endometrial_cancer",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "378363",
+          "display": "carboplatin Injectable Solution"
+        },
+        {
+          "system": "RxNorm",
+          "code": "312199",
+          "display": "paclitaxel 6 MG/ML Injectable Solution"
+        }
+      ],
+      "direct_transition": "ChemotherapyAdvanced_Encounter_End"
     },
     "ChemotherapyAdvanced_Encounter_End": {
       "type": "EncounterEnd",
       "direct_transition": "ResponseEvaluation"
     },
+    "HormonalTherapy_Guard": {
+      "type": "Simple",
+      "remarks": [
+        "Reachable both from first-line SystemicTherapy and again from",
+        "SystemicTherapy after a later DistantRecurrence -- without this",
+        "guard a patient already on chronic megestrol could be given a second,",
+        "simultaneously-active order for the same drug (one of the module's 8",
+        "stackable open-ended med orders). If already active, nothing new to",
+        "order -- go straight back into the evaluation loop."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "hormonal_therapy_active",
+            "operator": "is nil"
+          },
+          "transition": "HormonalTherapy_Encounter"
+        },
+        {
+          "transition": "ResponseEvaluation"
+        }
+      ]
+    },
+    "HormonalTherapy_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "HormonalTherapy"
+    },
+    "HormonalTherapy": {
+      "type": "MedicationOrder",
+      "chronic": true,
+      "reason": "endometrial_cancer",
+      "assign_to_attribute": "hormonal_therapy_active",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "860221",
+          "display": "megestrol acetate 40 MG Oral Tablet"
+        }
+      ],
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 1,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 365,
+          "unit": "days"
+        }
+      },
+      "direct_transition": "HormonalTherapy_Encounter_End"
+    },
     "HormonalTherapy_Encounter_End": {
       "type": "EncounterEnd",
       "direct_transition": "ResponseEvaluation"
     },
-    "TargetedTherapy_Encounter_End": {
+    "Pembrolizumab_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "Pembrolizumab_Therapy"
+    },
+    "Pembrolizumab_Therapy": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "reason": "endometrial_cancer",
+      "remarks": [
+        "Consolidates the pre-fix module's two separate pembrolizumab order",
+        "paths (first-line TargetedTherapy and second-line Immunotherapy --",
+        "same RxCUI, same drug) into one administered state shared by both",
+        "SystemicTherapy and SecondLineTherapy. RxNorm 1657750 already maps",
+        "to HCPCS J9271 in rxnorm_hcpcs_map.json."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1657750",
+          "display": "4 ML pembrolizumab 25 MG/ML Injection"
+        }
+      ],
+      "direct_transition": "Pembrolizumab_Encounter_End"
+    },
+    "Pembrolizumab_Encounter_End": {
       "type": "EncounterEnd",
       "direct_transition": "ResponseEvaluation"
     },
-    "ResponsePartial_Encounter_End": {
-      "type": "EncounterEnd",
+    "ResponseEvaluation": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 4,
+        "unit": "months"
+      },
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
+          "transition": "ResponseComplete"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "ResponsePartial"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "StableDisease"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "ProgressiveDisease"
+        }
+      ]
+    },
+    "ResponseComplete": {
+      "type": "Simple",
+      "direct_transition": "MaintenanceTherapy"
+    },
+    "ResponsePartial": {
+      "type": "Simple",
       "direct_transition": "ContinueTherapy"
     },
-    "StableDisease_Encounter_End": {
-      "type": "EncounterEnd",
+    "StableDisease": {
+      "type": "Simple",
       "direct_transition": "ContinueTherapy"
     },
-    "ContinueTherapy_Encounter_End": {
-      "type": "EncounterEnd",
+    "ContinueTherapy": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 4,
+        "unit": "months"
+      },
       "direct_transition": "ResponseEvaluation"
     },
-    "MaintenanceTherapy_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "ObservationMaintenance"
+    "ProgressiveDisease": {
+      "type": "Simple",
+      "direct_transition": "SecondLineTherapy"
     },
-    "ObservationMaintenance_Encounter_End": {
-      "type": "EncounterEnd",
+    "MaintenanceTherapy": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "ObservationMaintenance"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "MaintenanceHormonalTherapy_Guard"
+        }
+      ]
+    },
+    "ObservationMaintenance": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
       "direct_transition": "SurveillanceAdvanced"
+    },
+    "MaintenanceHormonalTherapy_Guard": {
+      "type": "Simple",
+      "remarks": [
+        "Same stacking hazard and same fix as HormonalTherapy_Guard above --",
+        "shares the hormonal_therapy_active attribute with it (it's the same",
+        "drug), so a patient already on megestrol from the first-line arm is",
+        "not given a second simultaneous order here."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "hormonal_therapy_active",
+            "operator": "is nil"
+          },
+          "transition": "MaintenanceHormonalTherapy_Encounter"
+        },
+        {
+          "transition": "SurveillanceAdvanced"
+        }
+      ]
+    },
+    "MaintenanceHormonalTherapy_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "MaintenanceHormonalTherapy"
+    },
+    "MaintenanceHormonalTherapy": {
+      "type": "MedicationOrder",
+      "chronic": true,
+      "reason": "endometrial_cancer",
+      "assign_to_attribute": "hormonal_therapy_active",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "860221",
+          "display": "megestrol acetate 40 MG Oral Tablet"
+        }
+      ],
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 1,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 365,
+          "unit": "days"
+        }
+      },
+      "direct_transition": "MaintenanceHormonalTherapy_Encounter_End"
     },
     "MaintenanceHormonalTherapy_Encounter_End": {
       "type": "EncounterEnd",
       "direct_transition": "SurveillanceAdvanced"
     },
+    "SecondLineTherapy": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
+          "transition": "SecondLineChemotherapy_Encounter"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "Pembrolizumab_Encounter"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "ClinicalTrial_Encounter"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "PalliativeCareOnly"
+        }
+      ]
+    },
+    "SecondLineChemotherapy_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "SecondLineChemotherapy"
+    },
+    "SecondLineChemotherapy": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "reason": "endometrial_cancer",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "374376",
+          "display": "doxorubicin Injectable Solution"
+        }
+      ],
+      "direct_transition": "SecondLineChemotherapy_Encounter_End"
+    },
     "SecondLineChemotherapy_Encounter_End": {
       "type": "EncounterEnd",
       "direct_transition": "ResponseEvaluation"
     },
-    "Immunotherapy_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "ResponseEvaluation"
+    "ClinicalTrial_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "ClinicalTrial"
+    },
+    "ClinicalTrial": {
+      "type": "Procedure",
+      "reason": "endometrial_cancer",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "709491003",
+          "display": "Enrolment in clinical trial"
+        }
+      ],
+      "remarks": [
+        "The pre-fix code, 446096008, is not a clinical-trial concept at all --",
+        "verified via Ontoserver 2026-08-10 that it actually means 'Perennial",
+        "allergic rhinitis' (and is used with that meaning, correctly, by",
+        "allergic_rhinitis.json). A patient with both allergic rhinitis and",
+        "this second-line arm would have collided on the same code across a",
+        "Condition and a Procedure -- the same HealthRecord.present",
+        "ClassCastException class of record-dropping bug documented in",
+        "task-1.10-report.md's 103735009 writeup. Recoded to 709491003",
+        "'Enrolment in clinical trial', verified active and otherwise unused",
+        "in this tree."
+      ],
+      "direct_transition": "ClinicalTrial_Encounter_End"
     },
     "ClinicalTrial_Encounter_End": {
       "type": "EncounterEnd",
       "direct_transition": "ResponseEvaluation"
     },
+    "PalliativeCareOnly": {
+      "type": "Encounter",
+      "encounter_class": "hospice",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "305336008",
+          "display": "Admission to hospice (procedure)"
+        }
+      ],
+      "direct_transition": "PalliativeCareOnly_Encounter_End"
+    },
     "PalliativeCareOnly_Encounter_End": {
       "type": "EncounterEnd",
       "direct_transition": "EndOfLife"
     },
-    "SurveillanceAdvanced_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "LongTermRemission"
+    "EndOfLife": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 12,
+        "unit": "months"
+      },
+      "direct_transition": "Death"
     },
-    "NoEvidenceDisease_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "SurveillanceAdvanced"
+    "Death": {
+      "type": "Death",
+      "direct_transition": "Terminal",
+      "range": {
+        "low": 1,
+        "high": 6,
+        "unit": "months"
+      },
+      "referenced_by_attribute": "endometrial_cancer"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "SalvageTherapy": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "RadiationSalvage_Encounter"
+        },
+        {
+          "distribution": 0.3,
+          "transition": "SurgicalSalvage_Encounter"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "SystemicTherapy"
+        }
+      ]
+    },
+    "RadiationSalvage_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "direct_transition": "RadiationSalvage"
+    },
+    "RadiationSalvage": {
+      "type": "Procedure",
+      "reason": "endometrial_cancer",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "33195004",
+          "display": "External beam radiation therapy procedure"
+        }
+      ],
+      "direct_transition": "RadiationSalvage_Encounter_End"
     },
     "RadiationSalvage_Encounter_End": {
       "type": "EncounterEnd",
       "direct_transition": "ResponseEvaluation"
     },
+    "SurgicalSalvage_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission (procedure)"
+        }
+      ],
+      "direct_transition": "SurgicalSalvage"
+    },
+    "SurgicalSalvage": {
+      "type": "Procedure",
+      "reason": "endometrial_cancer",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "238302003",
+          "display": "Debulking of pelvic tumour"
+        }
+      ],
+      "remarks": [
+        "Recoded from CPT 58960 to SNOMED 238302003, verified active via",
+        "Ontoserver 2026-08-10."
+      ],
+      "direct_transition": "SurgicalSalvage_Stay"
+    },
+    "SurgicalSalvage_Stay": {
+      "type": "Delay",
+      "remarks": [
+        "Genuine inpatient length of stay after cytoreductive/debulking",
+        "surgery, allowed to sit inside an open inpatient encounter."
+      ],
+      "range": {
+        "low": 4,
+        "high": 8,
+        "unit": "days"
+      },
+      "direct_transition": "SurgicalSalvage_Encounter_End"
+    },
     "SurgicalSalvage_Encounter_End": {
       "type": "EncounterEnd",
       "direct_transition": "ResponseEvaluation"
     },
-    "SurgeryOnly_Action_1_Encounter_End": {
+    "SurveillanceAdvanced": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "months"
+      },
+      "direct_transition": "Surveillance_Visit"
+    },
+    "Surveillance_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185389009",
+          "display": "Follow-up encounter (procedure)"
+        }
+      ],
+      "remarks": [
+        "The pre-fix module rolled recurrence status (RecurrenceCheck) and",
+        "closed with SurveillanceAdvanced_Encounter_End / NoEvidenceDisease",
+        "_Encounter_End without ever opening an encounter for this",
+        "periodic surveillance visit -- both were orphan EncounterEnds."
+      ],
+      "direct_transition": "Surveillance_Assessment"
+    },
+    "Surveillance_Assessment": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "years_no_recurrence",
+            "operator": ">=",
+            "value": 5
+          },
+          "transition": "SurveillanceAdvanced_Encounter_End"
+        },
+        {
+          "transition": "RecurrenceCheck"
+        }
+      ]
+    },
+    "SurveillanceAdvanced_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "LongTermRemission"
+    },
+    "RecurrenceCheck": {
+      "type": "Simple",
+      "remarks": [
+        "Per-pass recurrence rate corrected from 35% (0.20 local + 0.15",
+        "distant) to 0.9% per ~4-month pass -- compounded over roughly 15",
+        "passes across 5 years, (1-0.009)^15 = 0.87, i.e. ~13% cumulative",
+        "5-year recurrence, matching published endometrial cancer recurrence",
+        "rates (about 13% overall recur within 5 years across stages/risk",
+        "groups). The pre-fix 35%-per-pass rate implied virtually every",
+        "surveilled patient would recur almost immediately."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.005,
+          "transition": "LocalRecurrence"
+        },
+        {
+          "distribution": 0.004,
+          "transition": "DistantRecurrence"
+        },
+        {
+          "distribution": 0.991,
+          "transition": "NoEvidenceDisease"
+        }
+      ]
+    },
+    "LocalRecurrence": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "25173007",
+          "display": "Recurrent tumour"
+        }
+      ],
+      "remarks": [
+        "Was SNOMED 405843009 'Widespread metastatic malignant neoplastic",
+        "disease' -- coding a LOCAL recurrence as widespread metastatic",
+        "disease is backwards (that's a worse, systemic-disease concept, and",
+        "duplicates what DistantRecurrence already correctly represents).",
+        "SNOMED has no pre-coordinated 'local recurrence of malignant",
+        "neoplasm of endometrium/vagina' concept (the 'Local recurrence of",
+        "malignant neoplasm of X' family covers breast/lung/colon/etc. but",
+        "not the endometrium or vagina -- searched via Ontoserver 2026-08-10).",
+        "25173007 'Recurrent tumour' is the closest active, correctly-scoped",
+        "general concept; the module context (target_encounter, the",
+        "surrounding Surveillance_Visit) supplies the site."
+      ],
+      "direct_transition": "LocalRecurrence_Encounter_End"
+    },
+    "LocalRecurrence_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SalvageTherapy"
+    },
+    "DistantRecurrence": {
+      "type": "ConditionOnset",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "128462008",
+          "display": "Metastatic malignant neoplasm (disorder)"
+        }
+      ],
+      "direct_transition": "DistantRecurrence_Encounter_End"
+    },
+    "DistantRecurrence_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SystemicTherapy"
+    },
+    "NoEvidenceDisease": {
+      "type": "Counter",
+      "attribute": "years_no_recurrence",
+      "action": "increment",
+      "direct_transition": "NoEvidenceDisease_Encounter_End"
+    },
+    "NoEvidenceDisease_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "SurveillanceAdvanced"
+    },
+    "LongTermRemission": {
+      "type": "Delay",
+      "range": {
+        "low": 1,
+        "high": 2,
+        "unit": "years"
+      },
+      "direct_transition": "FollowUpVisit"
+    },
+    "FollowUpVisit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185389009",
+          "display": "Follow-up encounter (procedure)"
+        }
+      ],
+      "direct_transition": "PhysicalExamSurveillance"
+    },
+    "PhysicalExamSurveillance": {
+      "type": "Simple",
+      "direct_transition": "PhysicalExamSurveillance_Action_1_Gate"
+    },
+    "PhysicalExamSurveillance_Action_1_Gate": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "PhysicalExamSurveillance_Action_1",
+          "distribution": 0.9
+        },
+        {
+          "transition": "ContinueSurveillance",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "PhysicalExamSurveillance_Action_1": {
+      "type": "Observation",
+      "category": "exam",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "30954-2",
+          "display": "Relevant physical findings"
+        }
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "surveillance_visits",
+            "operator": "<",
+            "value": 5
+          },
+          "transition": "ContinueSurveillance"
+        },
+        {
+          "transition": "PhysicalExamSurveillance_Action_1_Encounter_End"
+        }
+      ]
+    },
+    "ContinueSurveillance": {
+      "type": "Counter",
+      "attribute": "surveillance_visits",
+      "action": "increment",
+      "direct_transition": "ContinueSurveillance_Encounter_End"
+    },
+    "ContinueSurveillance_Encounter_End": {
       "type": "EncounterEnd",
       "direct_transition": "SurveillanceLowRisk"
     },
@@ -1181,22 +1680,14 @@
       "type": "EncounterEnd",
       "direct_transition": "LongTermSurveillance"
     },
-    "endometrial_cancer_Incidence_Gate": {
-      "type": "Simple",
-      "remarks": [
-        "Lifetime endometrial cancer risk is about 3% in women. The Guard already selects women 50+ with risk factors; this gate scales that pool down to a realistic share (measured 15.9% of women at 0.25, so 0.05 lands near 3%).",
-        "Rate is a first-pass estimate and needs clinical review."
-      ],
-      "distributed_transition": [
-        {
-          "transition": "SymptomDevelopment",
-          "distribution": 0.05
-        },
-        {
-          "transition": "Terminal",
-          "distribution": 0.95
-        }
-      ]
+    "LongTermSurveillance": {
+      "type": "Delay",
+      "range": {
+        "low": 6,
+        "high": 12,
+        "unit": "months"
+      },
+      "direct_transition": "FollowUpVisit"
     }
   }
 }

@@ -8854,5 +8854,11 @@
       "code": "M41.129",
       "description": "Adolescent idiopathic scoliosis, site unspecified"
     }
+  ],
+  "25173007": [
+    {
+      "code": "C54.1",
+      "description": "Malignant neoplasm of endometrium"
+    }
   ]
 }

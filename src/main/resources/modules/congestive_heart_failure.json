@@ -85,7 +85,15 @@
     },
     "end_followup_encounter": {
       "type": "EncounterEnd",
-      "direct_transition": "Maintaining CHF"
+      "remarks": [
+        "Task 1.7: 'Order medications' (CallSubmodule heart/chf_meds) used to",
+        "fire while Followup CHF Encounter was still open, so every Delay",
+        "inside chf_meds/the NYHA submodules it calls elapsed with this",
+        "encounter's reservation held. Relocated here, right after the close,",
+        "so chf_meds opens and closes its own clean encounter instead of",
+        "inheriting (and blocking on) this one. See chf_meds.json remarks."
+      ],
+      "direct_transition": "Order medications"
     },
     "Maintaining CHF": {
       "type": "Delay",
@@ -469,7 +477,7 @@
     "Order medications": {
       "type": "CallSubmodule",
       "submodule": "heart/chf_meds",
-      "direct_transition": "Med_Rec"
+      "direct_transition": "Maintaining CHF"
     },
     "Report workup imaging": {
       "type": "DiagnosticReport",
@@ -1302,7 +1310,7 @@
           "unit": "mmol/L"
         }
       ],
-      "direct_transition": "Order medications"
+      "direct_transition": "Med_Rec"
     },
     "Repeat Lab Work": {
       "type": "CallSubmodule",

@@ -35,9 +35,9 @@
         },
         "as_needed": true
       },
-      "direct_transition": "Diuretic_Supply_Delay",
       "chronic": true,
-      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx"
+      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx",
+      "direct_transition": "BB"
     },
     "BB": {
       "type": "MedicationOrder",
@@ -103,8 +103,8 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "ACE_Supply_Delay",
-      "assign_to_attribute": "lisinopril_20_mg_oral_tablet_rx"
+      "assign_to_attribute": "lisinopril_20_mg_oral_tablet_rx",
+      "direct_transition": "Empagliflozin"
     },
     "ARB": {
       "type": "MedicationOrder",
@@ -130,8 +130,8 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "ARB_Supply_Delay",
-      "assign_to_attribute": "losartan_potassium_50_mg_oral_ta_rx"
+      "assign_to_attribute": "losartan_potassium_50_mg_oral_ta_rx",
+      "direct_transition": "Empagliflozin"
     },
     "ARNI": {
       "type": "MedicationOrder",
@@ -157,8 +157,8 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "ARNI_Supply_Delay",
-      "assign_to_attribute": "sacubitril_97_mg___valsartan_103_rx"
+      "assign_to_attribute": "sacubitril_97_mg___valsartan_103_rx",
+      "direct_transition": "Empagliflozin"
     },
     "Step 1": {
       "type": "Simple",
@@ -179,7 +179,39 @@
     },
     "EF Check": {
       "type": "Simple",
-      "direct_transition": "CKD Check"
+      "conditional_transition": [
+        {
+          "transition": "EF 36-40",
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Vital Sign",
+                "vital_sign": "Left ventricular Ejection fraction",
+                "operator": ">=",
+                "value": 36
+              },
+              {
+                "condition_type": "Vital Sign",
+                "vital_sign": "Left ventricular Ejection fraction",
+                "operator": "<=",
+                "value": 40
+              }
+            ]
+          }
+        },
+        {
+          "transition": "CKD Check"
+        }
+      ],
+      "remarks": [
+        "Task 1.7: previously an unconditional pass-through to CKD Check,",
+        "which left this file's own EF 36-40 chain permanently orphaned",
+        "(unreachable by any transition) -- the historic lint orphan",
+        "finding. Now actually checks the Left ventricular Ejection",
+        "fraction vital sign congestive_heart_failure.json's LVEF HFrEF",
+        "High state (range 36-40) recorded at diagnosis."
+      ]
     },
     "CKD Check": {
       "type": "Simple",
@@ -220,7 +252,7 @@
           "transition": "Filter"
         },
         {
-          "transition": "Terminal_Delay"
+          "transition": "Visit_Encounter_End"
         }
       ]
     },
@@ -255,7 +287,7 @@
           }
         },
         {
-          "transition": "Terminal_Delay"
+          "transition": "Visit_Encounter_End"
         }
       ]
     },
@@ -281,7 +313,7 @@
           }
         },
         {
-          "transition": "Terminal_Delay"
+          "transition": "Visit_Encounter_End"
         }
       ]
     },
@@ -293,7 +325,7 @@
           "distribution": 0.5
         },
         {
-          "transition": "Terminal_Delay",
+          "transition": "Visit_Encounter_End",
           "distribution": 0.5
         }
       ]
@@ -322,8 +354,8 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "MRA_Supply_Delay",
-      "assign_to_attribute": "spironolactone_25_mg_oral_tablet_rx"
+      "assign_to_attribute": "spironolactone_25_mg_oral_tablet_rx",
+      "direct_transition": "Empagliflozin"
     },
     "IVA": {
       "type": "MedicationOrder",
@@ -349,7 +381,7 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "Terminal_Delay",
+      "direct_transition": "Visit_Encounter_End",
       "assign_to_attribute": "ivabradine_5_mg_oral_tablet_rx"
     },
     "Filter": {
@@ -360,7 +392,7 @@
           "distribution": 0.05
         },
         {
-          "transition": "Terminal_Delay",
+          "transition": "Visit_Encounter_End",
           "distribution": 0.95
         }
       ]
@@ -370,8 +402,8 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": "1545653",
-          "display": "Empagliflozin 10 MG Oral Tablet"
+          "code": "1545658",
+          "display": "empagliflozin 10 MG Oral Tablet"
         }
       ],
       "reason": "chf",
@@ -389,8 +421,8 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "Empagliflozin_Supply_Delay",
-      "assign_to_attribute": "empagliflozin_10_mg_oral_tablet_rx"
+      "assign_to_attribute": "empagliflozin_10_mg_oral_tablet_rx",
+      "direct_transition": "Visit_Encounter_End"
     },
     "BiDil": {
       "type": "MedicationOrder",
@@ -416,7 +448,7 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "Terminal_Delay",
+      "direct_transition": "Visit_Encounter_End",
       "assign_to_attribute": "hydralazine_hydrochloride_375_mg_rx"
     },
     "Dig": {
@@ -443,7 +475,7 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "Terminal_Delay",
+      "direct_transition": "Visit_Encounter_End",
       "assign_to_attribute": "digoxin_0125_mg_oral_tablet_rx"
     },
     "IVA or BiDil Step": {
@@ -467,13 +499,19 @@
           "distribution": 0.05
         },
         {
-          "transition": "Terminal_Delay",
+          "transition": "Visit_Encounter_End",
           "distribution": 0.95
         }
       ]
     },
     "Other Step 3": {
       "type": "Simple",
+      "remarks": [
+        "Task 1.7: the no-MRA-this-lifetime else branch used to jump straight",
+        "to this file's own Terminal, bypassing the close entirely (Terminal",
+        "does not auto-close an open encounter for a submodule -- see",
+        "Visit_Encounter_End's remarks). Routed through the closer instead."
+      ],
       "conditional_transition": [
         {
           "transition": "Other Step 3 Filter",
@@ -483,7 +521,7 @@
           }
         },
         {
-          "transition": "Terminal"
+          "transition": "Visit_Encounter_End"
         }
       ]
     },
@@ -495,7 +533,7 @@
           "distribution": 0.05
         },
         {
-          "transition": "Terminal_Delay",
+          "transition": "Visit_Encounter_End",
           "distribution": 0.95
         }
       ]
@@ -517,90 +555,6 @@
         }
       ]
     },
-    "Diuretic_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "Diuretic_End"
-    },
-    "Diuretic_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "furosemide_40_mg_oral_tablet_rx",
-      "direct_transition": "BB"
-    },
-    "ACE_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "ACE_End"
-    },
-    "ACE_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "lisinopril_20_mg_oral_tablet_rx",
-      "direct_transition": "Empagliflozin"
-    },
-    "ARB_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "ARB_End"
-    },
-    "ARB_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "losartan_potassium_50_mg_oral_ta_rx",
-      "direct_transition": "Empagliflozin"
-    },
-    "ARNI_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "ARNI_End"
-    },
-    "ARNI_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "sacubitril_97_mg___valsartan_103_rx",
-      "direct_transition": "Empagliflozin"
-    },
-    "MRA_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "MRA_End"
-    },
-    "MRA_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "spironolactone_25_mg_oral_tablet_rx",
-      "direct_transition": "Empagliflozin"
-    },
-    "Empagliflozin_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "Empagliflozin_End"
-    },
-    "Empagliflozin_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "empagliflozin_10_mg_oral_tablet_rx",
-      "direct_transition": "Terminal_Delay"
-    },
     "Terminal_Delay": {
       "type": "Delay",
       "range": {
@@ -609,7 +563,24 @@
         "unit": "days"
       },
       "direct_transition": "Terminal"
+    },
+    "Visit_Encounter_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Task 1.7: added so every visit closes CHF_Medication_Encounter",
+        "(opened by the calling chf_meds.json, inherited into this",
+        "submodule) before the annual maintenance delay elapses. This",
+        "submodule has no Encounter state of its own -- it runs inside",
+        "whatever encounter chf_meds.json's own CHF_Medication_Encounter",
+        "opened; EncounterEnd closes whatever is currently open",
+        "regardless of which module opened it. Every *_Supply_Delay in",
+        "this file was likewise deleted (its only purpose was to hold",
+        "open a 30-day window before a MedicationEnd that is itself",
+        "deleted -- chronic:true GDMT is renewed annually by the engine,",
+        "State.java ~963) so orders now fire back-to-back in one visit."
+      ],
+      "direct_transition": "Terminal_Delay"
     }
   },
-  "gmf_version": 1
+  "gmf_version": 2
 }

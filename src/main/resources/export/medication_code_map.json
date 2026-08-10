@@ -261148,5 +261148,43 @@
       "code": "46708006410",
       "description": "rivastigmine 3 MG Oral Capsule"
     }
+  ],
+  "1545658": [
+    {
+      "code": "50090449200",
+      "description": "empagliflozin 10 MG Oral Tablet"
+    },
+    {
+      "code": "50090449201",
+      "description": "empagliflozin 10 MG Oral Tablet"
+    },
+    {
+      "code": "71610090009",
+      "description": "empagliflozin 10 MG Oral Tablet"
+    },
+    {
+      "code": "71610090097",
+      "description": "empagliflozin 10 MG Oral Tablet"
+    },
+    {
+      "code": "50090645200",
+      "description": "empagliflozin 10 MG Oral Tablet"
+    },
+    {
+      "code": "00597015207",
+      "description": "Empagliflozin 10 MG Oral Tablet [Jardiance]"
+    },
+    {
+      "code": "00597015230",
+      "description": "Empagliflozin 10 MG Oral Tablet [Jardiance]"
+    },
+    {
+      "code": "00597015237",
+      "description": "Empagliflozin 10 MG Oral Tablet [Jardiance]"
+    },
+    {
+      "code": "00597015290",
+      "description": "Empagliflozin 10 MG Oral Tablet [Jardiance]"
+    }
   ]
 }

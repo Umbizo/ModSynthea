@@ -1,52 +1,109 @@
 {
   "name": "Prostate Cancer Module",
+  "gmf_version": 2,
+  "remarks": [
+    "Prostate cancer screening, diagnosis, treatment and progression for men 55+.",
+    "",
+    "ENCOUNTER DISCIPLINE: ModSynthea gives each person a single encounter",
+    "reservation (State.java Encounter/EncounterEnd). Every Encounter opened here",
+    "reaches an EncounterEnd before any Delay or Guard, and every Delay sits",
+    "between an EncounterEnd and the next Encounter. The only Delay inside an open",
+    "encounter is Prostatectomy_Stay, which is a genuine inpatient length of stay.",
+    "",
+    "CALIBRATION TARGETS (see per-state remarks for the arithmetic):",
+    "- Lifetime probability of a prostate cancer diagnosis ~12.7% (SEER 2018-2022:",
+    "  lifetime risk 1 in 8, ~12.9%; median age at diagnosis 67).",
+    "- Screening offered ages 55-69 only (USPSTF 2018, JAMA 319:1901 - shared",
+    "  decision making 55-69, no routine PSA screening at 70+).",
+    "- Biochemical recurrence after definitive treatment ~30% by 10 years",
+    "  (Han, J Urol 2003; Freedland, JAMA 2005), then discharge to survivorship.",
+    "- Castration resistance ~3%/yr on ADT, with explicit stable-on-ADT exit",
+    "  (Kirby, Int J Clin Pract 2011).",
+    "- Prostate cancer death arises only in the metastatic castration-resistant arm.",
+    "",
+    "ATTRIBUTES (all module-local except 'Prostate Cancer', which",
+    "home_hospice_snf.json and veteran_prostate_cancer.json also read):",
+    "  Prostate Cancer         - the ConditionOnset entry, set at diagnosis",
+    "  last_observation        - most recent PSA value in ng/mL (a real number:",
+    "                            Observation states cannot assign_to_attribute, so",
+    "                            each PSA value is drawn by a SetAttribute and then",
+    "                            read back by the Observation via 'attribute')",
+    "  prostate_cancer_risk    - NCCN risk group at diagnosis",
+    "  clinical_stage          - clinical T stage at diagnosis",
+    "  prostate_followup_years - completed post-treatment surveillance years"
+  ],
   "states": {
     "Initial": {
       "type": "Initial",
-      "direct_transition": "Gender_Check"
+      "direct_transition": "Male_Check"
     },
-    "Gender_Check": {
-      "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 1,
-          "standardDeviation": 0.5
-        }
-      },
-      "unit": "days",
-      "complex_transition": [
+    "Male_Check": {
+      "type": "Simple",
+      "conditional_transition": [
         {
           "condition": {
             "condition_type": "Gender",
             "gender": "M"
           },
-          "distributions": [
-            {
-              "transition": "Age_Check",
-              "distribution": 1.0
-            }
-          ]
+          "transition": "Screening_Age_Guard"
         },
         {
           "transition": "Terminal"
         }
       ]
     },
-    "Age_Check": {
-      "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 55,
-          "standardDeviation": 10
-        }
+    "Screening_Age_Guard": {
+      "type": "Guard",
+      "remarks": [
+        "USPSTF 2018 (JAMA 319:1901) recommends individualised PSA screening for",
+        "men aged 55-69. Nobody enters the screening loop before 55."
+      ],
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 55,
+        "unit": "years"
       },
-      "unit": "years",
-      "direct_transition": "Screening_Discussion"
+      "direct_transition": "Screening_Entry_Delay"
     },
-    "Screening_Discussion": {
+    "Screening_Entry_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Spread first screening visits across the year following the 55th birthday",
+        "so onsets are not stacked on a single anniversary date."
+      ],
+      "range": {
+        "low": 0,
+        "high": 364,
+        "unit": "days"
+      },
+      "direct_transition": "Screening_Window_Check"
+    },
+    "Screening_Window_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Age-out of the screening loop at 70 (USPSTF 2018: recommends against",
+        "routine PSA-based screening in men 70 and older). This is the exit that",
+        "the pre-2026-08 module was missing entirely."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 70,
+            "unit": "years"
+          },
+          "transition": "Terminal"
+        },
+        {
+          "transition": "Screening_Visit"
+        }
+      ]
+    },
+    "Screening_Visit": {
       "type": "Encounter",
+      "encounter_class": "ambulatory",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -54,50 +111,68 @@
           "display": "Encounter for problem"
         }
       ],
-      "direct_transition": "PSA_Testing_Decision"
+      "direct_transition": "PSA_Draw"
     },
-    "PSA_Testing_Decision": {
+    "PSA_Draw": {
       "type": "Simple",
+      "remarks": [
+        "9% of screening draws land above the 3 ng/mL referral threshold. ERSPC",
+        "(Schroder, NEJM 2009) saw PSA >= 3 in 10-16% of first-round screens and",
+        "less on repeat rounds; 9% is the annually-rescreened steady state.",
+        "",
+        "Per-pass detection arithmetic: 0.09 elevated x 0.45 confirmed on repeat",
+        "x 0.222 biopsy positive = 0.0090 diagnoses per screening year. Over the",
+        "15 passes from 55 to 69 that is 1 - (1 - 0.009)^15 = 12.7% lifetime,",
+        "matching the SEER 2018-2022 lifetime risk of ~12.9%."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.6,
-          "transition": "Initial_PSA_Test"
+          "distribution": 0.91,
+          "transition": "Set_PSA_Normal"
         },
         {
-          "distribution": 0.4,
-          "transition": "Terminal"
+          "distribution": 0.09,
+          "transition": "Set_PSA_Elevated"
         }
       ]
     },
-    "Initial_PSA_Test": {
-      "type": "Simple",
-      "distributed_transition": [
+    "Set_PSA_Normal": {
+      "type": "SetAttribute",
+      "attribute": "last_observation",
+      "range": {
+        "low": 0.3,
+        "high": 2.9,
+        "decimals": 1
+      },
+      "direct_transition": "PSA_Test"
+    },
+    "Set_PSA_Elevated": {
+      "type": "SetAttribute",
+      "attribute": "last_observation",
+      "range": {
+        "low": 3.0,
+        "high": 9.9,
+        "decimals": 1
+      },
+      "direct_transition": "PSA_Test"
+    },
+    "PSA_Test": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
         {
-          "transition": "PSA_Result_Normal",
-          "distribution": 0.88
-        },
-        {
-          "transition": "PSA_Result_Elevated",
-          "distribution": 0.12
+          "system": "LOINC",
+          "code": "2857-1",
+          "display": "Prostate specific Ag [Mass/volume] in Serum"
         }
       ],
-      "remarks": [
-        "Roughly 10-15% of screening PSA draws are above the 3 ng/mL referral",
-        "threshold. Modelled as two ranges rather than one wide uniform draw, which",
-        "would have made most of the screened population look abnormal."
-      ]
+      "attribute": "last_observation",
+      "unit": "ng/mL",
+      "direct_transition": "PSA_Interpretation"
     },
     "PSA_Interpretation": {
-      "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 14,
-          "standardDeviation": 7
-        }
-      },
-      "unit": "days",
-      "complex_transition": [
+      "type": "Simple",
+      "conditional_transition": [
         {
           "condition": {
             "condition_type": "Attribute",
@@ -105,34 +180,88 @@
             "operator": ">=",
             "value": 3
           },
-          "distributions": [
-            {
-              "transition": "Repeat_PSA_Test",
-              "distribution": 0.8
-            },
-            {
-              "transition": "Prostate_MRI",
-              "distribution": 0.2
-            }
-          ]
+          "transition": "Refer_For_Repeat_PSA"
         },
         {
-          "condition": {
-            "condition_type": "Attribute",
-            "attribute": "last_observation",
-            "operator": "is nil"
-          },
-          "distributions": [
-            {
-              "transition": "Annual_Screening",
-              "distribution": 1.0
-            }
-          ]
-        },
-        {
-          "transition": "Annual_Screening"
+          "transition": "End_Screening_Visit"
         }
       ]
+    },
+    "End_Screening_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "PSA_Interval_Delay"
+    },
+    "PSA_Interval_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 11,
+        "high": 13,
+        "unit": "months"
+      },
+      "direct_transition": "Screening_Window_Check"
+    },
+    "Refer_For_Repeat_PSA": {
+      "type": "EncounterEnd",
+      "direct_transition": "Repeat_PSA_Delay"
+    },
+    "Repeat_PSA_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 4,
+        "high": 10,
+        "unit": "weeks"
+      },
+      "direct_transition": "Repeat_PSA_Visit"
+    },
+    "Repeat_PSA_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "Repeat_PSA_Draw"
+    },
+    "Repeat_PSA_Draw": {
+      "type": "Simple",
+      "remarks": [
+        "A confirmatory draw normalises in most men: transient elevation from",
+        "prostatitis, instrumentation or assay variation. 55% resolve, 45% stay",
+        "above 3 ng/mL and go on to imaging and biopsy."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.55,
+          "transition": "Set_PSA_Resolved"
+        },
+        {
+          "distribution": 0.45,
+          "transition": "Set_PSA_Confirmed"
+        }
+      ]
+    },
+    "Set_PSA_Resolved": {
+      "type": "SetAttribute",
+      "attribute": "last_observation",
+      "range": {
+        "low": 0.5,
+        "high": 2.9,
+        "decimals": 1
+      },
+      "direct_transition": "Repeat_PSA_Test"
+    },
+    "Set_PSA_Confirmed": {
+      "type": "SetAttribute",
+      "attribute": "last_observation",
+      "range": {
+        "low": 3.0,
+        "high": 14.9,
+        "decimals": 1
+      },
+      "direct_transition": "Repeat_PSA_Test"
     },
     "Repeat_PSA_Test": {
       "type": "Observation",
@@ -144,16 +273,63 @@
           "display": "Prostate specific Ag [Mass/volume] in Serum"
         }
       ],
-      "direct_transition": "MRI_or_Biopsy_Decision",
+      "attribute": "last_observation",
       "unit": "ng/mL",
-      "range": {
-        "low": 3.0,
-        "high": 12.0
-      },
-      "assign_to_attribute": "last_observation"
+      "direct_transition": "Repeat_PSA_Interpretation"
     },
-    "MRI_or_Biopsy_Decision": {
+    "Repeat_PSA_Interpretation": {
       "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "last_observation",
+            "operator": ">=",
+            "value": 3
+          },
+          "transition": "Refer_For_Biopsy"
+        },
+        {
+          "transition": "End_Repeat_PSA_Visit"
+        }
+      ]
+    },
+    "End_Repeat_PSA_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "PSA_Interval_Delay"
+    },
+    "Refer_For_Biopsy": {
+      "type": "EncounterEnd",
+      "direct_transition": "Biopsy_Scheduling_Delay"
+    },
+    "Biopsy_Scheduling_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 6,
+        "unit": "weeks"
+      },
+      "direct_transition": "Diagnostic_Workup_Visit"
+    },
+    "Diagnostic_Workup_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "Biopsy_Modality_Decision"
+    },
+    "Biopsy_Modality_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "Pre-biopsy multiparametric MRI followed by MRI/ultrasound fusion targeted",
+        "biopsy is now the majority pathway (NICE NG131; PRECISION, NEJM 2018);",
+        "the remainder go straight to systematic needle biopsy."
+      ],
       "distributed_transition": [
         {
           "distribution": 0.7,
@@ -185,7 +361,7 @@
           "display": "MRI guided biopsy of prostate"
         }
       ],
-      "direct_transition": "Pathology_Results"
+      "direct_transition": "End_Workup_Visit"
     },
     "Prostate_Biopsy": {
       "type": "Procedure",
@@ -196,32 +372,54 @@
           "display": "Biopsy of prostate"
         }
       ],
-      "direct_transition": "Pathology_Results"
+      "direct_transition": "End_Workup_Visit"
     },
-    "Pathology_Results": {
+    "End_Workup_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Pathology_Turnaround_Delay"
+    },
+    "Pathology_Turnaround_Delay": {
       "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 7,
-          "standardDeviation": 3
-        }
+      "range": {
+        "low": 5,
+        "high": 14,
+        "unit": "days"
       },
-      "unit": "days",
+      "direct_transition": "Pathology_Results_Visit"
+    },
+    "Pathology_Results_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
       "direct_transition": "Cancer_Diagnosis_Decision"
     },
     "Cancer_Diagnosis_Decision": {
       "type": "Simple",
+      "remarks": [
+        "22.2% biopsy positivity, in line with ERSPC round-one biopsy yield of",
+        "roughly a quarter (Schroder, NEJM 2009). A negative biopsy returns the",
+        "man to annual screening rather than ending his follow-up."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.25,
+          "distribution": 0.222,
           "transition": "Diagnose_Prostate_Cancer"
         },
         {
-          "distribution": 0.75,
-          "transition": "Annual_Screening"
+          "distribution": 0.778,
+          "transition": "End_Negative_Biopsy_Visit"
         }
       ]
+    },
+    "End_Negative_Biopsy_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "PSA_Interval_Delay"
     },
     "Diagnose_Prostate_Cancer": {
       "type": "ConditionOnset",
@@ -232,39 +430,152 @@
           "display": "Malignant neoplasm of prostate"
         }
       ],
-      "direct_transition": "Risk_Stratification",
-      "assign_to_attribute": "Prostate Cancer"
+      "assign_to_attribute": "Prostate Cancer",
+      "direct_transition": "Risk_Stratification"
     },
     "Risk_Stratification": {
+      "type": "Simple",
+      "remarks": [
+        "NCCN risk group at diagnosis. Approximates the SEER 2018-2022 stage mix",
+        "(local ~69%, regional ~13%, distant ~8%) expressed as risk groups.",
+        "",
+        "This used to be a single SetAttribute carrying a {type, value_set} object,",
+        "which is not valid GMF: Gson deserialises it into a LinkedTreeMap and any",
+        "downstream comparison throws. It is now a router into plain-string",
+        "SetAttribute states, which is what the value_set was trying to express."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.22,
+          "transition": "Set_Risk_Low"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Set_Risk_Favorable_Intermediate"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Set_Risk_Unfavorable_Intermediate"
+        },
+        {
+          "distribution": 0.25,
+          "transition": "Set_Risk_High"
+        },
+        {
+          "distribution": 0.13,
+          "transition": "Set_Risk_Very_High"
+        }
+      ]
+    },
+    "Set_Risk_Low": {
       "type": "SetAttribute",
       "attribute": "prostate_cancer_risk",
-      "value": {
-        "type": "String",
-        "value_set": [
-          "low_risk",
-          "favorable_intermediate",
-          "unfavorable_intermediate",
-          "high_risk",
-          "very_high_risk"
-        ]
-      },
+      "value": "low_risk",
+      "direct_transition": "Staging_Workup"
+    },
+    "Set_Risk_Favorable_Intermediate": {
+      "type": "SetAttribute",
+      "attribute": "prostate_cancer_risk",
+      "value": "favorable_intermediate",
+      "direct_transition": "Staging_Workup"
+    },
+    "Set_Risk_Unfavorable_Intermediate": {
+      "type": "SetAttribute",
+      "attribute": "prostate_cancer_risk",
+      "value": "unfavorable_intermediate",
+      "direct_transition": "Staging_Workup"
+    },
+    "Set_Risk_High": {
+      "type": "SetAttribute",
+      "attribute": "prostate_cancer_risk",
+      "value": "high_risk",
+      "direct_transition": "Staging_Workup"
+    },
+    "Set_Risk_Very_High": {
+      "type": "SetAttribute",
+      "attribute": "prostate_cancer_risk",
+      "value": "very_high_risk",
       "direct_transition": "Staging_Workup"
     },
     "Staging_Workup": {
+      "type": "Simple",
+      "remarks": [
+        "Clinical T stage at diagnosis, weighted towards T1c because most cases",
+        "are screen-detected and impalpable (SEER 2018-2022: ~69% localised).",
+        "Same bad-GMF fix as Risk_Stratification: router into plain-string",
+        "SetAttribute states instead of an inline value_set object."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
+          "transition": "Set_Stage_T1c"
+        },
+        {
+          "distribution": 0.18,
+          "transition": "Set_Stage_T2a"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "Set_Stage_T2b"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "Set_Stage_T2c"
+        },
+        {
+          "distribution": 0.12,
+          "transition": "Set_Stage_T3a"
+        },
+        {
+          "distribution": 0.06,
+          "transition": "Set_Stage_T3b"
+        },
+        {
+          "distribution": 0.04,
+          "transition": "Set_Stage_T4"
+        }
+      ]
+    },
+    "Set_Stage_T1c": {
       "type": "SetAttribute",
       "attribute": "clinical_stage",
-      "value": {
-        "type": "String",
-        "value_set": [
-          "T1c",
-          "T2a",
-          "T2b",
-          "T2c",
-          "T3a",
-          "T3b",
-          "T4"
-        ]
-      },
+      "value": "T1c",
+      "direct_transition": "Genomic_Testing_Decision"
+    },
+    "Set_Stage_T2a": {
+      "type": "SetAttribute",
+      "attribute": "clinical_stage",
+      "value": "T2a",
+      "direct_transition": "Genomic_Testing_Decision"
+    },
+    "Set_Stage_T2b": {
+      "type": "SetAttribute",
+      "attribute": "clinical_stage",
+      "value": "T2b",
+      "direct_transition": "Genomic_Testing_Decision"
+    },
+    "Set_Stage_T2c": {
+      "type": "SetAttribute",
+      "attribute": "clinical_stage",
+      "value": "T2c",
+      "direct_transition": "Genomic_Testing_Decision"
+    },
+    "Set_Stage_T3a": {
+      "type": "SetAttribute",
+      "attribute": "clinical_stage",
+      "value": "T3a",
+      "direct_transition": "Genomic_Testing_Decision"
+    },
+    "Set_Stage_T3b": {
+      "type": "SetAttribute",
+      "attribute": "clinical_stage",
+      "value": "T3b",
+      "direct_transition": "Genomic_Testing_Decision"
+    },
+    "Set_Stage_T4": {
+      "type": "SetAttribute",
+      "attribute": "clinical_stage",
+      "value": "T4",
       "direct_transition": "Genomic_Testing_Decision"
     },
     "Genomic_Testing_Decision": {
@@ -276,7 +587,7 @@
         },
         {
           "distribution": 0.6,
-          "transition": "Treatment_Discussion"
+          "transition": "End_Diagnosis_Visit"
         }
       ]
     },
@@ -290,10 +601,30 @@
           "display": "Oncotype DX prostate cancer assay"
         }
       ],
+      "range": {
+        "low": 10,
+        "high": 80,
+        "decimals": 0
+      },
+      "unit": "{score}",
+      "direct_transition": "End_Diagnosis_Visit"
+    },
+    "End_Diagnosis_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Treatment_Planning_Delay"
+    },
+    "Treatment_Planning_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 14,
+        "high": 28,
+        "unit": "days"
+      },
       "direct_transition": "Treatment_Discussion"
     },
     "Treatment_Discussion": {
       "type": "Encounter",
+      "encounter_class": "ambulatory",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -304,15 +635,12 @@
       "direct_transition": "Treatment_Selection"
     },
     "Treatment_Selection": {
-      "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 21,
-          "standardDeviation": 7
-        }
-      },
-      "unit": "days",
+      "type": "Simple",
+      "remarks": [
+        "NCCN risk-group-directed initial management. The 21-day deliberation",
+        "period that used to sit here is now Treatment_Planning_Delay, before the",
+        "conference opens, so the conference encounter closes the same day."
+      ],
       "complex_transition": [
         {
           "condition": {
@@ -327,7 +655,7 @@
               "distribution": 0.9
             },
             {
-              "transition": "Radical_Prostatectomy",
+              "transition": "End_Visit_For_Surgery",
               "distribution": 0.1
             }
           ]
@@ -345,11 +673,11 @@
               "distribution": 0.4
             },
             {
-              "transition": "Radical_Prostatectomy",
+              "transition": "End_Visit_For_Surgery",
               "distribution": 0.3
             },
             {
-              "transition": "Radiation_Therapy",
+              "transition": "End_Visit_For_Radiation",
               "distribution": 0.3
             }
           ]
@@ -363,15 +691,15 @@
           },
           "distributions": [
             {
-              "transition": "Radical_Prostatectomy",
+              "transition": "End_Visit_For_Surgery",
               "distribution": 0.4
             },
             {
-              "transition": "Radiation_Therapy",
+              "transition": "End_Visit_For_Radiation",
               "distribution": 0.4
             },
             {
-              "transition": "Combined_Modality",
+              "transition": "Start_ADT_Combined_Modality",
               "distribution": 0.2
             }
           ]
@@ -385,15 +713,15 @@
           },
           "distributions": [
             {
-              "transition": "Combined_Modality",
+              "transition": "Start_ADT_Combined_Modality",
               "distribution": 0.6
             },
             {
-              "transition": "Radical_Prostatectomy",
+              "transition": "End_Visit_For_Surgery",
               "distribution": 0.3
             },
             {
-              "transition": "Radiation_Therapy",
+              "transition": "End_Visit_For_Radiation",
               "distribution": 0.1
             }
           ]
@@ -407,25 +735,12 @@
           },
           "distributions": [
             {
-              "transition": "Systemic_Therapy",
+              "transition": "Start_ADT_Systemic",
               "distribution": 0.7
             },
             {
-              "transition": "Combined_Modality",
+              "transition": "Start_ADT_Combined_Modality",
               "distribution": 0.3
-            }
-          ]
-        },
-        {
-          "condition": {
-            "condition_type": "Attribute",
-            "attribute": "prostate_cancer_risk",
-            "operator": "is nil"
-          },
-          "distributions": [
-            {
-              "transition": "Active_Surveillance",
-              "distribution": 1.0
             }
           ]
         },
@@ -443,7 +758,73 @@
           "display": "Prostate cancer surveillance"
         }
       ],
+      "reason": "Prostate Cancer",
+      "direct_transition": "End_Treatment_Visit"
+    },
+    "End_Treatment_Visit": {
+      "type": "EncounterEnd",
       "direct_transition": "Surveillance_Monitoring"
+    },
+    "Start_ADT_Combined_Modality": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Leuprolide depot is a clinician-administered intramuscular injection, not",
+        "a dispensed prescription: administration=true routes it through",
+        "export/rxnorm_hcpcs_map.json (42375 -> J9217) instead of an NDC."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "42375",
+          "display": "leuprolide"
+        }
+      ],
+      "administration": true,
+      "reason": "Prostate Cancer",
+      "direct_transition": "End_Visit_For_Radiation"
+    },
+    "Start_ADT_Systemic": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "42375",
+          "display": "leuprolide"
+        }
+      ],
+      "administration": true,
+      "reason": "Prostate Cancer",
+      "direct_transition": "End_Visit_For_Systemic_Therapy"
+    },
+    "End_Visit_For_Systemic_Therapy": {
+      "type": "EncounterEnd",
+      "direct_transition": "Advanced_Disease_Monitoring"
+    },
+    "End_Visit_For_Surgery": {
+      "type": "EncounterEnd",
+      "direct_transition": "Prostatectomy_Scheduling_Delay"
+    },
+    "Prostatectomy_Scheduling_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 8,
+        "unit": "weeks"
+      },
+      "direct_transition": "Prostatectomy_Admission"
+    },
+    "Prostatectomy_Admission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission"
+        }
+      ],
+      "reason": "Prostate Cancer",
+      "direct_transition": "Radical_Prostatectomy"
     },
     "Radical_Prostatectomy": {
       "type": "Procedure",
@@ -454,7 +835,51 @@
           "display": "Radical prostatectomy"
         }
       ],
+      "reason": "Prostate Cancer",
+      "direct_transition": "Prostatectomy_Stay"
+    },
+    "Prostatectomy_Stay": {
+      "type": "Delay",
+      "remarks": [
+        "Genuine inpatient length of stay; the only Delay in this module that is",
+        "allowed to sit inside an open encounter."
+      ],
+      "range": {
+        "low": 1,
+        "high": 3,
+        "unit": "days"
+      },
+      "direct_transition": "End_Prostatectomy_Admission"
+    },
+    "End_Prostatectomy_Admission": {
+      "type": "EncounterEnd",
       "direct_transition": "Post_Treatment_Monitoring"
+    },
+    "End_Visit_For_Radiation": {
+      "type": "EncounterEnd",
+      "direct_transition": "Radiation_Scheduling_Delay"
+    },
+    "Radiation_Scheduling_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 8,
+        "unit": "weeks"
+      },
+      "direct_transition": "Radiation_Visit"
+    },
+    "Radiation_Visit": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Prostate Cancer",
+      "direct_transition": "Radiation_Therapy"
     },
     "Radiation_Therapy": {
       "type": "Procedure",
@@ -465,92 +890,207 @@
           "display": "Hypofractionated radiation therapy of prostate (procedure)"
         }
       ],
+      "reason": "Prostate Cancer",
+      "direct_transition": "End_Radiation_Visit"
+    },
+    "End_Radiation_Visit": {
+      "type": "EncounterEnd",
       "direct_transition": "Post_Treatment_Monitoring"
-    },
-    "Combined_Modality": {
-      "type": "MedicationOrder",
-      "direct_transition": "Radiation_Therapy",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "42375",
-          "display": "leuprolide"
-        }
-      ]
-    },
-    "Systemic_Therapy": {
-      "type": "MedicationOrder",
-      "direct_transition": "Advanced_Disease_Monitoring",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "42375",
-          "display": "leuprolide"
-        }
-      ]
     },
     "Surveillance_Monitoring": {
       "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 12,
-          "standardDeviation": 3
-        }
+      "range": {
+        "low": 11,
+        "high": 13,
+        "unit": "months"
       },
-      "unit": "months",
+      "direct_transition": "Surveillance_Visit"
+    },
+    "Surveillance_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Prostate Cancer",
       "direct_transition": "Progression_Check"
     },
     "Progression_Check": {
       "type": "Simple",
+      "remarks": [
+        "8%/yr conversion from active surveillance to definitive treatment, so",
+        "roughly a third of the cohort is treated within 10 years (Klotz, J Clin",
+        "Oncol 2015, Toronto active surveillance cohort). The pre-2026-08 module",
+        "used 30% per pass, which treated essentially everybody within 5 years.",
+        "A further 5%/yr are discharged from active surveillance follow-up."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.3,
+          "distribution": 0.08,
           "transition": "Definitive_Treatment"
         },
         {
-          "distribution": 0.7,
-          "transition": "Surveillance_Monitoring"
+          "distribution": 0.05,
+          "transition": "End_Surveillance_Discharge"
+        },
+        {
+          "distribution": 0.87,
+          "transition": "End_Surveillance_Visit"
         }
       ]
+    },
+    "End_Surveillance_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Surveillance_Monitoring"
+    },
+    "End_Surveillance_Discharge": {
+      "type": "EncounterEnd",
+      "direct_transition": "Terminal"
     },
     "Definitive_Treatment": {
       "type": "Simple",
       "distributed_transition": [
         {
           "distribution": 0.5,
-          "transition": "Radical_Prostatectomy"
+          "transition": "End_Visit_For_Surgery"
         },
         {
           "distribution": 0.5,
-          "transition": "Radiation_Therapy"
+          "transition": "End_Visit_For_Radiation"
         }
       ]
     },
     "Post_Treatment_Monitoring": {
       "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 12,
-          "standardDeviation": 4
-        }
+      "range": {
+        "low": 11,
+        "high": 13,
+        "unit": "months"
       },
-      "unit": "months",
-      "direct_transition": "PSA_Recurrence_Check"
+      "direct_transition": "Post_Treatment_Visit"
     },
-    "PSA_Recurrence_Check": {
+    "Post_Treatment_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Prostate Cancer",
+      "direct_transition": "Followup_Year_Counter"
+    },
+    "Followup_Year_Counter": {
+      "type": "Counter",
+      "attribute": "prostate_followup_years",
+      "action": "increment",
+      "direct_transition": "Followup_PSA_Draw"
+    },
+    "Followup_PSA_Draw": {
       "type": "Simple",
+      "remarks": [
+        "Biochemical recurrence is defined as a post-treatment PSA at or above",
+        "0.2 ng/mL. 3.5% per year for 10 years gives 1 - (1 - 0.035)^10 = 30%,",
+        "matching the 10-year biochemical recurrence rate after radical",
+        "prostatectomy (Han, J Urol 2003; Freedland, JAMA 2005). The pre-2026-08",
+        "module used 20% per pass, i.e. 89% recurrence by 10 years."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.2,
+          "distribution": 0.965,
+          "transition": "Set_Followup_PSA_Undetectable"
+        },
+        {
+          "distribution": 0.035,
+          "transition": "Set_Followup_PSA_Rising"
+        }
+      ]
+    },
+    "Set_Followup_PSA_Undetectable": {
+      "type": "SetAttribute",
+      "attribute": "last_observation",
+      "range": {
+        "low": 0.0,
+        "high": 0.15,
+        "decimals": 2
+      },
+      "direct_transition": "Followup_PSA_Test"
+    },
+    "Set_Followup_PSA_Rising": {
+      "type": "SetAttribute",
+      "attribute": "last_observation",
+      "range": {
+        "low": 0.21,
+        "high": 4.0,
+        "decimals": 2
+      },
+      "direct_transition": "Followup_PSA_Test"
+    },
+    "Followup_PSA_Test": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2857-1",
+          "display": "Prostate specific Ag [Mass/volume] in Serum"
+        }
+      ],
+      "attribute": "last_observation",
+      "unit": "ng/mL",
+      "direct_transition": "Followup_PSA_Interpretation"
+    },
+    "Followup_PSA_Interpretation": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "last_observation",
+            "operator": ">=",
+            "value": 0.2
+          },
           "transition": "Biochemical_Recurrence"
         },
         {
-          "distribution": 0.8,
-          "transition": "Post_Treatment_Monitoring"
+          "transition": "Followup_Duration_Check"
         }
       ]
+    },
+    "Followup_Duration_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Men who are recurrence-free after 10 years of surveillance are discharged",
+        "to survivorship care rather than being followed until death."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "prostate_followup_years",
+            "operator": ">=",
+            "value": 10
+          },
+          "transition": "End_Followup_Discharge"
+        },
+        {
+          "transition": "End_Post_Treatment_Visit"
+        }
+      ]
+    },
+    "End_Post_Treatment_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Post_Treatment_Monitoring"
+    },
+    "End_Followup_Discharge": {
+      "type": "EncounterEnd",
+      "direct_transition": "Terminal"
     },
     "Biochemical_Recurrence": {
       "type": "ConditionOnset",
@@ -561,54 +1101,110 @@
           "display": "Recurrent malignant neoplasm"
         }
       ],
-      "direct_transition": "Salvage_Therapy"
+      "direct_transition": "Start_ADT_Salvage"
     },
-    "Salvage_Therapy": {
+    "Start_ADT_Salvage": {
       "type": "MedicationOrder",
-      "direct_transition": "Advanced_Disease_Monitoring",
       "codes": [
         {
           "system": "RxNorm",
           "code": "42375",
           "display": "leuprolide"
         }
-      ]
+      ],
+      "administration": true,
+      "reason": "Prostate Cancer",
+      "direct_transition": "End_Recurrence_Visit"
+    },
+    "End_Recurrence_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Advanced_Disease_Monitoring"
     },
     "Advanced_Disease_Monitoring": {
       "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 24,
-          "standardDeviation": 12
-        }
+      "range": {
+        "low": 11,
+        "high": 13,
+        "unit": "months"
       },
-      "unit": "months",
+      "direct_transition": "ADT_Followup_Visit"
+    },
+    "ADT_Followup_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Prostate Cancer",
       "direct_transition": "Castration_Resistance_Check"
     },
     "Castration_Resistance_Check": {
       "type": "Simple",
+      "remarks": [
+        "3%/yr progression to castration-resistant disease on androgen deprivation",
+        "(Kirby, Int J Clin Pract 2011: 10-20% within five years), plus a 6%/yr",
+        "exit for durable responders discharged to routine follow-up. Competing",
+        "non-prostate mortality is left to the lifecycle module, which stops this",
+        "module when the person dies. The pre-2026-08 module used 60% per pass",
+        "with no non-CRPC exit, so every recurrence became castration-resistant."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.6,
+          "distribution": 0.03,
           "transition": "Metastatic_Castration_Resistant"
         },
         {
-          "distribution": 0.4,
-          "transition": "Advanced_Disease_Monitoring"
+          "distribution": 0.06,
+          "transition": "End_ADT_Stable_Discharge"
+        },
+        {
+          "distribution": 0.91,
+          "transition": "Continue_ADT"
         }
       ]
     },
+    "Continue_ADT": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "42375",
+          "display": "leuprolide"
+        }
+      ],
+      "administration": true,
+      "reason": "Prostate Cancer",
+      "direct_transition": "End_ADT_Followup_Visit"
+    },
+    "End_ADT_Followup_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Advanced_Disease_Monitoring"
+    },
+    "End_ADT_Stable_Discharge": {
+      "type": "EncounterEnd",
+      "direct_transition": "Terminal"
+    },
     "Metastatic_Castration_Resistant": {
       "type": "MedicationOrder",
-      "direct_transition": "Palliative_Care_Integration",
+      "remarks": [
+        "Docetaxel is an intravenous infusion given in the clinic:",
+        "administration=true routes it through export/rxnorm_hcpcs_map.json",
+        "(72962 -> J9171) rather than being dispensed as an NDC."
+      ],
       "codes": [
         {
           "system": "RxNorm",
           "code": "72962",
           "display": "docetaxel"
         }
-      ]
+      ],
+      "administration": true,
+      "reason": "Prostate Cancer",
+      "direct_transition": "Palliative_Care_Integration"
     },
     "Palliative_Care_Integration": {
       "type": "CarePlanStart",
@@ -619,74 +1215,79 @@
           "display": "Palliative care"
         }
       ],
-      "direct_transition": "End_of_Life_Care"
+      "reason": "Prostate Cancer",
+      "direct_transition": "End_CRPC_Visit"
     },
-    "End_of_Life_Care": {
-      "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 24,
-          "standardDeviation": 12
-        }
-      },
-      "unit": "months",
-      "direct_transition": "Death_From_Prostate_Cancer"
+    "End_CRPC_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "CRPC_Monitoring"
     },
-    "Annual_Screening": {
+    "CRPC_Monitoring": {
       "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 12,
-          "standardDeviation": 3
-        }
+      "range": {
+        "low": 11,
+        "high": 13,
+        "unit": "months"
       },
-      "unit": "months",
-      "direct_transition": "Initial_PSA_Test"
+      "direct_transition": "CRPC_Followup_Visit"
+    },
+    "CRPC_Followup_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Prostate Cancer",
+      "direct_transition": "CRPC_Outcome_Check"
+    },
+    "CRPC_Outcome_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Prostate cancer death arises only here, in the metastatic",
+        "castration-resistant arm, at 5%/yr. Everyone else leaves this module",
+        "through a discharge EncounterEnd and dies of a competing cause handled",
+        "by the lifecycle module. The pre-2026-08 module funnelled every",
+        "diagnosed man into Death_From_Prostate_Cancer."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.05,
+          "transition": "Death_From_Prostate_Cancer"
+        },
+        {
+          "distribution": 0.95,
+          "transition": "Continue_CRPC_Therapy"
+        }
+      ]
+    },
+    "Continue_CRPC_Therapy": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "72962",
+          "display": "docetaxel"
+        }
+      ],
+      "administration": true,
+      "reason": "Prostate Cancer",
+      "direct_transition": "End_CRPC_Followup_Visit"
+    },
+    "End_CRPC_Followup_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "CRPC_Monitoring"
     },
     "Death_From_Prostate_Cancer": {
       "type": "Death",
+      "condition_onset": "Diagnose_Prostate_Cancer",
       "direct_transition": "Terminal"
     },
     "Terminal": {
       "type": "Terminal"
-    },
-    "PSA_Result_Normal": {
-      "type": "Observation",
-      "category": "laboratory",
-      "codes": [
-        {
-          "system": "LOINC",
-          "code": "2857-1",
-          "display": "Prostate specific Ag [Mass/volume] in Serum"
-        }
-      ],
-      "unit": "ng/mL",
-      "range": {
-        "low": 0.2,
-        "high": 3.0
-      },
-      "assign_to_attribute": "last_observation",
-      "direct_transition": "PSA_Interpretation"
-    },
-    "PSA_Result_Elevated": {
-      "type": "Observation",
-      "category": "laboratory",
-      "codes": [
-        {
-          "system": "LOINC",
-          "code": "2857-1",
-          "display": "Prostate specific Ag [Mass/volume] in Serum"
-        }
-      ],
-      "unit": "ng/mL",
-      "range": {
-        "low": 3.0,
-        "high": 10.0
-      },
-      "assign_to_attribute": "last_observation",
-      "direct_transition": "PSA_Interpretation"
     }
   }
 }

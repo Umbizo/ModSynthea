@@ -6877,5 +6877,59 @@
       "code": "J0896",
       "description": "Injection, luspatercept-aamt, 0.25 mg"
     }
+  ],
+
+  "2690005": [
+    {
+      "code": "72197",
+      "description": "Magnetic resonance imaging, pelvis; without contrast material(s), followed by contrast material(s) and further sequences",
+      "weight": "0.75"
+    },
+    {
+      "code": "72195",
+      "description": "Magnetic resonance imaging, pelvis; without contrast material(s)",
+      "weight": "0.25"
+    }
+  ],
+  "447395005": [
+    {
+      "code": "55700",
+      "description": "Biopsy, prostate; needle or punch, single or multiple, any approach"
+    }
+  ],
+  "65575008": [
+    {
+      "code": "55700",
+      "description": "Biopsy, prostate; needle or punch, single or multiple, any approach"
+    }
+  ],
+  "26294005": [
+    {
+      "code": "55866",
+      "description": "Laparoscopy, surgical prostatectomy, retropubic radical, including nerve sparing, includes robotic assistance, when performed",
+      "weight": "0.85"
+    },
+    {
+      "code": "55840",
+      "description": "Prostatectomy, retropubic radical, with or without nerve sparing",
+      "weight": "0.08"
+    },
+    {
+      "code": "55845",
+      "description": "Prostatectomy, retropubic radical, with or without nerve sparing; with bilateral pelvic lymphadenectomy, including external iliac, hypogastric, and obturator nodes",
+      "weight": "0.07"
+    }
+  ],
+  "785706005": [
+    {
+      "code": "77386",
+      "description": "Intensity modulated radiation treatment delivery (IMRT), includes guidance and tracking, when performed; complex",
+      "weight": "0.7"
+    },
+    {
+      "code": "77373",
+      "description": "Stereotactic body radiation therapy, treatment delivery, per fraction to 1 or more lesions, including image guidance, entire course not to exceed 5 fractions",
+      "weight": "0.3"
+    }
   ]
 }

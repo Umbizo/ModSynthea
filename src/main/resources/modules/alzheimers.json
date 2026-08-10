@@ -260,7 +260,7 @@
         }
       ],
       "reason": "alzheimers_disease",
-      "direct_transition": "AnnualADFollowup"
+      "direct_transition": "End_MemoryClinicVisit"
     },
     "InfusionProgram": {
       "type": "Encounter",
@@ -385,7 +385,7 @@
         "(8 MG), 579148 (12 MG) as the real SCDs. Took the starting dose (4 MG).",
         "Also the exact RxCUI dementia.json's FirstPrescription1 already uses."
       ],
-      "direct_transition": "AnnualADFollowup"
+      "direct_transition": "End_MemoryClinicVisit"
     },
     "StartRivastigmine": {
       "type": "MedicationOrder",
@@ -403,6 +403,19 @@
         "confirmed via rxcui/373797/related.json?tty=SCD, which lists 314214",
         "(1.5 MG), 312835 (3 MG), 314215 (4.5 MG), 312836 (6 MG) as the real",
         "SCDs. Took 3 MG (mid-titration/maintenance dose)."
+      ],
+      "direct_transition": "End_MemoryClinicVisit"
+    },
+    "End_MemoryClinicVisit": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Fix round 1 (coordinator review): MemoryClinicVisit previously stayed",
+        "open across ChooseInitialTherapy's med-start states and was only",
+        "'closed' by AnnualADFollowup's same-module Encounter re-entry --",
+        "zero simulated time elapses between them, so the superseded encounter",
+        "got STOP == START (the same zero-duration-supersession pattern fixed",
+        "in the NursingHomeAdmission/HomeHospice end-stage loop). Explicit",
+        "close, no delay added."
       ],
       "direct_transition": "AnnualADFollowup"
     },
@@ -829,7 +842,7 @@
           "distribution": 0.9
         },
         {
-          "transition": "LongTermCareConsideration",
+          "transition": "End_PalliativeCareReferral",
           "distribution": 0.1
         }
       ]
@@ -842,6 +855,20 @@
           "code": "310303002",
           "display": "Advance directive discussion (procedure)"
         }
+      ],
+      "direct_transition": "End_PalliativeCareReferral"
+    },
+    "End_PalliativeCareReferral": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Fix round 1 (coordinator review): PalliativeCareReferral previously",
+        "stayed open across ACPProcedure/AdvancedCarePlanning* and was only",
+        "'closed' by LongTermCareConsideration's NursingHomeAdmission/",
+        "HomeHospice same-module Encounter re-entry -- zero simulated time",
+        "elapses in between, so the superseded encounter got STOP == START.",
+        "Same pattern as End_MemoryClinicVisit above. Explicit close, no",
+        "delay added; both the 0.9 (ACP content runs) and 0.1 (skipped) paths",
+        "out of AdvancedCarePlanning_Action_1_Gate now route through here."
       ],
       "direct_transition": "LongTermCareConsideration"
     },

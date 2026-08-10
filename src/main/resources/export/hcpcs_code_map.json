@@ -7367,5 +7367,35 @@
       "code": "58960",
       "description": "Resection (tumor debulking) of ovarian, peritoneal, or omental tumor"
     }
+  ],
+  "430448007": [
+    {
+      "code": "71260",
+      "description": "Computed tomography, thorax; with contrast material(s)"
+    }
+  ],
+  "35295005": [
+    {
+      "code": "32408",
+      "description": "Percutaneous needle biopsy, lung or mediastinum, including imaging guidance"
+    }
+  ],
+  "10847001": [
+    {
+      "code": "31622",
+      "description": "Bronchoscopy, rigid or flexible, including fluoroscopic guidance, when performed; diagnostic, with or without cell washing"
+    }
+  ],
+  "16327691000119101": [
+    {
+      "code": "70553",
+      "description": "Magnetic resonance imaging, brain (including brain stem); without contrast material, followed by contrast material(s) and further sequences"
+    }
+  ],
+  "428412000": [
+    {
+      "code": "77427",
+      "description": "Radiation treatment management, 5 treatments"
+    }
   ]
 }

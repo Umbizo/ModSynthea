@@ -1,9 +1,128 @@
 {
   "name": "Small Cell Lung Cancer Module",
+  "remarks": [
+    "2026-08 remediation: the pre-fix module rolled its entire lifetime",
+    "incidence check (Smoking_Status_Check -> Cancer_Risk_Assessment) once,",
+    "~1 day after birth (Smoking_Status_Check's own Delay). At that age the",
+    "`smoker` attribute has never been set by anything (LifecycleModule",
+    "does not assign it until adolescence), so the `smoker == true` branch",
+    "was structurally dead and the `smoker is nil` branch caught literally",
+    "every newborn, sending 30% of all infants into a 0.2% SCLC roll --",
+    "the module's entire disease burden was concentrated in the first day",
+    "of life. Replaced with an 18+ Guard and an annual incidence loop",
+    "(same re-enterable Delay+router idiom as pneumonia.json/CIDP.json)",
+    "gated by an EVER-smoker test at age: ever-smokers 50+, 1.5e-04/yr;",
+    "everyone else (never-smokers of any adult age, or ever-smokers under",
+    "50, where SCLC is rare regardless of smoking history), 5e-06/yr --",
+    "a 30x differential consistent with SCLC being the most strongly",
+    "smoking-associated lung cancer subtype (Varghese AM et al., 'Small-",
+    "cell lung cancers in patients who never smoked cigarettes,' J Thorac",
+    "Oncol. 2014;9(6):892-896 -- SCLC in true never-smokers is rare enough",
+    "to be case-report/small-series material; Govindan R et al., 'Changing",
+    "epidemiology of small-cell lung cancer in the United States over the",
+    "last 30 years,' J Clin Oncol. 2006;24(28):4539-4544, for the smoking-",
+    "driven age/incidence pattern the SEER-derived schedule here targets).",
+    "`smoker == true` alone is a trap -- LifecycleModule.quitSmoking clears",
+    "it back to false with cumulative probability approaching 1 over a",
+    "normal lifespan, so `smoker == true` OR `\"quit smoking age\" is not",
+    "nil` is the correct ever-smoker test (same idiom bladder_cancer.json",
+    "and lung_cancer/lung_cancer_probabilities.json use).",
+    "",
+    "Also fixed: Cough_Symptom, Hemoptysis_Symptom, and Chest_Pain_Symptom",
+    "were Symptom states carrying a `codes` array instead of the required",
+    "`symptom` string -- State$Symptom.process needs `symptom` and NPEs",
+    "without it, discarding the whole patient record (a known instance",
+    "flagged in this remediation's engine notes). Present_Symptoms (an",
+    "Encounter) was never explicitly closed before Medical_Oncology_",
+    "Encounter opened later in the same pass -- not a lint CRITICAL",
+    "(nothing >=1 day elapses between the two opens, and Encounter re-entry",
+    "auto-releases the prior reservation) but still an unclosed FHIR",
+    "Encounter resource; added an explicit close.",
+    "",
+    "The treatment spine (Medical_Oncology_Encounter onward) is",
+    "deliberately left untouched by this task -- Palliative_Care_Integration",
+    "still uses the shared 103735009 CarePlanStart code flagged in",
+    "task-1.10-report.md as a cross-module collision risk with any module",
+    "using 103735009 as a Procedure, but no module in the current tree",
+    "does (verified by search), so it is currently inert; out of this",
+    "task's scope to re-architect further."
+  ],
+  "gmf_version": 2,
   "states": {
     "Initial": {
       "type": "Initial",
-      "direct_transition": "Smoking_Status_Check"
+      "direct_transition": "Adult_Age_Guard"
+    },
+    "Adult_Age_Guard": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 18,
+        "unit": "years"
+      },
+      "direct_transition": "SCLC_Annual_Check"
+    },
+    "SCLC_Annual_Check": {
+      "type": "Delay",
+      "range": {
+        "low": 350,
+        "high": 385,
+        "unit": "days"
+      },
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Or",
+                "conditions": [
+                  {
+                    "condition_type": "Attribute",
+                    "attribute": "smoker",
+                    "operator": "==",
+                    "value": true
+                  },
+                  {
+                    "condition_type": "Attribute",
+                    "attribute": "quit smoking age",
+                    "operator": "is not nil"
+                  }
+                ]
+              },
+              {
+                "condition_type": "Age",
+                "operator": ">=",
+                "quantity": 50,
+                "unit": "years"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "transition": "Symptom_Onset",
+              "distribution": 0.00015
+            },
+            {
+              "transition": "SCLC_Annual_Check",
+              "distribution": 0.99985
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "transition": "Symptom_Onset",
+              "distribution": 0.000005
+            },
+            {
+              "transition": "SCLC_Annual_Check",
+              "distribution": 0.999995
+            }
+          ]
+        }
+      ]
     },
     "Medical_Oncology_Encounter": {
       "type": "Encounter",
@@ -33,66 +152,6 @@
         }
       ]
     },
-    "Smoking_Status_Check": {
-      "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 1,
-          "standardDeviation": 0.5
-        }
-      },
-      "unit": "days",
-      "complex_transition": [
-        {
-          "condition": {
-            "condition_type": "Attribute",
-            "attribute": "smoker",
-            "operator": "==",
-            "value": true
-          },
-          "distributions": [
-            {
-              "transition": "Cancer_Risk_Assessment",
-              "distribution": 1.0
-            }
-          ]
-        },
-        {
-          "condition": {
-            "condition_type": "Attribute",
-            "attribute": "smoker",
-            "operator": "is nil"
-          },
-          "distributions": [
-            {
-              "transition": "Cancer_Risk_Assessment",
-              "distribution": 0.3
-            },
-            {
-              "transition": "Terminal",
-              "distribution": 0.7
-            }
-          ]
-        },
-        {
-          "transition": "Terminal"
-        }
-      ]
-    },
-    "Cancer_Risk_Assessment": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.002,
-          "transition": "Symptom_Onset"
-        },
-        {
-          "distribution": 0.998,
-          "transition": "Terminal"
-        }
-      ]
-    },
     "Symptom_Onset": {
       "type": "Delay",
       "distribution": {
@@ -107,6 +166,7 @@
     },
     "Present_Symptoms": {
       "type": "Encounter",
+      "encounter_class": "ambulatory",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -118,13 +178,16 @@
     },
     "Cough_Symptom": {
       "type": "Symptom",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "49727002",
-          "display": "Cough"
-        }
+      "remarks": [
+        "Was a Symptom state carrying `codes` instead of the required",
+        "`symptom` string -- State$Symptom.process NPEs without `symptom`,",
+        "discarding the whole patient record."
       ],
+      "symptom": "Cough",
+      "range": {
+        "low": 1,
+        "high": 5
+      },
       "direct_transition": "Hemoptysis_Check"
     },
     "Hemoptysis_Check": {
@@ -142,13 +205,11 @@
     },
     "Hemoptysis_Symptom": {
       "type": "Symptom",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "66857006",
-          "display": "Hemoptysis"
-        }
-      ],
+      "symptom": "Hemoptysis",
+      "range": {
+        "low": 1,
+        "high": 5
+      },
       "direct_transition": "Chest_Pain_Check"
     },
     "Chest_Pain_Check": {
@@ -166,13 +227,11 @@
     },
     "Chest_Pain_Symptom": {
       "type": "Symptom",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "29857009",
-          "display": "Chest pain"
-        }
-      ],
+      "symptom": "Chest pain",
+      "range": {
+        "low": 1,
+        "high": 5
+      },
       "direct_transition": "Initial_Imaging"
     },
     "Initial_Imaging": {
@@ -272,12 +331,23 @@
       "type": "SetAttribute",
       "attribute": "sclc_stage",
       "value": "limited",
-      "direct_transition": "Medical_Oncology_Encounter"
+      "direct_transition": "Present_Symptoms_Encounter_End"
     },
     "Extensive_Stage": {
       "type": "SetAttribute",
       "attribute": "sclc_stage",
       "value": "extensive",
+      "direct_transition": "Present_Symptoms_Encounter_End"
+    },
+    "Present_Symptoms_Encounter_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Present_Symptoms (the diagnostic-workup Encounter opened above) was",
+        "never explicitly closed before Medical_Oncology_Encounter opened --",
+        "not a lint CRITICAL (nothing >=1 day elapses in between, and",
+        "Encounter re-entry auto-releases the prior reservation), but still",
+        "an unclosed FHIR Encounter resource. Closed explicitly here."
+      ],
       "direct_transition": "Medical_Oncology_Encounter"
     },
     "Chemoradiation_Therapy": {

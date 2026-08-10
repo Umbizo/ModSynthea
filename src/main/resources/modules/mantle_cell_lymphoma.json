@@ -6,16 +6,22 @@
     "overexpression. Median age at diagnosis ~68; most patients present with",
     "advanced-stage (III/IV) disease.",
     "",
-    "INCIDENCE. Annual reroll from age 50: 1.5e-05/yr for males, 5e-06/yr for",
-    "everyone else -- a population-average 1e-05/yr carrying the ~3:1",
-    "male:female ratio consistently reported for MCL. US MCL incidence is",
-    "~0.5-0.8 per 100,000 person-years across all ages and rises steeply after",
-    "age 60, so restricting the hazard to age 50+ concentrates the same case",
-    "count into the genuinely at-risk band and yields a median age at diagnosis",
-    "in the high 60s. Sources: Teras LR et al., 'US lymphoid malignancy",
-    "statistics by World Health Organization subtypes', CA Cancer J Clin",
-    "2016;66:443-459 (MCL ~0.5/100,000/yr, male:female ~2.8:1); SEER*Explorer",
-    "NHL-subtype incidence tables (MCL ~0.8/100,000/yr in recent years).",
+    "INCIDENCE. Annual reroll from age 50 on a two-band age schedule crossed",
+    "with the ~3:1 male:female ratio consistently reported for MCL:",
+    "  male,  age >= 65 : 3.00e-05/yr      male,  age 50-64 : 0.75e-05/yr",
+    "  other, age >= 65 : 1.00e-05/yr      other, age 50-64 : 0.25e-05/yr",
+    "The post-50 population average stays at ~1e-05/yr, but MCL incidence is",
+    "not flat with age -- it rises steeply after 60 -- so the mass is banded",
+    "rather than spread evenly. The banded schedule puts ~72% of onsets at 65",
+    "or over and gives a median age at diagnosis of ~68.8, against the",
+    "literature median of ~68; a flat post-50 hazard of the same average",
+    "implied a median of 61. Both schedules sit below the SEER age-specific",
+    "rates, so this is a redistribution, not an inflation.",
+    "Sources: Teras LR et al., 'US lymphoid malignancy statistics by World",
+    "Health Organization subtypes', CA Cancer J Clin 2016;66:443-459 (MCL",
+    "~0.5/100,000/yr, male:female ~2.8:1, median age at diagnosis ~68);",
+    "SEER*Explorer NHL-subtype incidence tables (MCL ~0.8/100,000/yr in recent",
+    "years, with age-specific rates rising sharply through the 60s and 70s).",
     "The pre-fix module rolled 8e-05 x 0.3 exactly once, at exactly age 45, and",
     "only for white males -- a single-age spike with no reroll and a 30-50x",
     "shortfall against the literature.",
@@ -55,12 +61,16 @@
     "under 66 with non-indolent disease are consolidated with autologous stem",
     "cell transplant -- an inpatient admission covering high-dose conditioning,",
     "the stem cell infusion and a 14-21 day stay -- then recover for 3-6 months",
-    "and go on to rituximab maintenance. Everyone else in first remission goes",
-    "straight to maintenance. Maintenance is up to 18 closed outpatient",
-    "rituximab infusions given every 8 weeks (LyMa: Le Gouill S et al., N Engl J",
-    "Med 2017;377:1250 -- rituximab maintenance every 2 months for 3 years after",
-    "ASCT; Kluin-Nelemans HC et al., N Engl J Med 2012;367:520 -- rituximab",
-    "maintenance after R-CHOP in older patients), with a 3% per-cycle relapse",
+    "and go on to rituximab maintenance. Maintenance is REGIMEN-GATED, not",
+    "universal: it is given after ASCT (LyMa: Le Gouill S et al., N Engl J Med",
+    "2017;377:1250 -- rituximab every 2 months for 3 years after transplant),",
+    "after R-CHOP (Kluin-Nelemans HC et al., N Engl J Med 2012;367:520) and",
+    "after bendamustine-rituximab (MAINTAIN: Rummel MJ et al., J Clin Oncol",
+    "2016;34(15_suppl):7503), and NOT after R-hyper-CVAD (consolidated with",
+    "transplant rather than maintained) or single-agent ibrutinib (already a",
+    "continuous therapy). Those two arms go straight to surveillance. Where it",
+    "applies, maintenance is up to 18 closed outpatient rituximab infusions",
+    "given every 8 weeks, with a 3% per-cycle relapse",
     "hazard so that maintenance is not an artificial guarantee of remission.",
     "This entire arm was unreachable in the pre-fix module: nothing transitioned",
     "into Consider_Stem_Cell_Transplant, so zero patients ever received an ASCT",
@@ -121,8 +131,21 @@
     "Annual_Incidence_Check": {
       "type": "Delay",
       "remarks": [
-        "Annual reroll, not a one-shot birth roll: 1.5e-05/yr male, 5e-06/yr",
-        "otherwise (population average 1e-05/yr, male:female 3:1).",
+        "Annual reroll, not a one-shot birth roll, on a two-band age schedule",
+        "crossed with the 3:1 male weighting:",
+        "  male,   age >= 65 : 3.00e-05/yr",
+        "  male,   age 50-64 : 0.75e-05/yr",
+        "  other,  age >= 65 : 1.00e-05/yr",
+        "  other,  age 50-64 : 0.25e-05/yr",
+        "The population-average post-50 rate is preserved at ~1e-05/yr, but the",
+        "mass now sits where MCL actually occurs: this schedule puts ~72% of",
+        "onsets at age 65 or over and gives a median age at diagnosis of ~68.8,",
+        "matching the literature median of ~68 that a flat post-50 hazard",
+        "missed by six years (it implied a median of 61).",
+        "ComplexTransition.follow takes the FIRST true branch, so the cases are",
+        "ordered (M and >=65) -> (M) -> (>=65) -> unconditioned default: by the",
+        "time branch 2 is tested the patient is known to be male and under 65,",
+        "and by branch 3 to be non-male.",
         "The delay is jittered 340-390 days so onsets do not synchronise."
       ],
       "range": {
@@ -133,17 +156,62 @@
       "complex_transition": [
         {
           "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Gender",
+                "gender": "M"
+              },
+              {
+                "condition_type": "Age",
+                "operator": ">=",
+                "quantity": 65,
+                "unit": "years"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "transition": "Develop_MCL",
+              "distribution": 0.00003
+            },
+            {
+              "transition": "Annual_Incidence_Check",
+              "distribution": 0.99997
+            }
+          ]
+        },
+        {
+          "condition": {
             "condition_type": "Gender",
             "gender": "M"
           },
           "distributions": [
             {
               "transition": "Develop_MCL",
-              "distribution": 0.000015
+              "distribution": 0.0000075
             },
             {
               "transition": "Annual_Incidence_Check",
-              "distribution": 0.999985
+              "distribution": 0.9999925
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 65,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "transition": "Develop_MCL",
+              "distribution": 0.00001
+            },
+            {
+              "transition": "Annual_Incidence_Check",
+              "distribution": 0.99999
             }
           ]
         },
@@ -151,11 +219,11 @@
           "distributions": [
             {
               "transition": "Develop_MCL",
-              "distribution": 0.000005
+              "distribution": 0.0000025
             },
             {
               "transition": "Annual_Incidence_Check",
-              "distribution": 0.999995
+              "distribution": 0.9999975
             }
           ]
         }
@@ -1022,11 +1090,11 @@
       "type": "Simple",
       "distributed_transition": [
         {
-          "transition": "HyperCVAD_Cycle_Admission",
+          "transition": "Start_HyperCVAD_Induction",
           "distribution": 0.6
         },
         {
-          "transition": "BR_Cycle_Visit",
+          "transition": "Start_BR_Induction",
           "distribution": 0.4
         }
       ]
@@ -1035,18 +1103,47 @@
       "type": "Simple",
       "distributed_transition": [
         {
-          "transition": "BR_Cycle_Visit",
+          "transition": "Start_BR_Induction",
           "distribution": 0.5
         },
         {
-          "transition": "RCHOP_Cycle_Visit",
+          "transition": "Start_RCHOP_Induction",
           "distribution": 0.3
         },
         {
-          "transition": "Ibrutinib_Start_Visit",
+          "transition": "Start_Ibrutinib_Induction",
           "distribution": 0.2
         }
       ]
+    },
+    "Start_HyperCVAD_Induction": {
+      "type": "SetAttribute",
+      "remarks": [
+        "Records which induction regimen the patient actually received, so",
+        "rituximab maintenance can be gated on it (see Maintenance_Entry).",
+        "Sole non-loop entry point into the hyper-CVAD arm."
+      ],
+      "attribute": "mcl_induction",
+      "value": "hypercvad",
+      "direct_transition": "HyperCVAD_Cycle_Admission"
+    },
+    "Start_BR_Induction": {
+      "type": "SetAttribute",
+      "attribute": "mcl_induction",
+      "value": "br",
+      "direct_transition": "BR_Cycle_Visit"
+    },
+    "Start_RCHOP_Induction": {
+      "type": "SetAttribute",
+      "attribute": "mcl_induction",
+      "value": "rchop",
+      "direct_transition": "RCHOP_Cycle_Visit"
+    },
+    "Start_Ibrutinib_Induction": {
+      "type": "SetAttribute",
+      "attribute": "mcl_induction",
+      "value": "ibrutinib",
+      "direct_transition": "Ibrutinib_Start_Visit"
     },
     "HyperCVAD_Cycle_Admission": {
       "type": "Encounter",
@@ -1541,7 +1638,7 @@
     },
     "End_Watchful_Waiting_Visit_Progression": {
       "type": "EncounterEnd",
-      "direct_transition": "BR_Cycle_Visit"
+      "direct_transition": "Start_BR_Induction"
     },
     "End_Watchful_Waiting_Visit": {
       "type": "EncounterEnd",
@@ -1929,6 +2026,18 @@
     },
     "End_ASCT_Admission": {
       "type": "EncounterEnd",
+      "direct_transition": "Set_Transplanted"
+    },
+    "Set_Transplanted": {
+      "type": "SetAttribute",
+      "remarks": [
+        "Post-ASCT is the strongest maintenance indication (LyMa) and is the",
+        "one route into maintenance that does not depend on the induction",
+        "regimen -- hyper-CVAD patients who go on to transplant DO get",
+        "maintenance, they just do not get it on hyper-CVAD alone."
+      ],
+      "attribute": "mcl_transplanted",
+      "value": true,
       "direct_transition": "Post_Transplant_Recovery"
     },
     "Post_Transplant_Recovery": {
@@ -1945,7 +2054,51 @@
     },
     "Maintenance_Entry": {
       "type": "Simple",
-      "direct_transition": "Maintenance_Visit"
+      "remarks": [
+        "Rituximab maintenance is regimen-gated, not universal. Evidence",
+        "supports it after ASCT (LyMa, N Engl J Med 2017;377:1250), after",
+        "R-CHOP in older patients (Kluin-Nelemans HC et al., N Engl J Med",
+        "2012;367:520) and after bendamustine-rituximab (MAINTAIN, Rummel MJ",
+        "et al., J Clin Oncol 2016;34(15_suppl):7503 -- 2 years of rituximab",
+        "maintenance vs observation after first-line B-R in MCL; widely used",
+        "in practice). There is no such evidence after R-hyper-CVAD (which is",
+        "consolidated with transplant, not maintained) or after single-agent",
+        "ibrutinib (a continuous therapy -- adding q8wk rituximab on top of an",
+        "open ibrutinib prescription, as the first cut of this module did, is",
+        "not a real regimen). Those two arms go straight to surveillance."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "mcl_transplanted",
+            "operator": "==",
+            "value": true
+          },
+          "transition": "Maintenance_Visit"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "mcl_induction",
+            "operator": "==",
+            "value": "rchop"
+          },
+          "transition": "Maintenance_Visit"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "mcl_induction",
+            "operator": "==",
+            "value": "br"
+          },
+          "transition": "Maintenance_Visit"
+        },
+        {
+          "transition": "Remission_Monitoring"
+        }
+      ]
     },
     "Maintenance_Visit": {
       "type": "Encounter",
@@ -2198,12 +2351,36 @@
       "type": "Simple",
       "distributed_transition": [
         {
-          "transition": "Secondary_Malignancy",
+          "transition": "Secondary_Malignancy_Guard",
           "distribution": 0.3
         },
         {
           "transition": "Continued_Long_Term_Remission_Observation",
           "distribution": 0.7
+        }
+      ]
+    },
+    "Secondary_Malignancy_Guard": {
+      "type": "Simple",
+      "remarks": [
+        "Long_Term_Followup_Visit is a loop: 0.05 x 0.3 = 1.5% of passes reach",
+        "here, and a long survivor makes many passes, so an unguarded",
+        "ConditionOnset would emit duplicate 363346000 rows. Fire once only.",
+        "ConditionOnset is not self-guarding the way MedicationOrder is --",
+        "HealthRecord.conditionStart appends a new Entry each time."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "mcl_secondary_malignancy",
+            "operator": "==",
+            "value": true
+          },
+          "transition": "Continued_Long_Term_Remission_Observation"
+        },
+        {
+          "transition": "Secondary_Malignancy"
         }
       ]
     },
@@ -2220,6 +2397,12 @@
           "display": "Malignant neoplastic disease"
         }
       ],
+      "direct_transition": "Set_Secondary_Malignancy"
+    },
+    "Set_Secondary_Malignancy": {
+      "type": "SetAttribute",
+      "attribute": "mcl_secondary_malignancy",
+      "value": true,
       "direct_transition": "Continued_Long_Term_Remission_Observation"
     },
     "Continued_Long_Term_Remission_Observation": {

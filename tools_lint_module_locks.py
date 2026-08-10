@@ -8,13 +8,20 @@ EncounterModule stops scheduling wellness/urgent-care visits for that person
 (State.java:991). Only EncounterEnd, a reachable Terminal, Death, or the module
 re-entering its own Encounter state releases it.
 
-CRITICAL  no EncounterEnd is reachable from an opened Encounter, so the lock is
-          held until Terminal/Death -- or forever, if the module loops. This is
-          the defect that flattened carrier/DME/hospice volume in the 2026-07-29
+CRITICAL  fires in three cases: (1) an ambulatory/outpatient/virtual/urgentcare/
+          wellness encounter (or one with no encounter_class -- it silently
+          defaults to ambulatory) can reach a Delay >= 1 day or a Guard before
+          reaching a closer (EncounterEnd/Terminal/Death) or re-entering an
+          Encounter; (2) an inpatient/snf/hospice/other encounter can never
+          reach a closer at all -- held until Terminal/Death, or forever if the
+          module loops; (3) while any encounter is open, a state named
+          `*_Supply_Delay` is reachable -- the banned medication-supply-delay
+          idiom, which is never a legitimate length of stay. This is the class
+          of defect that flattened carrier/DME/hospice volume in the 2026-07-29
           generation run.
-WARNING   an ambulatory/outpatient/virtual/urgent-care visit stays open across a
-          delay of a day or more. Legitimate for inpatient/SNF/hospice (that
-          delay is the length of stay); wrong for a clinic visit.
+WARNING   an inpatient/snf/hospice encounter stays open across a delay of more
+          than 90 days. A bounded length-of-stay delay is legitimate for these
+          classes; a 90+ day open reservation is not.
 """
 import json, glob, os, sys
 
@@ -43,10 +50,98 @@ def targets(v):
 
 
 def delay_ms(v):
-    d = v.get('range') or v.get('exact') or {}
-    unit = d.get('unit', 'days')
-    hi = d.get('high', d.get('quantity', 0)) or 0
-    return hi * UNIT_MS.get(unit, DAY)
+    d = v.get('range') or v.get('exact')
+    if d is not None:
+        unit = d.get('unit', 'days')
+        hi = d.get('high', d.get('quantity', 0)) or 0
+        return hi * UNIT_MS.get(unit, DAY)
+    # GMF also allows a `distribution` delay (UNIFORM/GAUSSIAN/EXPONENTIAL)
+    # with the unit at the state's top level and magnitude in `parameters`.
+    # ~20% of Delay states in this tree use this form -- treating them as
+    # 0ms (as a bare `v.get('range') or v.get('exact') or {}` would) hides
+    # real multi-month locks (e.g. prostate_cancer's annual-screening loop).
+    dist = v.get('distribution')
+    if isinstance(dist, dict):
+        p = dist.get('parameters') or {}
+        unit = v.get('unit', 'days')
+        # UNIFORM -> high; GAUSSIAN/EXPONENTIAL -> mean; EXACT -> value.
+        hi = p.get('high', p.get('mean', p.get('value', 0))) or 0
+        return hi * UNIT_MS.get(unit, DAY)
+    return 0
+
+
+def closes_before_block(states, start):
+    """True iff no path from `start` reaches a Delay >= 1 day or a Guard
+    before reaching EncounterEnd/Terminal/Death or re-entering an Encounter
+    (same-module re-entry releases the reservation)."""
+    seen, stack, blockers = set(), list(targets(states[start])), []
+    while stack:
+        name = stack.pop()
+        if name in seen:
+            continue
+        seen.add(name)
+        v = states.get(name)
+        if v is None:
+            continue
+        t = v.get('type')
+        if t in CLOSERS or t == 'Encounter':
+            continue
+        if t == 'Guard' or (t == 'Delay' and delay_ms(v) >= DAY):
+            blockers.append((name, t))
+            continue
+        stack.extend(targets(v))
+    return (not blockers), blockers
+
+
+def walk_closer_reachable(states, start):
+    """For inpatient/snf/hospice (and other non-ambulatory) classes: is any
+    closer (EncounterEnd/Terminal/Death) reachable at all from `start`, and
+    does the path cross a Delay > 90 days while the encounter is still open?
+    """
+    seen, stack = set(), list(targets(states[start]))
+    reaches_closer, long_delays = False, []
+    while stack:
+        name = stack.pop()
+        if name in seen:
+            continue
+        seen.add(name)
+        v = states.get(name)
+        if v is None:
+            continue
+        t = v.get('type')
+        if t in CLOSERS:
+            reaches_closer = True
+            continue
+        if t == 'Encounter':
+            continue          # re-entering an Encounter releases the old lock
+        if t == 'Delay':
+            ms = delay_ms(v)
+            if ms > 90 * DAY:
+                long_delays.append((name, v.get('range') or v.get('exact') or {}))
+        stack.extend(targets(v))
+    return reaches_closer, long_delays
+
+
+def find_supply_delays(states, start):
+    """Names of `*_Supply_Delay` states reachable from `start` while the
+    encounter is still open (before a closer or a same-module Encounter
+    re-entry). Always the banned idiom, regardless of encounter class."""
+    seen, stack, found = set(), list(targets(states[start])), []
+    while stack:
+        name = stack.pop()
+        if name in seen:
+            continue
+        seen.add(name)
+        v = states.get(name)
+        if v is None:
+            continue
+        if name.endswith('_Supply_Delay'):
+            found.append(name)
+        t = v.get('type')
+        if t in CLOSERS or t == 'Encounter':
+            continue
+        stack.extend(targets(v))
+    return found
 
 
 def analyze(path):
@@ -55,44 +150,35 @@ def analyze(path):
         return []
     findings = []
 
-    def walk_from(start, cls):
-        """Explore forward from an opened encounter until it is closed.
-
-        Returns (reaches_end, long_waits) where reaches_end is True if any
-        EncounterEnd is reachable while the encounter is still open.
-        """
-        seen, stack = set(), [start]
-        reaches_end, long_waits = False, []
-        while stack:
-            k = stack.pop()
-            if k in seen or k not in states:
-                continue
-            seen.add(k)
-            v = states[k]
-            t = v.get('type')
-            if t == 'EncounterEnd':
-                reaches_end = True
-                continue          # closed on this path; stop descending
-            if t in ('Terminal', 'Death'):
-                continue          # releases the lock, but only at the very end
-            if t == 'Encounter' and k != start and not v.get('wellness'):
-                continue          # re-entering an Encounter force-closes the old
-            if t in ('Delay', 'Guard'):
-                ms = delay_ms(v) if t == 'Delay' else float('inf')
-                if cls in AMBULATORY and ms >= DAY:
-                    long_waits.append((k, t, v.get('range') or v.get('exact') or 'guard'))
-            stack.extend(targets(v))
-        return reaches_end, long_waits
-
     for k, v in states.items():
         if v.get('type') != 'Encounter' or v.get('wellness'):
             continue
         cls = (v.get('encounter_class') or '').lower()
-        reaches_end, long_waits = walk_from(k, cls)
-        if not reaches_end:
-            findings.append(('CRITICAL', k, 'no EncounterEnd reachable', cls))
-        for w in long_waits:
-            findings.append(('WARNING', k, f'open across {w[0]} ({w[2]})', cls))
+
+        # Supply-Delay idiom: CRITICAL while any encounter is open, any class.
+        for name in find_supply_delays(states, k):
+            findings.append(('CRITICAL', k,
+                              f'{name} (Supply_Delay idiom) reachable while open', cls))
+
+        if cls in AMBULATORY or cls == '':
+            closes_first, blockers = closes_before_block(states, k)
+            if not closes_first:
+                for name, t in blockers:
+                    bv = states.get(name, {})
+                    if t == 'Guard':
+                        detail = 'guard'
+                    else:
+                        detail = bv.get('range') or bv.get('exact') or bv.get('distribution') or {}
+                    findings.append(('CRITICAL', k, f'open across {name} ({detail})', cls))
+        else:
+            reaches_closer, long_delays = walk_closer_reachable(states, k)
+            if not reaches_closer:
+                findings.append(('CRITICAL', k,
+                                  'no closer (EncounterEnd/Terminal/Death) reachable', cls))
+            if cls in ('inpatient', 'snf', 'hospice'):
+                for name, detail in long_delays:
+                    findings.append(('WARNING', k,
+                                      f'open across {name} ({detail}) > 90 days', cls))
     return findings
 
 

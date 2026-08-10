@@ -643,25 +643,60 @@
     "Long_Term_Outcome": {
       "type": "Simple",
       "remarks": [
-        "Per-quarter outcomes for the ongoing maintenance-follow-up loop -- see",
-        "module remarks for the arithmetic behind these numbers (annualised",
-        "mortality ~0.7%, eventual refractory share ~7.7%, replacing a pre-fix",
-        "split that funnelled ~87% of patients into the refractory arm)."
+        "Per-quarter outcomes for the ongoing maintenance-follow-up loop.",
+        "Fix round 1: the round-0 crisis rate (0.04/quarter) was solved",
+        "backwards from the mortality target rather than sourced, giving an",
+        "annualised crisis incidence of 1-(1-0.04)^4 = ~15.3%/yr and ~8",
+        "expected crises over a realistic multi-decade remaining lifespan --",
+        "real myasthenic crisis incidence is ~2-3%/yr with a ~15-20%",
+        "lifetime cumulative risk (Wendell LC, Levine JM, 'Myasthenic",
+        "crisis,' Neurohospitalist. 2011;1(1):16-22).",
+        "Retuned to crisis 0.006/quarter (~2.4%/yr, in range) and added a",
+        "small non-crisis death path (MG_Death_Other) so the ~0.7%/yr total",
+        "mortality target from round 0 still holds. Two-path arithmetic,",
+        "both per quarter:",
+        "  crisis-death   = crisis * Crisis_Outcome's death share",
+        "                 = 0.006 * 0.045 = 0.00027",
+        "  non-crisis     = 0.0015 (MG_Death_Other below)",
+        "  combined       = 0.00027 + 0.0015 = 0.00177/quarter",
+        "  annualised     = 1-(1-0.00177)^4 = ~0.706%, i.e. ~0.7%",
+        "Refractory-exit (0.00015/quarter) is unchanged: the eventual-",
+        "refractory-share arithmetic (a / (a + combined-death-per-quarter))",
+        "moves only from 0.00015/0.0018=8.3% to 0.00015/0.00177=8.5%,",
+        "still comfortably under the <=10% target."
       ],
       "distributed_transition": [
         {
-          "distribution": 0.95985,
+          "distribution": 0.99235,
           "transition": "Follow_Up_3_Months"
         },
         {
-          "distribution": 0.04,
+          "distribution": 0.006,
           "transition": "Crisis_Encounter"
         },
         {
           "distribution": 0.00015,
           "transition": "Refractory_MG_Pathway"
+        },
+        {
+          "distribution": 0.0015,
+          "transition": "MG_Death_Other"
         }
       ]
+    },
+    "MG_Death_Other": {
+      "type": "Death",
+      "remarks": [
+        "Small non-crisis mortality path added in fix round 1 -- see",
+        "Long_Term_Outcome's remarks for the two-path arithmetic. No cause-",
+        "of-death attribution (not referenced_by_attribute to the MG",
+        "diagnosis): represents the excess comorbidity/frailty burden of",
+        "living with MG (aspiration, respiratory decline, treatment",
+        "complications) rather than a discrete myasthenic-crisis event,",
+        "matching the same 'Death_Other' idiom CIDP.json uses for its own",
+        "non-crisis mortality path."
+      ],
+      "direct_transition": "Terminal"
     },
     "Crisis_Encounter": {
       "type": "Encounter",
@@ -717,13 +752,29 @@
       "distributed_transition": [
         {
           "distribution": 0.955,
-          "transition": "Follow_Up_3_Months"
+          "transition": "End_Myasthenic_Crisis"
         },
         {
           "distribution": 0.045,
           "transition": "Crisis_Death"
         }
       ]
+    },
+    "End_Myasthenic_Crisis": {
+      "type": "ConditionEnd",
+      "condition_onset": "Myasthenic_Crisis_Onset",
+      "remarks": [
+        "Fix round 1: Myasthenic_Crisis_Onset previously had no matching",
+        "close anywhere in the module, so a patient surviving multiple",
+        "crises over the Long_Term_Outcome loop's lifetime span (a realistic",
+        "~8 episodes under the round-0 rate, still several under the",
+        "corrected rate) stacked that many simultaneously 'active' crisis",
+        "conditions. A myasthenic crisis is an acute, self-limited (if",
+        "severe) episode that resolves with treatment over days to weeks --",
+        "unlike the underlying chronic MG diagnosis, it should not persist",
+        "as active once the patient stabilises."
+      ],
+      "direct_transition": "Follow_Up_3_Months"
     },
     "Crisis_Death": {
       "type": "Death",

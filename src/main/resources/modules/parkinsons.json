@@ -72,7 +72,24 @@
     },
     "LevodopaChallengeTest": {
       "type": "Simple",
+      "direct_transition": "LevodopaChallengeTest_Action_1_Encounter"
+    },
+    "LevodopaChallengeTest_Action_1_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
       "direct_transition": "LevodopaChallengeTest_Action_1"
+    },
+    "LevodopaChallengeTest_Action_1_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "LevodopaChallengeTest_Action_2"
     },
     "DiagnosisDecision": {
       "type": "Simple",
@@ -130,12 +147,114 @@
       "assign_to_attribute": "has_parkinsons",
       "direct_transition": "HoehnYahrStage1"
     },
+    "PD_Levodopa_Refill_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "on_levodopa",
+            "operator": "==",
+            "value": true
+          },
+          "transition": "PD_Medication_Encounter"
+        },
+        {
+          "transition": "DiseaseProgressionCheck"
+        }
+      ]
+    },
     "HoehnYahrStage1": {
       "type": "SetAttribute",
       "attribute": "h_and_y_stage",
       "value": 1,
+      "direct_transition": "StartLevodopaMonotherapy_Set"
+    },
+    "PD_Levodopa_Refill": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "724598",
+          "display": "carbidopa 25 MG / levodopa 100 MG Oral Tablet [Sinemet]"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "chronic": true,
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 3,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        }
+      },
+      "direct_transition": "PD_Medication_Encounter_End"
+    },
+    "PD_Medication_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "PD_Levodopa_Refill"
+    },
+
+    "PD_Medication_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "PD_Medication_Refill_Delay"
+    },
+
+    "PD_Medication_Refill_Delay": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 30,
+        "unit": "days"
+      },
+      "direct_transition": "PD_Refill_Cycle_Check"
+    },
+    "PD_Refill_Cycle_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "PD_Medication_Encounter",
+          "distribution": 0.9
+        },
+        {
+          "transition": "RegularNeurologyVisit",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "StartLevodopaMonotherapy_Set": {
+      "type": "SetAttribute",
+      "attribute": "on_levodopa",
+      "value": true,
+      "direct_transition": "StartLevodopaMonotherapy_Encounter"
+    },
+    "StartLevodopaMonotherapy_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
       "direct_transition": "StartLevodopaMonotherapy"
     },
+
     "StartLevodopaMonotherapy": {
       "type": "MedicationOrder",
       "codes": [
@@ -146,6 +265,19 @@
         }
       ],
       "reason": "has_parkinsons",
+      "chronic": true,
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 3,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        }
+      },
       "direct_transition": "StartLevodopaMonotherapy_Encounter_End"
     },
     "InitialResponsePeriod": {
@@ -183,7 +315,7 @@
       "type": "SetAttribute",
       "attribute": "h_and_y_stage",
       "value": 2,
-      "direct_transition": "RegularNeurologyVisit"
+      "direct_transition": "PD_Levodopa_Refill_Check"
     },
     "RegularNeurologyVisit": {
       "type": "Encounter",
@@ -202,6 +334,95 @@
       "type": "Simple",
       "direct_transition": "NonMotorSymptomsAssessment_Action_1_Gate"
     },
+    "AddDopamineAgonist_Set": {
+      "type": "SetAttribute",
+      "attribute": "on_pramipexole",
+      "value": true,
+      "direct_transition": "AddDopamineAgonist_Encounter"
+    },
+    "AddDopamineAgonist_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "AddDopamineAgonist"
+    },
+    "PD_DopamineAgonist_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "PD_DopamineAgonist_Refill"
+    },
+    "PD_DopamineAgonist_Refill_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "on_pramipexole",
+            "operator": "==",
+            "value": true
+          },
+          "transition": "PD_DopamineAgonist_Encounter"
+        },
+        {
+          "transition": "DiseaseProgressionCheck"
+        }
+      ]
+    },
+    "PD_DopamineAgonist_Refill": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "859044",
+          "display": "pramipexole dihydrochloride 0.5 MG Oral Tablet"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "chronic": true,
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 2,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        }
+      },
+      "direct_transition": "PD_DopamineAgonist_Encounter_End"
+    },
+
+    "PD_DopamineAgonist_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "PD_DopamineAgonist_Refill_Delay"
+    },
+
+    "PD_DopamineAgonist_Refill_Delay": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 30,
+        "unit": "days"
+      },
+      "direct_transition": "PD_DopamineAgonist_Refill_Check"
+    },
+
     "AddDopamineAgonist": {
       "type": "MedicationOrder",
       "codes": [
@@ -212,7 +433,39 @@
         }
       ],
       "reason": "has_parkinsons",
+      "chronic": true,
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 2,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        }
+      },
       "direct_transition": "AddDopamineAgonist_Encounter_End"
+    },
+    "AddCOMTInhibitor_Set": {
+      "type": "SetAttribute",
+      "attribute": "on_entacapone",
+      "value": true,
+      "direct_transition": "AddCOMTInhibitor_Encounter"
+    },
+    "AddCOMTInhibitor_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "AddCOMTInhibitor"
     },
     "AddCOMTInhibitor": {
       "type": "MedicationOrder",
@@ -224,6 +477,19 @@
         }
       ],
       "reason": "has_parkinsons",
+      "chronic": true,
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 3,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        }
+      },
       "direct_transition": "AddCOMTInhibitor_Encounter_End"
     },
     "StablePeriod": {
@@ -259,7 +525,7 @@
             "operator": "==",
             "value": true
           },
-          "transition": "AddAmantadine"
+          "transition": "PD_Amantadine_Encounter"
         },
         {
           "condition": {
@@ -268,10 +534,94 @@
             "operator": "==",
             "value": true
           },
-          "transition": "AddMAOBInhibitor"
+          "transition": "AddMAOBInhibitor_Set"
         },
         {
           "transition": "AdvancedSymptoms"
+        }
+      ]
+    },
+    "PD_Amantadine_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "AddAmantadine"
+    },
+    "PD_MAOB_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "PD_MAOB_Refill"
+    },
+
+    "PD_MAOB_Refill": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "896781",
+          "display": "rasagiline 1 MG Oral Tablet"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "chronic": true,
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 1,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        }
+      },
+      "direct_transition": "PD_MAOB_Encounter_End"
+    },
+
+    "PD_MAOB_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "PD_MAOB_Refill_Delay"
+    },
+
+    "PD_MAOB_Refill_Delay": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 30,
+        "unit": "days"
+      },
+      "direct_transition": "PD_MAOB_Refill_Check"
+    },
+
+    "PD_MAOB_Refill_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "on_rasagiline",
+            "operator": "==",
+            "value": true
+          },
+          "transition": "PD_MAOB_Encounter"
+        },
+        {
+          "transition": "DiseaseProgressionCheck"
         }
       ]
     },
@@ -285,19 +635,68 @@
         }
       ],
       "reason": "has_parkinsons",
+      "chronic": true,
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 2,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        }
+      },
+      "direct_transition": "PD_Amantadine_Encounter_End"
+    },
+    "PD_Amantadine_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "AdvancedSymptoms"
+    },
+    "AddMAOBInhibitor_Set": {
+      "type": "SetAttribute",
+      "attribute": "on_rasagiline",
+      "value": true,
+      "direct_transition": "PD_MAOB_Initial_Encounter"
+    },
+    "PD_MAOB_Initial_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "AddMAOBInhibitor"
     },
     "AddMAOBInhibitor": {
       "type": "MedicationOrder",
       "codes": [
         {
           "system": "RxNorm",
-          "code": "608328",
+          "code": "896781",
           "display": "rasagiline 1 MG Oral Tablet"
         }
       ],
       "reason": "has_parkinsons",
-      "direct_transition": "AdvancedSymptoms"
+      "chronic": true,
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 1,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        }
+      },
+      "direct_transition": "AddMAOBInhibitor_Encounter_End"
     },
     "AdvancedSymptoms": {
       "type": "Simple",
@@ -342,12 +741,25 @@
               }
             ]
           },
-          "transition": "DBS_Surgery"
+          "transition": "DBS_Surgery_Encounter"
         },
         {
           "transition": "AdvancedTherapiesEvaluation"
         }
       ]
+    },
+    "DBS_Surgery_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "DBS_Surgery"
     },
     "DBS_Surgery": {
       "type": "Procedure",
@@ -386,14 +798,6 @@
         }
       ],
       "reason": "has_parkinsons",
-      "remarks": [
-        "DBS programming follow-up. The previous version used 443254001 for 'Programming of",
-        "neurostimulator (procedure)' but no exact SNOMED concept was found in the IHTS browser.",
-        "Modelling this as a follow-up encounter rather than fabricating a procedure code is the",
-        "honest representation. If a SNOMED concept for neurostimulator programming/adjustment",
-        "is later identified (try browser term-search 'adjustment of implanted device'), add it",
-        "as a Procedure action within this encounter."
-      ],
       "direct_transition": "AdvancedTherapiesEvaluation"
     },
     "AdvancedTherapiesEvaluation": {
@@ -401,17 +805,34 @@
       "distributed_transition": [
         {
           "distribution": 0.4,
-          "transition": "LCIG_Therapy"
+          "transition": "LCIG_Encounter"
         },
         {
           "distribution": 0.3,
-          "transition": "ApomorphinePump"
+          "transition": "Apomorphine_Encounter"
         },
         {
           "distribution": 0.3,
           "transition": "PalliativeCareReferral"
         }
       ]
+    },
+    "LCIG_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "LCIG_Therapy"
+    },
+    "LCIG_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "PalliativeCareReferral"
     },
     "LCIG_Therapy": {
       "type": "MedicationOrder",
@@ -423,10 +844,24 @@
         }
       ],
       "reason": "has_parkinsons",
-      "direct_transition": "PalliativeCareReferral"
+      "direct_transition": "LCIG_Encounter_End"
+    },
+    "Apomorphine_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "ApomorphinePump"
     },
     "ApomorphinePump": {
       "type": "MedicationOrder",
+      "administration": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -435,6 +870,10 @@
         }
       ],
       "reason": "has_parkinsons",
+      "direct_transition": "Apomorphine_Encounter_End"
+    },
+    "Apomorphine_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "PalliativeCareReferral"
     },
     "DementiaOnset": {
@@ -469,6 +908,10 @@
           "display": "Referral to palliative care service (procedure)"
         }
       ],
+      "direct_transition": "PalliativeCareReferral_Encounter_End"
+    },
+    "PalliativeCareReferral_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "MultidisciplinaryCare"
     },
     "MultidisciplinaryCare": {
@@ -655,7 +1098,7 @@
         }
       ],
       "administration": true,
-      "direct_transition": "LevodopaChallengeTest_Action_2"
+      "direct_transition": "LevodopaChallengeTest_Action_1_Encounter_End"
     },
     "LevodopaChallengeTest_Action_2": {
       "type": "Observation",
@@ -807,7 +1250,7 @@
           "distribution": 0.8
         },
         {
-          "transition": "AddDopamineAgonist",
+          "transition": "AddDopamineAgonist_Set",
           "distribution": 0.2
         }
       ]
@@ -826,7 +1269,7 @@
             "operator": "==",
             "value": "progressing"
           },
-          "transition": "AddDopamineAgonist"
+          "transition": "AddDopamineAgonist_Set"
         },
         {
           "condition": {
@@ -835,7 +1278,7 @@
             "operator": "==",
             "value": "advanced"
           },
-          "transition": "AddCOMTInhibitor"
+          "transition": "AddCOMTInhibitor_Set"
         },
         {
           "transition": "NonMotorSymptomsAssessment_Action_5_Encounter_End"
@@ -1032,6 +1475,10 @@
         "clinically appropriate than chest-specific. Browser-search for a broader concept under",
         "'Physiotherapy procedure' if available, or accept this as a documented narrowing."
       ],
+      "direct_transition": "MultidisciplinaryCare_Action_1_Encounter_End"
+    },
+    "MultidisciplinaryCare_Action_1_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "MultidisciplinaryCare_Action_2_Gate"
     },
     "MultidisciplinaryCare_Action_2_Gate": {
@@ -1057,6 +1504,11 @@
           "display": "Occupational therapy assessment (procedure)"
         }
       ],
+      "direct_transition": "MultidisciplinaryCare_Action_2_Encounter_End"
+    },
+
+    "MultidisciplinaryCare_Action_2_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "MultidisciplinaryCare_Action_3_Gate"
     },
     "MultidisciplinaryCare_Action_3_Gate": {
@@ -1087,7 +1539,83 @@
         "If a per-session SNOMED concept is later required, browser-search 'speech and language",
         "therapy procedure' for child concepts."
       ],
+      "direct_transition": "MultidisciplinaryCare_Action_3_Encounter_End"
+    },
+
+    "MultidisciplinaryCare_Action_3_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "AdvanceCarePlanning"
+    },
+    "PD_COMT_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "PD_COMT_Refill"
+    },
+
+    "PD_COMT_Refill": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "317094",
+          "display": "entacapone 200 MG Oral Tablet"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "chronic": true,
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 3,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        }
+      },
+      "direct_transition": "PD_COMT_Encounter_End"
+    },
+
+    "PD_COMT_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "PD_COMT_Refill_Delay"
+    },
+
+    "PD_COMT_Refill_Delay": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 30,
+        "unit": "days"
+      },
+      "direct_transition": "PD_COMT_Refill_Check"
+    },
+
+    "PD_COMT_Refill_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "on_entacapone",
+            "operator": "==",
+            "value": true
+          },
+          "transition": "PD_COMT_Encounter"
+        },
+        {
+          "transition": "DiseaseProgressionCheck"
+        }
+      ]
     },
     "StartLevodopaMonotherapy_Encounter_End": {
       "type": "EncounterEnd",
@@ -1095,11 +1623,11 @@
     },
     "AddDopamineAgonist_Encounter_End": {
       "type": "EncounterEnd",
-      "direct_transition": "StablePeriod"
+      "direct_transition": "PD_DopamineAgonist_Refill_Check"
     },
     "AddCOMTInhibitor_Encounter_End": {
       "type": "EncounterEnd",
-      "direct_transition": "StablePeriod"
+      "direct_transition": "PD_COMT_Refill_Check"
     },
     "DBS_Surgery_Encounter_End": {
       "type": "EncounterEnd",
@@ -1111,7 +1639,11 @@
     },
     "NonMotorSymptomsAssessment_Action_5_Encounter_End": {
       "type": "EncounterEnd",
-      "direct_transition": "StablePeriod"
+      "direct_transition": "PD_Levodopa_Refill_Check"
+    },
+    "AddMAOBInhibitor_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "PD_MAOB_Refill_Check"
     },
     "parkinsons_Incidence_Gate": {
       "type": "Simple",

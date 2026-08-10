@@ -864,16 +864,41 @@
       "distributed_transition": [
         {
           "transition": "Maintenance_Stable",
-          "distribution": 0.8
+          "distribution": 0.84
         },
         {
           "transition": "Maintenance_Progression_Noted",
-          "distribution": 0.15
+          "distribution": 0.152
         },
         {
           "transition": "Maintenance_GA_Development",
-          "distribution": 0.05
+          "distribution": 0.008
         }
+      ],
+      "remarks": [
+        "Fix round 1 (reviewer finding): the original 5%-per-visit GA hazard, at this state's q4-8wk",
+        "maintenance cadence (avg 6 weeks -> 52/6 = 8.667 visits/year), compounds to",
+        "1-(1-0.05)^8.667 = 36% per year and 1-(1-0.05)^(8.667*5) = 89% cumulative at 5 years --",
+        "WORSE than the untreated Conservative arm's own 15%-per-visit/3-6mo-interval GA rate, and",
+        "inverted vs. this module's own remarks (\"anti-VEGF maintenance ... reduces progression risk\").",
+        "Published treated-eye macular atrophy (geographic atrophy) rates are roughly 20-40%",
+        "cumulative at 5 years [CATT/IVAN long-term follow-up data on anti-VEGF-treated neovascular",
+        "AMD]. Targeting the midpoint, 30% cumulative at 5 years, backs out to an annual hazard of",
+        "1-(1-0.30)^(1/5) = 6.9% (within the reviewer's suggested 5-10% annual band), which at this",
+        "state's 8.667 visits/year in turn backs out to a per-visit hazard of",
+        "1-(1-0.069)^(1/8.667) = 0.8%. Forward-checking: 0.8%/visit * 8.667 visits/yr compounds to",
+        "1-(1-0.008)^8.667 = 6.7%/year and 1-(1-0.008)^(8.667*5) = 29.4% cumulative at 5 years --",
+        "inside the cited 20-40% CATT/IVAN range. The freed 4.2 points of probability mass were",
+        "redistributed to Stable/Progression in their original ~84:16 ratio (0.84/0.152 here vs.",
+        "0.8/0.15 before).",
+        "",
+        "Treated-vs-untreated mean time-to-GA (geometric-distribution first-order approximation,",
+        "E[visits to first GA] = 1/p, E[time] ~= E[visits] * avg_interval): treated arm",
+        "1/0.008 * 6 weeks = 125 visits * 6 weeks ~= 14.4 years; untreated (Conservative_Management)",
+        "arm 1/0.15 * 4.5 months (Conservative_Follow_Up's 3-6mo range, unchanged by this fix) ~=",
+        "6.67 visits * 4.5 months ~= 2.5 years. The treated arm now takes ~5.8x longer on average to",
+        "reach geographic atrophy than the untreated arm, matching this module's own stated intent",
+        "that anti-VEGF maintenance protects against progression rather than accelerating it."
       ]
     },
     "Maintenance_Stable": {

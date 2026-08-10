@@ -28,16 +28,49 @@
     "  diagnosed men, against a real ~19% (SEER: 2.5% lifetime prostate cancer",
     "  mortality over 12.9% lifetime incidence).",
     "",
-    "ATTRIBUTES (all module-local except 'Prostate Cancer', which",
-    "home_hospice_snf.json and veteran_prostate_cancer.json also read):",
-    "  Prostate Cancer         - the ConditionOnset entry, set at diagnosis",
+    "ATTRIBUTES (all module-local except 'Prostate Cancer' and 'prostate_cancer'):",
+    "  Prostate Cancer         - the ConditionOnset entry, set at diagnosis. Module-local;",
+    "                            despite an earlier version of this remark, nothing outside",
+    "                            this file ever actually read it.",
+    "  prostate_cancer         - TASK 5.3: the SAME ConditionOnset entry, also assigned here",
+    "                            under the stock attribute name so this module's diagnoses",
+    "                            honor the contract home_hospice_snf.json's 'Prostate Cancer'",
+    "                            hospice-reason state and hospice_treatment.json's",
+    "                            Hospice_Admission (reason: hospice_reason) actually read:",
+    "                            value_attribute copies the Entry through, so it must hold an",
+    "                            Entry, not a boolean (cf. the hospice_reason Entry lesson from",
+    "                            Task 4.2) -- see Set_Stock_Prostate_Cancer_Attribute below.",
+    "                            Set ONLY by Diagnose_Prostate_Cancer's successor state, never",
+    "                            cleared, so a prior diagnosis by veteran_prostate_cancer.json",
+    "                            (which assigns its own ConditionOnset to this same attribute",
+    "                            name) is never overwritten -- see the mutual-exclusion guard",
+    "                            in Cancer_Diagnosis_Decision, which stops this module from",
+    "                            reaching Diagnose_Prostate_Cancer at all once the veteran",
+    "                            module's 126906006 is an Active Condition.",
     "  last_observation        - most recent PSA value in ng/mL (a real number:",
     "                            Observation states cannot assign_to_attribute, so",
     "                            each PSA value is drawn by a SetAttribute and then",
     "                            read back by the Observation via 'attribute')",
     "  prostate_cancer_risk    - NCCN risk group at diagnosis",
     "  clinical_stage          - clinical T stage at diagnosis",
-    "  prostate_followup_years - completed post-treatment surveillance years"
+    "  prostate_followup_years - completed post-treatment surveillance years",
+    "",
+    "TASK 5.3 (audit Class 7) -- coordination with veteran_prostate_cancer.json:",
+    "This module and the stock veteran module previously diagnosed prostate cancer under",
+    "different codes (399068003 here, 126906006 there) with no coordination, so a veteran",
+    "could get two prostatectomies and a custom-diagnosed patient could never reach the",
+    "stock hospice arms that key off 'prostate_cancer'. Fixed both directions:",
+    "  1. This module now also writes the stock 'prostate_cancer' attribute (above), so",
+    "     custom patients can reach home_hospice_snf.json/hospice_treatment.json.",
+    "  2. Cancer_Diagnosis_Decision below will not diagnose (Diagnose_Prostate_Cancer) a",
+    "     patient who already has veteran_prostate_cancer.json's 126906006 as an Active",
+    "     Condition -- it reroutes to End_Negative_Biopsy_Visit instead.",
+    "  3. veteran_prostate_cancer.json symmetrically will not fire its own ConditionOnset",
+    "     for a patient who already has this module's 399068003 as an Active Condition, and",
+    "     its therapy-escalation check (biopsy_visit_end) now keys off a module-scoped",
+    "     PriorState check on its own ConditionOnset rather than the now-shared",
+    "     'prostate_cancer' attribute, so a custom diagnosis can never route a patient into",
+    "     the veteran module's own Prostatectomy."
   ],
   "states": {
     "Initial": {
@@ -443,16 +476,45 @@
         "significant cancer in 38% of the MRI-targeted arm, and 70% of workups",
         "here are MRI-first, so a blended ~31% is the right figure. A negative",
         "biopsy returns the man to the screening loop rather than ending his",
-        "follow-up."
+        "follow-up.",
+        "",
+        "TASK 5.3 mutual exclusion (direction A): if veteran_prostate_cancer.json has",
+        "already diagnosed this patient (its ConditionOnset codes 126906006 as an Active",
+        "Condition), this biopsy is treated as if it were negative rather than adding a",
+        "second prostate cancer diagnosis under a different code. This module has only one",
+        "ConditionOnset for prostate cancer, so gating this single decision point is",
+        "sufficient to make the diagnosis states of the two modules mutually exclusive."
       ],
-      "distributed_transition": [
+      "complex_transition": [
         {
-          "distribution": 0.3125,
-          "transition": "Diagnose_Prostate_Cancer"
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "126906006",
+                "display": "Neoplasm of prostate (disorder)"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "transition": "End_Negative_Biopsy_Visit",
+              "distribution": 1
+            }
+          ]
         },
         {
-          "distribution": 0.6875,
-          "transition": "End_Negative_Biopsy_Visit"
+          "distributions": [
+            {
+              "distribution": 0.3125,
+              "transition": "Diagnose_Prostate_Cancer"
+            },
+            {
+              "distribution": 0.6875,
+              "transition": "End_Negative_Biopsy_Visit"
+            }
+          ]
         }
       ]
     },
@@ -470,6 +532,24 @@
         }
       ],
       "assign_to_attribute": "Prostate Cancer",
+      "direct_transition": "Set_Stock_Prostate_Cancer_Attribute"
+    },
+    "Set_Stock_Prostate_Cancer_Attribute": {
+      "type": "SetAttribute",
+      "remarks": [
+        "TASK 5.3: ConditionOnset can only assign_to_attribute once (State.java's",
+        "assignToAttribute is a single String field), so 'Prostate Cancer' (this module's",
+        "own attribute, read only inside this file) and 'prostate_cancer' (the stock",
+        "attribute name home_hospice_snf.json and hospice_treatment.json read) cannot both",
+        "be set by the ConditionOnset state itself. This SetAttribute copies the same Entry",
+        "into the stock name via value_attribute, so both attributes point at the identical",
+        "Condition entry -- required to be an Entry, not a boolean, because",
+        "home_hospice_snf.json's 'Prostate Cancer' state copies it again via",
+        "value_attribute into hospice_reason, and hospice_treatment.json's Hospice_Admission",
+        "encounter uses reason: hospice_reason directly."
+      ],
+      "attribute": "prostate_cancer",
+      "value_attribute": "Prostate Cancer",
       "direct_transition": "Risk_Stratification"
     },
     "Risk_Stratification": {

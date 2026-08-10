@@ -1,7 +1,32 @@
 {
   "name": "Veteran Prostate Cancer",
   "remarks": [
-    "A blank module"
+    "Stock module: veteran wellness DRE/PSA screening (60+), suspected-cancer workup,",
+    "biopsy, ConditionOnset (126906006), and an aggressive-therapy/watchful-waiting split",
+    "that can lead to a Prostatectomy. Sets the stock 'prostate_cancer' attribute (an",
+    "Entry, via assign_to_attribute) at diagnosis, which home_hospice_snf.json and",
+    "hospice_treatment.json also read.",
+    "",
+    "TASK 5.3 (audit Class 7) -- mutual exclusion with the custom prostate_cancer.json:",
+    "the two modules previously diagnosed prostate cancer under different codes with no",
+    "coordination, so a patient could get two prostatectomies. Two guards were added, both",
+    "direction B (this module deferring to the custom one):",
+    "  1. Custom_Prostate_Dx_Guard (before the 'Prostate_Cancer' ConditionOnset): skips",
+    "     this module's own diagnosis if prostate_cancer.json's 399068003 is already an",
+    "     Active Condition, routing to End_Suspected_Prostate_Cancer instead -- the same",
+    "     landing state a negative biopsy uses.",
+    "  2. biopsy_visit_end's escalation into the aggressive-therapy/Prostatectomy arm now",
+    "     keys off a module-scoped PriorState check on THIS module's own 'Prostate_Cancer'",
+    "     state, not the shared 'prostate_cancer' attribute. Necessary because",
+    "     prostate_cancer.json now ALSO writes 'prostate_cancer' (its own Task 5.3 fix, so",
+    "     custom patients can reach the stock hospice arms) -- an Attribute-based check",
+    "     here would otherwise have sent every custom-diagnosed patient who ever takes a",
+    "     veteran DRE/PSA workup into a second, duplicate Prostatectomy. PriorState is",
+    "     scoped to this module's own state history (Module.java process(): person.history",
+    "     is keyed by module name), so it is unaffected by what the other module writes.",
+    "Guard 1 makes the ConditionOnset states mutually exclusive; guard 2 makes the",
+    "Prostatectomy/therapy states mutually exclusive as a consequence (nothing downstream",
+    "of 'Prostate_Cancer' is reachable unless that state itself fired)."
   ],
   "states": {
     "Initial": {
@@ -271,12 +296,40 @@
           "display": "US Guidance for biopsy of Prostate"
         }
       ],
-      "direct_transition": "Prostate_Cancer",
+      "direct_transition": "Custom_Prostate_Dx_Guard",
       "value_code": {
         "system": "SNOMED-CT",
         "code": "165132006",
         "display": "Surgical biopsy result abnormal (finding)"
       }
+    },
+    "Custom_Prostate_Dx_Guard": {
+      "type": "Simple",
+      "remarks": [
+        "TASK 5.3 mutual exclusion (direction B): if prostate_cancer.json has already",
+        "diagnosed this patient (its ConditionOnset codes 399068003 as an Active",
+        "Condition), do not add this module's own 126906006 diagnosis. Land on",
+        "End_Suspected_Prostate_Cancer, the same state a negative biopsy result reaches, so",
+        "the Suspected_Prostate_Cancer situation is closed out identically either way."
+      ],
+      "conditional_transition": [
+        {
+          "transition": "End_Suspected_Prostate_Cancer",
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "399068003",
+                "display": "Malignant neoplasm of prostate"
+              }
+            ]
+          }
+        },
+        {
+          "transition": "Prostate_Cancer"
+        }
+      ]
     },
     "biopsy_results_normal": {
       "type": "Observation",
@@ -298,22 +351,28 @@
     },
     "biopsy_visit_end": {
       "type": "EncounterEnd",
+      "remarks": [
+        "TASK 5.3: escalate into the aggressive-therapy/Prostatectomy arm only when THIS",
+        "module's own 'Prostate_Cancer' ConditionOnset has actually fired, checked via a",
+        "module-scoped PriorState (Person.history is keyed per-module -- Module.java's",
+        "process() -- so this cannot see prostate_cancer.json's states). Previously this",
+        "checked the 'prostate_cancer' Attribute directly, which was safe only because this",
+        "module was the sole writer of that attribute; prostate_cancer.json's Task 5.3 fix",
+        "makes it a second writer (to honor the stock hospice contract), so an",
+        "Attribute-based check here would have sent every custom-diagnosed patient who ever",
+        "takes a veteran DRE/PSA workup into a second, duplicate Prostatectomy the moment",
+        "Custom_Prostate_Dx_Guard routed them around this module's own ConditionOnset."
+      ],
       "conditional_transition": [
         {
           "transition": "Prostate Symtpom 3",
           "condition": {
-            "condition_type": "Attribute",
-            "attribute": "prostate_cancer",
-            "operator": "is not nil"
+            "condition_type": "PriorState",
+            "name": "Prostate_Cancer"
           }
         },
         {
-          "transition": "wellness_visit_time_delay",
-          "condition": {
-            "condition_type": "Attribute",
-            "attribute": "prostate_cancer",
-            "operator": "is nil"
-          }
+          "transition": "wellness_visit_time_delay"
         }
       ]
     },

@@ -261324,5 +261324,137 @@
       "code": "43598085110",
       "description": "deferasirox 360 MG Oral Tablet"
     }
+  ],
+  "2702393": [
+    {
+      "code": "70069069601",
+      "description": "timolol hemihydrate 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70069069701",
+      "description": "timolol hemihydrate 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70069069801",
+      "description": "timolol hemihydrate 5 MG/ML Ophthalmic Solution"
+    }
+  ],
+  "861204": [
+    {
+      "code": "00781717770",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "00781717775",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "00781717785",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "42571046256",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "42571046292",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "46708074905",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "46708074910",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "46708074915",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "60505057701",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "60505057702",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "60505057703",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "62332074905",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "62332074910",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "62332074915",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "68083062605",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "68083062610",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "68083062615",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70069056601",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70069056701",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70069056801",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70756067700",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70756067730",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70756067800",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70756067830",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70756067900",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70756067935",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "82182032105",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "82182032110",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "82182032115",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    }
   ]
 }

@@ -7466,5 +7466,11 @@
       "code": "88291",
       "description": "Cytogenetics and molecular cytogenetics; interpretation and report"
     }
+  ],
+  "252832004": [
+    {
+      "code": "92100",
+      "description": "Serial tonometry with multiple measurements of intraocular pressure over an extended time period with interpretation and report, unilateral or bilateral"
+    }
   ]
 }

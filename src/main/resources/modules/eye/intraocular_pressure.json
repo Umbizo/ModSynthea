@@ -1,7 +1,39 @@
 {
   "name": "Intraocular Pressure",
   "remarks": [
-    "Submodule for IOP procedure and findings with expanded medications, glaucoma diagnosis, and follow-up care."
+    "Submodule for IOP procedure and findings with expanded medications, glaucoma diagnosis, and follow-up care.",
+    "",
+    "IOP is attribute-driven and persistent across visits (`iop_reading`). The Observation state class",
+    "has no `assign_to_attribute` field -- only `attribute` -- so a JSON module that sets",
+    "`assign_to_attribute` on an Observation is silently ignored by the engine; the value must instead",
+    "be drawn by a SetAttribute state and read back into the Observation via its real `attribute` field.",
+    "A population baseline is drawn once per patient (Draw_Baseline_IOP). On every later visit the",
+    "reading is redrawn within a narrow band keyed off treatment status and the patient's original",
+    "baseline tier (Elevated_IOP_Jitter / Normal_IOP_Jitter / Treated_IOP_Jitter), instead of a fresh",
+    "independent 8-35 mmHg roll every visit. The previous per-visit design OR-combined two independent",
+    "8-35 draws (P(either eye > 21) = 1-(1-14/27)^2 = 0.77), flagging ~77% of visits as elevated and",
+    "making nearly every recurring patient (e.g. every T2 diabetic routed through this submodule)",
+    "glaucomatous over time. Both eyes' Observations read the same persisted value; per-eye divergence",
+    "was not modelled, keeping the attribute contract to a single shared `iop_reading`.",
+    "",
+    "Diagnosis (Glaucoma_Diagnosis / Ocular_Hypertension_Diagnosis) and medication ordering are each",
+    "attribute-guarded so a patient already carrying the diagnosis, or already on a drop, is not",
+    "re-diagnosed or re-ordered on every subsequent visit. Glaucoma drops are chronic:true, matching",
+    "real-world indefinite once-daily/twice-daily dosing rather than a one-time fill.",
+    "",
+    "Two RxNorm codes were wrong and have been replaced with RxNav-verified SCDs (Semantic Clinical",
+    "Drugs; the previous codes were an SCDC and a bare ingredient, neither a dispensable drug):",
+    " - brimonidine: RxCUI 1999015 (previously used here) is an SCDC, \"brimonidine tartrate 0.25",
+    "   MG/ML\" -- an ingredient+strength component with no dose form, and its strength did not even",
+    "   match this state's own display text. Replaced with RxCUI 861204, the SCD \"brimonidine tartrate",
+    "   1 MG/ML Ophthalmic Solution\" (verified via RxNav rxcui/861204/historystatus). This is also the",
+    "   exact code eye/ophthalmic_progression.json's treatment-detection check looks for, so ordering it",
+    "   here now closes that IOP feedback loop instead of the two modules silently disagreeing.",
+    " - timolol: RxCUI 10600 was an IN (ingredient-only \"timolol\", no strength or dose form).",
+    "   Replaced with RxCUI 2702393, the SCD \"timolol hemihydrate 5 MG/ML Ophthalmic Solution\"",
+    "   (verified via RxNav), the closest unqualified (non-preservative-free, non-extended-release)",
+    "   generic match to the original display text; RxNorm has no plain \"timolol maleate ... ophthalmic",
+    "   solution\" SCD as of this writing."
   ],
   "states": {
     "Initial": {
@@ -27,6 +59,176 @@
         }
       },
       "unit": "minutes",
+      "direct_transition": "IOP_Reading_Gate"
+    },
+    "IOP_Reading_Gate": {
+      "type": "Simple",
+      "remarks": [
+        "First visit for this patient (iop_reading unset) draws a fresh population baseline;",
+        "every later visit re-enters here and only jitters the existing reading."
+      ],
+      "conditional_transition": [
+        {
+          "transition": "On_Treatment_Check",
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "iop_reading",
+            "operator": "is not nil"
+          }
+        },
+        {
+          "transition": "Draw_Baseline_IOP"
+        }
+      ]
+    },
+    "Draw_Baseline_IOP": {
+      "type": "SetAttribute",
+      "attribute": "iop_reading",
+      "distribution": {
+        "kind": "UNIFORM",
+        "round": true,
+        "parameters": {
+          "low": 8,
+          "high": 35
+        }
+      },
+      "direct_transition": "Classify_Baseline_Tier",
+      "remarks": [
+        "One-time population baseline IOP. Normal range is roughly 10-21 mmHg; values above 21",
+        "establish an elevated baseline tendency (iop_baseline_tier) that persists across future",
+        "visits until the patient is treated."
+      ]
+    },
+    "Classify_Baseline_Tier": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "transition": "Mark_Elevated_Tier",
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "iop_reading",
+            "operator": ">",
+            "value": 21
+          }
+        },
+        {
+          "transition": "Mark_Normal_Tier"
+        }
+      ]
+    },
+    "Mark_Elevated_Tier": {
+      "type": "SetAttribute",
+      "attribute": "iop_baseline_tier",
+      "value": "elevated",
+      "direct_transition": "IOP_Results_Left"
+    },
+    "Mark_Normal_Tier": {
+      "type": "SetAttribute",
+      "attribute": "iop_baseline_tier",
+      "value": "normal",
+      "direct_transition": "IOP_Results_Left"
+    },
+    "On_Treatment_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "transition": "Treated_IOP_Jitter",
+          "condition": {
+            "condition_type": "Active Medication",
+            "codes": [
+              {
+                "system": "RxNorm",
+                "code": "284008",
+                "display": "travoprost 0.04 MG/ML Ophthalmic Solution"
+              },
+              {
+                "system": "RxNorm",
+                "code": "2702393",
+                "display": "timolol hemihydrate 5 MG/ML Ophthalmic Solution"
+              },
+              {
+                "system": "RxNorm",
+                "code": "310015",
+                "display": "dorzolamide 20 MG/ML Ophthalmic Solution"
+              },
+              {
+                "system": "RxNorm",
+                "code": "1923432",
+                "display": "dorzolamide 20 MG/ML / timolol 5 MG/ML Ophthalmic Solution"
+              },
+              {
+                "system": "RxNorm",
+                "code": "861204",
+                "display": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+              },
+              {
+                "system": "RxNorm",
+                "code": "308739",
+                "display": "bimatoprost 0.3 MG/ML Ophthalmic Solution"
+              },
+              {
+                "system": "RxNorm",
+                "code": "314072",
+                "display": "latanoprost 0.05 MG/ML Ophthalmic Solution"
+              }
+            ]
+          }
+        },
+        {
+          "transition": "Elevated_IOP_Jitter",
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "iop_baseline_tier",
+            "operator": "==",
+            "value": "elevated"
+          }
+        },
+        {
+          "transition": "Normal_IOP_Jitter"
+        }
+      ]
+    },
+    "Treated_IOP_Jitter": {
+      "type": "SetAttribute",
+      "attribute": "iop_reading",
+      "distribution": {
+        "kind": "UNIFORM",
+        "round": true,
+        "parameters": {
+          "low": 12,
+          "high": 19
+        }
+      },
+      "direct_transition": "IOP_Results_Left",
+      "remarks": [
+        "Controlled range on therapy, reflecting the ~25-30% IOP reduction typical of prostaglandin",
+        "analog / beta-blocker / CAI monotherapy."
+      ]
+    },
+    "Elevated_IOP_Jitter": {
+      "type": "SetAttribute",
+      "attribute": "iop_reading",
+      "distribution": {
+        "kind": "UNIFORM",
+        "round": true,
+        "parameters": {
+          "low": 22,
+          "high": 32
+        }
+      },
+      "direct_transition": "IOP_Results_Left"
+    },
+    "Normal_IOP_Jitter": {
+      "type": "SetAttribute",
+      "attribute": "iop_reading",
+      "distribution": {
+        "kind": "UNIFORM",
+        "round": true,
+        "parameters": {
+          "low": 10,
+          "high": 21
+        }
+      },
       "direct_transition": "IOP_Results_Left"
     },
     "IOP_Results_Left": {
@@ -45,15 +247,11 @@
           "display": "Intraocular pressure (observable entity)"
         }
       ],
-      "range": {
-        "low": 8,
-        "high": 35
-      },
+      "attribute": "iop_reading",
       "direct_transition": "IOP_Results_Right",
       "remarks": [
         "Normal IOP range is 10-21 mmHg, but can be higher in pathological conditions"
-      ],
-      "assign_to_attribute": "left_intraocular_pressure"
+      ]
     },
     "IOP_Results_Right": {
       "type": "Observation",
@@ -71,36 +269,21 @@
           "display": "Intraocular pressure (observable entity)"
         }
       ],
-      "range": {
-        "low": 8,
-        "high": 35
-      },
+      "attribute": "iop_reading",
       "direct_transition": "Evaluate_IOP_Levels",
       "remarks": [
         "Normal IOP range is 10-21 mmHg, but can be higher in pathological conditions"
-      ],
-      "assign_to_attribute": "right_intraocular_pressure"
+      ]
     },
     "Evaluate_IOP_Levels": {
       "type": "Simple",
       "conditional_transition": [
         {
           "condition": {
-            "condition_type": "Or",
-            "conditions": [
-              {
-                "condition_type": "Attribute",
-                "attribute": "left_intraocular_pressure",
-                "operator": ">",
-                "value": 21
-              },
-              {
-                "condition_type": "Attribute",
-                "attribute": "right_intraocular_pressure",
-                "operator": ">",
-                "value": 21
-              }
-            ]
+            "condition_type": "Attribute",
+            "attribute": "iop_reading",
+            "operator": ">",
+            "value": 21
           },
           "transition": "High_IOP_Branch"
         },
@@ -114,26 +297,32 @@
       "conditional_transition": [
         {
           "condition": {
-            "condition_type": "Or",
-            "conditions": [
-              {
-                "condition_type": "Attribute",
-                "attribute": "left_intraocular_pressure",
-                "operator": ">",
-                "value": 30
-              },
-              {
-                "condition_type": "Attribute",
-                "attribute": "right_intraocular_pressure",
-                "operator": ">",
-                "value": 30
-              }
-            ]
+            "condition_type": "Attribute",
+            "attribute": "iop_reading",
+            "operator": ">",
+            "value": 30
           },
-          "transition": "Glaucoma_Diagnosis"
+          "transition": "Glaucoma_Diagnosis_Gate"
         },
         {
-          "transition": "Ocular_Hypertension_Diagnosis"
+          "transition": "Ocular_Hypertension_Diagnosis_Gate"
+        }
+      ]
+    },
+    "Glaucoma_Diagnosis_Gate": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "transition": "High_IOP_Medication_Gate",
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "glaucoma_diagnosed",
+            "operator": "==",
+            "value": true
+          }
+        },
+        {
+          "transition": "Glaucoma_Diagnosis"
         }
       ]
     },
@@ -146,8 +335,25 @@
           "display": "Glaucoma (disorder)"
         }
       ],
-      "direct_transition": "High_IOP_Medication_Selection",
+      "direct_transition": "High_IOP_Medication_Gate",
       "assign_to_attribute": "glaucoma_diagnosed"
+    },
+    "Ocular_Hypertension_Diagnosis_Gate": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "transition": "High_IOP_Medication_Gate",
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "ocular_hypertension_diagnosed",
+            "operator": "==",
+            "value": true
+          }
+        },
+        {
+          "transition": "Ocular_Hypertension_Diagnosis"
+        }
+      ]
     },
     "Ocular_Hypertension_Diagnosis": {
       "type": "ConditionOnset",
@@ -158,8 +364,63 @@
           "display": "Ocular hypertension (disorder)"
         }
       ],
-      "direct_transition": "High_IOP_Medication_Selection",
+      "direct_transition": "High_IOP_Medication_Gate",
       "assign_to_attribute": "ocular_hypertension_diagnosed"
+    },
+    "High_IOP_Medication_Gate": {
+      "type": "Simple",
+      "remarks": [
+        "Attribute-guard against re-ordering: a patient already on any glaucoma drop is not given",
+        "a duplicate new order every visit -- the existing chronic:true order stands."
+      ],
+      "conditional_transition": [
+        {
+          "transition": "Terminal",
+          "condition": {
+            "condition_type": "Active Medication",
+            "codes": [
+              {
+                "system": "RxNorm",
+                "code": "284008",
+                "display": "travoprost 0.04 MG/ML Ophthalmic Solution"
+              },
+              {
+                "system": "RxNorm",
+                "code": "2702393",
+                "display": "timolol hemihydrate 5 MG/ML Ophthalmic Solution"
+              },
+              {
+                "system": "RxNorm",
+                "code": "310015",
+                "display": "dorzolamide 20 MG/ML Ophthalmic Solution"
+              },
+              {
+                "system": "RxNorm",
+                "code": "1923432",
+                "display": "dorzolamide 20 MG/ML / timolol 5 MG/ML Ophthalmic Solution"
+              },
+              {
+                "system": "RxNorm",
+                "code": "861204",
+                "display": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+              },
+              {
+                "system": "RxNorm",
+                "code": "308739",
+                "display": "bimatoprost 0.3 MG/ML Ophthalmic Solution"
+              },
+              {
+                "system": "RxNorm",
+                "code": "314072",
+                "display": "latanoprost 0.05 MG/ML Ophthalmic Solution"
+              }
+            ]
+          }
+        },
+        {
+          "transition": "High_IOP_Medication_Selection"
+        }
+      ]
     },
     "High_IOP_Medication_Selection": {
       "type": "Simple",
@@ -208,10 +469,11 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": 284008,
+          "code": "284008",
           "display": "travoprost 0.04 MG/ML Ophthalmic Solution"
         }
       ],
+      "chronic": true,
       "direct_transition": "Terminal"
     },
     "Beta_Blockers": {
@@ -219,10 +481,11 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": 10600,
-          "display": "timolol 5 MG/ML Ophthalmic Solution"
+          "code": "2702393",
+          "display": "timolol hemihydrate 5 MG/ML Ophthalmic Solution"
         }
       ],
+      "chronic": true,
       "direct_transition": "Terminal"
     },
     "Carbonic_Anhydrase_Inhibitors": {
@@ -234,6 +497,7 @@
           "display": "dorzolamide 20 MG/ML Ophthalmic Solution"
         }
       ],
+      "chronic": true,
       "direct_transition": "Terminal"
     },
     "Timolol_Combination": {
@@ -241,10 +505,11 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": 1923432,
+          "code": "1923432",
           "display": "dorzolamide 20 MG/ML / timolol 5 MG/ML Ophthalmic Solution"
         }
       ],
+      "chronic": true,
       "direct_transition": "Terminal"
     },
     "Alpha_Agonists": {
@@ -252,10 +517,11 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": 1999015,
+          "code": "861204",
           "display": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
         }
       ],
+      "chronic": true,
       "direct_transition": "Terminal"
     },
     "Normal_IOP_Follow_Up": {
@@ -271,6 +537,7 @@
           "display": "bimatoprost 0.3 MG/ML Ophthalmic Solution"
         }
       ],
+      "chronic": true,
       "direct_transition": "Terminal"
     },
     "Latanoprost": {
@@ -282,7 +549,9 @@
           "display": "latanoprost 0.05 MG/ML Ophthalmic Solution"
         }
       ],
+      "chronic": true,
       "direct_transition": "Terminal"
     }
-  }
+  },
+  "gmf_version": 2
 }

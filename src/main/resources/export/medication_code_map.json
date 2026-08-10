@@ -261130,5 +261130,23 @@
       "code": "27241014108",
       "description": "doxycycline hyclate 100 MG Oral Capsule"
     }
+  ],
+  "312835": [
+    {
+      "code": "00781261513",
+      "description": "rivastigmine 3 MG Oral Capsule"
+    },
+    {
+      "code": "00781261560",
+      "description": "rivastigmine 3 MG Oral Capsule"
+    },
+    {
+      "code": "33342009006",
+      "description": "rivastigmine 3 MG Oral Capsule"
+    },
+    {
+      "code": "46708006410",
+      "description": "rivastigmine 3 MG Oral Capsule"
+    }
   ]
 }

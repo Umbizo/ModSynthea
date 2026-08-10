@@ -7017,5 +7017,23 @@
       "code": "94003",
       "description": "Ventilation assist and management, initiation of pressure or volume preset ventilators for assisted or controlled breathing; hospital inpatient/observation, each subsequent day"
     }
+  ],
+  "113024001": [
+    {
+      "code": "99483",
+      "description": "Assessment of and care plan for patient with cognitive impairment, including a cognitive-focused evaluation"
+    }
+  ],
+  "273643004": [
+    {
+      "code": "96116",
+      "description": "Neurobehavioral status exam, clinical assessment (e.g., cognitive testing) with report"
+    }
+  ],
+  "310303002": [
+    {
+      "code": "99497",
+      "description": "Advance care planning including explanation and discussion of advance directives such as standard forms, first 30 minutes"
+    }
   ]
 }

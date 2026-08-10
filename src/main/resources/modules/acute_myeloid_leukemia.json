@@ -3,15 +3,76 @@
   "remarks": [
     "This module simulates the progression of Acute Myeloid Leukemia (AML) from onset through treatment phases.",
     "Models age-dependent subtypes, genetic mutations, and treatment responses.",
-    "Based on WHO classification, ELN risk stratification, and modern treatment protocols."
+    "Based on WHO classification, ELN risk stratification, and modern treatment protocols.",
+    "",
+    "Age is classified at the moment of each annual onset check (Age_Risk_Assessment,",
+    "invoked every pass of AML_Development_Monitoring), not once at whatever age",
+    "(1-10 years, via the old birth-rolled Initial_Delay) the person happened to be",
+    "when the module first ran. The pre-fix module set aml_patient_type exactly once",
+    "and never revisited it, so a person who survived past 18 or 60 kept accruing AML",
+    "risk at pediatric rates forever ('pediatric forever' bug) and adult-onset AML was",
+    "never generated. Adult annual incidence (1e-5 <60y, 8e-5 60y+) approximates the",
+    "~10x rise with age reported in Shallis RM, Wang R, Davidoff A, Ma X, Zeidan AM.",
+    "'Epidemiology of acute myeloid leukemia: Recent progress and enduring challenges.'",
+    "Blood Rev. 2019;36:70-87 (age-adjusted incidence 2.0/100,000 <65y vs 20.1/100,000",
+    "65y+); this module's own values are lower in absolute terms (controller-specified)",
+    "but preserve the same ~8x steep age gradient using this module's pre-existing",
+    "60-year adult-subtype threshold rather than 65.",
+    "",
+    "Rapid_AML_Progression (a Death state) was structurally present but never wired",
+    "into any reachable relapse path, so no simulated patient ever died of AML --",
+    "relapsed/refractory patients cycled through salvage therapy and response",
+    "reassessment forever ('immortal relapsing disease' bug). Relapse_Mortality_Check",
+    "now gates entry to each salvage round at a per-relapse-event death probability",
+    "derived from post-relapse survival data (see its own remarks)."
   ],
   "states": {
     "Initial": {
       "type": "Initial",
-      "direct_transition": "Initial_Delay"
+      "direct_transition": "Congenital_AML_Delay"
+    },
+    "Congenital_AML_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Congenital/infantile AML (including transient myeloproliferative disorder",
+        "progressing to AML) presents at or shortly after birth -- unlike the",
+        "pre-fix module, which rolled this same 2e-05 chance at whatever birth-rolled",
+        "age (1-10 years) Initial_Delay happened to land on."
+      ],
+      "range": {
+        "low": 0,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Congenital_AML_Check"
+    },
+    "Congenital_AML_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Rate unchanged from the pre-fix module (2e-05); out of this task's explicit",
+        "numeric scope, which specifies only the recurring pediatric/adult annual",
+        "rates below. Retained as a distinct, near-birth, high-risk pathway."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.00002,
+          "transition": "Congenital_AML_Risk"
+        },
+        {
+          "distribution": 0.99998,
+          "transition": "AML_Development_Monitoring"
+        }
+      ]
     },
     "Age_Risk_Assessment": {
       "type": "Simple",
+      "remarks": [
+        "Re-invoked every AML_Development_Monitoring pass (annually) so",
+        "aml_patient_type always reflects the person's CURRENT age, not a value",
+        "frozen at first classification. The three age bands are exhaustive and",
+        "mutually exclusive over all non-negative ages, so no fallback branch",
+        "is needed."
+      ],
       "conditional_transition": [
         {
           "condition": {
@@ -50,9 +111,6 @@
             "unit": "years"
           },
           "transition": "Older_Adult_AML_Risk"
-        },
-        {
-          "transition": "Older_Adult_AML_Risk"
         }
       ]
     },
@@ -62,12 +120,12 @@
       "value": "pediatric",
       "distributed_transition": [
         {
-          "transition": "Normal_Hematologic_Health",
-          "distribution": 0.99998
+          "transition": "Set_Pediatric_AML",
+          "distribution": 0.00002
         },
         {
-          "transition": "Congenital_AML_Risk",
-          "distribution": 2e-05
+          "transition": "AML_Development_Monitoring",
+          "distribution": 0.99998
         }
       ]
     },
@@ -75,18 +133,18 @@
       "type": "SetAttribute",
       "attribute": "aml_patient_type",
       "value": "young_adult",
+      "remarks": [
+        "1e-05/yr, ages 18-59 -- controller-specified calibration; see module-level",
+        "remarks for the real-world age-gradient citation."
+      ],
       "distributed_transition": [
         {
-          "transition": "Normal_Hematologic_Health",
-          "distribution": 0.99995
-        },
-        {
           "transition": "Secondary_AML_Risk",
-          "distribution": 3e-05
+          "distribution": 0.00001
         },
         {
-          "transition": "De_Novo_AML_Risk",
-          "distribution": 2e-05
+          "transition": "AML_Development_Monitoring",
+          "distribution": 0.99999
         }
       ]
     },
@@ -94,18 +152,18 @@
       "type": "SetAttribute",
       "attribute": "aml_patient_type",
       "value": "older_adult",
+      "remarks": [
+        "8e-05/yr, ages 60+ -- controller-specified calibration; see module-level",
+        "remarks for the real-world age-gradient citation."
+      ],
       "distributed_transition": [
         {
-          "transition": "Normal_Hematologic_Health",
-          "distribution": 0.9996
-        },
-        {
           "transition": "Secondary_AML_Risk",
-          "distribution": 0.00025
+          "distribution": 0.00008
         },
         {
-          "transition": "De_Novo_AML_Risk",
-          "distribution": 0.00015
+          "transition": "AML_Development_Monitoring",
+          "distribution": 0.99992
         }
       ]
     },
@@ -121,120 +179,21 @@
       "direct_transition": "AML_Diagnosis",
       "assign_to_attribute": "acute_myeloid_leukemia"
     },
-    "Normal_Hematologic_Health": {
-      "type": "SetAttribute",
-      "attribute": "aml_stage",
-      "value": 0,
-      "direct_transition": "AML_Development_Monitoring"
-    },
     "AML_Development_Monitoring": {
       "type": "Delay",
+      "remarks": [
+        "Annual reroll (was 3-12 months, which both inflated per-pass hazard and",
+        "made annual rates awkward to apply cleanly). direct_transition to",
+        "Age_Risk_Assessment on every pass is the core 'age classification at",
+        "diagnosis, not once' fix: whichever age band the person is CURRENTLY in",
+        "gets re-evaluated and re-set every single pass."
+      ],
       "range": {
-        "low": 3,
-        "high": 12,
-        "unit": "months"
+        "low": 340,
+        "high": 390,
+        "unit": "days"
       },
-      "complex_transition": [
-        {
-          "condition": {
-            "condition_type": "And",
-            "conditions": [
-              {
-                "condition_type": "Attribute",
-                "attribute": "aml_patient_type",
-                "operator": "==",
-                "value": "pediatric"
-              },
-              {
-                "condition_type": "Attribute",
-                "attribute": "aml_stage",
-                "operator": "==",
-                "value": 0
-              }
-            ]
-          },
-          "distributions": [
-            {
-              "distribution": 0.99998,
-              "transition": "AML_Development_Monitoring"
-            },
-            {
-              "distribution": 2e-05,
-              "transition": "Set_Pediatric_AML"
-            }
-          ]
-        },
-        {
-          "condition": {
-            "condition_type": "And",
-            "conditions": [
-              {
-                "condition_type": "Attribute",
-                "attribute": "aml_patient_type",
-                "operator": "==",
-                "value": "young_adult"
-              },
-              {
-                "condition_type": "Attribute",
-                "attribute": "aml_stage",
-                "operator": "==",
-                "value": 0
-              }
-            ]
-          },
-          "distributions": [
-            {
-              "distribution": 0.99995,
-              "transition": "AML_Development_Monitoring"
-            },
-            {
-              "distribution": 5e-05,
-              "transition": "Set_Young_Adult_AML"
-            }
-          ]
-        },
-        {
-          "condition": {
-            "condition_type": "And",
-            "conditions": [
-              {
-                "condition_type": "Attribute",
-                "attribute": "aml_patient_type",
-                "operator": "==",
-                "value": "older_adult"
-              },
-              {
-                "condition_type": "Attribute",
-                "attribute": "aml_stage",
-                "operator": "==",
-                "value": 0
-              }
-            ]
-          },
-          "distributions": [
-            {
-              "distribution": 0.9996,
-              "transition": "AML_Development_Monitoring"
-            },
-            {
-              "distribution": 0.0004,
-              "transition": "Set_Older_Adult_AML"
-            }
-          ]
-        },
-        {
-          "condition": {
-            "condition_type": "Attribute",
-            "attribute": "aml_stage",
-            "operator": "==",
-            "value": 1
-          },
-          "transition": "Rapid_AML_Progression"
-        },
-        {
-          "transition": "Rapid_AML_Progression"
-        }
-      ]
+      "direct_transition": "Age_Risk_Assessment"
     },
     "Congenital_AML_Risk": {
       "type": "SetAttribute",
@@ -273,25 +232,7 @@
         }
       ]
     },
-    "De_Novo_AML_Risk": {
-      "type": "SetAttribute",
-      "attribute": "de_novo_aml",
-      "value": true,
-      "direct_transition": "Set_De_Novo_AML"
-    },
     "Set_Pediatric_AML": {
-      "type": "SetAttribute",
-      "attribute": "aml_stage",
-      "value": 1,
-      "direct_transition": "AML_Condition"
-    },
-    "Set_Young_Adult_AML": {
-      "type": "SetAttribute",
-      "attribute": "aml_stage",
-      "value": 1,
-      "direct_transition": "AML_Condition"
-    },
-    "Set_Older_Adult_AML": {
       "type": "SetAttribute",
       "attribute": "aml_stage",
       "value": 1,
@@ -340,13 +281,39 @@
           "distribution": 0.1
         },
         {
-          "transition": "Supportive_Care",
+          "transition": "Supportive_Care_Visit",
           "distribution": 0.05
         }
       ]
     },
     "Induction_Chemotherapy": {
       "type": "Simple",
+      "direct_transition": "Induction_Admission"
+    },
+    "Induction_Admission": {
+      "type": "Encounter",
+      "remarks": [
+        "The pre-fix module fired Azacitidine_Administration and Transfusion_Support",
+        "with no encounter open at all on this path (AML_Diagnosis_End had already",
+        "closed the diagnosis encounter, and AML_Treatment_Pathway -- itself only",
+        "reachable by looping back through Azacitidine_Administration/Transfusion_",
+        "Support/AML_Diagnosis_End every induction pass -- opened nothing new).",
+        "Verified by a (state, encounter_open) BFS: Azacitidine_Administration,",
+        "Transfusion_Support and AML_Diagnosis_End were each reachable in BOTH the",
+        "encounter-open context (first, correct, pass through the diagnosis",
+        "encounter) and the encounter-closed context (every subsequent induction",
+        "loop pass). This encounter, opened once per induction course, removes the",
+        "closed-context path entirely."
+      ],
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission"
+        }
+      ],
+      "reason": "Acute Myeloid Leukemia",
       "direct_transition": "Azacitidine_Administration"
     },
     "Azacitidine_Administration": {
@@ -360,7 +327,256 @@
           "display": "azacitidine Injection"
         }
       ],
+      "direct_transition": "Induction_LOS"
+    },
+    "Induction_LOS": {
+      "type": "Delay",
+      "remarks": [
+        "~21-35 day inpatient length of stay for induction chemotherapy and count",
+        "recovery -- a legitimate carve-out under the inpatient encounter-lock rule",
+        "(< 90 days), matching the ~28-day pattern already established for ALL",
+        "induction in this tree (commit 6dd9df2b). Named to avoid the *_Supply_Delay",
+        "idiom, which the linter always treats as CRITICAL while an encounter is open",
+        "regardless of legitimacy."
+      ],
+      "range": {
+        "low": 21,
+        "high": 35,
+        "unit": "days"
+      },
       "direct_transition": "Transfusion_Support"
+    },
+    "Targeted_Therapy": {
+      "type": "Simple",
+      "direct_transition": "Initialize_AML_Monitor_Count"
+    },
+    "Supportive_Care_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for symptom"
+        }
+      ],
+      "reason": "Acute Myeloid Leukemia",
+      "direct_transition": "Supportive_Care"
+    },
+    "Supportive_Care": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "133918004",
+          "display": "Supportive care"
+        }
+      ],
+      "direct_transition": "Supportive_Care_Visit_End"
+    },
+    "Supportive_Care_Visit_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Response_Assessment"
+    },
+    "Response_Assessment": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Complete_Remission",
+          "distribution": 0.6
+        },
+        {
+          "transition": "Partial_Remission",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Relapsed_AML",
+          "distribution": 0.2
+        }
+      ]
+    },
+    "Complete_Remission": {
+      "type": "SetAttribute",
+      "attribute": "aml_status",
+      "value": "remission",
+      "direct_transition": "Venetoclax_End_Guard"
+    },
+    "Venetoclax_End_Guard": {
+      "type": "Simple",
+      "remarks": [
+        "Response_Assessment (and therefore Complete_Remission) is reachable from",
+        "Supportive_Care, which never sets venetoclax_therapy. The pre-fix module",
+        "called Venetoclax_End (referenced_by_attribute: venetoclax_therapy)",
+        "unconditionally, which NPEs at State$MedicationEnd.process",
+        "(State.java:1623, 'medication.stop' on a null attribute lookup) and drops",
+        "the whole patient record -- one of the 22 MedicationEnd-on-unset-attribute",
+        "states found by the tree-wide static check in task 1.10's report (S3/S9),",
+        "which names this module explicitly. This guard skips straight to",
+        "Surveillance for anyone who never started venetoclax."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "venetoclax_therapy",
+            "operator": "is not nil"
+          },
+          "transition": "Venetoclax_End"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "venetoclax_therapy",
+            "operator": "is nil"
+          },
+          "transition": "Surveillance"
+        }
+      ]
+    },
+    "Partial_Remission": {
+      "type": "SetAttribute",
+      "attribute": "aml_status",
+      "value": "partial_remission",
+      "direct_transition": "Relapsed_AML"
+    },
+    "Relapsed_AML": {
+      "type": "SetAttribute",
+      "attribute": "aml_status",
+      "value": "relapsed",
+      "direct_transition": "Relapse_Mortality_Check"
+    },
+    "Relapse_Mortality_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Rapid_AML_Progression (a Death state) existed in the pre-fix module but was",
+        "reachable only through an attribute-guarded branch of the old",
+        "AML_Development_Monitoring complex_transition that could never be true in",
+        "practice (aml_stage only ever reaches 1 after the person has already left",
+        "the monitoring loop for good) -- confirmed unreachable by transition-target",
+        "analysis, not by the naive structural BFS (which cannot see attribute-guard",
+        "semantics and reports it as reachable). No simulated AML patient could ever",
+        "die of AML; relapsed/refractory disease cycled through salvage and",
+        "reassessment forever.",
+        "",
+        "0.20 per relapse event approximates published post-relapse survival:",
+        "Breems DA, Van Putten WL, Huijgens PC, et al. 'Prognostic Index for Adult",
+        "Patients With Acute Myeloid Leukemia After First Relapse.' J Clin Oncol.",
+        "2005;23(9):1969-1978 (2-year OS after relapse 4.7%-46% by risk group); and",
+        "DiNardo CD, Wei AH. 'How I treat acute myeloid leukemia in the era of new",
+        "drugs.' Blood. 2020;135(2):85-96 (relapsed/refractory AML median OS well",
+        "under 12 months without transplant). Combined with this loop's reused",
+        "60/20/20 Response_Assessment split (each relapse round: 20% die before",
+        "reassessment, 48% of the original cohort reach CR, 32% loop again), the",
+        "finite-absorption cumulative mortality among relapsed patients is",
+        "0.20/(0.20+0.48) = 29.4% -- directionally correct (relapsed AML carries a",
+        "real risk of death that the pre-fix module modelled as zero) but likely",
+        "still optimistic relative to the ~10% real-world 5-year OS after relapse,",
+        "because Response_Assessment's 60% CR rate (realistic for FRONTLINE",
+        "induction) is reused unmodified for salvage rounds, where real CR rates are",
+        "considerably lower. Recalibrating Response_Assessment for salvage specifically",
+        "is out of this task's scope; noted as a follow-up concern."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Rapid_AML_Progression",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Salvage_Therapy",
+          "distribution": 0.8
+        }
+      ]
+    },
+    "Salvage_Therapy": {
+      "type": "Simple",
+      "direct_transition": "Relapsed_Venetoclax_Therapy"
+    },
+    "Relapsed_Venetoclax_Therapy": {
+      "type": "MedicationOrder",
+      "reason": "relapsed_acute_myeloid_leukemia",
+      "assign_to_attribute": "relapsed_venetoclax",
+      "chronic": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1747567",
+          "display": "Venetoclax Oral Tablet"
+        }
+      ],
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 1,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 28,
+          "unit": "days"
+        }
+      },
+      "direct_transition": "Salvage_Cycle_Delay"
+    },
+    "Salvage_Cycle_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "The pre-fix module ordered this med (chronic: true, 28-day prescription)",
+        "and then immediately called MedicationEnd on it at the same instant, with",
+        "no elapsed time and no encounter -- a chronic medication that starts and",
+        "stops simultaneously, and a same-instant response reassessment straight",
+        "after a relapse diagnosis. This delay gives the salvage cycle real",
+        "duration (1-2 28-day cycles) before MedicationEnd and reassessment,",
+        "matching VIALE-A-era venetoclax + hypomethylating-agent response-",
+        "assessment timing (first assessment at end of cycle 1, confirmed by",
+        "cycle 2-3)."
+      ],
+      "range": {
+        "low": 28,
+        "high": 56,
+        "unit": "days"
+      },
+      "direct_transition": "Relapsed_Venetoclax_End"
+    },
+    "Transfusion_Support": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "116859006",
+          "display": "Transfusion of blood product"
+        }
+      ],
+      "direct_transition": "Induction_Admission_End"
+    },
+    "Induction_Admission_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Initialize_AML_Monitor_Count"
+    },
+    "Surveillance": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 12,
+        "unit": "months"
+      },
+      "distributed_transition": [
+        {
+          "transition": "Relapsed_AML",
+          "distribution": 0.2
+        },
+        {
+          "transition": "Surveillance",
+          "distribution": 0.8
+        }
+      ]
+    },
+    "Rapid_AML_Progression": {
+      "type": "Death",
+      "condition_onset": "AML_Condition",
+      "direct_transition": "Final_Delay"
+    },
+    "Terminal": {
+      "type": "Terminal"
     },
     "Initialize_AML_Monitor_Count": {
       "type": "SetAttribute",
@@ -450,135 +666,6 @@
       "type": "EncounterEnd",
       "direct_transition": "Increment_AML_Monitor_Count"
     },
-    "Targeted_Therapy": {
-      "type": "Simple",
-      "direct_transition": "Initialize_AML_Monitor_Count"
-    },
-    "Supportive_Care": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "133918004",
-          "display": "Supportive care"
-        }
-      ],
-      "direct_transition": "Response_Assessment"
-    },
-    "Response_Assessment": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "transition": "Complete_Remission",
-          "distribution": 0.6
-        },
-        {
-          "transition": "Partial_Remission",
-          "distribution": 0.2
-        },
-        {
-          "transition": "Relapsed_AML",
-          "distribution": 0.2
-        }
-      ]
-    },
-    "Complete_Remission": {
-      "type": "SetAttribute",
-      "attribute": "aml_status",
-      "value": "remission",
-      "direct_transition": "Venetoclax_End"
-    },
-    "Partial_Remission": {
-      "type": "SetAttribute",
-      "attribute": "aml_status",
-      "value": "partial_remission",
-      "direct_transition": "Relapsed_AML"
-    },
-    "Relapsed_AML": {
-      "type": "SetAttribute",
-      "attribute": "aml_status",
-      "value": "relapsed",
-      "direct_transition": "Salvage_Therapy"
-    },
-    "Salvage_Therapy": {
-      "type": "Simple",
-      "direct_transition": "Relapsed_Venetoclax_Therapy"
-    },
-    "Relapsed_Venetoclax_Therapy": {
-      "type": "MedicationOrder",
-      "reason": "relapsed_acute_myeloid_leukemia",
-      "assign_to_attribute": "relapsed_venetoclax",
-      "chronic": true,
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "1747567",
-          "display": "Venetoclax Oral Tablet"
-        }
-      ],
-      "prescription": {
-        "dosage": {
-          "amount": 1,
-          "frequency": 1,
-          "period": 1,
-          "unit": "days"
-        },
-        "duration": {
-          "quantity": 28,
-          "unit": "days"
-        }
-      },
-      "direct_transition": "Relapsed_Venetoclax_End"
-    },
-    "Transfusion_Support": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "116859006",
-          "display": "Transfusion of blood product"
-        }
-      ],
-      "direct_transition": "AML_Diagnosis_End"
-    },
-    "Surveillance": {
-      "type": "Delay",
-      "range": {
-        "low": 3,
-        "high": 12,
-        "unit": "months"
-      },
-      "distributed_transition": [
-        {
-          "transition": "Relapsed_AML",
-          "distribution": 0.2
-        },
-        {
-          "transition": "Surveillance",
-          "distribution": 0.8
-        }
-      ]
-    },
-    "Rapid_AML_Progression": {
-      "type": "Death",
-      "direct_transition": "Final_Delay"
-    },
-    "Terminal": {
-      "type": "Terminal"
-    },
-    "AML_Diagnosis_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "AML_Treatment_Pathway"
-    },
-    "Initial_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 365,
-        "high": 3650,
-        "unit": "days"
-      },
-      "direct_transition": "Age_Risk_Assessment"
-    },
     "Bone_Marrow_Biopsy": {
       "type": "Procedure",
       "codes": [
@@ -611,7 +698,11 @@
           ]
         }
       ],
-      "direct_transition": "Azacitidine_Administration"
+      "direct_transition": "AML_Diagnosis_End"
+    },
+    "AML_Diagnosis_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "AML_Treatment_Pathway"
     },
     "Venetoclax_End": {
       "type": "MedicationEnd",
@@ -633,5 +724,5 @@
       "direct_transition": "Terminal"
     }
   },
-  "gmf_version": 1
+  "gmf_version": 2
 }

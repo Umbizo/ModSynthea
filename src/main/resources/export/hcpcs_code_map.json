@@ -7448,5 +7448,11 @@
       "description": "Radiation treatment delivery, >=1 MeV; intermediate",
       "weight": "0.20"
     }
+  ],
+  "133918004": [
+    {
+      "code": "G9054",
+      "description": "Oncology; primary focus of visit; supervising, coordinating or managing care of patient with terminal cancer or for whom other medical illness prevents further cancer treatment; includes symptom management, end-of-life care planning, management of palliative therapies"
+    }
   ]
 }

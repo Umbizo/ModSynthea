@@ -24,7 +24,32 @@
     "relapsed/refractory patients cycled through salvage therapy and response",
     "reassessment forever ('immortal relapsing disease' bug). Relapse_Mortality_Check",
     "now gates entry to each salvage round at a per-relapse-event death probability",
-    "derived from post-relapse survival data (see its own remarks)."
+    "derived from post-relapse survival data (see its own remarks).",
+    "",
+    "Fix round 1 (reviewer): aml_stage, aml_risk, aml_status, congenital_aml, and",
+    "aml_patient_type were all write-only (grep-verified tree-wide, including within",
+    "this module) -- set by SetAttribute states and never read by any condition",
+    "anywhere. The pure relay states that existed ONLY to set one of these",
+    "(Set_Pediatric_AML, Set_Secondary_AML, Set_De_Novo_AML, Congenital_AML_Risk,",
+    "Set_High_Risk_AML) are deleted and their predecessors repointed directly to",
+    "AML_Condition. States that combine a dead attribute write with real other logic",
+    "(the three age-band hazard states, and Complete_Remission/Partial_Remission/",
+    "Relapsed_AML, the last of which is a real multi-predecessor merge point) are",
+    "kept as Simple states with the dead attribute/value removed rather than deleted.",
+    "Secondary_AML_Risk's real conditional logic (checking myelodysplastic_syndrome/",
+    "chemotherapy_history/radiation_exposure) is unchanged and left in place -- it is",
+    "not itself a dead attribute, just a decision whose two branches now both lead to",
+    "AML_Condition; a future task may reconnect it to differentiated treatment.",
+    "",
+    "Surveillance previously had no absorbing 'cured' exit: 0.2/pass relapse, 0.8/pass",
+    "loop, forever. Reviewer's re-derivation of the full absorbing chain showed this",
+    "makes P(eventual AML death | ever relapse) solve to exactly 1.0, because every",
+    "Complete_Remission path (frontline or salvage) eventually re-enters Surveillance",
+    "and, with no discharge exit, relapses again with probability 1 given infinite",
+    "passes. Surveillance now runs on an annual cadence with a 5-year relapse-free",
+    "discharge to Long_Term_Remission_Discharge -> Terminal, giving a real absorbing",
+    "'cured' outcome. See Surveillance and Relapse_Mortality_Check remarks for the",
+    "full recomputed chain."
   ],
   "states": {
     "Initial": {
@@ -51,12 +76,15 @@
       "remarks": [
         "Rate unchanged from the pre-fix module (2e-05); out of this task's explicit",
         "numeric scope, which specifies only the recurring pediatric/adult annual",
-        "rates below. Retained as a distinct, near-birth, high-risk pathway."
+        "rates below. Retained as a distinct, near-birth, high-risk pathway.",
+        "Fix round 1: routes straight to AML_Condition -- the pre-fix module's",
+        "Congenital_AML_Risk -> Set_High_Risk_AML relay only ever set the dead",
+        "congenital_aml and aml_risk attributes and is removed."
       ],
       "distributed_transition": [
         {
           "distribution": 0.00002,
-          "transition": "Congenital_AML_Risk"
+          "transition": "AML_Condition"
         },
         {
           "distribution": 0.99998,
@@ -115,12 +143,17 @@
       ]
     },
     "Pediatric_AML_Risk": {
-      "type": "SetAttribute",
-      "attribute": "aml_patient_type",
-      "value": "pediatric",
+      "type": "Simple",
+      "remarks": [
+        "Fix round 1: was SetAttribute aml_patient_type=pediatric; that attribute is",
+        "never read anywhere in the tree (grep-verified), so this is now a plain",
+        "hazard-roll state. The hit branch used to route through Set_Pediatric_AML,",
+        "a pure relay that only set the also-dead aml_stage attribute -- removed,",
+        "routes straight to AML_Condition."
+      ],
       "distributed_transition": [
         {
-          "transition": "Set_Pediatric_AML",
+          "transition": "AML_Condition",
           "distribution": 0.00002
         },
         {
@@ -130,12 +163,12 @@
       ]
     },
     "Young_Adult_AML_Risk": {
-      "type": "SetAttribute",
-      "attribute": "aml_patient_type",
-      "value": "young_adult",
+      "type": "Simple",
       "remarks": [
         "1e-05/yr, ages 18-59 -- controller-specified calibration; see module-level",
-        "remarks for the real-world age-gradient citation."
+        "remarks for the real-world age-gradient citation.",
+        "Fix round 1: was SetAttribute aml_patient_type=young_adult (dead attribute,",
+        "grep-verified unread tree-wide); now a plain hazard-roll state."
       ],
       "distributed_transition": [
         {
@@ -149,12 +182,12 @@
       ]
     },
     "Older_Adult_AML_Risk": {
-      "type": "SetAttribute",
-      "attribute": "aml_patient_type",
-      "value": "older_adult",
+      "type": "Simple",
       "remarks": [
         "8e-05/yr, ages 60+ -- controller-specified calibration; see module-level",
-        "remarks for the real-world age-gradient citation."
+        "remarks for the real-world age-gradient citation.",
+        "Fix round 1: was SetAttribute aml_patient_type=older_adult (dead attribute,",
+        "grep-verified unread tree-wide); now a plain hazard-roll state."
       ],
       "distributed_transition": [
         {
@@ -195,14 +228,19 @@
       },
       "direct_transition": "Age_Risk_Assessment"
     },
-    "Congenital_AML_Risk": {
-      "type": "SetAttribute",
-      "attribute": "congenital_aml",
-      "value": true,
-      "direct_transition": "Set_High_Risk_AML"
-    },
     "Secondary_AML_Risk": {
       "type": "Simple",
+      "remarks": [
+        "Fix round 1: both branches now route straight to AML_Condition. The",
+        "pre-fix module routed through Set_Secondary_AML / Set_De_Novo_AML, two",
+        "relays that only set the dead aml_stage attribute (grep-verified unread",
+        "tree-wide) and were otherwise identical -- removed. This check's own",
+        "logic (real risk-factor attributes: myelodysplastic_syndrome,",
+        "chemotherapy_history, radiation_exposure) is unchanged and left in",
+        "place, since it is not itself a dead attribute -- only its two",
+        "downstream relays were. A future task may reconnect secondary-vs-de-novo",
+        "classification to differentiated treatment or a real attribute."
+      ],
       "conditional_transition": [
         {
           "condition": {
@@ -225,36 +263,12 @@
               }
             ]
           },
-          "transition": "Set_Secondary_AML"
+          "transition": "AML_Condition"
         },
         {
-          "transition": "Set_De_Novo_AML"
+          "transition": "AML_Condition"
         }
       ]
-    },
-    "Set_Pediatric_AML": {
-      "type": "SetAttribute",
-      "attribute": "aml_stage",
-      "value": 1,
-      "direct_transition": "AML_Condition"
-    },
-    "Set_Secondary_AML": {
-      "type": "SetAttribute",
-      "attribute": "aml_stage",
-      "value": 1,
-      "direct_transition": "AML_Condition"
-    },
-    "Set_De_Novo_AML": {
-      "type": "SetAttribute",
-      "attribute": "aml_stage",
-      "value": 1,
-      "direct_transition": "AML_Condition"
-    },
-    "Set_High_Risk_AML": {
-      "type": "SetAttribute",
-      "attribute": "aml_risk",
-      "value": "high",
-      "direct_transition": "AML_Condition"
     },
     "AML_Diagnosis": {
       "type": "Encounter",
@@ -266,7 +280,15 @@
           "display": "Hospital admission"
         }
       ],
-      "reason": "Acute Myeloid Leukemia",
+      "remarks": [
+        "Fix round 1: reason was the literal display string 'Acute Myeloid",
+        "Leukemia', which matches neither an attribute name nor a state name and",
+        "so resolves to nothing at State.java:1033-1057 (encounter.reason stays",
+        "null -- no principal/admitting diagnosis on this claim). Corrected to",
+        "the attribute AML_Condition assigns ('acute_myeloid_leukemia'), matching",
+        "the convention Azacitidine_Administration already used correctly."
+      ],
+      "reason": "acute_myeloid_leukemia",
       "direct_transition": "Bone_Marrow_Biopsy"
     },
     "AML_Treatment_Pathway": {
@@ -303,7 +325,10 @@
         "encounter-open context (first, correct, pass through the diagnosis",
         "encounter) and the encounter-closed context (every subsequent induction",
         "loop pass). This encounter, opened once per induction course, removes the",
-        "closed-context path entirely."
+        "closed-context path entirely.",
+        "Fix round 1: reason corrected from the non-resolving literal string",
+        "'Acute Myeloid Leukemia' to the attribute AML_Condition assigns -- see",
+        "AML_Diagnosis's remarks for the mechanism."
       ],
       "encounter_class": "inpatient",
       "codes": [
@@ -313,7 +338,7 @@
           "display": "Hospital admission"
         }
       ],
-      "reason": "Acute Myeloid Leukemia",
+      "reason": "acute_myeloid_leukemia",
       "direct_transition": "Azacitidine_Administration"
     },
     "Azacitidine_Administration": {
@@ -360,7 +385,12 @@
           "display": "Encounter for symptom"
         }
       ],
-      "reason": "Acute Myeloid Leukemia",
+      "remarks": [
+        "Fix round 1: reason corrected from the non-resolving literal string",
+        "'Acute Myeloid Leukemia' to the attribute AML_Condition assigns -- see",
+        "AML_Diagnosis's remarks for the mechanism."
+      ],
+      "reason": "acute_myeloid_leukemia",
       "direct_transition": "Supportive_Care"
     },
     "Supportive_Care": {
@@ -396,9 +426,13 @@
       ]
     },
     "Complete_Remission": {
-      "type": "SetAttribute",
-      "attribute": "aml_status",
-      "value": "remission",
+      "type": "Simple",
+      "remarks": [
+        "Fix round 1: was SetAttribute aml_status=remission; aml_status is never",
+        "read anywhere in the tree (grep-verified). Kept as a named Simple state",
+        "(rather than collapsed away) because it is a real, distinct merge point",
+        "documenting the CR outcome in the graph."
+      ],
       "direct_transition": "Venetoclax_End_Guard"
     },
     "Venetoclax_End_Guard": {
@@ -412,7 +446,7 @@
         "the whole patient record -- one of the 22 MedicationEnd-on-unset-attribute",
         "states found by the tree-wide static check in task 1.10's report (S3/S9),",
         "which names this module explicitly. This guard skips straight to",
-        "Surveillance for anyone who never started venetoclax."
+        "Init_Surveillance_Counter for anyone who never started venetoclax."
       ],
       "conditional_transition": [
         {
@@ -429,20 +463,27 @@
             "attribute": "venetoclax_therapy",
             "operator": "is nil"
           },
-          "transition": "Surveillance"
+          "transition": "Init_Surveillance_Counter"
         }
       ]
     },
     "Partial_Remission": {
-      "type": "SetAttribute",
-      "attribute": "aml_status",
-      "value": "partial_remission",
+      "type": "Simple",
+      "remarks": [
+        "Fix round 1: was SetAttribute aml_status=partial_remission; aml_status is",
+        "never read anywhere in the tree (grep-verified). Kept as a named Simple",
+        "state for the same reason as Complete_Remission."
+      ],
       "direct_transition": "Relapsed_AML"
     },
     "Relapsed_AML": {
-      "type": "SetAttribute",
-      "attribute": "aml_status",
-      "value": "relapsed",
+      "type": "Simple",
+      "remarks": [
+        "Fix round 1: was SetAttribute aml_status=relapsed; aml_status is never",
+        "read anywhere in the tree (grep-verified). Kept as a named Simple state",
+        "-- it is a real merge point with three predecessors (Response_Assessment,",
+        "Partial_Remission, Surveillance_Relapse_Roll)."
+      ],
       "direct_transition": "Relapse_Mortality_Check"
     },
     "Relapse_Mortality_Check": {
@@ -464,17 +505,35 @@
         "2005;23(9):1969-1978 (2-year OS after relapse 4.7%-46% by risk group); and",
         "DiNardo CD, Wei AH. 'How I treat acute myeloid leukemia in the era of new",
         "drugs.' Blood. 2020;135(2):85-96 (relapsed/refractory AML median OS well",
-        "under 12 months without transplant). Combined with this loop's reused",
-        "60/20/20 Response_Assessment split (each relapse round: 20% die before",
-        "reassessment, 48% of the original cohort reach CR, 32% loop again), the",
-        "finite-absorption cumulative mortality among relapsed patients is",
-        "0.20/(0.20+0.48) = 29.4% -- directionally correct (relapsed AML carries a",
-        "real risk of death that the pre-fix module modelled as zero) but likely",
-        "still optimistic relative to the ~10% real-world 5-year OS after relapse,",
-        "because Response_Assessment's 60% CR rate (realistic for FRONTLINE",
-        "induction) is reused unmodified for salvage rounds, where real CR rates are",
-        "considerably lower. Recalibrating Response_Assessment for salvage specifically",
-        "is out of this task's scope; noted as a follow-up concern."
+        "under 12 months without transplant).",
+        "",
+        "FIX ROUND 1 -- reviewer correction: the round-0 remark claimed a",
+        "'finite-absorption cumulative mortality of 29.4%' by treating",
+        "Complete_Remission as a terminal outcome. That was wrong: Surveillance had",
+        "no absorbing discharge exit (0.2/pass relapse, 0.8/pass loop forever), so",
+        "every CR path eventually cycles back through this same check with",
+        "probability 1 given infinite passes, and the true recursive solution is",
+        "P(eventual AML death | ever relapse) = 1.0 -- solve p = 0.2 + 0.8*p*1.0 => p = 1.0.",
+        "Surveillance now has a real 5-year relapse-free discharge (see its own",
+        "remarks). Recomputing with that fix, let q = P(die | just achieved CR and",
+        "entered Surveillance) and p = P(die | just relapsed, i.e. at THIS state):",
+        "  q = P(relapse within 5 discharge-eligible years) * p",
+        "    = 0.5988 * p        (Surveillance's own remarks derive 0.5988)",
+        "  p = 0.2*1 + 0.8*(0.6*q + 0.2*p + 0.2*p)      [Response_Assessment's",
+        "                                                60/20/20 reused for salvage]",
+        "    = 0.2 + 0.8*(0.6*0.5988*p + 0.4*p)",
+        "    = 0.2 + 0.8*0.75928*p = 0.2 + 0.607424*p",
+        "  => p = 0.2 / 0.392576 = 0.5095  (~51.0%)",
+        "Population-level, from first diagnosis (Response_Assessment's first pass,",
+        "0.6 CR / 0.2 PR / 0.2 relapsed):",
+        "  P(eventual AML death | diagnosed) = 0.6*q + 0.4*p",
+        "    = 0.6*0.5988*0.5095 + 0.4*0.5095 = 0.1830 + 0.2038 = 0.3868 (~38.7%)",
+        "This is likely still somewhat optimistic relative to real-world ~70%",
+        "eventual mortality implied by SEER's ~29-31% 5-year OS (this simplified",
+        "model does not stratify treatment intensity/fitness, and reuses",
+        "Response_Assessment's 60% CR -- realistic for frontline induction -- for",
+        "salvage rounds too, where real CR rates are considerably lower). Flagged",
+        "as a follow-up concern, not fixed here (out of this round's scope)."
       ],
       "distributed_transition": [
         {
@@ -489,6 +548,28 @@
     },
     "Salvage_Therapy": {
       "type": "Simple",
+      "direct_transition": "Salvage_Cycle_Visit"
+    },
+    "Salvage_Cycle_Visit": {
+      "type": "Encounter",
+      "remarks": [
+        "Fix round 1: the salvage path had NO encounter at all (Relapsed_Venetoclax_",
+        "Therapy fired directly from Salvage_Therapy, a bare Simple state) --",
+        "relapsed AML produced no claims, and the medication order silently",
+        "attached to whatever encounter was most recent in the person's overall",
+        "record (HealthRecord.currentEncounter's fallback, State.java/",
+        "HealthRecord.java) rather than a dedicated visit. Every salvage cycle now",
+        "opens its own ambulatory encounter."
+      ],
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for symptom"
+        }
+      ],
+      "reason": "relapsed_acute_myeloid_leukemia",
       "direct_transition": "Relapsed_Venetoclax_Therapy"
     },
     "Relapsed_Venetoclax_Therapy": {
@@ -515,6 +596,10 @@
           "unit": "days"
         }
       },
+      "direct_transition": "Salvage_Cycle_Visit_End"
+    },
+    "Salvage_Cycle_Visit_End": {
+      "type": "EncounterEnd",
       "direct_transition": "Salvage_Cycle_Delay"
     },
     "Salvage_Cycle_Delay": {
@@ -522,13 +607,13 @@
       "remarks": [
         "The pre-fix module ordered this med (chronic: true, 28-day prescription)",
         "and then immediately called MedicationEnd on it at the same instant, with",
-        "no elapsed time and no encounter -- a chronic medication that starts and",
-        "stops simultaneously, and a same-instant response reassessment straight",
-        "after a relapse diagnosis. This delay gives the salvage cycle real",
-        "duration (1-2 28-day cycles) before MedicationEnd and reassessment,",
-        "matching VIALE-A-era venetoclax + hypomethylating-agent response-",
-        "assessment timing (first assessment at end of cycle 1, confirmed by",
-        "cycle 2-3)."
+        "no elapsed time -- a chronic medication that starts and stops",
+        "simultaneously, and a same-instant response reassessment straight after a",
+        "relapse diagnosis. This delay gives the salvage cycle real duration (1-2",
+        "28-day cycles) before MedicationEnd and reassessment, matching",
+        "VIALE-A-era venetoclax + hypomethylating-agent response-assessment timing",
+        "(first assessment at end of cycle 1, confirmed by cycle 2-3). Sits outside",
+        "the now-closed Salvage_Cycle_Visit encounter."
       ],
       "range": {
         "low": 28,
@@ -552,23 +637,98 @@
       "type": "EncounterEnd",
       "direct_transition": "Initialize_AML_Monitor_Count"
     },
+    "Init_Surveillance_Counter": {
+      "type": "SetAttribute",
+      "attribute": "aml_surveillance_years",
+      "value": 0,
+      "direct_transition": "Surveillance"
+    },
     "Surveillance": {
       "type": "Delay",
+      "remarks": [
+        "Fix round 1: annual cadence (was 3-12 months) so passes align cleanly with",
+        "years for the 5-year discharge threshold below and with published",
+        "annual/5-year relapse-free-survival data."
+      ],
       "range": {
-        "low": 3,
-        "high": 12,
+        "low": 11,
+        "high": 13,
         "unit": "months"
       },
+      "direct_transition": "Count_Surveillance_Year"
+    },
+    "Count_Surveillance_Year": {
+      "type": "Counter",
+      "attribute": "aml_surveillance_years",
+      "action": "increment",
+      "direct_transition": "Surveillance_Outcome_Check"
+    },
+    "Surveillance_Outcome_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Fix round 1: this whole discharge mechanism is new. The pre-fix module's",
+        "Surveillance had only two outcomes -- 0.2/pass relapse, 0.8/pass loop --",
+        "forever, with no absorbing cured/discharged exit. See Relapse_Mortality_",
+        "Check's remarks for the reviewer's proof that this makes P(eventual AML",
+        "death | ever relapse) solve to exactly 1.0.",
+        "",
+        "5 relapse-free years -> Long_Term_Remission_Discharge, per Dohner H,",
+        "Weisdorf DJ, Bloomfield CD. 'Acute Myeloid Leukemia.' N Engl J Med.",
+        "2015;373:1136-1152 (~35-40% of adults achieving CR become long-term",
+        "survivors/cured). Surveillance_Relapse_Roll's annual rate is calibrated so",
+        "P(5 consecutive relapse-free years) ~= 0.40: solving (1-p)^5 = 0.40 gives",
+        "p = 1 - 0.40^(1/5) = 0.1674/yr; rounded to 0.167 below.",
+        "Check: (1-0.167)^5 = 0.833^5 = 0.4012 (~40.1%, matches target)."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "aml_surveillance_years",
+            "operator": ">=",
+            "value": 5
+          },
+          "transition": "Long_Term_Remission_Discharge"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "aml_surveillance_years",
+            "operator": "<",
+            "value": 5
+          },
+          "transition": "Surveillance_Relapse_Roll"
+        }
+      ]
+    },
+    "Surveillance_Relapse_Roll": {
+      "type": "Simple",
+      "remarks": [
+        "0.167/yr -- see Surveillance_Outcome_Check's remarks for the derivation",
+        "against a ~40% 5-year cure target (Dohner et al. 2015 NEJM). Cumulative",
+        "relapse probability within the 5-year discharge window = 1 - 0.4012 =",
+        "0.5988, the figure Relapse_Mortality_Check's remarks use as 'q's",
+        "coefficient."
+      ],
       "distributed_transition": [
         {
           "transition": "Relapsed_AML",
-          "distribution": 0.2
+          "distribution": 0.167
         },
         {
           "transition": "Surveillance",
-          "distribution": 0.8
+          "distribution": 0.833
         }
       ]
+    },
+    "Long_Term_Remission_Discharge": {
+      "type": "Simple",
+      "remarks": [
+        "5 consecutive relapse-free years -- functionally cured (Dohner et al.",
+        "2015 NEJM). Absorbing exit: this patient does not re-enter the relapse",
+        "risk pool. All-cause mortality is still handled by the lifecycle module."
+      ],
+      "direct_transition": "Terminal"
     },
     "Rapid_AML_Progression": {
       "type": "Death",
@@ -582,7 +742,7 @@
       "type": "SetAttribute",
       "attribute": "aml_monitor_count",
       "value": 0,
-      "direct_transition": "Venetoclax_Therapy"
+      "direct_transition": "Monthly_AML_Monitoring"
     },
     "Increment_AML_Monitor_Count": {
       "type": "Counter",
@@ -603,12 +763,22 @@
           "transition": "Response_Assessment"
         },
         {
-          "transition": "Monthly_AML_Monitoring"
+          "transition": "Monthly_AML_Monitoring_Followup"
         }
       ]
     },
     "Venetoclax_Therapy": {
       "type": "MedicationOrder",
+      "remarks": [
+        "Fix round 1: moved to fire inside Monthly_AML_Monitoring (was ordered by",
+        "Initialize_AML_Monitor_Count before any encounter opened -- reachable from",
+        "Targeted_Therapy, a bare Simple state, or from Induction_Admission_End, an",
+        "EncounterEnd -- so this order silently attached to whatever encounter was",
+        "most recent in the person's overall record instead of a dedicated visit).",
+        "Ordered once, at the first monthly visit only; monitoring visits 2-3 use",
+        "Monthly_AML_Monitoring_Followup and do not re-order it (chronic: true",
+        "already covers ongoing refills)."
+      ],
       "reason": "acute_myeloid_leukemia",
       "assign_to_attribute": "venetoclax_therapy",
       "chronic": true,
@@ -631,10 +801,31 @@
           "unit": "days"
         }
       },
-      "direct_transition": "Monthly_AML_Monitoring"
+      "direct_transition": "AML_CBC_Check"
     },
     "Monthly_AML_Monitoring": {
       "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for symptom"
+        }
+      ],
+      "remarks": [
+        "Fix round 1: first monitoring visit. Now opens BEFORE Venetoclax_Therapy",
+        "(was ordered before this encounter existed -- see Venetoclax_Therapy's",
+        "remarks)."
+      ],
+      "direct_transition": "Venetoclax_Therapy"
+    },
+    "Monthly_AML_Monitoring_Followup": {
+      "type": "Encounter",
+      "remarks": [
+        "Fix round 1: new. Monitoring visits 2-3 (no re-ordering of the chronic",
+        "venetoclax prescription -- see Venetoclax_Therapy's remarks)."
+      ],
       "encounter_class": "ambulatory",
       "codes": [
         {
@@ -664,6 +855,21 @@
     },
     "Monthly_AML_Monitoring_End": {
       "type": "EncounterEnd",
+      "direct_transition": "Monthly_Monitoring_Delay"
+    },
+    "Monthly_Monitoring_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Fix round 1: new. The pre-fix module had no delay at all between",
+        "'monthly' monitoring passes -- all three landed on the same simulated",
+        "instant (the same defect class as dlbcl's pre-fix R-CHOP). Sits outside",
+        "the now-closed Monthly_AML_Monitoring(_Followup) encounter."
+      ],
+      "range": {
+        "low": 28,
+        "high": 30,
+        "unit": "days"
+      },
       "direct_transition": "Increment_AML_Monitor_Count"
     },
     "Bone_Marrow_Biopsy": {
@@ -671,9 +877,18 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "86273004",
+          "code": "234326005",
           "display": "Bone marrow biopsy"
         }
+      ],
+      "remarks": [
+        "Fix round 1 (cross-module): recoded from 86273004 (the generic root",
+        "'Biopsy' concept, whose shared hcpcs_code_map row bills CPT 38221 --",
+        "correct for a bone marrow biopsy by coincidence of a shared map row, not",
+        "because 86273004 itself means bone marrow biopsy) to 234326005 'Bone",
+        "marrow biopsy (procedure)', the specific SNOMED concept, matching",
+        "myelodysplastic_syndromes.json's Bone_Marrow_Biopsy_Procedure. Existing",
+        "hcpcs_code_map row (234326005 -> G0364) covers it; no new row needed."
       ],
       "direct_transition": "AML_Diagnostic_Report"
     },
@@ -707,7 +922,7 @@
     "Venetoclax_End": {
       "type": "MedicationEnd",
       "referenced_by_attribute": "venetoclax_therapy",
-      "direct_transition": "Surveillance"
+      "direct_transition": "Init_Surveillance_Counter"
     },
     "Relapsed_Venetoclax_End": {
       "type": "MedicationEnd",

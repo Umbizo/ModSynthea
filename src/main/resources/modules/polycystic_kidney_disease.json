@@ -18,7 +18,13 @@
     "Gson silently turns it into a LinkedTreeMap crash landmine) replaced with a",
     "distributed_transition into three plain-integer SetAttribute states. No incidence",
     "or clinical rates were changed in this pass; all distributed_transition",
-    "probabilities are unchanged from the pre-remediation module except where noted."
+    "probabilities are unchanged from the pre-remediation module except where noted.",
+    "Fix round 1 (2026-08, same task): Hypertension_Onset no longer uses",
+    "assign_to_attribute (it stored a HealthRecord.Entry OBJECT, invisible to every",
+    "stock '== true' consumer of 'hypertension'); a new Set_Hypertension_True",
+    "SetAttribute state now sets the boolean, matching stock hypertension.json's own",
+    "convention. ACEi_Therapy marked 'chronic: true' (Global Constraint 6) -- lifelong",
+    "antihypertensive, no MedicationEnd."
   ],
   "gmf_version": 2,
   "states": {
@@ -164,13 +170,28 @@
           "display": "Essential hypertension"
         }
       ],
-      "direct_transition": "ACEi_Therapy",
-      "assign_to_attribute": "hypertension",
+      "direct_transition": "Set_Hypertension_True",
       "remarks": [
-        "Attribute renamed from capitalized 'Hypertension' to lowercase 'hypertension'",
-        "(module-audit-remediation task 1.2): chronic_kidney_disease.json's",
-        "Guard_for_Htn_or_DM reads the lowercase attribute (\"is not nil\"); the capitalized",
-        "form was invisible to it and to every other stock consumer of this attribute."
+        "module-audit-remediation task 1.2 fix round 1: no assign_to_attribute here",
+        "(nothing in this module reads a dx-Entry attribute back). Setting hypertension",
+        "is now handled by Set_Hypertension_True immediately after this state."
+      ]
+    },
+    "Set_Hypertension_True": {
+      "type": "SetAttribute",
+      "attribute": "hypertension",
+      "value": true,
+      "direct_transition": "ACEi_Therapy",
+      "remarks": [
+        "module-audit-remediation task 1.2 fix round 1: assign_to_attribute on",
+        "Hypertension_Onset stored a HealthRecord.Entry OBJECT under 'hypertension', not",
+        "a boolean -- every '== true' consumer (stock hypertension.json:838 'Check for",
+        "Hypertension Override', metabolic_syndrome_disease.json:106,",
+        "endometrial_cancer.json:57, covid19/determine_risk.json:36) stayed blind to it;",
+        "only 'is not nil' consumers (chronic_kidney_disease.json's Guard_for_Htn_or_DM)",
+        "worked. This SetAttribute now matches the stock convention -- stock",
+        "hypertension.json's own Onset_Hypertension state sets the same attribute the",
+        "same way -- so both '== true' and 'is not nil' consumers see it."
       ]
     },
     "ACEi_Therapy": {
@@ -183,11 +204,15 @@
           "display": "Lisinopril 10 MG Oral Tablet"
         }
       ],
+      "chronic": true,
       "remarks": [
         "Recoded from 29046 (the bare 'Lisinopril' ingredient CUI, not prescribable) to",
         "314076, the lisinopril 10 MG Oral Tablet SCD -- verified present as a key in",
         "export/medication_code_map.json (NDCs for 'Lisinopril 10 MG Oral Tablet [Zestril]'",
-        "and equivalents), per Global Constraint 3/9."
+        "and equivalents), per Global Constraint 3/9.",
+        "module-audit-remediation task 1.2 fix round 1: added 'chronic: true' (Global",
+        "Constraint 6) -- lisinopril for PKD-associated hypertension is a lifelong",
+        "antihypertensive, correctly never stopped via MedicationEnd."
       ]
     },
     "PKD_Screening_Labs": {

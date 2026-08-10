@@ -41,7 +41,14 @@
     "Recovered episodes close the acute condition (ConditionEnd, 7-90 days",
     "after the acute encounter) and loop back into the annual incidence",
     "check, so a patient can experience multiple discrete AKI episodes over",
-    "a lifetime."
+    "a lifetime.",
+    "",
+    "Fix round 1: fixing the Observation.assign_to_attribute drop above made",
+    "Assess_AKI_Severity's severity gate live for the first time, which",
+    "exposed that the original uniform 1.2-6.5 creatinine draw sent 47% of",
+    "episodes to Severe_AKI/Dialysis (real AKI RRT ~2-6%). AKI_Creatinine_Value",
+    "is now a distributed_transition into three banded draws (see its own",
+    "remarks) so P(creatinine >=4.0, severe) ~= 13%, within the 10-15% target."
   ],
   "gmf_version": 2,
   "states": {
@@ -152,6 +159,64 @@
       "direct_transition": "AKI_Creatinine_Value"
     },
     "AKI_Creatinine_Value": {
+      "type": "Simple",
+      "remarks": [
+        "Fix round 1: the original single uniform 1.2-6.5 draw made",
+        "Assess_AKI_Severity's severity gate (previously inert -- see below)",
+        "route 47% of episodes to Severe_AKI/Dialysis once the",
+        "Observation.assign_to_attribute silent-drop bug was fixed, against a",
+        "real AKI RRT rate of ~2-6%. Reshaped right-skewed via a",
+        "distributed_transition into three banded draws so P(creatinine",
+        ">=4.0, i.e. severe/KDIGO-Stage-3-equivalent) ~= 13%, in the 10-15%",
+        "range the controller targeted (creatinine >=4.0 mg/dL routes every",
+        "episode to Dialysis in this simplified model, so this also bounds",
+        "the dialysis rate). Band shares approximate the KDIGO-stage mix",
+        "reported for hospitalised/community AKI (most episodes are mild;",
+        "severe/Stage-3-equivalent is a minority): KDIGO Clinical Practice",
+        "Guideline for Acute Kidney Injury, Kidney Int Suppl. 2012;2(1):1-138",
+        "for the staging definitions, and Hoste EAJ, Bagshaw SM, Bellomo R,",
+        "et al., Intensive Care Med. 2015;41(8):1411-1423 (AKI-EPI) for the",
+        "order-of-magnitude stage distribution -- that cohort is ICU-only and",
+        "skews sicker (~19% Stage 3) than this module's general hospital/",
+        "community population, so 13% (toward the low end of the",
+        "controller's 10-15% band) is used here."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.55,
+          "transition": "AKI_Creatinine_Draw_Mild"
+        },
+        {
+          "distribution": 0.32,
+          "transition": "AKI_Creatinine_Draw_Moderate"
+        },
+        {
+          "distribution": 0.13,
+          "transition": "AKI_Creatinine_Draw_Severe"
+        }
+      ]
+    },
+    "AKI_Creatinine_Draw_Mild": {
+      "type": "SetAttribute",
+      "attribute": "creatinine",
+      "range": {
+        "low": 1.2,
+        "high": 1.9,
+        "decimals": 1
+      },
+      "direct_transition": "AKI_Creatinine_Check"
+    },
+    "AKI_Creatinine_Draw_Moderate": {
+      "type": "SetAttribute",
+      "attribute": "creatinine",
+      "range": {
+        "low": 2.0,
+        "high": 3.9,
+        "decimals": 1
+      },
+      "direct_transition": "AKI_Creatinine_Check"
+    },
+    "AKI_Creatinine_Draw_Severe": {
       "type": "SetAttribute",
       "remarks": [
         "Draw the severity-determining value into an attribute first, then",
@@ -163,7 +228,7 @@
       ],
       "attribute": "creatinine",
       "range": {
-        "low": 1.2,
+        "low": 4.0,
         "high": 6.5,
         "decimals": 1
       },

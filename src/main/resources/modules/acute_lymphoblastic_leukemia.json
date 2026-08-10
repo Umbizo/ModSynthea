@@ -459,10 +459,19 @@
     },
     "Bone_Marrow_Biopsy": {
       "type": "Procedure",
+      "remarks": [
+        "Fix round 1 (cross-module, reviewer): recoded from 86273004 (the generic",
+        "root 'Biopsy' concept -- its hcpcs_code_map row bills CPT 38221 correctly",
+        "for a bone marrow biopsy only by coincidence of a shared map row, not",
+        "because 86273004 itself means bone marrow biopsy) to 234326005 'Bone",
+        "marrow biopsy (procedure)', matching myelodysplastic_syndromes.json and",
+        "acute_myeloid_leukemia.json's Bone_Marrow_Biopsy states. Existing",
+        "hcpcs_code_map row (234326005 -> G0364) covers it; no new row needed."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "86273004",
+          "code": "234326005",
           "display": "Bone marrow biopsy"
         }
       ],

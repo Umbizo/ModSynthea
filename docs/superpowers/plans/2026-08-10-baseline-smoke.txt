@@ -1,0 +1,11 @@
+eligible population (code=399068003, sex=M, min-age=55.0): n=232, n_with_dx=0
+share of dx 399068003 in eligible pop: 0.000  max=0.200 [OK]
+onset age samples for dx 399068003 in eligible pop: n=0
+onset age p5 for dx 399068003: n/a
+onset age p95 for dx 399068003: n/a
+mean encounters/patient: 202.17  min=30.00 [OK]
+top condition code: 314529007 (6556/34196 rows)
+top condition code share: 0.192  max=0.050 [FAIL]
+
+FAIL: 1 bound(s) violated:
+  - top condition code share = 0.192 > max 0.050

@@ -7223,5 +7223,11 @@
       "code": "71045",
       "description": "Portable chest x-ray"
     }
+  ],
+  "26212005": [
+    {
+      "code": "33405",
+      "description": "Aortic valve replacement"
+    }
   ]
 }

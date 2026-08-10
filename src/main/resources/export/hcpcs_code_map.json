@@ -5,6 +5,12 @@
       "description": "Collection of venous blood by venipuncture"
     }
   ],
+  "86273004": [
+    {
+      "code": "38221",
+      "description": "Diagnostic bone marrow; biopsy(ies)"
+    }
+  ],
   "164721007": [
     {
       "code": "95910",

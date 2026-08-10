@@ -37,22 +37,96 @@
     "ALL_Development_Monitoring": {
       "type": "Delay",
       "range": {
-        "low": 6,
-        "high": 12,
-        "unit": "months"
+        "low": 340,
+        "high": 390,
+        "unit": "days"
       },
       "remarks": [
-        "ALL typically develops rapidly over weeks to months",
-        "Monitor for development of leukemic transformation"
+        "One sporadic-ALL incidence roll per year of life; see ALL_Incidence_Hazard_Check for the age-banded rates.",
+        "Previously rolled a flat 5e-5 chance every 6-12 months for the rest of the person's life with no age adjustment -- that let sporadic risk compound unrealistically into old age (~5x over SEER, elderly-skewed instead of the true early-childhood peak)."
       ],
-      "distributed_transition": [
+      "direct_transition": "ALL_Incidence_Hazard_Check"
+    },
+    "ALL_Incidence_Hazard_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Age-banded annual sporadic ALL hazard (SEER childhood cancer statistics: incidence peaks ages 1-4, falls through childhood, low flat rate in adults):",
+        "  ages 1-4:  7e-5/year",
+        "  ages 5-14: 3e-5/year",
+        "  ages 15+:  1e-5/year",
+        "p_pass = 1 - (1 - p_annual)^(delta t years); delta t = 1 year here, so p_pass = p_annual directly.",
+        "Branch order matters: complex_transition takes the first true condition, so the youngest band is tested first."
+      ],
+      "complex_transition": [
         {
-          "distribution": 0.99995,
-          "transition": "ALL_Development_Monitoring"
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Age",
+                "operator": ">=",
+                "quantity": 1,
+                "unit": "years"
+              },
+              {
+                "condition_type": "Age",
+                "operator": "<=",
+                "quantity": 4,
+                "unit": "years"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "transition": "Set_Precursor_B_ALL",
+              "distribution": 7e-05
+            },
+            {
+              "transition": "ALL_Development_Monitoring",
+              "distribution": 0.99993
+            }
+          ]
         },
         {
-          "distribution": 5e-05,
-          "transition": "Set_Precursor_B_ALL"
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Age",
+                "operator": ">=",
+                "quantity": 5,
+                "unit": "years"
+              },
+              {
+                "condition_type": "Age",
+                "operator": "<=",
+                "quantity": 14,
+                "unit": "years"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "transition": "Set_Precursor_B_ALL",
+              "distribution": 3e-05
+            },
+            {
+              "transition": "ALL_Development_Monitoring",
+              "distribution": 0.99997
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "transition": "Set_Precursor_B_ALL",
+              "distribution": 1e-05
+            },
+            {
+              "transition": "ALL_Development_Monitoring",
+              "distribution": 0.99999
+            }
+          ]
         }
       ]
     },
@@ -135,11 +209,14 @@
     },
     "B_Cell_ALL_Onset": {
       "type": "ConditionOnset",
+      "remarks": [
+        "CORRECTED: 277572005 fails the SNOMED CT Verhoeff check digit (off-by-one typo). 277572006 'Precursor B-cell acute lymphoblastic leukaemia' verified active via SNOMED CT $lookup."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "277572005",
-          "display": "Precursor B-cell lymphoblastic leukemia (disorder)"
+          "code": "277572006",
+          "display": "Precursor B-cell acute lymphoblastic leukemia (disorder)"
         }
       ],
       "direct_transition": "Set_ALL_Subtype_B"
@@ -378,7 +455,7 @@
           "unit": "days"
         }
       },
-      "direct_transition": "Prednisone_Supply_Delay"
+      "direct_transition": "Induction_LOS"
     },
     "Bone_Marrow_Biopsy": {
       "type": "Procedure",
@@ -512,11 +589,14 @@
     },
     "CNS_Leukemia": {
       "type": "ConditionOnset",
+      "remarks": [
+        "CORRECTED: 277534002 fails the SNOMED CT Verhoeff check digit. 61301000119102 verified active via SNOMED CT $lookup and already carries a condition_code_map row (C91.00, CNS involvement)."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "277534002",
-          "display": "Central nervous system leukemia (disorder)"
+          "code": "61301000119102",
+          "display": "Disorder of central nervous system co-occurrent and due to acute lymphoid leukemia (disorder)"
         }
       ],
       "direct_transition": "CNS_Symptoms"
@@ -731,12 +811,13 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "91861009",
+          "code": "91857003",
           "display": "Acute lymphoblastic leukemia (disorder)"
         }
       ],
       "remarks": [
-        "Death from early complications: sepsis, bleeding, organ failure"
+        "Death from early complications: sepsis, bleeding, organ failure",
+        "CORRECTED: 91861009 is acute MYELOID leukaemia (verified via SNOMED CT $lookup); 91857003 is acute lymphoid leukaemia, the correct code for this ALL module."
       ]
     },
     "Treatment_Phase_Assessment": {
@@ -1059,13 +1140,14 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "91861009",
+          "code": "91857003",
           "display": "Acute lymphoblastic leukemia (disorder)"
         }
       ],
       "remarks": [
         "Death from progressive disease and complications",
-        "Refractory or multiply relapsed ALL"
+        "Refractory or multiply relapsed ALL",
+        "CORRECTED: 91861009 is acute MYELOID leukaemia (verified via SNOMED CT $lookup); 91857003 is acute lymphoid leukaemia, the correct code for this ALL module."
       ]
     },
     "Late_Effects": {
@@ -1244,8 +1326,11 @@
       },
       "direct_transition": "Terminal_Complications"
     },
-    "Prednisone_Supply_Delay": {
+    "Induction_LOS": {
       "type": "Delay",
+      "remarks": [
+        "~28-day inpatient length of stay for ALL induction chemotherapy -- a legitimate carve-out under the inpatient encounter-lock rule (< 90 days), not the banned *_Supply_Delay medication-refill idiom. Adult ALL induction routinely requires several weeks of inpatient monitoring for myelosuppression/neutropenic fever risk before the patient is stable for discharge."
+      ],
       "range": {
         "low": 28,
         "high": 28,

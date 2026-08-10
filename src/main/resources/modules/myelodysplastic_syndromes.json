@@ -1090,23 +1090,34 @@
         "This state represents the watchful-waiting cohort (mostly SLD/MLD).",
         "Annual AML transformation in watchful-waiting lower-risk MDS: ~2–5%/year.",
         "Disease worsening requiring treatment escalation: ~10–15%/year.",
-        "Stable disease: ~70–80% per monitoring cycle."
+        "Stable disease: ~70–80% per monitoring cycle.",
+        "",
+        "FIX ROUND 1 (reviewer): the 0.03 AML-transform figure was being applied",
+        "per pass on this state's own Monitoring_Delay_Lower loop (3-6 months,",
+        "avg 136.97 days), which compounds to 1-(1-0.03)^(365/136.97) = 7.8%/yr --",
+        "against this exact state's own cited 2-5%/yr. Re-derived at the 3.5%/yr",
+        "midpoint, correctly converted to this loop's actual per-pass interval:",
+        "p_pass = 1-(1-0.035)^(136.97/365) = 0.01328 (annualized back:",
+        "1-(1-0.01328)^(365/136.97) = 0.0350, confirms). Freed mass (0.03-0.01328",
+        "= 0.01672) redistributed across the other three branches in their",
+        "original ratio, matching the technique used for Transfusion_Progression_",
+        "Check (below)."
       ],
       "distributed_transition": [
         {
-          "distribution": 0.03,
+          "distribution": 0.01328,
           "transition": "AML_Transformation"
         },
         {
-          "distribution": 0.1,
+          "distribution": 0.10172,
           "transition": "Escalate_To_Higher_Risk"
         },
         {
-          "distribution": 0.17,
+          "distribution": 0.17293,
           "transition": "Lower_Risk_ESA_Start"
         },
         {
-          "distribution": 0.7,
+          "distribution": 0.71207,
           "transition": "Monitoring_Delay_Lower"
         }
       ]
@@ -1887,28 +1898,59 @@
         "(1-(1-0.12)^11.6), against this module's own cited 2-5%/year for",
         "watchful-waiting lower-risk MDS (Lower_Risk_Progression_Check remarks)",
         "and the per-subtype rates cited on AML_Transformation itself.",
-        "Re-derived as the 2.5%/year midpoint of that cited range, converted to",
-        "a per-pass probability at the loop's actual ~4.5 week cadence:",
-        "p_pass = 1-(1-p_annual)^(dt/365) = 1-(1-0.025)^(31.5/365) = 0.00219.",
-        "The freed probability mass is redistributed across the other three",
-        "branches in their original 0.6:0.2:0.08 ratio (loop:escalate:palliative)",
-        "so their relative weight is unchanged."
+        "",
+        "FIX ROUND 1 (reviewer correction): round 0 re-derived only the AML rate",
+        "(2.5%/yr midpoint -> 0.00218/pass) and redistributed the freed mass",
+        "proportionally across the other three branches -- but Escalate_To_",
+        "Higher_Risk (0.2) and Lower_Risk_Palliative_Support (0.08) were",
+        "THEMSELVES already authored as annual rates being applied per (~4.5-week)",
+        "pass, exactly the same defect class as the AML branch, and the",
+        "proportional redistribution RAISED them further (0.2 -> 0.2268/pass =",
+        "1-(1-0.2268)^11.6 = 94.9%/yr; 0.08 -> 0.0906/pass = 66.7%/yr). At those",
+        "rates the expected loop residence was only 1/(0.0022+0.2268+0.0906) =",
+        "3.1 passes (~3.5 months) -- patients were swept out of the loop almost",
+        "immediately, so the correctly-calibrated 0.22%/pass AML hazard barely",
+        "got a chance to fire (only 0.0022/(0.0022+0.2268+0.0906) = 0.69% of",
+        "loop-exits were AML transformation).",
+        "",
+        "All three competing per-pass hazards are now independently converted",
+        "from their intended annual rates at this loop's actual ~31.5-day pass",
+        "length, and RBC_Transfusion_Encounter (continue) absorbs whatever",
+        "probability remains -- the standard way to combine independent",
+        "competing annual hazards into a single discrete-time pass:",
+        "  p_pass = 1-(1-p_annual)^(31.5/365)",
+        "  AML transform  (2.5%/yr, this state's own re-derivation):  0.00218",
+        "  Escalate       (0.20/yr, authored-as-annual, per reviewer): 0.01907",
+        "  Palliative     (0.08/yr, authored-as-annual, per reviewer): 0.00717",
+        "  Continue (loop) = 1 - 0.00218 - 0.01907 - 0.00717 = 0.97158",
+        "Sanity check (annualizing back): 1-(1-0.00218)^11.587=0.0250,",
+        "1-(1-0.01907)^11.587=0.2000, 1-(1-0.00717)^11.587=0.0800 -- all three",
+        "recover their intended annual rates exactly.",
+        "Expected loop residence = 1/(0.00218+0.01907+0.00717) = 35.2 passes",
+        "(~3.0 years) -- plausible for chronic transfusion-dependent lower-risk",
+        "MDS (median OS for this IPSS-R band is years, per this module's own",
+        "module-level epidemiology remarks). Realized fraction of loop-exits that",
+        "are AML transformation = 0.00218/(0.00218+0.01907+0.00717) = 7.7%,",
+        "consistent in direction with the per-subtype rates cited on",
+        "AML_Transformation (lower-risk subtypes: 1-8%/year each) without",
+        "collapsing to either the round-0 near-zero (0.69%) or the pre-fix",
+        "runaway (~77%/yr) failure modes."
       ],
       "distributed_transition": [
         {
-          "distribution": 0.6804,
+          "distribution": 0.97158,
           "transition": "RBC_Transfusion_Encounter"
         },
         {
-          "distribution": 0.2268,
+          "distribution": 0.01907,
           "transition": "Escalate_To_Higher_Risk"
         },
         {
-          "distribution": 0.0022,
+          "distribution": 0.00218,
           "transition": "AML_Transformation"
         },
         {
-          "distribution": 0.0906,
+          "distribution": 0.00717,
           "transition": "Lower_Risk_Palliative_Support"
         }
       ]
@@ -2098,8 +2140,16 @@
         "Overall response rate: ~50% (CR ~17%, PR ~12%, HI ~21%).",
         "Assess response after ≥4–6 cycles (minimum); continue until progression.",
         "Oral azacitidine (CC-486) approved for AML maintenance — not for MDS.",
-        "Ongoing/chronic therapy (chronic: true) -- guarded by Azacitidine_Order_Guard",
-        "above rather than given an artificial short MedicationEnd."
+        "FIX ROUND 1 (reviewer): dropped chronic: true. Azacitidine here is a",
+        "7-of-28-day in-clinic injectable (SC/IV), not a take-home prescription --",
+        "chronic:true makes the person's routine wellness encounters auto-renew",
+        "it indefinitely (person.chronicMedications, HealthRecord.medicationStart/",
+        "wellness refill logic), which is the right behavior for an ongoing oral",
+        "prescription like deferasirox or venetoclax but not for a drug whose",
+        "administration is itself the clinical event. Azacitidine_Order_Guard",
+        "(above) already prevents this state from re-ordering/re-stacking on",
+        "every HMA_Azacitidine_Encounter re-entry; sibling HMA_Decitabine_",
+        "Encounter's Decitabine_Medication is non-chronic for the same reason."
       ],
       "codes": [
         {
@@ -2109,7 +2159,6 @@
         }
       ],
       "reason": "MDS_Onset",
-      "chronic": true,
       "assign_to_attribute": "azacitidine_active",
       "direct_transition": "HMA_Encounter_End"
     },

@@ -7229,5 +7229,23 @@
       "code": "33405",
       "description": "Aortic valve replacement"
     }
+  ],
+  "127788007": [
+    {
+      "code": "38206",
+      "description": "Stem cell harvesting"
+    }
+  ],
+  "82918005": [
+    {
+      "code": "78816",
+      "description": "PET or CT whole body"
+    }
+  ],
+  "113091000": [
+    {
+      "code": "72158",
+      "description": "MRI spine with contrast"
+    }
   ]
 }

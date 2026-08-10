@@ -15,7 +15,16 @@
     "- SNOMED 91302008 (Sepsis) \u2014 used in Synthea base modules",
     "- LOINC 2465-3 (IgG), 2458-8 (IgA), 2472-9 (IgM) \u2014 verified via loinc.org + ARUP + Labcorp",
     "- RxNorm 1809414 (immunoglobulin G, human 10% in 50 mL Injection) \u2014 verified via NLM RxNorm-NDC crosswalk (Octagam, Privigen)",
-    "- NUBC discharge code 01 (Discharged to home) \u2014 standard NUBC value"
+    "- NUBC discharge code 01 (Discharged to home) \u2014 standard NUBC value",
+    "",
+    "Rate sources (added 2026-08):",
+    "- Incidence gate 0.0006: Boyle JM, Buckley RH. Population prevalence of diagnosed primary",
+    "  immunodeficiency diseases in the United States. J Clin Immunol. 2007;27(5):497-502",
+    "  (household survey, diagnosed PID prevalence ~1 in 1,200).",
+    "- Severity split (0.5/0.35/0.15 mild/moderate/severe): derived as a proxy from ESID Registry",
+    "  (1994-2024, n=30,628; antibody deficiency 49%, combined immunodeficiency with syndromic",
+    "  features 14%, CID alone 8%) and the 2020 Tandfonline systematic review of PID registries.",
+    "  See the remark on Severity_Assignment for the derivation and its limits."
   ],
   "states": {
     "Initial": {
@@ -231,7 +240,19 @@
     "Severity_Assignment": {
       "type": "Simple",
       "remarks": [
-        "Severity stratification is encoded as a distributed transition, not as data on the Observation itself."
+        "Severity stratification is encoded as a distributed transition, not as data on the Observation itself.",
+        "Sourced as a severity proxy from PID-type registry composition, since no registry reports",
+        "mild/moderate/severe directly: ESID Registry (30,628 patients, 1994-2024) reports antibody",
+        "deficiencies -- generally the least severe category, though a minority (e.g. CVID) still need",
+        "IVIG -- at 49% of all diagnoses (55% in the European cohort, 78% in the US cohort); combined",
+        "immunodeficiency with syndromic features (14%) and CID alone (8%) are the categories that",
+        "usually require curative HSCT. Tandfonline 2020 systematic review of PID registries corroborates",
+        "antibody deficiency as the plurality/majority category worldwide. Mild=0.5 tracks the",
+        "antibody-deficiency-dominant literature share; Severe=0.15 sits below the ~15-22% combined",
+        "CID share since not all CID patients require transplant; Moderate=0.35 is the remainder",
+        "(symptomatic antibody deficiencies on IVIG, phagocyte defects, immune dysregulation).",
+        "This is a severity proxy derived from diagnostic-category shares, not a validated",
+        "clinical-severity study -- flagged here rather than left silently unsourced."
       ],
       "distributed_transition": [
         {
@@ -352,7 +373,7 @@
         },
         {
           "distribution": 0.1,
-          "transition": "Organ_Damage_Onset"
+          "transition": "Organ_Damage_Visit"
         }
       ]
     },
@@ -470,6 +491,19 @@
         "code": "01",
         "display": "Discharged to home care or self care (routine discharge)"
       },
+      "direct_transition": "End_Infection_Complication"
+    },
+    "End_Infection_Complication": {
+      "type": "ConditionEnd",
+      "referenced_by_attribute": "infection_complication",
+      "remarks": [
+        "Chronic_Management loops back through Infection_Complication_Admission on each",
+        "recurrence (0.3/pass). Without ending the prior episode, HealthRecord.conditionStart's",
+        "de-dupe (present.containsKey(code)) means a second pneumonia episode on the same code",
+        "silently reuses the first episode's already-closed entry and is never attached to the",
+        "new admission's claim -- the second and later hospitalizations would carry no listed",
+        "diagnosis. Ending the condition at discharge lets each episode record its own entry."
+      ],
       "direct_transition": "Infection_Outcome"
     },
     "Infection_Outcome": {
@@ -485,8 +519,29 @@
         }
       ]
     },
+    "Organ_Damage_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "primary_immunodeficiency",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for check up (procedure)"
+        }
+      ],
+      "remarks": [
+        "Added so the bronchiectasis diagnosis below lands on its own encounter/claim instead of",
+        "silently reusing whatever encounter last happened to be open. HealthRecord.currentEncounter()",
+        "falls back to the most recent *past* encounter (even an already-closed one) when no encounter",
+        "is active, so a bare ConditionOnset here would attach a new-onset diagnosis to a stale,",
+        "already-discharged encounter from a prior visit."
+      ],
+      "direct_transition": "Organ_Damage_Onset"
+    },
     "Organ_Damage_Onset": {
       "type": "ConditionOnset",
+      "target_encounter": "Organ_Damage_Visit",
       "assign_to_attribute": "pid_organ_damage",
       "codes": [
         {
@@ -500,6 +555,15 @@
         "Verified via OMIM (ICD-10 J47, UMLS C0006267).",
         "Modelled as a long-term sequela arising in the Chronic_Management branch."
       ],
+      "direct_transition": "End_Organ_Damage_Visit"
+    },
+    "End_Organ_Damage_Visit": {
+      "type": "EncounterEnd",
+      "discharge_disposition": {
+        "system": "NUBC",
+        "code": "01",
+        "display": "Discharged to home care or self care (routine discharge)"
+      },
       "direct_transition": "Chronic_Management"
     },
     "Normal_Life": {
@@ -531,7 +595,7 @@
       "type": "Simple",
       "remarks": [
         "Symptomatic primary immunodeficiency affects roughly 1 in 1,200-2,000 people. Without this gate the module onsets PID in every patient and its mortality branches then kill most of them before 65.",
-        "Rate is a first-pass estimate and needs clinical review."
+        "Source: Boyle JM, Buckley RH. Population prevalence of diagnosed primary immunodeficiency diseases in the United States. J Clin Immunol. 2007;27(5):497-502 -- a national random-digit-dial household survey that found diagnosed PID prevalence of ~1 in 1,200 (0.083%). 0.0006 (1 in 1,667) is deliberately conservative within that study's estimate, since this module's downstream mortality/HSCT branches are calibrated to the diagnosed (symptomatic, worked-up) population the survey captured, not the larger undiagnosed-mild-deficiency population some other sources include."
       ],
       "distributed_transition": [
         {

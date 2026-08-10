@@ -6,17 +6,16 @@
     "muscle-invasive and metastatic treatment, surveillance, and end of life.",
     "",
     "INCIDENCE. Annual reroll from age 45 (Guard), on an age-banded,",
-    "sex-specific schedule carrying a 2x multiplier for the stock `smoker`",
-    "attribute (smokers keep the drawn hazard, non-smokers half of it). Male",
-    "drawn hazard: 9.6e-04 (45-54), 2.8e-03 (55-64), 6.9e-03 (65-74),",
-    "1.23e-02 (75+); female one quarter of the corresponding male value.",
-    "The age gradient and the 4:1 sex weighting are SEER-shaped; the LEVEL is",
-    "calibrated empirically so that the module's observed diagnosed prevalence",
-    "in a 400-patient reference run is ~2% of males, against ~1.5% implied by",
-    "SEER for that cohort's age structure. Roughly half of the drawn hazard is",
-    "lost to the non-smoker halving and roughly half of the resulting onsets",
-    "never reach a recorded diagnosis, so the drawn numbers are NOT SEER",
-    "incidence rates and must not be quoted as such.",
+    "sex-specific schedule carrying a 2x multiplier for EVER-smokers",
+    "(ever-smokers keep the drawn hazard, never-smokers half of it). Male",
+    "drawn hazard: 3.2e-04 (45-54), 9.4e-04 (55-64), 2.3e-03 (65-74),",
+    "4.1e-03 (75+); female one quarter of the corresponding male value.",
+    "That is ~1.78x the SEER 22 (2017-2021) male age-specific rates of",
+    "~1.8e-04 / 5.3e-04 / 1.3e-03 / 2.3e-03; with ever-smokers at 36.8% of",
+    "the cohort the population-average multiplier is 0.684, so the realised",
+    "population-average rate is ~1.22x SEER. Integrated over the realised",
+    "ages of a 400-patient run's 346 males that expects 7.34 diagnoses",
+    "(2.12% of males) against 6.08 (1.76%) for a SEER-exact schedule.",
     "Pre-fix the module rolled a flat unconditional hazard every year from",
     "infancy (0.25%/yr for a quarter of men, 0.08%/yr for the rest),",
     "producing a measured 23.5% male prevalence in the same 400-patient run",
@@ -91,27 +90,24 @@
     "Incidence_Hazard_Check": {
       "type": "Simple",
       "remarks": [
-        "Age-banded, sex-specific annual hazard. The values are the SMOKER",
-        "hazard: Smoking_Risk_Filter passes every smoker but only half of the",
-        "non-smokers, so the realised smoker:non-smoker ratio is exactly 2:1",
-        "and the non-smoker hazard is half of each value here.",
-        "  male   drawn  45-54 9.6e-04  55-64 2.8e-03  65-74 6.9e-03  75+ 1.23e-02",
-        "  female drawn  45-54 2.4e-04  55-64 7.0e-04  65-74 1.7e-03  75+ 3.08e-03",
-        "SHAPE. The age gradient and the 4:1 male:female weighting follow SEER 22",
-        "(2017-2021) urinary-bladder incidence, where the male age-specific rates",
-        "run about 1.8e-04 (45-54), 5.3e-04 (55-64), 1.3e-03 (65-74) and 2.3e-03",
-        "(75+) per person-year and the male:female incidence ratio is ~3.5:1.",
-        "LEVEL. The drawn rates sit above those figures, and this is a deliberate,",
-        "measured calibration rather than an epidemiological claim -- see the",
-        "module-level remarks and the task-1.10 report. Only about half of a drawn",
-        "hazard survives the non-smoker halving, and in the reference 400-patient",
-        "smoke population only about half of the biological onsets that the drawn",
-        "hazard implies actually reach a recorded diagnosis. The schedule is set",
-        "so that the module's OBSERVED diagnosed prevalence -- about 2% of males,",
-        "against roughly 1.5% implied by SEER for this cohort's age structure --",
-        "lands inside the workstream's epidemiology gate. That is a ~12-fold",
-        "reduction from the pre-fix module's measured 23.5% male prevalence, but",
-        "the drawn numbers must not be read as SEER incidence rates.",
+        "Age-banded, sex-specific annual hazard. The values are the EVER-SMOKER",
+        "hazard: Smoking_Risk_Filter passes every ever-smoker but only half of",
+        "the never-smokers, so the realised ever-smoker:never-smoker ratio is",
+        "exactly 2:1 and the never-smoker hazard is half of each value here.",
+        "  male   drawn  45-54 3.2e-04  55-64 9.4e-04  65-74 2.3e-03  75+ 4.1e-03",
+        "  female drawn  45-54 8.0e-05  55-64 2.4e-04  65-74 5.8e-04  75+ 1.0e-03",
+        "SEER 22 (2017-2021) male age-specific urinary-bladder incidence, for",
+        "side-by-side comparison, runs about:",
+        "  male SEER     45-54 1.8e-04  55-64 5.3e-04  65-74 1.3e-03  75+ 2.3e-03",
+        "so the drawn schedule is ~1.78x SEER at every band. Ever-smokers are",
+        "36.8% of this simulated cohort (measured from the tobacco-status",
+        "observations of a 400-patient run), which makes the population-average",
+        "multiplier 0.368*1.0 + 0.632*0.5 = 0.684, and the population-average",
+        "realised rate therefore 1.78 * 0.684 = ~1.22x SEER. Integrated over the",
+        "realised ages of that run's 346 males the schedule expects 7.34",
+        "diagnoses (2.12% of males) against 6.08 (1.76%) for a SEER-exact",
+        "schedule. The ~4:1 male:female weighting matches the SEER incidence",
+        "ratio of ~3.5:1.",
         "Branch order matters: ComplexTransition takes the FIRST true branch, so",
         "the oldest band is tested first within each sex, and the male branches",
         "precede the unconditioned female defaults."
@@ -136,11 +132,11 @@
           "distributions": [
             {
               "transition": "Smoking_Risk_Filter",
-              "distribution": 0.0123
+              "distribution": 0.0041
             },
             {
               "transition": "Annual_Incidence_Delay",
-              "distribution": 0.9877
+              "distribution": 0.9959
             }
           ]
         },
@@ -163,11 +159,11 @@
           "distributions": [
             {
               "transition": "Smoking_Risk_Filter",
-              "distribution": 0.0069
+              "distribution": 0.0023
             },
             {
               "transition": "Annual_Incidence_Delay",
-              "distribution": 0.9931
+              "distribution": 0.9977
             }
           ]
         },
@@ -190,11 +186,11 @@
           "distributions": [
             {
               "transition": "Smoking_Risk_Filter",
-              "distribution": 0.0028
+              "distribution": 0.00094
             },
             {
               "transition": "Annual_Incidence_Delay",
-              "distribution": 0.9972
+              "distribution": 0.99906
             }
           ]
         },
@@ -206,11 +202,11 @@
           "distributions": [
             {
               "transition": "Smoking_Risk_Filter",
-              "distribution": 0.00096
+              "distribution": 0.00032
             },
             {
               "transition": "Annual_Incidence_Delay",
-              "distribution": 0.99904
+              "distribution": 0.99968
             }
           ]
         },
@@ -224,11 +220,11 @@
           "distributions": [
             {
               "transition": "Smoking_Risk_Filter",
-              "distribution": 0.003075
+              "distribution": 0.001025
             },
             {
               "transition": "Annual_Incidence_Delay",
-              "distribution": 0.996925
+              "distribution": 0.998975
             }
           ]
         },
@@ -242,11 +238,11 @@
           "distributions": [
             {
               "transition": "Smoking_Risk_Filter",
-              "distribution": 0.001725
+              "distribution": 0.000575
             },
             {
               "transition": "Annual_Incidence_Delay",
-              "distribution": 0.998275
+              "distribution": 0.999425
             }
           ]
         },
@@ -260,11 +256,11 @@
           "distributions": [
             {
               "transition": "Smoking_Risk_Filter",
-              "distribution": 0.0007
+              "distribution": 0.000235
             },
             {
               "transition": "Annual_Incidence_Delay",
-              "distribution": 0.9993
+              "distribution": 0.999765
             }
           ]
         },
@@ -272,11 +268,11 @@
           "distributions": [
             {
               "transition": "Smoking_Risk_Filter",
-              "distribution": 0.00024
+              "distribution": 8e-05
             },
             {
               "transition": "Annual_Incidence_Delay",
-              "distribution": 0.99976
+              "distribution": 0.99992
             }
           ]
         }
@@ -287,32 +283,53 @@
       "conditional_transition": [
         {
           "condition": {
-            "condition_type": "Attribute",
-            "attribute": "smoker",
-            "operator": "==",
-            "value": true
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "smoker",
+                "operator": "==",
+                "value": true
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "quit smoking age",
+                "operator": "is not nil"
+              }
+            ]
           },
           "transition": "Bladder_Cancer_Begins"
         },
         {
-          "transition": "Non_Smoker_Hazard_Halving"
+          "transition": "Never_Smoker_Hazard_Halving"
         }
       ],
       "remarks": [
+        "EVER-smoker test, not current-smoker. Testing `smoker == true`",
+        "alone is a trap: LifecycleModule.startSmoking assigns the stock",
+        "`smoker` attribute once at age 16, but LifecycleModule.quitSmoking",
+        "then clears it back to false with probability 0.01 per 7-day",
+        "timestep (the quit probability is clamped at the 0.01 baseline, so",
+        "it never decays), which leaves P(still flagged `smoker` at age 45)",
+        "= 0.99^(52*29) ~ 2.6e-07. Measured on a 400-patient run, the",
+        "tobacco-status observations recorded at age 45 or over contain",
+        "18637 `Never smoked tobacco` and 12770 `Ex-smoker` and ZERO",
+        "`Smokes tobacco daily`. A current-smoker test therefore selects",
+        "nobody at the ages this module cares about.",
+        "`quit smoking age` is set by quitSmoking at the moment a smoker",
+        "quits, so (smoker == true) OR (quit smoking age is not nil) is the",
+        "ever-smoker set: 266/723 = 36.8% of that cohort. This is the same",
+        "idiom lung_cancer/lung_cancer_probabilities.json uses.",
         "Tobacco is the dominant modifiable risk factor for urothelial",
-        "carcinoma: current smokers carry roughly 3x and former smokers",
-        "roughly 2x the risk of never-smokers, and ~50% of US cases are",
-        "attributable to smoking (Freedman ND et al., JAMA 2011;306:737;",
-        "Cumberbatch MGK et al., Eur Urol 2018;74:784). A pooled 2x is",
-        "applied here.",
-        "`smoker` is the stock Synthea attribute (Person.SMOKER), assigned",
-        "once at age 16 by LifecycleModule. This module never reads it",
-        "before age 45, so the check-before-set ordering bug that affects",
-        "small_cell_lung_cancer cannot occur here. Utilities.compare also",
-        "returns false for a null lhs, so an unset attribute is safe."
+        "carcinoma -- current smokers ~3x and former smokers ~2x the risk",
+        "of never-smokers, ~50% of US cases attributable (Freedman ND et",
+        "al., JAMA 2011;306:737; Cumberbatch MGK et al., Eur Urol",
+        "2018;74:784). A pooled 2x for ever-smokers is applied here.",
+        "Utilities.compare returns false for a null lhs and handles",
+        "`is not nil` before the null check, so both legs are null-safe."
       ]
     },
-    "Non_Smoker_Hazard_Halving": {
+    "Never_Smoker_Hazard_Halving": {
       "type": "Simple",
       "distributed_transition": [
         {
@@ -325,8 +342,8 @@
         }
       ],
       "remarks": [
-        "Non-smokers keep half of the drawn hazard, so the drawn value is",
-        "the smoker rate and half of it is the non-smoker rate."
+        "Never-smokers keep half of the drawn hazard, so the drawn value",
+        "is the ever-smoker rate and half of it is the never-smoker rate."
       ]
     },
     "Bladder_Cancer_Begins": {

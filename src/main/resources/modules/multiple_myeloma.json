@@ -1,5 +1,5 @@
 {
-  "name": "Multiple Myeloma Claims Realistic",
+  "name": "Multiple Myeloma",
   "remarks": [
     "Merged disease-natural-history and claims-utilization multiple myeloma module",
     "Preserves MGUS \u2192 smoldering \u2192 active MM progression",
@@ -30,7 +30,7 @@
           "display": "Autologous bone marrow transplant"
         }
       ],
-      "direct_transition": "Maintenance_Lenalidomide"
+      "direct_transition": "Pegfilgrastim"
     },
     "Blood_Transfusion": {
       "type": "Procedure",
@@ -380,6 +380,14 @@
           "display": "Zoledronic acid"
         }
       ],
+      "direct_transition": "Zoledronic_Delay"
+    },
+    "Zoledronic_Delay": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 90,
+        "unit": "days"
+      },
       "direct_transition": "Relapse_Check"
     },
     "Anemia": {
@@ -511,17 +519,21 @@
       "direct_transition": "MM_Longitudinal_Monitoring"
     },
     "Relapse_Check": {
-      "type": "Simple",
-      "distributed_transition": [
+    "type": "Simple",
+    "distributed_transition": [
         {
-          "transition": "MM_Longitudinal_Monitoring",
-          "distribution": 0.8
+        "transition": "MM_Longitudinal_Monitoring",
+        "distribution": 0.70
         },
         {
-          "transition": "Salvage_Therapy_Encounter",
-          "distribution": 0.2
+        "transition": "Salvage_Therapy_Encounter",
+        "distribution": 0.20
+        },
+        {
+        "transition": "Hospice_Check",
+        "distribution": 0.10
         }
-      ]
+    ]
     },
     "Salvage_Therapy_Encounter": {
       "type": "Encounter",
@@ -547,29 +559,17 @@
       "direct_transition": "Relapse_Regimen"
     },
     "Hospice_Check": {
-      "type": "Simple",
-      "distributed_transition": [
+    "type": "Simple",
+    "distributed_transition": [
         {
-          "transition": "Hospice_Enrollment",
-          "distribution": 0.4
+        "transition": "Hospice_Enrollment",
+        "distribution": 0.70
         },
         {
-          "transition": "MM_Longitudinal_Monitoring",
-          "distribution": 0.6
+        "transition": "MM_Longitudinal_Monitoring",
+        "distribution": 0.30
         }
-      ]
-    },
-    "Hospice_Enrollment": {
-      "type": "Encounter",
-      "encounter_class": "hospice",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "385763009",
-          "display": "Hospice care"
-        }
-      ],
-      "direct_transition": "Hospice_Visit"
+    ]
     },
     "Hospice_Visit": {
       "type": "Procedure",
@@ -584,25 +584,58 @@
     },
     "Maintenance_Lenalidomide": {
       "type": "MedicationOrder",
-      "reason": "Multiple myeloma",
-      "assign_to_attribute": "maintenance_lenalidomide",
       "codes": [
         {
           "system": "RxNorm",
           "code": "342369",
-          "display": "Lenalidomide"
+          "display": "lenalidomide"
         }
       ],
-      "direct_transition": "Maintenance_Lenalidomide_Encounter_End"
+      "direct_transition": "Maintenance_Lenalidomide_Cycle_Delay"
     },
-    "Maintenance_Lenalidomide_Delay": {
+
+    "Maintenance_Lenalidomide_Cycle_Delay": {
       "type": "Delay",
-      "range": {
-        "low": 12,
-        "high": 36,
-        "unit": "months"
+      "exact": {
+        "quantity": 28,
+        "unit": "days"
       },
-      "direct_transition": "Maintenance_Lenalidomide_End"
+      "direct_transition": "Maintenance_Lenalidomide_Review"
+    },
+
+    "Maintenance_Lenalidomide_Review": {
+        "type": "Simple",
+        "distributed_transition": [
+            {
+            "transition": "Maintenance_Lenalidomide",
+            "distribution": 0.85
+            },
+            {
+            "transition": "MM_Longitudinal_Monitoring",
+            "distribution": 0.15
+            }
+        ]
+    },
+    "Lenalidomide_Relapse_Cycle": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 28,
+        "unit": "days"
+      },
+      "direct_transition": "Lenalidomide_Relapse_Review"
+    },
+    "Lenalidomide_Relapse_Review": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Lenalidomide_Relapse",
+          "distribution": 0.85
+        },
+        {
+          "transition": "Dexamethasone_Relapse",
+          "distribution": 0.15
+        }
+      ]
     },
     "Terminal_MM": {
       "type": "Delay",
@@ -622,6 +655,14 @@
           "display": "Ixazomib 4 MG Oral Capsule"
         }
       ],
+      "direct_transition": "Ixazomib_Cycle_Delay"
+    },
+    "Ixazomib_Cycle_Delay": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 28,
+        "unit": "days"
+      },
       "direct_transition": "Lenalidomide_Relapse"
     },
     "Lenalidomide_Relapse": {
@@ -633,7 +674,7 @@
           "display": "Lenalidomide"
         }
       ],
-      "direct_transition": "Dexamethasone_Relapse"
+      "direct_transition": "Lenalidomide_Relapse_Cycle"
     },
     "Dexamethasone_Relapse": {
       "type": "MedicationOrder",
@@ -655,7 +696,28 @@
           "display": "Pomalidomide 4 MG Oral Capsule"
         }
       ],
-      "direct_transition": "Dexamethasone_Pom"
+      "direct_transition": "Pomalidomide_Cycle_Delay"
+    },
+    "Pomalidomide_Cycle_Delay": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 28,
+        "unit": "days"
+      },
+      "direct_transition": "Pomalidomide_Cycle_Check"
+    },
+    "Pomalidomide_Cycle_Check": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Pomalidomide",
+          "distribution": 0.8
+        },
+        {
+          "transition": "Dexamethasone_Pom",
+          "distribution": 0.2
+        }
+      ]
     },
     "Dexamethasone_Pom": {
       "type": "MedicationOrder",
@@ -677,6 +739,14 @@
           "display": "selinexor Oral Tablet"
         }
       ],
+      "direct_transition": "Selinexor_Cycle_Delay"
+    },
+    "Selinexor_Cycle_Delay": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 28,
+        "unit": "days"
+      },
       "direct_transition": "Dexamethasone_Selinexor"
     },
     "Dexamethasone_Selinexor": {
@@ -1082,10 +1152,6 @@
     "Hospice_Visit_Encounter_End": {
       "type": "EncounterEnd",
       "direct_transition": "Terminal_MM"
-    },
-    "Maintenance_Lenalidomide_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "Maintenance_Lenalidomide_Delay"
     }
   }
 }

@@ -7337,5 +7337,11 @@
       "code": "94010",
       "description": "Spirometry (procedure)"
     }
+  ],
+  "399750009": [
+    {
+      "code": "60521",
+      "description": "Thymectomy, partial or total; sternal split or transthoracic approach, without radical mediastinal dissection"
+    }
   ]
 }

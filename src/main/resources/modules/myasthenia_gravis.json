@@ -5,45 +5,164 @@
     "characterized by weakness and rapid fatigue of voluntary muscles.",
     "The condition is caused by antibodies that block acetylcholine receptors",
     "at the neuromuscular junction. Prevalence is 150-200 per million (15-20 per 100,000).",
-    "Incidence is 4.1-30 per million person-years. Bimodal age distribution with peaks",
-    "in women 20-39 and men 50-70. Based on current clinical literature and epidemiology.",
     "",
-    "RxNorm note: ingredient-level RxCUIs are used here for compatibility with the original module.",
-    "1202 (Azathioprine) and 70645 (Mycophenolate mofetil) are independently confirmed active.",
-    "8120 (Pyridostigmine), 8640 (Prednisone), and 121191 (Rituximab) should be confirmed active",
-    "via rxnav.nlm.nih.gov/REST/rxcui/{rxcui}/properties.json before production use. For greater",
-    "FHIR specificity, consider upgrading to product-level (TTY=SCD) RxCUIs such as:",
-    "  Pyridostigmine     -> 199985 (Pyridostigmine 60 MG Oral Tablet)",
-    "  Prednisone         -> 312617 (Prednisone 5 MG Oral Tablet)",
-    "  Azathioprine       -> 308571 (Azathioprine 50 MG Oral Tablet)",
-    "  Mycophenolate      -> 896733 (Mycophenolate mofetil 500 MG Oral Tablet)",
-    "  Rituximab          -> 1656698 (Rituximab 10 MG/ML Injectable Solution)"
+    "2026-08 remediation:",
+    "- Onset: the pre-fix module rolled a single flat 0.02% lifetime chance at the",
+    "  age-15 Guard, which cannot reproduce MG's well-documented bimodal age/sex",
+    "  distribution (early-onset, female-predominant vs late-onset, male-",
+    "  predominant). Replaced with an annual incidence loop (MG_Annual_Check,",
+    "  same re-enterable Delay+router idiom as pneumonia.json/CIDP.json), gated",
+    "  by an And(Gender, Age-range) complex_transition: women 20-40, 3e-05/yr;",
+    "  men 60-80, 5e-05/yr; nobody else rolls. Source: Carr AS, Cardwell CR,",
+    "  McCarron PO, McConville J. 'A systematic review of population based",
+    "  epidemiological studies in Myasthenia Gravis.' BMC Neurol. 2010;10:46 --",
+    "  documents the bimodal peaks and reports incidence estimates in the",
+    "  4.1-30/million/yr range; the two bands here sit at the upper end of that",
+    "  range (30/million and 50/million respectively), consistent with the late-",
+    "  onset, male-predominant rise in incidence documented in more recent",
+    "  cohorts (Gilhus NE, Verschuuren JJ. 'Myasthenia gravis: subgroup",
+    "  classification and therapeutic strategies for a heterogeneous disease.'",
+    "  Lancet Neurol. 2015;14(10):1023-1036).",
+    "- Long_Term_Outcome (the quarterly maintenance-follow-up loop): the pre-fix",
+    "  split was 80% continue / 10% crisis / 10% refractory-exit, with Crisis at",
+    "  15% mortality. Modelling the loop as a two-absorbing-state process (the",
+    "  same arithmetic used to characterise the bug -- P(eventual refractory) =",
+    "  a / (a + c*d), where a is the per-quarter refractory-exit probability and",
+    "  c*d is the per-quarter crisis-death probability), the pre-fix numbers",
+    "  (a=0.10, c*d=0.10*0.15=0.015) resolve to P(refractory) = 0.10/0.115 =",
+    "  ~87% -- i.e. nearly every patient who does not die of crisis eventually",
+    "  funnels into the refractory/rituximab arm, when only ~10-15% of real MG",
+    "  patients become treatment-refractory. Retuned to continue 0.95985 /",
+    "  crisis 0.04 / refractory-exit 0.00015 per quarter, with crisis mortality",
+    "  (Crisis_Outcome) at 4.5% (Alshekhlee A, Miles JD, Katirji B, Preston DC,",
+    "  Kaminski HJ. 'Myasthenic crisis: clinical features, mortality, complications,",
+    "  and risk factors for prolonged intubation.' Neurology 2009;72(18):1548-1554",
+    "  -- reports 4.47% in-hospital mortality for myasthenic crisis in a large US",
+    "  cohort). That gives per-quarter crisis-death = 0.04*0.045 = 0.0018,",
+    "  annualised mortality ~1-(1-0.0018)^4 = ~0.72%, and P(eventual refractory)",
+    "  = 0.00015/(0.00015+0.0018) = ~7.7%, both matching the task targets",
+    "  (annual mortality ~0.7%, refractory <=10%).",
+    "- Crisis management previously had no acute treatment at all: Crisis_Encounter",
+    "  recorded the ConditionOnset and closed with no intervention. Added",
+    "  IVIG_Crisis_Treatment (RxNorm 42386, administered, HCPCS J1599 -- same",
+    "  ingredient/mapping CIDP.json's IVIG_Therapy already uses), the standard",
+    "  first-line acute stabilising therapy for myasthenic crisis alongside",
+    "  plasma exchange.",
+    "- Advanced_Treatment (rituximab) is now administration: true, not chronic:",
+    "  true -- it is a clinician-administered infusion course, not a self-",
+    "  administered chronic prescription. RxNorm 121191 already maps to HCPCS",
+    "  J9312 in rxnorm_hcpcs_map.json (same code mantle_cell_lymphoma.json uses",
+    "  for rituximab), so no new export row was needed.",
+    "",
+    "RxNorm note: the pre-fix module used bare ingredient RxCUIs for",
+    "pyridostigmine/azathioprine/mycophenolate and its own remarks proposed",
+    "SCD upgrades to verify later. Verifying those against RxNav",
+    "(rxnav.nlm.nih.gov) found two of the three proposed RxCUIs were wrong:",
+    "199985 is 'troglitazone 400 MG Oral Tablet' (an unrelated, withdrawn",
+    "diabetes drug), not pyridostigmine, and 896733 does not resolve to any",
+    "RxNorm concept. Corrected mappings, confirmed via RxNav on 2026-08-10:",
+    "  Pyridostigmine  -> 903857 (pyridostigmine bromide 60 MG Oral Tablet, SCD)",
+    "  Azathioprine    -> 197388 (azathioprine 50 MG Oral Tablet, SCD -- already",
+    "                     used and mapped by CIDP.json's Second_Line_Treatment)",
+    "  Mycophenolate   -> 200060 (mycophenolate mofetil 500 MG Oral Tablet, SCD)",
+    "  Rituximab       -> 121191 (ingredient CUI; kept as-is -- see above)",
+    "Prednisone (8640) and rituximab's own suggested SCD upgrade (1656698, also",
+    "unresolvable in RxNav) were left as ingredient CUIs: prednisone is not in",
+    "this task's scope and already resolves via medication_code_map.json, and",
+    "rituximab is administered/J-coded rather than dispensed, so no SCD is",
+    "needed for it."
   ],
+  "gmf_version": 2,
   "states": {
     "Initial": {
       "type": "Initial",
-      "direct_transition": "Age_Check"
+      "direct_transition": "MG_Annual_Check"
     },
-    "Age_Check": {
-      "type": "Guard",
-      "allow": {
-        "condition_type": "Age",
-        "operator": ">=",
-        "quantity": 15,
-        "unit": "years"
+    "MG_Annual_Check": {
+      "type": "Delay",
+      "remarks": [
+        "Annual timer and router in one state (see pneumonia.json/CIDP.json for",
+        "the same idiom). Bimodal incidence: women 20-40, 3e-05/yr; men 60-80,",
+        "5e-05/yr; nobody else rolls -- see module remarks for sourcing.",
+        "ComplexTransition.follow takes the first true branch, so the two bands",
+        "are mutually exclusive by construction (checked independently, not",
+        "cascaded), and everyone else falls through to the unconditioned",
+        "default, which just re-enters this same state a year later."
+      ],
+      "range": {
+        "low": 350,
+        "high": 385,
+        "unit": "days"
       },
-      "direct_transition": "MG_Risk_Assessment"
-    },
-    "MG_Risk_Assessment": {
-      "type": "Simple",
-      "distributed_transition": [
+      "complex_transition": [
         {
-          "distribution": 0.0002,
-          "transition": "Develop_MG_Onset"
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Gender",
+                "gender": "F"
+              },
+              {
+                "condition_type": "Age",
+                "operator": ">=",
+                "quantity": 20,
+                "unit": "years"
+              },
+              {
+                "condition_type": "Age",
+                "operator": "<",
+                "quantity": 40,
+                "unit": "years"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "distribution": 3e-05,
+              "transition": "Develop_MG_Onset"
+            },
+            {
+              "distribution": 0.99997,
+              "transition": "MG_Annual_Check"
+            }
+          ]
         },
         {
-          "distribution": 0.9998,
-          "transition": "No_MG"
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Gender",
+                "gender": "M"
+              },
+              {
+                "condition_type": "Age",
+                "operator": ">=",
+                "quantity": 60,
+                "unit": "years"
+              },
+              {
+                "condition_type": "Age",
+                "operator": "<",
+                "quantity": 80,
+                "unit": "years"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "distribution": 5e-05,
+              "transition": "Develop_MG_Onset"
+            },
+            {
+              "distribution": 0.99995,
+              "transition": "MG_Annual_Check"
+            }
+          ]
+        },
+        {
+          "transition": "MG_Annual_Check"
         }
       ]
     },
@@ -286,8 +405,8 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": "9000",
-          "display": "pyridostigmine"
+          "code": "903857",
+          "display": "pyridostigmine bromide 60 MG Oral Tablet"
         }
       ],
       "direct_transition": "End_Initial_Encounter"
@@ -329,7 +448,7 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": 8640,
+          "code": "8640",
           "display": "Prednisone"
         }
       ],
@@ -385,8 +504,8 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": "1256",
-          "display": "azathioprine"
+          "code": "197388",
+          "display": "azathioprine 50 MG Oral Tablet"
         }
       ],
       "direct_transition": "End_Aza_Encounter"
@@ -415,8 +534,8 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": "68149",
-          "display": "mycophenolate mofetil"
+          "code": "200060",
+          "display": "mycophenolate mofetil 500 MG Oral Tablet"
         }
       ],
       "direct_transition": "End_Myco_Encounter"
@@ -523,17 +642,23 @@
     },
     "Long_Term_Outcome": {
       "type": "Simple",
+      "remarks": [
+        "Per-quarter outcomes for the ongoing maintenance-follow-up loop -- see",
+        "module remarks for the arithmetic behind these numbers (annualised",
+        "mortality ~0.7%, eventual refractory share ~7.7%, replacing a pre-fix",
+        "split that funnelled ~87% of patients into the refractory arm)."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.8,
+          "distribution": 0.95985,
           "transition": "Follow_Up_3_Months"
         },
         {
-          "distribution": 0.1,
+          "distribution": 0.04,
           "transition": "Crisis_Encounter"
         },
         {
-          "distribution": 0.1,
+          "distribution": 0.00015,
           "transition": "Refractory_MG_Pathway"
         }
       ]
@@ -562,6 +687,25 @@
           "display": "Myasthenic crisis (disorder)"
         }
       ],
+      "direct_transition": "IVIG_Crisis_Treatment"
+    },
+    "IVIG_Crisis_Treatment": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "reason": "Myasthenic_Crisis_Onset",
+      "remarks": [
+        "First-line acute stabilising therapy for myasthenic crisis (alongside",
+        "plasma exchange, not separately modelled here). RxNorm 42386 already",
+        "maps to HCPCS J1599 in rxnorm_hcpcs_map.json -- the same mapping",
+        "CIDP.json's IVIG_Therapy state uses."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "42386",
+          "display": "immunoglobulins, intravenous"
+        }
+      ],
       "direct_transition": "End_Crisis_Encounter"
     },
     "End_Crisis_Encounter": {
@@ -572,11 +716,11 @@
       "type": "Simple",
       "distributed_transition": [
         {
-          "distribution": 0.85,
+          "distribution": 0.955,
           "transition": "Follow_Up_3_Months"
         },
         {
-          "distribution": 0.15,
+          "distribution": 0.045,
           "transition": "Crisis_Death"
         }
       ]
@@ -615,12 +759,12 @@
     },
     "Advanced_Treatment": {
       "type": "MedicationOrder",
+      "administration": true,
       "reason": "MG_Diagnosis",
-      "chronic": true,
       "codes": [
         {
           "system": "RxNorm",
-          "code": 121191,
+          "code": "121191",
           "display": "Rituximab"
         }
       ],
@@ -640,10 +784,6 @@
         }
       },
       "unit": "months",
-      "direct_transition": "Terminal"
-    },
-    "No_MG": {
-      "type": "Simple",
       "direct_transition": "Terminal"
     },
     "Terminal": {

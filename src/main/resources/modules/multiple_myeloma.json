@@ -931,6 +931,7 @@
 
     "Dexamethasone_KRd": {
       "type": "MedicationOrder",
+      "administration": true,
       "codes": [
         {
           "system": "RxNorm",

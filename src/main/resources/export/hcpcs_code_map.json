@@ -7001,5 +7001,21 @@
       "description": "Salpingo-oophorectomy, complete or partial, unilateral or bilateral (separate procedure)",
       "weight": "0.2"
     }
+  ],
+  "169069000": [
+    {
+      "code": "71260",
+      "description": "CT thorax with contrast"
+    }
+  ],
+  "40617009": [
+    {
+      "code": "94002",
+      "description": "Ventilation assist and management, initiation of pressure or volume preset ventilators for assisted or controlled breathing; hospital inpatient/observation, initial day"
+    },
+    {
+      "code": "94003",
+      "description": "Ventilation assist and management, initiation of pressure or volume preset ventilators for assisted or controlled breathing; hospital inpatient/observation, each subsequent day"
+    }
   ]
 }

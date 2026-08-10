@@ -8818,6 +8818,18 @@
       "code": "C67.8",
       "description": "Malignant neoplasm of overlapping sites of bladder"
     }
+  ],
+  "34020007": [
+    {
+      "code": "J13",
+      "description": "Pneumonia due to Streptococcus pneumoniae"
+    }
+  ],
+  "46970008": [
+    {
+      "code": "J15.7",
+      "description": "Pneumonia due to Mycoplasma pneumoniae"
+    }
   ]
-  
+
 }

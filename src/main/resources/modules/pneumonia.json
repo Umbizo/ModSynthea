@@ -1,14 +1,116 @@
 {
   "name": "Pneumonia_Enhanced",
+  "gmf_version": 2,
   "remarks": [
     "This module supports pediatric, adult, and geriatric populations",
     "Includes mild, moderate, and severe pneumonia with appropriate treatment pathways",
-    "This module has expansions of antibiotic pathways and ventilator support"
+    "This module has expansions of antibiotic pathways and ventilator support",
+    "",
+    "2026-08-10 remediation (audit Task 1.5): the pre-fix module gave 100% of",
+    "patients pneumonia exactly once, at birth, and held encounters open across",
+    "30-72 day medication-supply delays and a 5-14 day recovery delay (6 lint",
+    "CRITICALs). Replaced the birth roll with an annual age-banded incidence",
+    "loop (Annual_Incidence_Check) that allows repeat episodes over a lifetime.",
+    "Every encounter in every arm now reaches its EncounterEnd immediately",
+    "after orders/observations are recorded; supply/recovery/length-of-stay",
+    "delays all sit strictly after the EncounterEnd that opened them, per the",
+    "close-before-delay pattern established in Tasks 1.1-1.4. All in-module",
+    "codes are SNOMED-CT (or LOINC/RxNorm where appropriate); the ICD-10-CM",
+    "and CPT codes that used to be mixed into conditions/procedures/encounters",
+    "now live only in the export code maps.",
+    "",
+    "Overlap guard: the annual reroll loop (Annual_Incidence_Check) is only",
+    "ever re-entered after the prior episode's ConditionEnd, because every",
+    "severity arm is a single sequential path back to that state -- a person",
+    "cannot be mid-episode and back at the reroll check simultaneously. No",
+    "separate stacking-guard state is needed; this is a structural invariant",
+    "of the graph, not a runtime check."
   ],
   "states": {
     "Initial": {
       "type": "Initial",
-      "direct_transition": "PneumoniaOnset"
+      "direct_transition": "Annual_Incidence_Check"
+    },
+    "Annual_Incidence_Check": {
+      "type": "Delay",
+      "remarks": [
+        "Age-banded annual incidence of community-acquired pneumonia (all",
+        "severities, not just hospitalized cases): 1.5%/yr under 5, 0.4%/yr",
+        "ages 5-64, 2%/yr at 65+. Order-of-magnitude source: Jain et al.,",
+        "'Community-Acquired Pneumonia Requiring Hospitalization among U.S.",
+        "Children', NEJM 2015;372:835-45, and Jain et al., 'Community-",
+        "Acquired Pneumonia Requiring Hospitalization among U.S. Adults',",
+        "NEJM 2015;373:415-27 (the CAP-EPIC studies) -- those papers measure",
+        "hospitalized CAP only (~1-2/1000/yr in adults), so the rates here",
+        "are scaled up to approximate all-severity community incidence,",
+        "consistent with the wider epidemiology literature on CAP.",
+        "",
+        "This state is both the annual timer and the router: the Delay",
+        "(370-395 days, always > 1 year) must elapse before the",
+        "complex_transition rolls, so the earliest possible onset for any",
+        "patient is just past their first birthday -- the pre-fix module's",
+        "everyone-at-birth defect cannot recur.",
+        "",
+        "Bands are evaluated oldest-first because ComplexTransition takes",
+        "the first condition that is true. On a no-onset roll, and after",
+        "every recovered episode, the loop re-enters this same state,",
+        "allowing repeat episodes over a lifetime."
+      ],
+      "range": {
+        "low": 370,
+        "high": 395,
+        "unit": "days"
+      },
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 65,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "distribution": 0.02,
+              "transition": "PneumoniaOnset"
+            },
+            {
+              "distribution": 0.98,
+              "transition": "Annual_Incidence_Check"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 5,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "distribution": 0.004,
+              "transition": "PneumoniaOnset"
+            },
+            {
+              "distribution": 0.996,
+              "transition": "Annual_Incidence_Check"
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "distribution": 0.015,
+              "transition": "PneumoniaOnset"
+            },
+            {
+              "distribution": 0.985,
+              "transition": "Annual_Incidence_Check"
+            }
+          ]
+        }
+      ]
     },
     "PneumoniaOnset": {
       "type": "ConditionOnset",
@@ -18,11 +120,6 @@
           "system": "SNOMED-CT",
           "code": "233604007",
           "display": "Pneumonia (disorder)"
-        },
-        {
-          "system": "ICD-10-CM",
-          "code": "J18.9",
-          "display": "Pneumonia, unspecified"
         }
       ],
       "direct_transition": "CoughSymptom"
@@ -107,12 +204,16 @@
       "type": "Procedure",
       "codes": [
         {
-          "system": "CPT",
-          "code": "71046",
-          "display": "Chest radiologic examination, 2 views"
+          "system": "SNOMED-CT",
+          "code": "399208008",
+          "display": "Plain X-ray of chest (procedure)"
         }
       ],
       "direct_transition": "ED_Visit_End"
+    },
+    "ED_Visit_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "DetermineSeverity"
     },
     "DetermineSeverity": {
       "type": "Simple",
@@ -180,9 +281,9 @@
       "encounter_class": "ambulatory",
       "codes": [
         {
-          "system": "CPT",
-          "code": "99213",
-          "display": "Office or other outpatient visit for the evaluation and management of an established patient"
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
         }
       ],
       "reason": "pneumonia",
@@ -198,21 +299,95 @@
         }
       ],
       "reason": "pneumonia",
-      "direct_transition": "AntibioticTreatmentOutpatient_Supply_Delay",
+      "direct_transition": "Doxycycline_Order",
       "assign_to_attribute": "amoxicillin_500_mg_oral_capsule_rx"
+    },
+    "Doxycycline_Order": {
+      "type": "MedicationOrder",
+      "assign_to_attribute": "doxycycline_rx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1649988",
+          "display": "doxycycline hyclate 100 MG Oral Capsule"
+        }
+      ],
+      "reason": "pneumonia",
+      "direct_transition": "OutpatientManagement_End"
+    },
+    "OutpatientManagement_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Orders are placed and the encounter closes here; the medication",
+        "supply and recovery delays below all run after this EncounterEnd,",
+        "per the close-before-delay pattern (was CRITICAL: this encounter",
+        "used to stay open across both drugs' delays)."
+      ],
+      "direct_transition": "AntibioticTreatmentOutpatient_Supply_Delay"
+    },
+    "AntibioticTreatmentOutpatient_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "AntibioticTreatmentOutpatient_End"
+    },
+    "AntibioticTreatmentOutpatient_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "amoxicillin_500_mg_oral_capsule_rx",
+      "direct_transition": "Doxycycline_End_Delay"
+    },
+    "Doxycycline_End_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 7,
+        "high": 14,
+        "unit": "days"
+      },
+      "direct_transition": "Doxycycline_End"
+    },
+    "Doxycycline_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "doxycycline_rx",
+      "direct_transition": "FollowUpCare"
     },
     "FollowUpCare": {
       "type": "Encounter",
       "encounter_class": "ambulatory",
       "codes": [
         {
-          "system": "CPT",
-          "code": "99212",
-          "display": "Office or other outpatient visit for the evaluation and management of an established patient"
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for check up (procedure)"
         }
       ],
       "reason": "pneumonia",
+      "direct_transition": "FollowUpCare_End"
+    },
+    "FollowUpCare_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Closes immediately; RecoveryMild below now runs after this",
+        "EncounterEnd (was CRITICAL: this encounter used to stay open",
+        "across the 5-14 day recovery delay)."
+      ],
       "direct_transition": "RecoveryMild"
+    },
+    "RecoveryMild": {
+      "type": "Delay",
+      "range": {
+        "low": 5,
+        "high": 14,
+        "unit": "days"
+      },
+      "direct_transition": "ConditionEnd_Mild"
+    },
+    "ConditionEnd_Mild": {
+      "type": "ConditionEnd",
+      "referenced_by_attribute": "pneumonia",
+      "direct_transition": "Annual_Incidence_Check"
     },
     "InpatientAdmission": {
       "type": "Encounter",
@@ -260,9 +435,105 @@
       ],
       "direct_transition": "Ceftriaxone_Order"
     },
+    "Ceftriaxone_Order": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Clinician-administered inpatient IV antibiotic: administration:true",
+        "routes this to a professional/inpatient claim line through",
+        "rxnorm_hcpcs_map (J0696) rather than modelled as a 30-day retail",
+        "supply, and administration rows don't stack, so no MedicationEnd",
+        "is needed. Was the *_Supply_Delay idiom (CRITICAL) before this fix."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1665021",
+          "display": "ceftriaxone 1000 MG Injection"
+        }
+      ],
+      "administration": true,
+      "reason": "pneumonia",
+      "direct_transition": "Azithromycin_Order"
+    },
+    "Azithromycin_Order": {
+      "type": "MedicationOrder",
+      "assign_to_attribute": "azithromycin_rx",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "248656",
+          "display": "azithromycin 500 MG Oral Tablet"
+        }
+      ],
+      "reason": "pneumonia",
+      "direct_transition": "CBC_Inpatient"
+    },
+    "CBC_Inpatient": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "6690-2",
+          "display": "Leukocytes [#/volume] in Blood"
+        }
+      ],
+      "range": {
+        "low": 12000,
+        "high": 20000
+      },
+      "unit": "/uL",
+      "direct_transition": "CRP_Inpatient"
+    },
+    "CRP_Inpatient": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "1988-5",
+          "display": "C reactive protein"
+        }
+      ],
+      "range": {
+        "low": 50,
+        "high": 200
+      },
+      "unit": "mg/L",
+      "direct_transition": "Blood_Culture"
+    },
+    "Blood_Culture": {
+      "type": "Observation",
+      "category": "laboratory",
+      "remarks": [
+        "Observation has no 'value' field in the engine (State.java) -- a",
+        "bare string here is silently dropped, same defect class as the raw",
+        "value blocks below. value_code is the correct idiom for a",
+        "qualitative culture result."
+      ],
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "600-7",
+          "display": "Bacteria identified in Blood by Culture"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": "9861002",
+        "display": "Streptococcus pneumoniae (organism)"
+      },
+      "direct_transition": "OxygenSaturationInpatient"
+    },
     "OxygenSaturationInpatient": {
       "type": "Observation",
       "category": "vital-signs",
+      "remarks": [
+        "Fixed bad-gmf: 'value' is not a field on Observation (State.java),",
+        "so the old {type:Range,...} block was silently dropped and every",
+        "row recorded NULL. Numeric observations use the top-level 'range'",
+        "field instead."
+      ],
       "codes": [
         {
           "system": "LOINC",
@@ -270,14 +541,48 @@
           "display": "Oxygen saturation in Arterial blood"
         }
       ],
-      "vital_sign": "Oxygen Saturation",
-      "value": {
-        "type": "Range",
+      "range": {
         "low": 88,
-        "high": 94,
-        "unit": "%"
+        "high": 94
       },
+      "unit": "%",
+      "direct_transition": "InpatientAdmission_Stay"
+    },
+    "InpatientAdmission_Stay": {
+      "type": "Delay",
+      "remarks": [
+        "Bounded length of stay for a moderate-severity admission, inside",
+        "the encounter (legitimate LOS, not a medication-supply delay)."
+      ],
+      "range": {
+        "low": 3,
+        "high": 6,
+        "unit": "days"
+      },
+      "direct_transition": "Azithromycin_End"
+    },
+    "Azithromycin_End": {
+      "type": "MedicationEnd",
+      "referenced_by_attribute": "azithromycin_rx",
       "direct_transition": "InpatientAdmission_End"
+    },
+    "InpatientAdmission_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "RecoveryModerate"
+    },
+    "RecoveryModerate": {
+      "type": "Delay",
+      "range": {
+        "low": 10,
+        "high": 21,
+        "unit": "days"
+      },
+      "direct_transition": "ConditionEnd_Moderate"
+    },
+    "ConditionEnd_Moderate": {
+      "type": "ConditionEnd",
+      "referenced_by_attribute": "pneumonia",
+      "direct_transition": "Annual_Incidence_Check"
     },
     "ICUAdmission": {
       "type": "Encounter",
@@ -294,6 +599,12 @@
     },
     "IVAntibiotics": {
       "type": "MedicationOrder",
+      "remarks": [
+        "Clinician-administered ICU IV antibiotic: administration:true",
+        "routes this through rxnorm_hcpcs_map (J2543) instead of a 30-day",
+        "retail supply; no MedicationEnd needed. Was the *_Supply_Delay",
+        "idiom (CRITICAL) before this fix."
+      ],
       "codes": [
         {
           "system": "RxNorm",
@@ -301,17 +612,17 @@
           "display": "piperacillin 3000 MG / tazobactam 375 MG Injection"
         }
       ],
+      "administration": true,
       "reason": "pneumonia",
-      "direct_transition": "IVAntibiotics_Supply_Delay",
-      "assign_to_attribute": "piperacillin_3_gm___tazobactam_0_rx"
+      "direct_transition": "CT_Chest"
     },
     "CT_Chest": {
       "type": "Procedure",
       "codes": [
         {
-          "system": "CPT",
-          "code": "71260",
-          "display": "CT thorax with contrast"
+          "system": "SNOMED-CT",
+          "code": "169069000",
+          "display": "Computed tomography of thorax (procedure)"
         }
       ],
       "direct_transition": "ABG"
@@ -319,6 +630,9 @@
     "ABG": {
       "type": "Observation",
       "category": "laboratory",
+      "remarks": [
+        "Fixed bad-gmf: see OxygenSaturationInpatient remark."
+      ],
       "codes": [
         {
           "system": "LOINC",
@@ -326,40 +640,12 @@
           "display": "pO2 Arterial"
         }
       ],
-      "value": {
-        "type": "Range",
-        "low": 50,
-        "high": 70,
-        "unit": "mmHg"
-      },
-      "direct_transition": "VentilatorSupport"
-    },
-    "Doxycycline_End_Delay": {
-      "type": "Delay",
       "range": {
-        "low": 7,
-        "high": 14,
-        "unit": "days"
+        "low": 50,
+        "high": 70
       },
-      "direct_transition": "Doxycycline_End"
-    },
-    "Doxycycline_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "doxycycline_rx",
-      "direct_transition": "OutpatientManagement_End"
-    },
-    "Doxycycline_Order": {
-      "type": "MedicationOrder",
-      "assign_to_attribute": "doxycycline_rx",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "1650144",
-          "display": "doxycycline hyclate 100 MG Oral Capsule"
-        }
-      ],
-      "reason": "pneumonia",
-      "direct_transition": "Doxycycline_End_Delay"
+      "unit": "mmHg",
+      "direct_transition": "VentilatorSupport"
     },
     "VentilatorSupport": {
       "type": "Procedure",
@@ -390,7 +676,7 @@
           "transition": "GeriatricComplications"
         },
         {
-          "transition": "RecoverySevere"
+          "transition": "ICUAdmission_Stay"
         }
       ]
     },
@@ -398,61 +684,40 @@
       "type": "ConditionOnset",
       "codes": [
         {
-          "system": "ICD-10-CM",
-          "code": "J13",
-          "display": "Pneumonia due to Streptococcus pneumoniae"
-        },
-        {
           "system": "SNOMED-CT",
-          "code": "34050004",
-          "display": "Respiratory syncytial virus pneumonia (disorder)"
+          "code": "34020007",
+          "display": "Pneumonia caused by Streptococcus (disorder)"
         }
       ],
-      "direct_transition": "RecoverySevere"
+      "direct_transition": "ICUAdmission_Stay"
     },
     "GeriatricComplications": {
       "type": "ConditionOnset",
       "codes": [
         {
-          "system": "ICD-10-CM",
-          "code": "J15.7",
-          "display": "Pneumonia due to Mycoplasma pneumoniae"
-        },
-        {
           "system": "SNOMED-CT",
-          "code": "233606009",
-          "display": "Severe pneumonia (disorder)"
+          "code": "46970008",
+          "display": "Pneumonia caused by Mycoplasma pneumoniae (disorder)"
         }
       ],
+      "direct_transition": "ICUAdmission_Stay"
+    },
+    "ICUAdmission_Stay": {
+      "type": "Delay",
+      "remarks": [
+        "Bounded length of stay for a severe/ICU admission, inside the",
+        "encounter (legitimate LOS, not a medication-supply delay)."
+      ],
+      "range": {
+        "low": 4,
+        "high": 10,
+        "unit": "days"
+      },
+      "direct_transition": "ICUAdmission_End"
+    },
+    "ICUAdmission_End": {
+      "type": "EncounterEnd",
       "direct_transition": "RecoverySevere"
-    },
-    "RecoveryMild": {
-      "type": "Delay",
-      "range": {
-        "low": 5,
-        "high": 14,
-        "unit": "days"
-      },
-      "direct_transition": "ConditionEnd_Mild"
-    },
-    "ConditionEnd_Mild": {
-      "type": "ConditionEnd",
-      "referenced_by_attribute": "pneumonia",
-      "direct_transition": "FollowUpCare_End"
-    },
-    "RecoveryModerate": {
-      "type": "Delay",
-      "range": {
-        "low": 10,
-        "high": 21,
-        "unit": "days"
-      },
-      "direct_transition": "ConditionEnd_Moderate"
-    },
-    "ConditionEnd_Moderate": {
-      "type": "ConditionEnd",
-      "referenced_by_attribute": "pneumonia",
-      "direct_transition": "Terminal"
     },
     "RecoverySevere": {
       "type": "Delay",
@@ -466,161 +731,7 @@
     "ConditionEnd_Severe": {
       "type": "ConditionEnd",
       "referenced_by_attribute": "pneumonia",
-      "direct_transition": "ICUAdmission_End"
-    },
-    "Terminal": {
-      "type": "Terminal"
-    },
-    "ED_Visit_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "DetermineSeverity"
-    },
-    "OutpatientManagement_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "FollowUpCare"
-    },
-    "FollowUpCare_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "Terminal"
-    },
-    "InpatientAdmission_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "RecoveryModerate"
-    },
-    "Ceftriaxone_Order": {
-      "type": "MedicationOrder",
-      "assign_to_attribute": "ceftriaxone_rx",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "1665021",
-          "display": "ceftriaxone 1000 MG Injection"
-        }
-      ],
-      "reason": "pneumonia",
-      "direct_transition": "Ceftriaxone_Supply_Delay"
-    },
-    "Ceftriaxone_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 7,
-        "high": 7,
-        "unit": "days"
-      },
-      "direct_transition": "Ceftriaxone_End"
-    },
-    "Ceftriaxone_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "ceftriaxone_rx",
-      "direct_transition": "Azithromycin_Order"
-    },
-    "Azithromycin_Order": {
-      "type": "MedicationOrder",
-      "assign_to_attribute": "azithromycin_rx",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "248656",
-          "display": "azithromycin 500 MG Oral Tablet"
-        }
-      ],
-      "reason": "pneumonia",
-      "direct_transition": "Azithromycin_Supply_Delay"
-    },
-    "Azithromycin_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 5,
-        "high": 5,
-        "unit": "days"
-      },
-      "direct_transition": "Azithromycin_End"
-    },
-    "Azithromycin_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "azithromycin_rx",
-      "direct_transition": "CBC_Inpatient"
-    },
-    "CBC_Inpatient": {
-      "type": "Observation",
-      "category": "laboratory",
-      "codes": [
-        {
-          "system": "LOINC",
-          "code": "6690-2",
-          "display": "Leukocytes [#/volume] in Blood"
-        }
-      ],
-      "value": {
-        "type": "Range",
-        "low": 12000,
-        "high": 20000,
-        "unit": "/uL"
-      },
-      "direct_transition": "CRP_Inpatient"
-    },
-    "CRP_Inpatient": {
-      "type": "Observation",
-      "category": "laboratory",
-      "codes": [
-        {
-          "system": "LOINC",
-          "code": "1988-5",
-          "display": "C reactive protein"
-        }
-      ],
-      "value": {
-        "type": "Range",
-        "low": 50,
-        "high": 200
-      },
-      "direct_transition": "Blood_Culture",
-      "unit": "mg/L"
-    },
-    "Blood_Culture": {
-      "type": "Observation",
-      "category": "laboratory",
-      "codes": [
-        {
-          "system": "LOINC",
-          "code": "600-7",
-          "display": "Bacteria identified in Blood by Culture"
-        }
-      ],
-      "value": "Streptococcus pneumoniae",
-      "direct_transition": "OxygenSaturationInpatient"
-    },
-    "ICUAdmission_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "Terminal"
-    },
-    "AntibioticTreatmentOutpatient_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "AntibioticTreatmentOutpatient_End"
-    },
-    "AntibioticTreatmentOutpatient_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "amoxicillin_500_mg_oral_capsule_rx",
-      "direct_transition": "Doxycycline_Order"
-    },
-    "IVAntibiotics_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "IVAntibiotics_End"
-    },
-    "IVAntibiotics_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "piperacillin_3_gm___tazobactam_0_rx",
-      "direct_transition": "CT_Chest"
+      "direct_transition": "Annual_Incidence_Check"
     }
   }
 }

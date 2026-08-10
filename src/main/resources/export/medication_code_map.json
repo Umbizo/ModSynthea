@@ -261112,5 +261112,23 @@
       "code": "00310057812",
       "description": "olaparib 150 MG Oral Tablet"
     }
+  ],
+  "1649988": [
+    {
+      "code": "00143314205",
+      "description": "doxycycline hyclate 100 MG Oral Capsule"
+    },
+    {
+      "code": "00378014805",
+      "description": "doxycycline hyclate 100 MG Oral Capsule"
+    },
+    {
+      "code": "00904042804",
+      "description": "doxycycline hyclate 100 MG Oral Capsule"
+    },
+    {
+      "code": "27241014108",
+      "description": "doxycycline hyclate 100 MG Oral Capsule"
+    }
   ]
 }

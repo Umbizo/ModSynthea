@@ -31,7 +31,12 @@
     "blocks, an unrecognized GMF field silently dropped by Gson -- every",
     "prior BNP/JVD record was NULL. Fixed: numeric BNP via top-level",
     "`range` (LOINC 33762-6, unit pg/mL, already correct); qualitative",
-    "JVD via `value_code` (SNOMED 52101004, 'Present')."
+    "JVD via `value_code` (SNOMED 52101004, 'Present').",
+    "AUDIT CORRECTION (found during SMOKE, not in the fix spec):",
+    "CheckRiskFactors' risk-factor Guard checked two SNOMED codes",
+    "(13645005, 70995007) that no module in the tree ever assigns --",
+    "0% reachability at any population size, not a sampling artifact.",
+    "See CheckRiskFactors' own remark for the fix."
   ],
   "states": {
     "Initial": {
@@ -40,6 +45,23 @@
     },
     "CheckRiskFactors": {
       "type": "Guard",
+      "remarks": [
+        "Task 2.3 AUDIT CORRECTION (found during SMOKE verification, not in",
+        "the original fix spec): this Guard checked SNOMED 13645005",
+        "('Chronic obstructive lung disease') and 70995007 ('Pulmonary",
+        "hypertension') -- neither code is ever assigned by ANY module in",
+        "this tree (grep-confirmed against the full modules/ directory).",
+        "copd.json diagnoses either 87433001 (Emphysema) or 185086009",
+        "(Chronic obstructive bronchitis), never the generic 13645005",
+        "umbrella concept. Pulmonary hypertension isn't diagnosed by any",
+        "module at all, under any code. Net effect: this Guard could NEVER",
+        "pass for any patient, at any population size -- not a small-sample",
+        "absence, a structural 0%-reachability defect that predates this",
+        "task (CheckRiskFactors was otherwise unchanged). Fixed by matching",
+        "the two codes copd.json actually emits; kept the pulmonary-",
+        "hypertension leg (harmless -- if some future module starts",
+        "diagnosing it, this Guard picks it up for free)."
+      ],
       "allow": {
         "condition_type": "And",
         "conditions": [
@@ -57,8 +79,18 @@
                 "codes": [
                   {
                     "system": "SNOMED-CT",
-                    "code": "13645005",
-                    "display": "Chronic obstructive lung disease (disorder)"
+                    "code": "87433001",
+                    "display": "Pulmonary emphysema (disorder)"
+                  }
+                ]
+              },
+              {
+                "condition_type": "Active Condition",
+                "codes": [
+                  {
+                    "system": "SNOMED-CT",
+                    "code": "185086009",
+                    "display": "Chronic obstructive bronchitis (disorder)"
                   }
                 ]
               },

@@ -7035,5 +7035,23 @@
       "code": "99497",
       "description": "Advance care planning including explanation and discussion of advance directives such as standard forms, first 30 minutes"
     }
+  ],
+  "169070004": [
+    {
+      "code": "74177",
+      "description": "Computed tomography, abdomen and pelvis; with contrast material"
+    }
+  ],
+  "16310003": [
+    {
+      "code": "76700",
+      "description": "Ultrasound, abdominal, real time with image documentation; complete"
+    }
+  ],
+  "116241004": [
+    {
+      "code": "48150",
+      "description": "Pancreatectomy, proximal subtotal with total duodenectomy, partial gastrectomy, choledochoenterostomy and gastrojejunostomy (Whipple-type procedure); with pancreatojejunostomy"
+    }
   ]
 }

@@ -7,14 +7,43 @@
     "has no `assign_to_attribute` field -- only `attribute` -- so a JSON module that sets",
     "`assign_to_attribute` on an Observation is silently ignored by the engine; the value must instead",
     "be drawn by a SetAttribute state and read back into the Observation via its real `attribute` field.",
-    "A population baseline is drawn once per patient (Draw_Baseline_IOP). On every later visit the",
-    "reading is redrawn within a narrow band keyed off treatment status and the patient's original",
-    "baseline tier (Elevated_IOP_Jitter / Normal_IOP_Jitter / Treated_IOP_Jitter), instead of a fresh",
-    "independent 8-35 mmHg roll every visit. The previous per-visit design OR-combined two independent",
-    "8-35 draws (P(either eye > 21) = 1-(1-14/27)^2 = 0.77), flagging ~77% of visits as elevated and",
-    "making nearly every recurring patient (e.g. every T2 diabetic routed through this submodule)",
+    "A tier is drawn once per patient (Baseline_Tier_Roll). On every later visit the reading is",
+    "redrawn within a narrow band keyed off treatment status and that tier (Elevated_IOP_Jitter /",
+    "Normal_IOP_Jitter / Treated_IOP_Jitter), instead of a fresh independent 8-35 mmHg roll every",
+    "visit. The original per-visit design OR-combined two independent 8-35 draws",
+    "(P(either eye > 21) = 1-(1-14/27)^2 = 0.77), flagging ~77% of visits as elevated and making",
+    "nearly every recurring patient (e.g. every T2 diabetic routed through this submodule)",
     "glaucomatous over time. Both eyes' Observations read the same persisted value; per-eye divergence",
     "was not modelled, keeping the attribute contract to a single shared `iop_reading`.",
+    "",
+    "Fix round 1 (reviewer finding): the first version of this fix replaced the per-visit re-roll",
+    "with a persistent tier, but derived the tier from a Draw_Baseline_IOP Uniform(8,35) split at 21",
+    "-- (35-21)/(35-8) = 51.9% of patients landed in the elevated tier, and Elevated_IOP_Jitter's",
+    "Uniform(22,32) was entirely above the 21 threshold, so elevation was deterministic every visit",
+    "once tiered. The reviewer's 200k-patient Monte Carlo measured ~50% of patients acquiring a",
+    "lifetime glaucoma (~7.5%) or OHT (~42.7%) diagnosis by visit 2 -- against a real combined",
+    "glaucoma+OHT prevalence of roughly 10-15% in an older/diabetic ophthalmology-clinic population",
+    "(POAG prevalence ~2-2.5% in US adults 40+ rising sharply with age past 70 [Vajaranant et al.,",
+    "NHANES-based estimates]; OHT prevalence ~3-6% in population surveys [Beaver Dam Eye Study,",
+    "Baltimore Eye Survey]; diabetes carries an independently elevated open-angle-glaucoma risk in",
+    "several cohort/meta-analyses [e.g. Zhou et al. 2014] -- composited to the 10-15% figure used",
+    "here, not a single precise source). Fixed two ways:",
+    " - Baseline_Tier_Roll now assigns the tier directly from a sourced 15%/85% weighted split",
+    "   (distributed_transition) instead of deriving it from a uniform numeric draw.",
+    " - Elevated_IOP_Jitter's band was widened to Uniform(15,33) so it straddles the 21 mmHg",
+    "   threshold (P(>21) = 12/18 = 66.7% per visit) instead of guaranteeing elevation every time --",
+    "   representing real IOP's visit-to-visit and diurnal variability, and giving OHT/glaucoma a",
+    "   non-zero chance of going undetected on any single visit.",
+    "   With those two numbers: P(diagnosed by visit 1 | elevated tier) = 0.667, population-wide",
+    "   0.15*0.667 = 10.0%. P(diagnosed by visit 2) = 1-(1-0.667)^2 = 0.889, population-wide",
+    "   0.15*0.889 = 13.3%. As visits -> infinity this converges to the tier fraction itself, 15.0%",
+    "   -- so the combined lifetime-diagnosis rate is bracketed within the target 10-15% band across",
+    "   the whole realistic range of follow-up length (10.0% at first exposure, 15.0% as an upper",
+    "   asymptote), not just at one arbitrarily chosen visit count. Within a qualifying reading,",
+    "   P(>30 | >21) = (3/18)/(12/18) = 25%, so of eventual diagnoses roughly 1-in-4 land in the",
+    "   glaucoma band (>30) and 3-in-4 in the OHT band (21-30) -- population-wide asymptotically",
+    "   ~3.75% glaucoma / ~11.25% OHT, a plausible ratio (OHT is more prevalent than diagnosed",
+    "   glaucoma in the underlying population literature cited above).",
     "",
     "Diagnosis (Glaucoma_Diagnosis / Ocular_Hypertension_Diagnosis) and medication ordering are each",
     "attribute-guarded so a patient already carrying the diagnosis, or already on a drop, is not",
@@ -64,7 +93,7 @@
     "IOP_Reading_Gate": {
       "type": "Simple",
       "remarks": [
-        "First visit for this patient (iop_reading unset) draws a fresh population baseline;",
+        "First visit for this patient (iop_reading unset) rolls a fresh population tier;",
         "every later visit re-enters here and only jitters the existing reading."
       ],
       "conditional_transition": [
@@ -77,56 +106,39 @@
           }
         },
         {
-          "transition": "Draw_Baseline_IOP"
+          "transition": "Baseline_Tier_Roll"
         }
       ]
     },
-    "Draw_Baseline_IOP": {
-      "type": "SetAttribute",
-      "attribute": "iop_reading",
-      "distribution": {
-        "kind": "UNIFORM",
-        "round": true,
-        "parameters": {
-          "low": 8,
-          "high": 35
-        }
-      },
-      "direct_transition": "Classify_Baseline_Tier",
-      "remarks": [
-        "One-time population baseline IOP. Normal range is roughly 10-21 mmHg; values above 21",
-        "establish an elevated baseline tendency (iop_baseline_tier) that persists across future",
-        "visits until the patient is treated."
-      ]
-    },
-    "Classify_Baseline_Tier": {
+    "Baseline_Tier_Roll": {
       "type": "Simple",
-      "conditional_transition": [
+      "distributed_transition": [
         {
           "transition": "Mark_Elevated_Tier",
-          "condition": {
-            "condition_type": "Attribute",
-            "attribute": "iop_reading",
-            "operator": ">",
-            "value": 21
-          }
+          "distribution": 0.15
         },
         {
-          "transition": "Mark_Normal_Tier"
+          "transition": "Mark_Normal_Tier",
+          "distribution": 0.85
         }
+      ],
+      "remarks": [
+        "One-time population tier assignment, 15% elevated / 85% normal -- a sourced weight (see",
+        "module remarks for the combined glaucoma+OHT prevalence citation), not derived from a",
+        "numeric draw. The tier persists (iop_baseline_tier) across all future visits until treated."
       ]
     },
     "Mark_Elevated_Tier": {
       "type": "SetAttribute",
       "attribute": "iop_baseline_tier",
       "value": "elevated",
-      "direct_transition": "IOP_Results_Left"
+      "direct_transition": "Elevated_IOP_Jitter"
     },
     "Mark_Normal_Tier": {
       "type": "SetAttribute",
       "attribute": "iop_baseline_tier",
       "value": "normal",
-      "direct_transition": "IOP_Results_Left"
+      "direct_transition": "Normal_IOP_Jitter"
     },
     "On_Treatment_Check": {
       "type": "Simple",
@@ -212,11 +224,17 @@
         "kind": "UNIFORM",
         "round": true,
         "parameters": {
-          "low": 22,
-          "high": 32
+          "low": 15,
+          "high": 33
         }
       },
-      "direct_transition": "IOP_Results_Left"
+      "direct_transition": "IOP_Results_Left",
+      "remarks": [
+        "Straddles the 21 mmHg elevated threshold (P(>21) = 12/18 = 66.7% per visit) instead of the",
+        "old Uniform(22,32), which was entirely above it and so guaranteed an elevated reading, and",
+        "therefore an eventual diagnosis, on every single visit. See module remarks for the resulting",
+        "population-wide diagnosis-rate arithmetic."
+      ]
     },
     "Normal_IOP_Jitter": {
       "type": "SetAttribute",

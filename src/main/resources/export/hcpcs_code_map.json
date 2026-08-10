@@ -7454,5 +7454,17 @@
       "code": "G9054",
       "description": "Oncology; primary focus of visit; supervising, coordinating or managing care of patient with terminal cancer or for whom other medical illness prevents further cancer treatment; includes symptom management, end-of-life care planning, management of palliative therapies"
     }
+  ],
+  "116863004": [
+    {
+      "code": "36430",
+      "description": "Transfusion, blood or blood components"
+    }
+  ],
+  "405825005": [
+    {
+      "code": "88291",
+      "description": "Cytogenetics and molecular cytogenetics; interpretation and report"
+    }
   ]
 }

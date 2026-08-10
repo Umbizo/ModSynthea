@@ -261310,5 +261310,19 @@
       "code": "00310125130",
       "description": "osimertinib 80 MG Oral Tablet [Tagrisso]"
     }
+  ],
+  "1607792": [
+    {
+      "code": "16714099501",
+      "description": "deferasirox 360 MG Oral Tablet"
+    },
+    {
+      "code": "31722001330",
+      "description": "deferasirox 360 MG Oral Tablet"
+    },
+    {
+      "code": "43598085110",
+      "description": "deferasirox 360 MG Oral Tablet"
+    }
   ]
 }

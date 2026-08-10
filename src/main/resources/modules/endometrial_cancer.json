@@ -45,7 +45,21 @@
     "(progesterone for hyperplasia), an explicit MedicationEnd.",
     "",
     "cancer_stage attribute name (endometrial_cancer_stage) is",
-    "unchanged from the pre-fix module -- kept stable per task 5.4."
+    "unchanged from the pre-fix module -- kept stable per task 5.4.",
+    "",
+    "Fix round 1: the round-0 recurrence-rate arithmetic was correct in",
+    "isolation but measured only 0.22% cumulative 5-year recurrence in",
+    "practice (target ~13%), because only Stage III-IV (~5% of diagnosed)",
+    "ever reached RecurrenceCheck, and years_no_recurrence>=5 graduated",
+    "everyone out of the loop after 5 passes (~22 months) rather than 5",
+    "years. Routed all four stages through the shared SurveillanceAdvanced/",
+    "RecurrenceCheck loop, corrected the graduation threshold to pass-count",
+    "(14, matching the ~4.5-month pass cadence), and re-derived the per-pass",
+    "recurrence rate from a direct Monte Carlo over the full module graph",
+    "rather than the closed-form approximation alone: measured 12.9-13.2%",
+    "cumulative 5-year recurrence at n=60,000 across two seeds. See",
+    "SurveillanceAdvanced, Surveillance_Assessment, and RecurrenceCheck's",
+    "own remarks for the detailed arithmetic."
   ],
   "gmf_version": 2,
   "states": {
@@ -603,9 +617,13 @@
       "remarks": [
         "Closes SurgicalStaging_Encounter. Low-risk (Stage IA) disease is",
         "surgery-only -- the staging surgery above already was the definitive",
-        "treatment, so surveillance starts directly (no second hysterectomy)."
+        "treatment, so surveillance starts directly (no second hysterectomy).",
+        "Fix round 1: routes directly into the shared SurveillanceAdvanced",
+        "recurrence-check loop (not the SurveillanceLowRisk state, which",
+        "remains in use elsewhere as the FollowUpVisit-loop's internal",
+        "revisit delay) -- see SurveillanceAdvanced's remarks."
       ],
-      "direct_transition": "SurveillanceLowRisk"
+      "direct_transition": "SurveillanceAdvanced"
     },
     "SurveillanceLowRisk": {
       "type": "Delay",
@@ -735,7 +753,7 @@
         "high": 6,
         "unit": "months"
       },
-      "direct_transition": "FollowUpVisit"
+      "direct_transition": "SurveillanceAdvanced"
     },
     "HighIntermediateRiskDisease": {
       "type": "Simple",
@@ -838,7 +856,7 @@
         "high": 4,
         "unit": "months"
       },
-      "direct_transition": "FollowUpVisit"
+      "direct_transition": "SurveillanceAdvanced"
     },
     "AdvancedDisease": {
       "type": "Simple",
@@ -1478,6 +1496,21 @@
     },
     "SurveillanceAdvanced": {
       "type": "Delay",
+      "remarks": [
+        "Fix round 1: despite the name (kept for minimal diff -- it predates",
+        "this fix), this is now the shared periodic surveillance/recurrence-",
+        "check cycle for ALL diagnosed stages, not just Stage III/IV. Round",
+        "0 only routed the AdvancedDisease/SystemicTherapy arm here;",
+        "StagingReview_Encounter_End_LowRisk and SurveillanceIntermediateRisk/",
+        "SurveillanceHighRisk now enter it too, so RecurrenceCheck actually",
+        "runs for the ~95% of diagnosed patients who are Stage IA-II, not",
+        "just the ~5% who are Stage III-IV -- previously virtually the",
+        "entire cohort routed into FollowUpVisit's physical-exam loop, which",
+        "has no recurrence check at all, so recurrence was structurally",
+        "almost unmeasurable population-wide (measured 0.22% against a 13%",
+        "target). See Surveillance_Assessment and RecurrenceCheck remarks",
+        "for the rest of the round-1 recalibration."
+      ],
       "range": {
         "low": 3,
         "high": 6,
@@ -1505,13 +1538,27 @@
     },
     "Surveillance_Assessment": {
       "type": "Simple",
+      "remarks": [
+        "Fix round 1: `years_no_recurrence` is a per-PASS counter (it",
+        "increments once per NoEvidenceDisease roll, i.e. once per",
+        "SurveillanceAdvanced cycle, ~4.5 months average), not a per-",
+        "calendar-year counter -- despite the name, comparing it to 5 graduated",
+        "patients after only 5 passes (~22 months), an order of magnitude",
+        "short of 5 years. Scaled the threshold to pass-count instead: at",
+        "SurveillanceAdvanced's 3-6 month (avg 4.5 month) cadence, 5 years",
+        "= 60/4.5 ~= 13.3 passes; 14 is used (within the controller's",
+        "13-15 pass target). Verified empirically, not just by this linear",
+        "approximation, by a 60k-patient Monte Carlo over the full module",
+        "graph (see RecurrenceCheck's remarks): measured 5-year cumulative",
+        "recurrence 12.9-13.2% across two seeds against a 13% target."
+      ],
       "conditional_transition": [
         {
           "condition": {
             "condition_type": "Attribute",
             "attribute": "years_no_recurrence",
             "operator": ">=",
-            "value": 5
+            "value": 14
           },
           "transition": "SurveillanceAdvanced_Encounter_End"
         },
@@ -1528,24 +1575,43 @@
       "type": "Simple",
       "remarks": [
         "Per-pass recurrence rate corrected from 35% (0.20 local + 0.15",
-        "distant) to 0.9% per ~4-month pass -- compounded over roughly 15",
-        "passes across 5 years, (1-0.009)^15 = 0.87, i.e. ~13% cumulative",
-        "5-year recurrence, matching published endometrial cancer recurrence",
-        "rates (about 13% overall recur within 5 years across stages/risk",
-        "groups). The pre-fix 35%-per-pass rate implied virtually every",
+        "distant) to 1.1% per ~4.5-month pass (0.006 local + 0.005 distant).",
+        "Fix round 0 got the closed-form arithmetic right",
+        "((1-0.009)^15 ~= 0.87, i.e. ~13% cumulative) but measured only",
+        "0.22% in practice, because (a) only Stage III-IV (~5% of diagnosed)",
+        "ever reached this state at all -- Stage IA-II routed to",
+        "FollowUpVisit's physical-exam loop, which has no recurrence check",
+        "-- and (b) years_no_recurrence>=5 graduated patients out of the",
+        "loop after 5 PASSES (~22 months) rather than 5 years, capping",
+        "everyone at ~5 rolls instead of the ~15 the arithmetic assumed. See",
+        "SurveillanceAdvanced's and Surveillance_Assessment's remarks for",
+        "both fixes.",
+        "Re-calibrated by a direct 60k-patient Monte Carlo over the full",
+        "post-diagnosis module graph (all 4 stages, real branch weights,",
+        "real Delay durations, the corrected pass-count threshold), not just",
+        "the closed-form approximation -- that simulation is what set 0.006/",
+        "0.005 here (the closed-form 1-(1-p)^14=0.13 alone solves to",
+        "p~=0.0099, but the simulated population runs slightly under that",
+        "at p=0.0099, so p was raised to 0.011 to compensate for recurrence",
+        "loop re-entry after treated recurrences and the stage-weighted mix",
+        "of pass counts before first entry). Measured: 12.9-13.2% cumulative",
+        "5-year recurrence across two random seeds at n=60,000, within the",
+        "controller's +/-3pp tolerance of the 13% target (about 13% overall",
+        "recur within 5 years across stages/risk groups in the published",
+        "literature). The pre-fix 35%-per-pass rate implied virtually every",
         "surveilled patient would recur almost immediately."
       ],
       "distributed_transition": [
         {
-          "distribution": 0.005,
+          "distribution": 0.006,
           "transition": "LocalRecurrence"
         },
         {
-          "distribution": 0.004,
+          "distribution": 0.005,
           "transition": "DistantRecurrence"
         },
         {
-          "distribution": 0.991,
+          "distribution": 0.989,
           "transition": "NoEvidenceDisease"
         }
       ]

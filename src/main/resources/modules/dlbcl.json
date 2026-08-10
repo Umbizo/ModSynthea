@@ -34,13 +34,37 @@
       "type": "Delay",
       "remarks": [
         "Annual reroll (340-390 day jitter), age-banded, replacing the one-shot",
-        "birth roll. Anchors are the controller-specified 2e-05/yr at 40 and",
-        "1e-04/yr at 75+; the two intermediate bands interpolate toward SEER's",
-        "reported pattern of incidence rising with age and peaking at ages 65-74",
-        "(SEER Cancer Stat Facts: NHL - Diffuse Large B-Cell Lymphoma; overall",
-        "age-adjusted incidence ~5.6/100,000). This module's own calibration",
-        "sits below that population-wide figure by design (matches the pattern",
-        "used for the other cancer modules in this remediation pass).",
+        "birth roll.",
+        "",
+        "FIX ROUND 1 (reviewer): round 0's raw hazard schedule (2e-05/40-54,",
+        "4e-05/55-64, 8e-05/65-74, 1e-04/75+, unbounded above) put its heaviest",
+        "weight in the open-ended 75+ band. Competing all-cause mortality does",
+        "thin the population there, but not fast enough to offset a rate that",
+        "stays flat and highest for the rest of a person's life -- the reviewer's",
+        "survivorship-weighted re-derivation put the realized median age AT",
+        "DIAGNOSIS around 71-73, above the 64-68 target (SEER median 66-67).",
+        "",
+        "Re-derived here using this engine's OWN competing-mortality model",
+        "(LifecycleModule.likelihoodOfDeath, src/main/java/org/mitre/synthea/",
+        "modules/LifecycleModule.java:1006 -- the actual all-cause hazard that",
+        "determines who survives to be diagnosed in this pipeline, not an",
+        "external approximation): 145.7/100k (40-44), 326.5/100k (45-54),",
+        "737.8/100k (55-64), 1817.0/100k (65-74), 4877.3/100k (75-84),",
+        "13499.4/100k (85-94), 50000/100k (95+).",
+        "",
+        "Combining that with each candidate DLBCL hazard schedule via",
+        "S(age+1) = S(age)*(1-mortality(age))*(1-dlbcl(age)), diagnosis density",
+        "= S(age)*dlbcl(age), and reading off the cumulative-mass age at which",
+        "the running total first reaches 50% of all eventual diagnoses (python,",
+        "ages 40-100, 1-year steps) gives, for this module's new schedule",
+        "(2e-05/40-54, 7e-05/55-64, 1e-04/65-74, 6e-05/75+ -- peak moved from",
+        "75+ to 65-74, matching SEER's own finding that incidence is 'most",
+        "frequently diagnosed among people aged 65-74' rather than monotonically",
+        "rising past 74; SEER Cancer Stat Facts: NHL - Diffuse Large B-Cell",
+        "Lymphoma): cumulative mass 48.98% by age 66, 52.73% by age 67 ->",
+        "**median age at diagnosis = 67**, inside the 64-68 target and matching",
+        "the cited SEER median (66-67) directly. p5 = 45, p95 = 87.",
+        "",
         "ComplexTransition.follow takes the first true branch, so bands are",
         "checked age-descending."
       ],
@@ -59,11 +83,11 @@
           },
           "distributions": [
             {
-              "distribution": 0.0001,
+              "distribution": 0.00006,
               "transition": "Symptom_Onset"
             },
             {
-              "distribution": 0.9999,
+              "distribution": 0.99994,
               "transition": "DLBCL_Annual_Incidence_Check"
             }
           ]
@@ -77,11 +101,11 @@
           },
           "distributions": [
             {
-              "distribution": 0.00008,
+              "distribution": 0.0001,
               "transition": "Symptom_Onset"
             },
             {
-              "distribution": 0.99992,
+              "distribution": 0.9999,
               "transition": "DLBCL_Annual_Incidence_Check"
             }
           ]
@@ -95,11 +119,11 @@
           },
           "distributions": [
             {
-              "distribution": 0.00004,
+              "distribution": 0.00007,
               "transition": "Symptom_Onset"
             },
             {
-              "distribution": 0.99996,
+              "distribution": 0.99993,
               "transition": "DLBCL_Annual_Incidence_Check"
             }
           ]
@@ -183,11 +207,23 @@
     },
     "Excisional_Biopsy": {
       "type": "Procedure",
+      "remarks": [
+        "Fix round 1 (reviewer): 86273004 is the generic root 'Biopsy' concept, not",
+        "a lymph node biopsy specifically -- its shared hcpcs_code_map row bills",
+        "CPT 38221 (bone marrow biopsy), which is wrong for a diagnostic",
+        "excisional lymph node biopsy. Recoded to 307996001 'Excisional biopsy of",
+        "lymph node', verified active via the NCI EVS REST API",
+        "(api-evsrest.nci.nih.gov/api/v1/concept/snomedct_us/307996001: name",
+        "'Excisional biopsy of lymph node', active=true) and Verhoeff-valid. New",
+        "hcpcs_code_map row added (CPT 38510, 'Biopsy or excision of lymph",
+        "node(s); open, deep cervical node(s)' -- cervical lymphadenopathy is the",
+        "most common diagnostic-biopsy presentation for DLBCL)."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "86273004",
-          "display": "Excision biopsy of lymph node"
+          "code": "307996001",
+          "display": "Excisional biopsy of lymph node"
         }
       ],
       "direct_transition": "DLBCL_Diagnosis"

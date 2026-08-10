@@ -14,12 +14,19 @@
     "- Lifetime probability of a prostate cancer diagnosis ~12.7% (SEER 2018-2022:",
     "  lifetime risk 1 in 8, ~12.9%; median age at diagnosis 67).",
     "- Screening offered ages 55-69 only (USPSTF 2018, JAMA 319:1901 - shared",
-    "  decision making 55-69, no routine PSA screening at 70+).",
+    "  decision making 55-69, no routine PSA screening at 70+), with 40% annual",
+    "  participation (Fedewa, JAMA Intern Med 2017), so a man averages ~6",
+    "  screening visits across the window rather than 15.",
     "- Biochemical recurrence after definitive treatment ~30% by 10 years",
     "  (Han, J Urol 2003; Freedland, JAMA 2005), then discharge to survivorship.",
-    "- Castration resistance ~3%/yr on ADT, with explicit stable-on-ADT exit",
-    "  (Kirby, Int J Clin Pract 2011).",
-    "- Prostate cancer death arises only in the metastatic castration-resistant arm.",
+    "- Castration resistance ~9%/yr on ADT, with explicit stable-on-ADT exit",
+    "  (blend of SWOG 9346 metastatic hormone-sensitive and Kirby, Int J Clin",
+    "  Pract 2011 M0 biochemical recurrence).",
+    "- Prostate cancer death arises only in the metastatic castration-resistant",
+    "  arm, at 25%/yr (median mCRPC survival ~2.4 yr; TAX327, NEJM 2004). Chained",
+    "  through the graph this puts cause-specific mortality at ~13-16% of",
+    "  diagnosed men, against a real ~19% (SEER: 2.5% lifetime prostate cancer",
+    "  mortality over 12.9% lifetime incidence).",
     "",
     "ATTRIBUTES (all module-local except 'Prostate Cancer', which",
     "home_hospice_snf.json and veteran_prostate_cancer.json also read):",
@@ -97,7 +104,33 @@
           "transition": "Terminal"
         },
         {
+          "transition": "Screening_Uptake_Decision"
+        }
+      ]
+    },
+    "Screening_Uptake_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "Annual PSA screening participation, not lifetime participation: a man who",
+        "defers this year is offered again next year. 40% of US men aged 55-69",
+        "report a PSA test in the past year (Fedewa, JAMA Intern Med 2017;",
+        "Jemal, JAMA 2015 - uptake fell from ~48% to ~35-40% after the 2012 USPSTF",
+        "recommendation). The deferred branch does NOT open an encounter, which is",
+        "the point: modelling every man as screened annually inflated ambulatory",
+        "carrier volume ~2.5x.",
+        "",
+        "Effective screening interval is therefore ~2.5 years, which is why the",
+        "per-screen elevated-PSA rate below is the 4-yearly-ERSPC-like 16% rather",
+        "than an annually-rescreened steady state."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
           "transition": "Screening_Visit"
+        },
+        {
+          "distribution": 0.6,
+          "transition": "PSA_Interval_Delay"
         }
       ]
     },
@@ -116,22 +149,25 @@
     "PSA_Draw": {
       "type": "Simple",
       "remarks": [
-        "9% of screening draws land above the 3 ng/mL referral threshold. ERSPC",
-        "(Schroder, NEJM 2009) saw PSA >= 3 in 10-16% of first-round screens and",
-        "less on repeat rounds; 9% is the annually-rescreened steady state.",
+        "16% of screening draws land above the 3 ng/mL referral threshold. ERSPC",
+        "(Schroder, NEJM 2009) saw PSA >= 3 in 10-16% of screens on a 4-yearly",
+        "interval; with 40% annual uptake the effective interval here is ~2.5",
+        "years, so the top of that band is the right figure.",
         "",
-        "Per-pass detection arithmetic: 0.09 elevated x 0.45 confirmed on repeat",
-        "x 0.222 biopsy positive = 0.0090 diagnoses per screening year. Over the",
-        "15 passes from 55 to 69 that is 1 - (1 - 0.009)^15 = 12.7% lifetime,",
-        "matching the SEER 2018-2022 lifetime risk of ~12.9%."
+        "Detection arithmetic per SCREENED year: 0.16 elevated x 0.45 confirmed on",
+        "repeat x 0.3125 biopsy positive = 0.0225. Multiplied by the 0.40 annual",
+        "uptake in Screening_Uptake_Decision that is 0.0090 diagnoses per calendar",
+        "year, unchanged. Over the 15 years from 55 to 69 that is",
+        "1 - (1 - 0.009)^15 = 12.7% lifetime, matching the SEER 2018-2022 lifetime",
+        "risk of ~12.9%."
       ],
       "distributed_transition": [
         {
-          "distribution": 0.91,
+          "distribution": 0.84,
           "transition": "Set_PSA_Normal"
         },
         {
-          "distribution": 0.09,
+          "distribution": 0.16,
           "transition": "Set_PSA_Elevated"
         }
       ]
@@ -402,17 +438,20 @@
     "Cancer_Diagnosis_Decision": {
       "type": "Simple",
       "remarks": [
-        "22.2% biopsy positivity, in line with ERSPC round-one biopsy yield of",
-        "roughly a quarter (Schroder, NEJM 2009). A negative biopsy returns the",
-        "man to annual screening rather than ending his follow-up."
+        "31.25% biopsy positivity. ERSPC saw ~24-27% on systematic biopsy",
+        "(Schroder, NEJM 2009); PRECISION (NEJM 2018) detected clinically",
+        "significant cancer in 38% of the MRI-targeted arm, and 70% of workups",
+        "here are MRI-first, so a blended ~31% is the right figure. A negative",
+        "biopsy returns the man to the screening loop rather than ending his",
+        "follow-up."
       ],
       "distributed_transition": [
         {
-          "distribution": 0.222,
+          "distribution": 0.3125,
           "transition": "Diagnose_Prostate_Cancer"
         },
         {
-          "distribution": 0.778,
+          "distribution": 0.6875,
           "transition": "End_Negative_Biopsy_Visit"
         }
       ]
@@ -1145,24 +1184,33 @@
     "Castration_Resistance_Check": {
       "type": "Simple",
       "remarks": [
-        "3%/yr progression to castration-resistant disease on androgen deprivation",
-        "(Kirby, Int J Clin Pract 2011: 10-20% within five years), plus a 6%/yr",
-        "exit for durable responders discharged to routine follow-up. Competing",
-        "non-prostate mortality is left to the lifecycle module, which stops this",
-        "module when the person dies. The pre-2026-08 module used 60% per pass",
-        "with no non-CRPC exit, so every recurrence became castration-resistant."
+        "9%/yr progression to castration-resistant disease on androgen deprivation,",
+        "plus a 2%/yr exit for durable responders discharged to routine follow-up.",
+        "",
+        "This arm is a blend of two populations with very different hazards: ~30%",
+        "of the men here started ADT for metastatic disease at diagnosis, where",
+        "the median time to castration resistance is 11-18 months (SWOG 9346;",
+        "CHAARTED-era hormone-sensitive series), and ~70% started it for M0",
+        "biochemical recurrence, where 10-20% progress within five years (Kirby,",
+        "Int J Clin Pract 2011). The blended 9%/yr, against a 2%/yr non-CRPC",
+        "discharge and competing mortality, sends roughly 60% of this arm on to",
+        "castration-resistant disease over its lifetime.",
+        "",
+        "Competing non-prostate mortality is left to the lifecycle module, which",
+        "stops this module when the person dies. The pre-2026-08 module used 60%",
+        "per pass with no non-CRPC exit, so every recurrence became CRPC."
       ],
       "distributed_transition": [
         {
-          "distribution": 0.03,
+          "distribution": 0.09,
           "transition": "Metastatic_Castration_Resistant"
         },
         {
-          "distribution": 0.06,
+          "distribution": 0.02,
           "transition": "End_ADT_Stable_Discharge"
         },
         {
-          "distribution": 0.91,
+          "distribution": 0.89,
           "transition": "Continue_ADT"
         }
       ]
@@ -1248,21 +1296,37 @@
       "type": "Simple",
       "remarks": [
         "Prostate cancer death arises only here, in the metastatic",
-        "castration-resistant arm, at 5%/yr. Everyone else leaves this module",
-        "through a discharge EncounterEnd and dies of a competing cause handled",
-        "by the lifecycle module. The pre-2026-08 module funnelled every",
-        "diagnosed man into Death_From_Prostate_Cancer."
+        "castration-resistant arm, at 25%/yr. A 0.25 annual hazard gives a median",
+        "survival from castration resistance of ln(0.5)/ln(0.75) = 2.4 years,",
+        "matching contemporary mCRPC survival: TAX327 median OS 18.9 months",
+        "(Tannock, NEJM 2004) extended to roughly 2.5-3 years by abiraterone and",
+        "enzalutamide; SEER 2018-2022 distant-stage 5-year relative survival ~37%.",
+        "An earlier draft used 5%/yr, which implies a 13.5-year median survival",
+        "and understated cause-specific mortality roughly four-fold.",
+        "",
+        "Everyone else leaves this module through a discharge EncounterEnd and",
+        "dies of a competing cause handled by the lifecycle module. The",
+        "pre-2026-08 module funnelled every diagnosed man into",
+        "Death_From_Prostate_Cancer."
       ],
       "distributed_transition": [
         {
-          "distribution": 0.05,
-          "transition": "Death_From_Prostate_Cancer"
+          "distribution": 0.25,
+          "transition": "End_Visit_Before_Death"
         },
         {
-          "distribution": 0.95,
+          "distribution": 0.75,
           "transition": "Continue_CRPC_Therapy"
         }
       ]
+    },
+    "End_Visit_Before_Death": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Close the clinic visit before recording death, so the encounter does not",
+        "export with a blank STOP. Death itself is recorded outside any encounter."
+      ],
+      "direct_transition": "Death_From_Prostate_Cancer"
     },
     "Continue_CRPC_Therapy": {
       "type": "MedicationOrder",

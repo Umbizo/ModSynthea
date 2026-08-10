@@ -6955,5 +6955,51 @@
       "description": "Stereotactic body radiation therapy, treatment delivery, per fraction to 1 or more lesions, including image guidance, entire course not to exceed 5 fractions",
       "weight": "0.3"
     }
+  ],
+  "405824009": [
+    {
+      "code": "81162",
+      "description": "BRCA1, BRCA2 (hereditary breast and ovarian cancer) gene analysis; full sequence analysis and full duplication/deletion analysis",
+      "weight": "0.8"
+    },
+    {
+      "code": "81479",
+      "description": "Unlisted molecular pathology procedure",
+      "weight": "0.2"
+    }
+  ],
+  "426491001": [
+    {
+      "code": "76830",
+      "description": "Ultrasound, transvaginal",
+      "weight": "0.8"
+    },
+    {
+      "code": "76856",
+      "description": "Ultrasound, pelvic (nonobstetric), real time with image documentation; complete",
+      "weight": "0.2"
+    }
+  ],
+  "116028008": [
+    {
+      "code": "58951",
+      "description": "Resection (initial) of ovarian, tubal or primary peritoneal malignancy with bilateral salpingo-oophorectomy and omentectomy; with total abdominal hysterectomy, pelvic and limited para-aortic lymphadenectomy",
+      "weight": "0.35"
+    },
+    {
+      "code": "58953",
+      "description": "Bilateral salpingo-oophorectomy with omentectomy, total abdominal hysterectomy and radical dissection for debulking",
+      "weight": "0.25"
+    },
+    {
+      "code": "58952",
+      "description": "Resection (initial) of ovarian, tubal or primary peritoneal malignancy with bilateral salpingo-oophorectomy and omentectomy; with radical dissection for debulking",
+      "weight": "0.2"
+    },
+    {
+      "code": "58720",
+      "description": "Salpingo-oophorectomy, complete or partial, unilateral or bilateral (separate procedure)",
+      "weight": "0.2"
+    }
   ]
 }

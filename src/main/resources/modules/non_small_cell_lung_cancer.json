@@ -36,6 +36,17 @@
     },
     "Present Symptoms": {
       "type": "MultiObservation",
+      "remarks": [
+        "Hotfix (Task 2.1): added the top-level `codes` this ObservationGroup requires. MultiObservation.process() reads codes.get(0).code with no null check; without a top-level codes array every patient who reaches this state throws a NullPointerException ('this.codes is null') and the whole in-progress patient record is silently discarded. This is a crash fix only -- diagnosis/onset/coding gaps are deferred to the Task 4.1 rewrite."
+      ],
+      "category": "exam",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "418799008",
+          "display": "Symptom (finding)"
+        }
+      ],
       "observations": [
         {
           "codes": [
@@ -128,6 +139,17 @@
     },
     "Pathology": {
       "type": "MultiObservation",
+      "remarks": [
+        "Hotfix (Task 2.1): added the top-level `codes` this ObservationGroup requires (see Present Symptoms remark for the crash mechanism). Crash fix only; histology/coding gaps deferred to Task 4.1."
+      ],
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "22637-3",
+          "display": "Pathology report final diagnosis"
+        }
+      ],
       "observations": [
         {
           "codes": [
@@ -168,6 +190,17 @@
     },
     "Molecular Testing": {
       "type": "MultiObservation",
+      "remarks": [
+        "Hotfix (Task 2.1): added the top-level `codes` this ObservationGroup requires (see Present Symptoms remark for the crash mechanism). Crash fix only; marker/coding gaps deferred to Task 4.1."
+      ],
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "69548-6",
+          "display": "Genetic variant assessment"
+        }
+      ],
       "observations": [
         {
           "codes": [
@@ -201,21 +234,11 @@
     },
     "Staging": {
       "type": "SetAttribute",
+      "remarks": [
+        "Hotfix (Task 2.1): value_set parses to a Gson LinkedTreeMap, and a later Map-vs-String compare threw a ClassCastException that crashed generation for every patient who reached this state. Replaced with a single modal stage as a crash fix only. Task 4.1's rewrite restores a proper stage distribution via distributed_transition into separate SetAttribute states."
+      ],
       "attribute": "cancer_stage",
-      "value": {
-        "type": "String",
-        "value_set": [
-          "IA",
-          "IB",
-          "IIA",
-          "IIB",
-          "IIIA",
-          "IIIB",
-          "IIIC",
-          "IVA",
-          "IVB"
-        ]
-      },
+      "value": "IIIA",
       "direct_transition": "Early Stage Check"
     },
     "Early Stage Check": {

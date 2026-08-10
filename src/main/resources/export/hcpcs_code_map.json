@@ -7028,6 +7028,30 @@
       "description": "Advance care planning including explanation and discussion of advance directives such as standard forms, first 30 minutes"
     }
   ],
+  "713603004": [
+    {
+      "code": "99497",
+      "description": "Advance care planning including explanation and discussion of advance directives such as standard forms, first 30 minutes"
+    }
+  ],
+  "230861003": [
+    {
+      "code": "61867",
+      "description": "Placement of neurostimulator electrode array, cranial; first array"
+    }
+  ],
+  "430282003": [
+    {
+      "code": "78607",
+      "description": "DaTscan imaging"
+    }
+  ],
+  "445794007": [
+    {
+      "code": "96132",
+      "description": "Neuropsychological testing (e.g., Halstead-Reitan Neuropsychological Battery, Wechsler Memory Scales and Wisconsin Card Sorting Test), administered by physician or other qualified health care professional, first hour"
+    }
+  ],
   "169070004": [
     {
       "code": "74177",

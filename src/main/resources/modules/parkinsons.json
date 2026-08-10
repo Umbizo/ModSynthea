@@ -43,6 +43,15 @@
           "display": "Encounter for problem (procedure)"
         }
       ],
+      "direct_transition": "PrimaryCareVisit_Encounter_End"
+    },
+    "PrimaryCareVisit_Encounter_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Task 2.2 fix: lint CRITICAL -- this encounter was open across the 1-6 month",
+        "NeurologyReferral Delay. Close it before the referral wait, matching the",
+        "Task 1.6 pattern of explicit closes at supersession/wait points."
+      ],
       "direct_transition": "NeurologyReferral"
     },
     "NeurologyReferral": {
@@ -100,6 +109,14 @@
           "display": "Essential tremor"
         }
       ],
+      "direct_transition": "EssentialTremorDiagnosis_Encounter_End"
+    },
+    "EssentialTremorDiagnosis_Encounter_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Task 2.2 fix: this branch used to reach Terminal with NeurologyVisit1's",
+        "encounter still open (a dangling/blank-STOP encounter). Close it."
+      ],
       "direct_transition": "Terminal"
     },
     "OtherNeurologicDisorder": {
@@ -111,6 +128,13 @@
           "display": "Multiple system atrophy"
         }
       ],
+      "direct_transition": "OtherNeurologicDisorder_Encounter_End"
+    },
+    "OtherNeurologicDisorder_Encounter_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Task 2.2 fix: same dangling-encounter defect as EssentialTremorDiagnosis."
+      ],
       "direct_transition": "Terminal"
     },
     "ParkinsonsDiagnosis": {
@@ -120,12 +144,13 @@
           "system": "SNOMED-CT",
           "code": "49049000",
           "display": "Parkinson's disease (disorder)"
-        },
-        {
-          "system": "ICD-10-CM",
-          "code": "G20",
-          "display": "Parkinson's disease"
         }
+      ],
+      "remarks": [
+        "Task 2.2 fix: dropped the inline ICD-10-CM G20 code. GMF module states may",
+        "only carry SNOMED-CT/RxNorm/LOINC/CVX/DICOM codes -- ICD-10-CM belongs in",
+        "the export condition_code_map.json, not inline. 49049000 is already mapped",
+        "there to G20, so nothing else changes."
       ],
       "assign_to_attribute": "has_parkinsons",
       "direct_transition": "HoehnYahrStage1"
@@ -165,18 +190,37 @@
       "type": "SetAttribute",
       "attribute": "pd_stage",
       "value": "early_stable",
-      "direct_transition": "HoehnYahrStage2"
+      "direct_transition": "Set_LevodopaResponse_True"
     },
     "ModerateResponse_HYStage2": {
       "type": "SetAttribute",
       "attribute": "pd_stage",
       "value": "progressing",
-      "direct_transition": "HoehnYahrStage2"
+      "direct_transition": "Set_LevodopaResponse_True"
     },
     "PoorResponse_HYStage2": {
       "type": "SetAttribute",
       "attribute": "pd_stage",
       "value": "advanced",
+      "direct_transition": "Set_LevodopaResponse_False"
+    },
+    "Set_LevodopaResponse_True": {
+      "type": "SetAttribute",
+      "attribute": "levodopa_response",
+      "value": true,
+      "remarks": [
+        "Task 2.2 fix: levodopa_response was read by DBSEvaluation but never set",
+        "anywhere, so the DBS arm was dead. Documented responsiveness to levodopa",
+        "is a real DBS-candidacy criterion (AAN/MDS practice guidance). Good and",
+        "moderate initial responders (90% of the 0.6/0.3/0.1 TreatmentResponseAssessment",
+        "split) both count as levodopa-responsive; only poor responders do not."
+      ],
+      "direct_transition": "HoehnYahrStage2"
+    },
+    "Set_LevodopaResponse_False": {
+      "type": "SetAttribute",
+      "attribute": "levodopa_response",
+      "value": false,
       "direct_transition": "HoehnYahrStage2"
     },
     "HoehnYahrStage2": {
@@ -307,6 +351,40 @@
       "type": "SetAttribute",
       "attribute": "h_and_y_stage",
       "value": 4,
+      "direct_transition": "CognitiveScreening"
+    },
+    "CognitiveScreening": {
+      "type": "Simple",
+      "remarks": [
+        "Task 2.2 fix: no_dementia was read by DBSEvaluation but never set anywhere",
+        "(the '5th and only assignment' the fix brief describes is this state), so",
+        "DBS was categorically unreachable. Cognitive impairment is a well-recognized",
+        "DBS exclusion criterion (candidates must be screened for significant",
+        "cognitive decline before referral) -- this represents that screening for",
+        "patients who have reached H&Y stage 4 via the motor-complications cascade",
+        "(a track distinct from the annual-loop DementiaOnset branch below)."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.8,
+          "transition": "Set_NoDementia_True"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "Set_NoDementia_False"
+        }
+      ]
+    },
+    "Set_NoDementia_True": {
+      "type": "SetAttribute",
+      "attribute": "no_dementia",
+      "value": true,
+      "direct_transition": "DBSEvaluation"
+    },
+    "Set_NoDementia_False": {
+      "type": "SetAttribute",
+      "attribute": "no_dementia",
+      "value": false,
       "direct_transition": "DBSEvaluation"
     },
     "DBSEvaluation": {
@@ -342,12 +420,37 @@
               }
             ]
           },
-          "transition": "DBS_Surgery"
+          "transition": "DBS_Admission"
         },
         {
           "transition": "AdvancedTherapiesEvaluation"
         }
       ]
+    },
+    "DBS_Admission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "remarks": [
+        "Task 2.2 fix: own-BFS finding (not lint-flagged, since Procedure states",
+        "aren't lint-checked for encounter context). Before this fix DBS_Surgery ran",
+        "with no encounter open anywhere on this path -- HealthRecord.currentEncounter()",
+        "silently attaches unattached records to the chronologically-latest encounter in",
+        "the person's whole history (open or closed), so the surgery record was being",
+        "mis-attributed to a stale, long-closed ambulatory visit, and the pre-existing",
+        "DBS_Surgery_Encounter_End state was a permanent silent no-op (no reservation",
+        "to end). Same defect class as Task 1.6's alzheimers lecanemab/donanemab fix.",
+        "Wrapped in a real inpatient admission, matching the prostate_cancer.json /",
+        "pancreatic_cancer.json Hospital-admission-then-procedure idiom (32485007)."
+      ],
+      "direct_transition": "DBS_Surgery"
     },
     "DBS_Surgery": {
       "type": "Procedure",
@@ -356,14 +459,28 @@
           "system": "SNOMED-CT",
           "code": "230861003",
           "display": "Deep brain stimulation (procedure)"
-        },
-        {
-          "system": "CPT",
-          "code": "61867",
-          "display": "Placement of neurostimulator electrode arrays"
         }
       ],
       "reason": "has_parkinsons",
+      "remarks": [
+        "Task 2.2 fix: dropped the inline CPT 61867 code (GMF states may not carry",
+        "CPT). 61867 (Placement of neurostimulator electrode arrays) moved to",
+        "hcpcs_code_map.json as the export-side mapping for 230861003."
+      ],
+      "direct_transition": "DBS_Surgery_Stay"
+    },
+    "DBS_Surgery_Stay": {
+      "type": "Delay",
+      "remarks": [
+        "Genuine inpatient length of stay for DBS electrode/IPG implantation --",
+        "the only Delay allowed to sit inside an open encounter, per the",
+        "prostate_cancer.json Prostatectomy_Stay idiom."
+      ],
+      "range": {
+        "low": 1,
+        "high": 3,
+        "unit": "days"
+      },
       "direct_transition": "DBS_Surgery_Encounter_End"
     },
     "PostDBSRecovery": {
@@ -393,6 +510,18 @@
         "honest representation. If a SNOMED concept for neurostimulator programming/adjustment",
         "is later identified (try browser term-search 'adjustment of implanted device'), add it",
         "as a Procedure action within this encounter."
+      ],
+      "direct_transition": "DBSFollowUp_Encounter_End"
+    },
+    "DBSFollowUp_Encounter_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Task 2.2 fix: own-BFS finding. DBSFollowUp's encounter was never closed",
+        "before AdvancedTherapiesEvaluation's branches, all of which reach",
+        "PalliativeCareReferral (another Encounter) with zero elapsed simulated",
+        "time -- a same-module re-entry that the engine auto-supersedes with a",
+        "zero-duration close (State.java:981-993). Close explicitly instead, per",
+        "the Task 1.6 pattern."
       ],
       "direct_transition": "AdvancedTherapiesEvaluation"
     },
@@ -444,12 +573,20 @@
           "system": "SNOMED-CT",
           "code": "52448006",
           "display": "Dementia in Parkinson's disease (disorder)"
-        },
-        {
-          "system": "ICD-10-CM",
-          "code": "G31.83",
-          "display": "Dementia with Lewy bodies"
         }
+      ],
+      "remarks": [
+        "Task 2.2 fix: dropped the inline ICD-10-CM G31.83 code (bad-system scanner",
+        "gap -- GMF module states may only carry SNOMED-CT/RxNorm/LOINC/CVX/DICOM).",
+        "Considered recoding the SNOMED itself to the fix brief's candidate 80098002",
+        "'Lewy body dementia' (verified real/active/Verhoeff-valid via Ontoserver",
+        "$lookup), but rejected it: 52448006 'Dementia in Parkinson's disease' is",
+        "already mapped in condition_code_map.json -> G20.A1 'Parkinson's disease",
+        "with dementia, without dyskinesia or fluctuations', which is a more",
+        "clinically precise ICD-10-CM target for this exact scenario (dementia",
+        "arising in a diagnosed PD patient) than G31.83 (Lewy body dementia -- a",
+        "related but formally distinct diagnostic entity). No export-map change",
+        "needed; the correct mapping already existed."
       ],
       "direct_transition": "HoehnYahrStage5"
     },
@@ -469,6 +606,15 @@
           "display": "Referral to palliative care service (procedure)"
         }
       ],
+      "direct_transition": "PalliativeCareReferral_Encounter_End"
+    },
+    "PalliativeCareReferral_Encounter_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Task 2.2 fix: own-BFS finding. PalliativeCareReferral's encounter was never",
+        "closed before MultidisciplinaryCare's chest-physio/OT/speech Encounter chain",
+        "-- a zero-duration same-module supersession. Close explicitly."
+      ],
       "direct_transition": "MultidisciplinaryCare"
     },
     "MultidisciplinaryCare": {
@@ -486,29 +632,36 @@
       ],
       "reason": "has_parkinsons",
       "remarks": [
-        "*** WARNING: PLACEHOLDER CODE \u2014 DO NOT USE IN PRODUCTION ***",
+        "Task 2.2: resolved. Prior placeholder saga (304250004 and 713600000, both",
+        "genuinely fail Verhoeff -- reconfirmed with tools_scan_unmapped_codes.py's",
+        "verhoeff_ok()) is closed out; 713603004 is NOT a placeholder.",
         "",
-        "The previous version used 304250004 'Advance directive discussion (procedure)' which failed",
-        "Verhoeff. 713600000 was provisionally proposed but has now been confirmed to FAIL the Verhoeff",
-        "check digit \u2014 meaning it cannot be a valid SCTID either.",
+        "713603004 verified as a real, active International-Edition SNOMED CT concept",
+        "via Ontoserver ($lookup on r4.ontoserver.csiro.au): FSN 'Advance care",
+        "planning (procedure)', inactive=false, moduleId 900000000000207008 (SNOMED",
+        "CT core module, i.e. International Edition, not a national-extension-only",
+        "concept). Corroborated independently via findacode.com and snomedbrowser.com",
+        "(both list 713603004 as 'Advance care planning'), and it is the code used by",
+        "CMS/HEDIS advance-care-planning quality measures (Quality ID #47 / CBE 0326).",
+        "Passes Verhoeff (confirmed).",
         "",
-        "ACTION REQUIRED before production ingestion:",
-        "1. Open browser.ihtsdotools.org",
-        "2. Term-search 'advance care planning' or 'discussion about advance care'",
-        "3. Locate an active SNOMED concept with semantic tag (procedure) or (regime/therapy)",
-        "4. Replace 713600000 in this state with the verified concept ID and FSN",
-        "5. Verify the replacement passes Verhoeff with the validator script",
+        "Also checked the fix brief's suggested fallback, 371538006: it exists and is",
+        "active, but its FSN is 'Advance directive report (record artifact)' -- a",
+        "document/record-artifact concept, not a procedure/discussion concept, and a",
+        "worse semantic fit for a CarePlanStart than 713603004. Not used.",
         "",
-        "If no suitable concept is found, options are:",
-        "(a) Remove this state entirely and capture advance-care-planning activity as a free-text",
-        "    annotation on the parent PalliativeCareReferral or MultidisciplinaryCare encounter.",
-        "(b) Use a parent concept like 'Counselling (procedure)' if browser-verifiable, accepting",
-        "    that the specificity is reduced.",
+        "Mapped to CPT 99497 in hcpcs_code_map.json (same CPT used by alzheimers.json's",
+        "310303002 ACP row from Task 1.6). Note for a future task: 310303002 itself",
+        "now resolves as INACTIVE per the same Ontoserver lookup (retired ~2026-07-01)",
+        "-- out of scope here (alzheimers.json), flagged for follow-up.",
         "",
-        "This placeholder is intentionally invalid (fails Verhoeff) so that any pipeline ingestion",
-        "WILL fail loudly rather than silently accept fabricated data."
+        "Transitions directly to EndStageDisease (the old AdvanceCarePlanning_Encounter_End",
+        "state was removed): every inbound path (Action_1/2/3_Encounter_End or Gate3's",
+        "direct 0.4 branch, itself immediately after an Action_N close) now closes its",
+        "encounter before reaching this state, so that EncounterEnd had become a",
+        "permanent, always-inert no-op after the Action_1/2/3 close fixes below."
       ],
-      "direct_transition": "AdvanceCarePlanning_Encounter_End"
+      "direct_transition": "EndStageDisease"
     },
     "EndStageDisease": {
       "type": "Delay",
@@ -555,6 +708,17 @@
         "skilled nursing facility classification) plus the generic encounter code 185347001. The",
         "nursing facility nature is captured in encounter_class, not in the SNOMED code itself."
       ],
+      "direct_transition": "LongTermCare_Encounter_End"
+    },
+    "LongTermCare_Encounter_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Task 2.2 fix: own-BFS finding. Death.process() (State.java:2488) does not",
+        "close any open encounter -- it only records death. LongTermCare's snf",
+        "encounter was reaching Death still open, i.e. a permanent blank-STOP row",
+        "(the patient dies and the module terminates, so nothing ever closes it).",
+        "Close it first, per the fix spec's 'Death paths close encounters first.'"
+      ],
       "direct_transition": "Death"
     },
     "Terminal": {
@@ -588,14 +752,22 @@
       "type": "Procedure",
       "codes": [
         {
-          "system": "CPT",
-          "code": "78607",
-          "display": "DaTscan imaging"
+          "system": "SNOMED-CT",
+          "code": "430282003",
+          "display": "Radionuclide imaging of brain using ioflupane (123-I)"
         }
       ],
       "remarks": [
-        "Dopamine transporter imaging for differential diagnosis.",
-        "CPT code not audited in SNOMED audit pass \u2014 verify separately."
+        "Task 2.2 fix: recoded from bare CPT 78607 (bad-system -- GMF states may not",
+        "carry CPT/HCPCS directly) to SNOMED-CT. Considered the fix brief's candidate",
+        "433112001, but that code is WRONG -- verified via Ontoserver $lookup it is",
+        "'Percutaneous mechanical thrombectomy of portal vein using fluoroscopic",
+        "guidance with contrast', an unrelated interventional-radiology concept.",
+        "Searched Ontoserver for 'ioflupane'/'dopamine transporter imaging' instead:",
+        "430282003 (this code) is the most specific real match -- ioflupane",
+        "(123-I)/DaTscan is exactly what CPT 78607 describes. Verified active,",
+        "International Edition (moduleId 900000000000207008), Verhoeff-valid.",
+        "hcpcs_code_map.json row added: 430282003 -> 78607."
       ],
       "direct_transition": "DiagnosticWorkup_Action_2_Gate"
     },
@@ -624,7 +796,9 @@
       "remarks": [
         "IHTS-verified. NOTE: This code is RBANS-specific (Repeatable Battery for the Assessment",
         "of Neuropsychological Status). If the module's intent is generic neuropsychological workup",
-        "rather than RBANS specifically, browser-search for a broader parent concept."
+        "rather than RBANS specifically, browser-search for a broader parent concept.",
+        "Task 2.2 fix: added hcpcs_code_map.json row 445794007 -> 96132 (Neuropsychological",
+        "testing ... first hour), the standard CPT family for this test."
       ],
       "direct_transition": "DiagnosticWorkup_Action_3"
     },
@@ -654,7 +828,25 @@
           "display": "carbidopa 25 MG / levodopa 100 MG Oral Tablet [Sinemet]"
         }
       ],
-      "administration": true,
+      "remarks": [
+        "Task 2.2 fix: dropped administration:true (route mismatch -- scanner flagged",
+        "admin-med->HCPCS with no fix available: an in-clinic acute levodopa challenge",
+        "dose is given orally, and there is no J-code for oral Sinemet; J-codes only",
+        "exist for parenteral/infused drugs administered by clinic staff). Also found",
+        "no verifiable SNOMED procedure concept for 'levodopa challenge test' itself",
+        "(Ontoserver term search came back empty), so a Procedure-state remodel wasn't",
+        "an option either. Modeled instead as a regular dispensed order for the single",
+        "trial dose, immediately followed by a MedicationEnd (LevodopaChallengeTest_Action_1_End)",
+        "-- honest for a one-off diagnostic dose, not an ongoing prescription -- and",
+        "reuses the RxCUI 724598 medication_code_map.json rows already present (same",
+        "code StartLevodopaMonotherapy/LevodopaChallengeTest use), so no new export-map",
+        "row was needed."
+      ],
+      "direct_transition": "LevodopaChallengeTest_Action_1_End"
+    },
+    "LevodopaChallengeTest_Action_1_End": {
+      "type": "MedicationEnd",
+      "medication_order": "LevodopaChallengeTest_Action_1",
       "direct_transition": "LevodopaChallengeTest_Action_2"
     },
     "LevodopaChallengeTest_Action_2": {
@@ -846,6 +1038,47 @@
       "type": "Counter",
       "attribute": "disease_duration_years",
       "action": "increment",
+      "remarks": [
+        "Task 2.2 fix: this Counter previously fired exactly once (there was no path",
+        "back to it), so disease_duration_years topped out at 2 and the >=5/>=10",
+        "thresholds below were dead code -- PD-dementia unreachable, and every",
+        "survivor fell straight through to the 'else' branch (100% promoted to",
+        "MotorComplications after a single ~2-4yr StablePeriod), which is the",
+        "audit's '100% die of PD 5-8yr post-dx' finding. Fixed by looping: each",
+        "tier's non-promoted share now returns via AnnualProgressionCheck (a Delay",
+        "+ mortality reroll, ~1yr/pass) instead of forcing promotion, so duration",
+        "climbs annually and the >=10 tier -- guaranteed unreachable before -- is now",
+        "reached at ~duration 10 (roughly 8 loop passes past this state's first,",
+        "~2-4yr StablePeriod-delayed entry at duration 2), matching the fix spec's",
+        "'PD-dementia arm reachable at ~10yr duration'.",
+        "Also routes the >=10/>=5 promote branches through HoehnYahrStage3 (was:",
+        "straight to MotorComplications for the >=10/>=5 tiers, silently skipping",
+        "the h_and_y_stage=3 SetAttribute -- a pre-existing minor inconsistency,",
+        "fixed in passing since HoehnYahrStage3 already direct-transitions to",
+        "MotorComplications anyway).",
+        "Per-tier promotion hazard rises with duration (12%/yr under 5yr, 25%/yr",
+        "5-10yr, then 35% dementia / 25% motor-complications / 40% continue-looping",
+        "at 10yr+) -- a calibration approximation, not literature-exact, chosen so",
+        "cumulative promotion by year 5 lands near the ~40-50% commonly cited for",
+        "levodopa-related motor complications within 4-6 years (Ahlskog JE & Muenter",
+        "MD, 'Frequency of levodopa-related dyskinesias and motor fluctuations as",
+        "estimated from the cumulative literature', Mov Disord 2001;16(3):448-458).",
+        "The 10yr+ tier deliberately keeps a 40% continue-looping branch (not a",
+        "guaranteed 100% exit): without it, EVERY sufficiently long-lived diagnosed",
+        "patient is eventually funneled into this module's own terminal cascade with",
+        "certainty as years->infinity, which would still make PD-attributed mortality",
+        "converge to ~100% of diagnosed patients over a full-lifetime simulation --",
+        "just with realistic (rather than rigidly narrow) timing. The continue-loop",
+        "branch (each pass carrying its own 2%/yr mortality check, see",
+        "AnnualProgressionCheck) leaves room for competing causes -- Synthea's own",
+        "background all-cause mortality, or another disease module -- to end some",
+        "patients' lives first, so the eventual PD-specific-death fraction seen in a",
+        "real generation run is expected to land measurably below 100% (verified in",
+        "the Task 2.2 SMOKE run; see the module's fix-brief report for the observed",
+        "fraction). PD-dementia relative odds are essentially unchanged by this (35",
+        "vs 25 preserves the original 60/40 dementia:motor-complications ratio",
+        "conditional on eventually exiting the loop)."
+      ],
       "complex_transition": [
         {
           "condition": {
@@ -856,12 +1089,16 @@
           },
           "distributions": [
             {
-              "distribution": 0.6,
+              "distribution": 0.35,
               "transition": "DementiaOnset"
             },
             {
+              "distribution": 0.25,
+              "transition": "HoehnYahrStage3"
+            },
+            {
               "distribution": 0.4,
-              "transition": "MotorComplications"
+              "transition": "AnnualProgressionCheck"
             }
           ]
         },
@@ -874,17 +1111,80 @@
           },
           "distributions": [
             {
-              "distribution": 0.7,
-              "transition": "MotorComplications"
+              "distribution": 0.25,
+              "transition": "HoehnYahrStage3"
             },
             {
-              "distribution": 0.3,
-              "transition": "HoehnYahrStage3"
+              "distribution": 0.75,
+              "transition": "AnnualProgressionCheck"
             }
           ]
         },
         {
-          "transition": "HoehnYahrStage3"
+          "distributions": [
+            {
+              "distribution": 0.12,
+              "transition": "HoehnYahrStage3"
+            },
+            {
+              "distribution": 0.88,
+              "transition": "AnnualProgressionCheck"
+            }
+          ]
+        }
+      ]
+    },
+    "AnnualProgressionCheck": {
+      "type": "Delay",
+      "remarks": [
+        "Task 2.2 fix: annual reroll loop (Task 1.6/alzheimers idiom) that lets",
+        "disease_duration_years keep climbing every ~year instead of the module",
+        "falling through to MotorComplications after a single pass.",
+        "",
+        "Also carries two competing exits per pass, both needed to break the",
+        "otherwise-deterministic 'every sufficiently long-lived diagnosed patient",
+        "eventually reaches the motor-complications/dementia terminal cascade' funnel",
+        "(a linear once-promoted cascade -- MotorComplications->...->EndStageDisease",
+        "-- with no other branch point that isn't itself 100% death-absorbing):",
+        "  - 2%/yr excess-mortality hazard. PD carries roughly 1.5-2x",
+        "    general-population mortality (Macleod AD et al., 'Mortality in",
+        "    Parkinson's disease: a systematic review and meta-analysis', Mov Disord",
+        "    2014;29(13):1615-1622); this is a modest excess-hazard approximation",
+        "    layered on top of Synthea's own independent background all-cause",
+        "    mortality (applied outside any disease module), not a literature-exact",
+        "    per-year figure.",
+        "  - 5%/yr exit to Terminal ('stable/indolent course, lost to this module's",
+        "    follow-up'): not every PD patient progresses to severe motor",
+        "    complications or dementia -- a meaningful minority maintain a more",
+        "    indolent, often tremor-dominant course associated with slower",
+        "    progression (Jankovic J, 'Parkinson's disease: clinical features and",
+        "    diagnosis', J Neurol Neurosurg Psychiatry 2008;79(4):368-376). These",
+        "    patients exit this module (their eventual death, from PD-unrelated",
+        "    causes or old age, is Synthea's background lifecycle module's concern,",
+        "    not this one's) rather than being deterministically funneled into",
+        "    end-stage disease given enough simulated years. Same idiom as",
+        "    alzheimers.json's Annual_MCI_Progression_Check RevertToNormal exit",
+        "    (Task 1.6).",
+        "No encounter is open anywhere in this annual loop (verified by BFS), so",
+        "neither exit needs a separate close-the-visit step here."
+      ],
+      "range": {
+        "low": 350,
+        "high": 380,
+        "unit": "days"
+      },
+      "distributed_transition": [
+        {
+          "distribution": 0.02,
+          "transition": "Death"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "Terminal"
+        },
+        {
+          "distribution": 0.93,
+          "transition": "DiseaseProgressionCheck_Action_1"
         }
       ]
     },
@@ -911,6 +1211,33 @@
         "Code switched from 64531003 to 9748009 per AAN PD Quality Measurement Set 2020.",
         "Browser-confirm 9748009 if not already done."
       ],
+      "direct_transition": "DyskinesiaSeverityCheck"
+    },
+    "DyskinesiaSeverityCheck": {
+      "type": "Simple",
+      "remarks": [
+        "Task 2.2 fix: dyskinesia_severe was read by MedicationAdjustment (gating",
+        "AddAmantadine) but never set anywhere, so the amantadine arm was dead. Not",
+        "every patient who has any dyskinesia has SEVERE, treatment-requiring",
+        "dyskinesia -- gate it probabilistically (informal approximation; roughly",
+        "consistent with reports that a minority of levodopa-treated patients with",
+        "dyskinesia need dedicated anti-dyskinetic therapy such as amantadine)."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
+          "transition": "Set_DyskinesiaSevere_True"
+        },
+        {
+          "distribution": 0.6,
+          "transition": "MotorComplications_Action_2_Gate"
+        }
+      ]
+    },
+    "Set_DyskinesiaSevere_True": {
+      "type": "SetAttribute",
+      "attribute": "dyskinesia_severe",
+      "value": true,
       "direct_transition": "MotorComplications_Action_2_Gate"
     },
     "MotorComplications_Action_2_Gate": {
@@ -1032,6 +1359,17 @@
         "clinically appropriate than chest-specific. Browser-search for a broader concept under",
         "'Physiotherapy procedure' if available, or accept this as a documented narrowing."
       ],
+      "direct_transition": "MultidisciplinaryCare_Action_1_Encounter_End"
+    },
+    "MultidisciplinaryCare_Action_1_Encounter_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Task 2.2 fix: own-BFS finding. This chest-physio assessment encounter was",
+        "never closed before the next Action_N Encounter in the chain (a chain of",
+        "three zero-duration same-module supersessions the audit's affected-states",
+        "list named MultidisciplinaryCare_Action_1 for). Close explicitly; each",
+        "therapy assessment is clinically a distinct visit anyway."
+      ],
       "direct_transition": "MultidisciplinaryCare_Action_2_Gate"
     },
     "MultidisciplinaryCare_Action_2_Gate": {
@@ -1056,6 +1394,14 @@
           "code": "410155007",
           "display": "Occupational therapy assessment (procedure)"
         }
+      ],
+      "direct_transition": "MultidisciplinaryCare_Action_2_Encounter_End"
+    },
+    "MultidisciplinaryCare_Action_2_Encounter_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Task 2.2 fix: same chained-supersession defect as Action_1 -- close before",
+        "the next Encounter in the chain."
       ],
       "direct_transition": "MultidisciplinaryCare_Action_3_Gate"
     },
@@ -1087,6 +1433,16 @@
         "If a per-session SNOMED concept is later required, browser-search 'speech and language",
         "therapy procedure' for child concepts."
       ],
+      "direct_transition": "MultidisciplinaryCare_Action_3_Encounter_End"
+    },
+    "MultidisciplinaryCare_Action_3_Encounter_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Task 2.2 fix: same chained-supersession defect as Action_1/Action_2 --",
+        "close before AdvanceCarePlanning (a CarePlanStart; it does not itself",
+        "reserve/require an open encounter, but a real one should still close",
+        "cleanly here rather than superseding)."
+      ],
       "direct_transition": "AdvanceCarePlanning"
     },
     "StartLevodopaMonotherapy_Encounter_End": {
@@ -1104,10 +1460,6 @@
     "DBS_Surgery_Encounter_End": {
       "type": "EncounterEnd",
       "direct_transition": "PostDBSRecovery"
-    },
-    "AdvanceCarePlanning_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "EndStageDisease"
     },
     "NonMotorSymptomsAssessment_Action_5_Encounter_End": {
       "type": "EncounterEnd",
@@ -1130,5 +1482,6 @@
         }
       ]
     }
-  }
+  },
+  "gmf_version": 2
 }

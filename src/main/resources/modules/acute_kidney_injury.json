@@ -1,21 +1,114 @@
 {
   "name": "Acute Kidney Injury",
-  "gmf_version": 1,
+  "remarks": [
+    "Models recurrent, sporadic episodes of acute kidney injury (AKI) in adults.",
+    "The pre-fix module rolled a flat 22% AKI risk once, 1-10 years after birth --",
+    "concentrating essentially all AKI in early childhood, which does not reflect",
+    "reality (AKI risk rises steeply with age and is driven by acute illness,",
+    "nephrotoxic exposure, and comorbidity, not childhood per se). This version",
+    "drops that pediatric roll entirely: an 18+ Guard gates entry, then an",
+    "annual age-banded incidence loop runs for the rest of the patient's life,",
+    "so AKI can recur.",
+    "",
+    "Annual incidence: 0.4%/yr at 65+, 0.05%/yr for adults 18-64. Order-of-",
+    "magnitude source: Hsu CY, McCulloch CE, Fan D, Ordonez JD, Chertow GM, Go",
+    "AS. 'Community-based incidence of acute renal failure.' Kidney Int.",
+    "2007;72(2):208-212 -- overall creatinine-defined community AKI incidence",
+    "around 1/1000 person-years, rising sharply with age into the several-per-",
+    "1000 range at 65+; the bands here are consistent with that gradient.",
+    "",
+    "Severity (Assess_AKI_Severity) is read from the `creatinine` attribute",
+    "drawn at AKI_Creatinine_Value/-Check: <2.0 mg/dL mild, <4.0 moderate,",
+    ">=4.0 severe. The >=4.0 mg/dL severe threshold intentionally coincides",
+    "with the KDIGO Stage 3 absolute-creatinine criterion (KDIGO Clinical",
+    "Practice Guideline for Acute Kidney Injury, Kidney Int Suppl.",
+    "2012;2(1):1-138), which is reused at AKI_Outcome to gate mortality.",
+    "",
+    "Mortality is attributed only to severe (KDIGO Stage 3-equivalent)",
+    "episodes, ~15%, via the Death state. Order-of-magnitude source: Hoste",
+    "EAJ, Bagshaw SM, Bellomo R, et al. 'Epidemiology of acute kidney injury",
+    "in critically ill patients: the multinational AKI-EPI study.' Intensive",
+    "Care Med. 2015;41(8):1411-1423 -- hospital mortality rises steeply by",
+    "KDIGO stage, with Stage 3 mortality in the ~15-30% range depending on",
+    "care setting; 15% is used as a conservative point estimate spanning ward",
+    "and ICU severe AKI. Moderate episodes are not modelled as directly",
+    "fatal. Post-AKI progression to CKD is also stratified by severity,",
+    "consistent with Coca SG, Singanamala S, Parikh CR. 'Chronic kidney",
+    "disease after acute kidney injury: a systematic review and meta-",
+    "analysis.' Kidney Int. 2012;81(5):442-448 (pooled CKD risk after AKI is",
+    "substantial and rises with AKI severity).",
+    "",
+    "Recovered episodes close the acute condition (ConditionEnd, 7-90 days",
+    "after the acute encounter) and loop back into the annual incidence",
+    "check, so a patient can experience multiple discrete AKI episodes over",
+    "a lifetime."
+  ],
+  "gmf_version": 2,
   "states": {
     "Initial": {
       "type": "Initial",
-      "direct_transition": "Initial_Delay"
+      "direct_transition": "Adult_Age_Guard"
     },
-    "AKI_Risk_Exposure": {
-      "type": "Simple",
-      "distributed_transition": [
+    "Adult_Age_Guard": {
+      "type": "Guard",
+      "remarks": [
+        "This module does not attempt to model pediatric AKI (see module",
+        "remarks); block entry to the annual incidence loop until adulthood."
+      ],
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 18,
+        "unit": "years"
+      },
+      "direct_transition": "AKI_Annual_Check"
+    },
+    "AKI_Annual_Check": {
+      "type": "Delay",
+      "remarks": [
+        "Annual timer and router in one state (see the pneumonia.json module",
+        "for the same idiom): the Delay must elapse before the",
+        "complex_transition rolls, and a no-onset roll (or a recovered",
+        "episode's ConditionEnd) re-enters this same state, allowing repeat",
+        "AKI episodes across a patient's adult life.",
+        "0.4%/yr at 65+, 0.05%/yr for ages 18-64 -- see module remarks for",
+        "sourcing."
+      ],
+      "range": {
+        "low": 370,
+        "high": 395,
+        "unit": "days"
+      },
+      "complex_transition": [
         {
-          "distribution": 0.22,
-          "transition": "AKI_Symptom1"
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 65,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "distribution": 0.004,
+              "transition": "AKI_Symptom1"
+            },
+            {
+              "distribution": 0.996,
+              "transition": "AKI_Annual_Check"
+            }
+          ]
         },
         {
-          "distribution": 0.78,
-          "transition": "Terminal"
+          "distributions": [
+            {
+              "distribution": 0.0005,
+              "transition": "AKI_Symptom1"
+            },
+            {
+              "distribution": 0.9995,
+              "transition": "AKI_Annual_Check"
+            }
+          ]
         }
       ]
     },
@@ -56,12 +149,30 @@
           "display": "Emergency room admission"
         }
       ],
+      "direct_transition": "AKI_Creatinine_Value"
+    },
+    "AKI_Creatinine_Value": {
+      "type": "SetAttribute",
+      "remarks": [
+        "Draw the severity-determining value into an attribute first, then",
+        "have the Observation read it back via `attribute` (not",
+        "`assign_to_attribute`, which the engine silently drops on Observation",
+        "states -- see task-1.10-report.md and this task's controller notes).",
+        "Assess_AKI_Severity, AKI_Hospital_Disposition, and AKI_Outcome all",
+        "read this same `creatinine` attribute downstream."
+      ],
+      "attribute": "creatinine",
+      "range": {
+        "low": 1.2,
+        "high": 6.5,
+        "decimals": 1
+      },
       "direct_transition": "AKI_Creatinine_Check"
     },
     "AKI_Creatinine_Check": {
       "type": "Observation",
       "category": "laboratory",
-      "assign_to_attribute": "creatinine",
+      "attribute": "creatinine",
       "codes": [
         {
           "system": "LOINC",
@@ -70,10 +181,6 @@
         }
       ],
       "unit": "mg/dL",
-      "range": {
-        "low": 1.2,
-        "high": 6.5
-      },
       "direct_transition": "AKI_Diagnosis"
     },
     "AKI_Diagnosis": {
@@ -103,6 +210,10 @@
         "high": 80
       },
       "direct_transition": "AKI_ED_Encounter_End"
+    },
+    "AKI_ED_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Assess_AKI_Severity"
     },
     "Assess_AKI_Severity": {
       "type": "Simple",
@@ -157,26 +268,6 @@
       },
       "direct_transition": "AKI_Hospital_Admission"
     },
-    "Dialysis": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "302497006",
-          "display": "Hemodialysis procedure"
-        }
-      ],
-      "direct_transition": "AKI_Hospital_Discharge"
-    },
-    "AKI_Monitoring": {
-      "type": "Delay",
-      "range": {
-        "low": 7,
-        "high": 21,
-        "unit": "days"
-      },
-      "direct_transition": "AKI_Outcome"
-    },
     "AKI_Hospital_Admission": {
       "type": "Encounter",
       "encounter_class": "inpatient",
@@ -205,6 +296,38 @@
         "high": 8.0
       },
       "direct_transition": "AKI_Hospital_Disposition"
+    },
+    "AKI_Hospital_Disposition": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "creatinine",
+            "operator": ">=",
+            "value": 4.0
+          },
+          "transition": "Dialysis"
+        },
+        {
+          "transition": "AKI_Hospital_Discharge"
+        }
+      ]
+    },
+    "Dialysis": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "302497006",
+          "display": "Hemodialysis procedure"
+        }
+      ],
+      "direct_transition": "AKI_Hospital_Discharge"
+    },
+    "AKI_Hospital_Discharge": {
+      "type": "EncounterEnd",
+      "direct_transition": "Nephrology_Followup"
     },
     "Nephrology_Followup": {
       "type": "Encounter",
@@ -235,8 +358,26 @@
       },
       "direct_transition": "Nephrology_Followup_End"
     },
-    "AKI_Hospital_Disposition": {
+    "Nephrology_Followup_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "AKI_Monitoring"
+    },
+    "AKI_Monitoring": {
+      "type": "Delay",
+      "range": {
+        "low": 7,
+        "high": 21,
+        "unit": "days"
+      },
+      "direct_transition": "AKI_Outcome"
+    },
+    "AKI_Outcome": {
       "type": "Simple",
+      "remarks": [
+        "Route on the same `creatinine` >= 4.0 mg/dL threshold used to send",
+        "patients to Severe_AKI / Dialysis -- this module's stand-in for",
+        "KDIGO Stage 3. Only that branch carries mortality risk."
+      ],
       "conditional_transition": [
         {
           "condition": {
@@ -245,42 +386,65 @@
             "operator": ">=",
             "value": 4.0
           },
-          "transition": "Dialysis"
+          "transition": "AKI_Outcome_Severe"
         },
         {
-          "transition": "AKI_Hospital_Discharge"
+          "transition": "AKI_Outcome_Moderate"
         }
       ]
     },
-    "AKI_Hospital_Discharge": {
-      "type": "EncounterEnd",
-      "direct_transition": "Nephrology_Followup"
-    },
-    "AKI_Outcome": {
+    "AKI_Outcome_Severe": {
       "type": "Simple",
+      "remarks": [
+        "~15% mortality, higher CKD progression than moderate AKI. See",
+        "module remarks (Hoste et al. 2015; Coca et al. 2012) for sourcing."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.7,
-          "transition": "AKI_Recovery"
+          "distribution": 0.15,
+          "transition": "AKI_Death"
         },
         {
-          "distribution": 0.2,
+          "distribution": 0.35,
           "transition": "Progress_to_CKD"
         },
         {
-          "distribution": 0.1,
-          "transition": "AKI_Death"
+          "distribution": 0.5,
+          "transition": "AKI_Recovery"
+        }
+      ]
+    },
+    "AKI_Outcome_Moderate": {
+      "type": "Simple",
+      "remarks": [
+        "No direct mortality modelled for moderate (non-Stage-3-equivalent)",
+        "AKI; some CKD progression risk remains. See module remarks (Coca et",
+        "al. 2012) for sourcing."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.15,
+          "transition": "Progress_to_CKD"
+        },
+        {
+          "distribution": 0.85,
+          "transition": "AKI_Recovery"
         }
       ]
     },
     "AKI_Recovery": {
       "type": "Delay",
       "range": {
-        "low": 1,
-        "high": 6,
-        "unit": "months"
+        "low": 7,
+        "high": 90,
+        "unit": "days"
       },
-      "direct_transition": "Terminal"
+      "direct_transition": "AKI_ConditionEnd"
+    },
+    "AKI_ConditionEnd": {
+      "type": "ConditionEnd",
+      "condition_onset": "AKI_Diagnosis",
+      "direct_transition": "AKI_Annual_Check"
     },
     "Progress_to_CKD": {
       "type": "ConditionOnset",
@@ -325,23 +489,6 @@
     },
     "Terminal": {
       "type": "Terminal"
-    },
-    "AKI_ED_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "Assess_AKI_Severity"
-    },
-    "Initial_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 365,
-        "high": 3650,
-        "unit": "days"
-      },
-      "direct_transition": "AKI_Risk_Exposure"
-    },
-    "Nephrology_Followup_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "AKI_Monitoring"
     }
   }
 }

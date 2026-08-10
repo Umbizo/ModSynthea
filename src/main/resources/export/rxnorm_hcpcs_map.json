@@ -18895,10 +18895,14 @@
   ],
   "378363": [
     {
-      "code": "J9045"
+      "code": "J9045",
+      "weight": "1.0",
+      "description": "Injection, carboplatin, 50 mg"
     },
     {
-      "code": "J9267"
+      "code": "J9267",
+      "weight": "0.0",
+      "description": "Injection, paclitaxel, 1 mg"
     }
   ],
   "385885": [
@@ -19310,10 +19314,14 @@
   ],
   "56946": [
     {
-      "code": "J9267"
+      "code": "J9267",
+      "weight": "1.0",
+      "description": "Injection, paclitaxel, 1 mg"
     },
     {
-      "code": "J9045"
+      "code": "J9045",
+      "weight": "0.0",
+      "description": "Injection, carboplatin, 50 mg"
     }
   ],
   "57308": [

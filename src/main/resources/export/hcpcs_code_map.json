@@ -7380,12 +7380,6 @@
       "description": "Percutaneous needle biopsy, lung or mediastinum, including imaging guidance"
     }
   ],
-  "10847001": [
-    {
-      "code": "31622",
-      "description": "Bronchoscopy, rigid or flexible, including fluoroscopic guidance, when performed; diagnostic, with or without cell washing"
-    }
-  ],
   "16327691000119101": [
     {
       "code": "70553",

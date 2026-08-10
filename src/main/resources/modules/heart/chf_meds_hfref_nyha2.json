@@ -36,7 +36,7 @@
         "as_needed": true
       },
       "chronic": true,
-      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx",
+      "assign_to_attribute": "chf_furosemide_40_mg_oral_tablet_rx",
       "direct_transition": "BB"
     },
     "BB": {
@@ -103,7 +103,7 @@
         "as_needed": true
       },
       "chronic": true,
-      "assign_to_attribute": "lisinopril_20_mg_oral_tablet_rx",
+      "assign_to_attribute": "chf_lisinopril_20_mg_oral_tablet_rx",
       "direct_transition": "Visit_Encounter_End"
     },
     "ARB": {

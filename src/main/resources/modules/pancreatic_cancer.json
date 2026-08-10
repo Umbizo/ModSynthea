@@ -44,7 +44,7 @@
     "length) is gone from every arm.",
     "",
     "TREATMENT COURSES (NCCN Pancreatic Adenocarcinoma Guideline categories",
-    "match this module's pre-existing cancer_stage values):",
+    "match this module's pre-existing pancreatic_stage values):",
     "- Resectable (15%): upfront pancreaticoduodenectomy (Whipple), then 6",
     "  cycles adjuvant gemcitabine (CONKO-001, Oettle et al. JAMA",
     "  2013;310:1473 -- 6 months adjuvant gemcitabine, median OS 22.8mo).",
@@ -59,11 +59,11 @@
     "  gemcitabine (Burris et al. J Clin Oncol 1997;15:2403 -- single-agent",
     "  gemcitabine median OS 5.65mo), then hospice.",
     "",
-    "cancer_stage is shared with ovarian_cancer.json and",
-    "non_small_cell_lung_cancer.json under different value sets (this module",
-    "uses resectable/borderline/locally_advanced/metastatic; ovarian uses",
-    "I/II/III/IV) -- unchanged here per the standing instruction to leave",
-    "cross-module attribute-name coordination to a dedicated task.",
+    "the former shared 'cancer_stage' attribute (also written by",
+    "ovarian_cancer.json under a different value set: resectable/",
+    "borderline/locally_advanced/metastatic here vs. I/II/III/IV there) was",
+    "renamed to 'pancreatic_stage' by the cross-module attribute-rename task",
+    "-- verified by grep that no other module reads it.",
     "",
     "SECOND ROOT CAUSE OF THE UNDER-COUNT (found during this task's own",
     "verification, not named in the audit): the module's six Symptom states",
@@ -525,25 +525,25 @@
     },
     "Resectable_Disease": {
       "type": "SetAttribute",
-      "attribute": "cancer_stage",
+      "attribute": "pancreatic_stage",
       "value": "resectable",
       "direct_transition": "End_Staging_Workup"
     },
     "Borderline_Resectable": {
       "type": "SetAttribute",
-      "attribute": "cancer_stage",
+      "attribute": "pancreatic_stage",
       "value": "borderline",
       "direct_transition": "End_Staging_Workup"
     },
     "Locally_Advanced": {
       "type": "SetAttribute",
-      "attribute": "cancer_stage",
+      "attribute": "pancreatic_stage",
       "value": "locally_advanced",
       "direct_transition": "End_Staging_Workup"
     },
     "Metastatic_Disease": {
       "type": "SetAttribute",
-      "attribute": "cancer_stage",
+      "attribute": "pancreatic_stage",
       "value": "metastatic",
       "direct_transition": "End_Staging_Workup"
     },
@@ -565,7 +565,7 @@
         {
           "condition": {
             "condition_type": "Attribute",
-            "attribute": "cancer_stage",
+            "attribute": "pancreatic_stage",
             "operator": "==",
             "value": "resectable"
           },
@@ -574,7 +574,7 @@
         {
           "condition": {
             "condition_type": "Attribute",
-            "attribute": "cancer_stage",
+            "attribute": "pancreatic_stage",
             "operator": "==",
             "value": "borderline"
           },
@@ -583,7 +583,7 @@
         {
           "condition": {
             "condition_type": "Attribute",
-            "attribute": "cancer_stage",
+            "attribute": "pancreatic_stage",
             "operator": "==",
             "value": "locally_advanced"
           },
@@ -678,7 +678,7 @@
         {
           "condition": {
             "condition_type": "Attribute",
-            "attribute": "cancer_stage",
+            "attribute": "pancreatic_stage",
             "operator": "==",
             "value": "borderline"
           },

@@ -37,7 +37,15 @@
     "BNP/murmur record was NULL. Fixed via top-level range (BNP) and",
     "value_code (murmur). Added explicit EncounterEnds before both",
     "Death branches (ICU and ward mortality checks), which previously",
-    "reached Death with the encounter still open."
+    "reached Death with the encounter still open.",
+    "",
+    "Task 5.4 remediation (2026-08-10/11): this module's 'furosemide_rx'",
+    "and 'lisinopril_rx' attribute names didn't collide with any other",
+    "module's strings, but were generic enough to risk a future collision",
+    "(chf_meds.json/right_sided_heart_failure.json use differently-named",
+    "but semantically identical furosemide/lisinopril order attributes).",
+    "Prefixed 'vhf_' for consistency with those modules' Task 5.4 fixes --",
+    "verified by grep that no other module reads the new names."
   ],
   "states": {
     "Initial": {
@@ -353,7 +361,7 @@
         "as_needed": true
       },
       "chronic": true,
-      "assign_to_attribute": "furosemide_rx",
+      "assign_to_attribute": "vhf_furosemide_rx",
       "direct_transition": "Medication_Lisinopril"
     },
     "Medication_Lisinopril": {
@@ -380,7 +388,7 @@
         "as_needed": true
       },
       "chronic": true,
-      "assign_to_attribute": "lisinopril_rx",
+      "assign_to_attribute": "vhf_lisinopril_rx",
       "direct_transition": "Medication_Metoprolol"
     },
     "Medication_Metoprolol": {

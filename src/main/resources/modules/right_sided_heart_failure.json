@@ -36,7 +36,14 @@
     "CheckRiskFactors' risk-factor Guard checked two SNOMED codes",
     "(13645005, 70995007) that no module in the tree ever assigns --",
     "0% reachability at any population size, not a sampling artifact.",
-    "See CheckRiskFactors' own remark for the fix."
+    "See CheckRiskFactors' own remark for the fix.",
+    "",
+    "Task 5.4 remediation (2026-08-10/11): 'furosemide_40_mg_oral_tablet_rx'",
+    "and 'lisinopril_20_mg_oral_tablet_rx' were person-global attribute",
+    "names identical to ones written by heart/chf_meds.json (and its",
+    "nyha2/3/4 submodules), risking a future MedicationEnd/Guard in one",
+    "module silently acting on the other's order. Prefixed 'rshf_' here --",
+    "verified by grep that no other module reads the new names."
   ],
   "states": {
     "Initial": {
@@ -335,7 +342,7 @@
         "as_needed": true
       },
       "chronic": true,
-      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx",
+      "assign_to_attribute": "rshf_furosemide_40_mg_oral_tablet_rx",
       "direct_transition": "Medication_Lisinopril"
     },
     "Medication_Lisinopril": {
@@ -362,7 +369,7 @@
         "as_needed": true
       },
       "chronic": true,
-      "assign_to_attribute": "lisinopril_20_mg_oral_tablet_rx",
+      "assign_to_attribute": "rshf_lisinopril_20_mg_oral_tablet_rx",
       "direct_transition": "Medication_Sildenafil"
     },
     "Medication_Sildenafil": {

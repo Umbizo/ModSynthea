@@ -46,19 +46,20 @@
     "- Cause-specific mortality among diagnosed women lands near 50%, against",
     "  a SEER 2018-2022 5-year relative survival of ~51%.",
     "",
-    "ATTRIBUTES (all module-local; verified by grep that no other module reads",
-    "them, except 'histology' and 'cancer_stage', whose names are shared with",
-    "other cancer modules and are left unchanged pending the cross-module",
-    "attribute-rename task):",
+    "ATTRIBUTES (all module-local, including histology/stage: 'histology' and",
+    "'cancer_stage' were shared with pancreatic_cancer.json and were renamed",
+    "to 'ovarian_histology' / 'ovarian_stage' by the cross-module",
+    "attribute-rename task -- verified by grep that no other module reads",
+    "the new names):",
     "  Ovarian Cancer            - ConditionOnset entry set at diagnosis; used",
     "                              as the 'reason' pointer on treatment-phase",
     "                              encounters, procedures and medications",
     "  Recurrent Ovarian Cancer  - ConditionOnset entry set at first recurrence",
     "                              (also the stacking guard for that onset)",
     "  ovarian_cancer_risk       - average | family_history | high_brca",
-    "  histology                 - high_grade_serous | endometrioid |",
+    "  ovarian_histology         - high_grade_serous | endometrioid |",
     "                              clear_cell | mucinous | low_grade_serous",
-    "  cancer_stage              - FIGO stage I..IV, as a plain string",
+    "  ovarian_stage             - FIGO stage I..IV, as a plain string",
     "  ecog_status               - ECOG performance status 0..3, as an integer",
     "  last_ca125                - most recent CA-125 in U/mL. Observation",
     "                              states cannot assign_to_attribute (the field",
@@ -620,31 +621,31 @@
     },
     "Set_Histology_Serous": {
       "type": "SetAttribute",
-      "attribute": "histology",
+      "attribute": "ovarian_histology",
       "value": "high_grade_serous",
       "direct_transition": "Diagnostic_Presentation_Delay"
     },
     "Set_Histology_Endometrioid": {
       "type": "SetAttribute",
-      "attribute": "histology",
+      "attribute": "ovarian_histology",
       "value": "endometrioid",
       "direct_transition": "Diagnostic_Presentation_Delay"
     },
     "Set_Histology_Clear_Cell": {
       "type": "SetAttribute",
-      "attribute": "histology",
+      "attribute": "ovarian_histology",
       "value": "clear_cell",
       "direct_transition": "Diagnostic_Presentation_Delay"
     },
     "Set_Histology_Mucinous": {
       "type": "SetAttribute",
-      "attribute": "histology",
+      "attribute": "ovarian_histology",
       "value": "mucinous",
       "direct_transition": "Diagnostic_Presentation_Delay"
     },
     "Set_Histology_Low_Grade": {
       "type": "SetAttribute",
-      "attribute": "histology",
+      "attribute": "ovarian_histology",
       "value": "low_grade_serous",
       "direct_transition": "Diagnostic_Presentation_Delay"
     },
@@ -720,7 +721,7 @@
       "type": "ConditionOnset",
       "remarks": [
         "One diagnosis code for every histology - the histology itself lives in",
-        "the 'histology' attribute. The pre-fix module split the diagnosis",
+        "the 'ovarian_histology' attribute. The pre-fix module split the diagnosis",
         "across 93796005 and 93934004 (both of which the export map sends to",
         "ICD-10 C56.9), which fragmented every downstream count.",
         "Outside every loop: a person can only be diagnosed once."
@@ -741,7 +742,7 @@
         {
           "condition": {
             "condition_type": "Attribute",
-            "attribute": "histology",
+            "attribute": "ovarian_histology",
             "operator": "==",
             "value": "high_grade_serous"
           },
@@ -811,25 +812,25 @@
     },
     "Set_Stage_I": {
       "type": "SetAttribute",
-      "attribute": "cancer_stage",
+      "attribute": "ovarian_stage",
       "value": "I",
       "direct_transition": "ECOG_Assessment_Router"
     },
     "Set_Stage_II": {
       "type": "SetAttribute",
-      "attribute": "cancer_stage",
+      "attribute": "ovarian_stage",
       "value": "II",
       "direct_transition": "ECOG_Assessment_Router"
     },
     "Set_Stage_III": {
       "type": "SetAttribute",
-      "attribute": "cancer_stage",
+      "attribute": "ovarian_stage",
       "value": "III",
       "direct_transition": "ECOG_Assessment_Router"
     },
     "Set_Stage_IV": {
       "type": "SetAttribute",
-      "attribute": "cancer_stage",
+      "attribute": "ovarian_stage",
       "value": "IV",
       "direct_transition": "ECOG_Assessment_Router"
     },
@@ -912,13 +913,13 @@
             "conditions": [
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "I"
               },
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "II"
               }
@@ -932,13 +933,13 @@
             "conditions": [
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "III"
               },
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "IV"
               }
@@ -1024,7 +1025,7 @@
         {
           "condition": {
             "condition_type": "Attribute",
-            "attribute": "cancer_stage",
+            "attribute": "ovarian_stage",
             "operator": "==",
             "value": "I"
           },
@@ -1045,19 +1046,19 @@
             "conditions": [
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "II"
               },
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "III"
               },
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "IV"
               }
@@ -1370,13 +1371,13 @@
             "conditions": [
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "III"
               },
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "IV"
               }
@@ -1580,13 +1581,13 @@
             "conditions": [
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "I"
               },
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "II"
               }
@@ -1609,13 +1610,13 @@
             "conditions": [
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "III"
               },
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "IV"
               }

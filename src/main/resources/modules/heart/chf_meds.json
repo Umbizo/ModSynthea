@@ -24,7 +24,17 @@
     "an open encounter for modules loaded from a subdirectory (State.java",
     "Terminal.process: 'only auto-close encounter for top-level modules',",
     "gated on `!module.submodule`; every file under modules/heart/ is",
-    "structurally a submodule regardless of how it's invoked)."
+    "structurally a submodule regardless of how it's invoked).",
+    "",
+    "Task 5.4 remediation (2026-08-10/11): 'furosemide_40_mg_oral_tablet_rx'",
+    "and 'lisinopril_20_mg_oral_tablet_rx' were person-global attribute",
+    "names also written by right_sided_heart_failure.json under the",
+    "identical strings, so a future MedicationEnd or Guard added to either",
+    "module could silently act on the other's order. Prefixed 'chf_' here",
+    "(shared consistently across chf_meds.json and the chf_meds_hfref_",
+    "nyha2/3/4.json submodules it calls into, which intentionally continue",
+    "the same titration attributes) -- verified by grep that no other",
+    "module reads the new names."
   ],
   "states": {
     "Initial": {
@@ -165,7 +175,7 @@
       },
       "chronic": true,
       "direct_transition": "BNP_Monitoring",
-      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx"
+      "assign_to_attribute": "chf_furosemide_40_mg_oral_tablet_rx"
     },
     "HFrEF Branch": {
       "type": "Simple",
@@ -397,7 +407,7 @@
       },
       "chronic": true,
       "direct_transition": "Spironolactone",
-      "assign_to_attribute": "lisinopril_20_mg_oral_tablet_rx"
+      "assign_to_attribute": "chf_lisinopril_20_mg_oral_tablet_rx"
     },
     "ARNI": {
       "type": "MedicationOrder",

@@ -8830,6 +8830,17 @@
       "code": "J15.7",
       "description": "Pneumonia due to Mycoplasma pneumoniae"
     }
+  ],
+  "1229859000": [
+    {
+      "code": "C67.9",
+      "description": "Malignant neoplasm of bladder, unspecified"
+    }
+  ],
+  "1229864001": [
+    {
+      "code": "C67.9",
+      "description": "Malignant neoplasm of bladder, unspecified"
+    }
   ]
-
 }

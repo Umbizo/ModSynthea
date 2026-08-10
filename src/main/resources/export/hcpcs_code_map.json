@@ -6847,62 +6847,54 @@
       "description": "Syphilis infection test"
     }
   ],
-   "121191": [
+  "121191": [
     {
       "code": "J9312",
       "description": "Injection, rituximab, 10 mg"
     }
   ],
-
   "25463": [
     {
       "code": "J9211",
       "description": "Injection, idarubicin hydrochloride, 5 mg"
     }
   ],
-
   "278177": [
     {
       "code": "J9025",
       "description": "Injection, azacitidine, 1 mg"
     }
   ],
-
   "28648": [
     {
       "code": "J9100",
       "description": "Injection, cytarabine, 100 mg"
     }
   ],
-
   "351949": [
     {
       "code": "J9041",
       "description": "Injection, bortezomib, 0.1 mg"
     }
   ],
-
   "46509032": [
     {
       "code": "J9025",
       "description": "Injection, azacitidine, 1 mg"
     }
   ],
-
   "704258": [
     {
       "code": "J9034",
       "description": "Injection, bendamustine hydrochloride, 1 mg"
     }
   ],
-
   "2200671": [
     {
       "code": "J0896",
       "description": "Injection, luspatercept-aamt, 0.25 mg"
     }
   ],
-
   "2690005": [
     {
       "code": "72197",
@@ -7124,6 +7116,78 @@
     {
       "code": "0540T",
       "description": "Chimeric antigen receptor T-cell (CAR-T) therapy; CAR-T cell administration, autologous"
+    }
+  ],
+  "142505009": [
+    {
+      "code": "52000",
+      "description": "Cystourethroscopy (separate procedure)"
+    }
+  ],
+  "713859006": [
+    {
+      "code": "74178",
+      "description": "Computed tomography, abdomen and pelvis; without contrast material in one or both body regions, followed by contrast material(s) and further sections in one or both body regions"
+    }
+  ],
+  "386791007": [
+    {
+      "code": "52235",
+      "description": "Cystourethroscopy, with fulguration and/or resection of MEDIUM bladder tumor(s) (2.0 to 5.0 cm)"
+    }
+  ],
+  "712753009": [
+    {
+      "code": "51720",
+      "description": "Bladder instillation of anticarcinogenic agent (including retention time)"
+    }
+  ],
+  "1285290008": [
+    {
+      "code": "51720",
+      "description": "Bladder instillation of anticarcinogenic agent (including retention time)"
+    }
+  ],
+  "432370003": [
+    {
+      "code": "74177",
+      "description": "Computed tomography, abdomen and pelvis; with contrast material(s)"
+    }
+  ],
+  "41747008": [
+    {
+      "code": "78306",
+      "description": "Bone and/or joint imaging; whole body"
+    }
+  ],
+  "64063003": [
+    {
+      "code": "51570",
+      "description": "Cystectomy, complete; (separate procedure)"
+    }
+  ],
+  "243306000": [
+    {
+      "code": "50820",
+      "description": "Ureteroileal conduit (ileal bladder), including intestine anastomosis"
+    }
+  ],
+  "699736009": [
+    {
+      "code": "51960",
+      "description": "Enterocystoplasty, including intestinal anastomosis"
+    }
+  ],
+  "176004009": [
+    {
+      "code": "50825",
+      "description": "Continent diversion, including intestine anastomosis using any segment of small and/or large intestine (Kock pouch or Camey enterocystoplasty)"
+    }
+  ],
+  "713281006": [
+    {
+      "code": "99245",
+      "description": "Office or other outpatient consultation for a new or established patient, comprehensive"
     }
   ]
 }

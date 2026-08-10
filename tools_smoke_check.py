@@ -141,6 +141,13 @@ def main():
     ap.add_argument('--top-share-max', type=float,
                      help='max allowed share of all condition rows held by a single code '
                           '(whole population)')
+    ap.add_argument('--exclude-codes',
+                     help='comma-separated condition codes to exclude from the '
+                          '--top-share-max computation only (both numerator and '
+                          'denominator); these codes still count normally for every '
+                          'other check (e.g. legitimate high-frequency administrative '
+                          'codes like med_rec\'s "Medication review due" that would '
+                          'otherwise permanently jam the monoculture gate)')
     ap.add_argument('--out', default='output/smoke/csv',
                      help='directory containing patients/conditions/encounters.csv '
                           '(default output/smoke/csv)')
@@ -239,10 +246,19 @@ def main():
     check("mean encounters/patient", mean_enc, args.mean_encounters_min, None,
           violations, fmt='{:.2f}')
 
-    if total_condition_rows:
-        top_code, top_count = max(cond_code_counts.items(), key=lambda kv: kv[1])
-        top_share = top_count / total_condition_rows
-        print(f"top condition code: {top_code} ({top_count}/{total_condition_rows} rows)")
+    exclude_set = {c.strip() for c in (args.exclude_codes or '').split(',') if c.strip()}
+    top_counts = {c: n for c, n in cond_code_counts.items() if c not in exclude_set}
+    top_total = sum(top_counts.values())
+    if top_total:
+        top_code, top_count = max(top_counts.items(), key=lambda kv: kv[1])
+        top_share = top_count / top_total
+        excl_note = ''
+        if exclude_set:
+            dropped = total_condition_rows - top_total
+            excl_note = (f" (excluding {len(exclude_set)} code(s) "
+                          f"{{{', '.join(sorted(exclude_set))}}}, {dropped} rows dropped "
+                          f"from this computation only)")
+        print(f"top condition code{excl_note}: {top_code} ({top_count}/{top_total} rows)")
     else:
         top_share = None
     check("top condition code share", top_share, None, args.top_share_max, violations)

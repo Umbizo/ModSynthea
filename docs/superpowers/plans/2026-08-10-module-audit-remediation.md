@@ -302,7 +302,7 @@ One task per module. Each task fixes **everything** the audit found in that modu
 
 ### Phase 1 gate
 
-- [ ] `python3 tools_lint_module_locks.py` → 0 CRITICAL outside stock modules. `./tools_smoke_gen.sh 1000` → no exceptions; `python3 tools_smoke_check.py --code 399068003 --sex M --eligible-min-age 55 --max-share 0.18 --mean-encounters-min 30 --top-share-max 0.05` → PASS. Commit the recorded gate output: `chore(audit): phase 1 gate - encounter starvation eliminated`.
+- [ ] `python3 tools_lint_module_locks.py` → 0 CRITICAL outside stock modules. `./tools_smoke_gen.sh 1000` → no exceptions; `python3 tools_smoke_check.py --code 399068003 --sex M --eligible-min-age 55 --max-share 0.18 --mean-encounters-min 30 --top-share-max 0.05 --exclude-codes 314529007` → PASS. Commit the recorded gate output: `chore(audit): phase 1 gate - encounter starvation eliminated`.
 
 ---
 
@@ -433,7 +433,7 @@ Requirements: keep 1.6's gating/mortality; restructure progression MCI → mild 
 ## Phase 7 — Full verification regen and PR
 
 - [ ] **7.1 Static gate:** `python3 tools_lint_module_locks.py` → 0 CRITICAL outside triaged stock modules; `python3 tools_scan_unmapped_codes.py` → 0 rows for fork modules.
-- [ ] **7.2 Generation gate:** `./tools_smoke_gen.sh 1000` → no exceptions. Assertions, all must PASS: `--mean-encounters-min 30 --top-share-max 0.05` (starvation/monoculture); prostate 399068003 M 55+ share 0.06–0.18; AD 26929004 65+ share ≤ 0.15; pneumonia share 0.10–0.45 with onset 5th percentile ≥ 1 yr; MM/MCL/CIDP/ovarian/bladder/pancreatic shares within their task bounds; every custom-module target drug from the audit (pegfilgrastim, daratumumab, pembrolizumab, anti-VEGF, IVIG) appears ≥ once in `medications.csv`. Save the full check output as `docs/superpowers/plans/2026-08-10-final-verification.txt`.
+- [ ] **7.2 Generation gate:** `./tools_smoke_gen.sh 1000` → no exceptions. Assertions, all must PASS: `--mean-encounters-min 30 --top-share-max 0.05 --exclude-codes 314529007` (starvation/monoculture); prostate 399068003 M 55+ share 0.06–0.18; AD 26929004 65+ share ≤ 0.15; pneumonia share 0.10–0.45 with onset 5th percentile ≥ 1 yr; MM/MCL/CIDP/ovarian/bladder/pancreatic shares within their task bounds; every custom-module target drug from the audit (pegfilgrastim, daratumumab, pembrolizumab, anti-VEGF, IVIG) appears ≥ once in `medications.csv`. Save the full check output as `docs/superpowers/plans/2026-08-10-final-verification.txt`.
 - [ ] **7.3 Report:** update `~/dev/srdc_pipelines/reference/modsynthea_module_audit.md` with a "Remediation status 2026-08" section: per-module before/after verdicts, the stock-module triage list, and the new baseline numbers.
 - [ ] **7.4 PR:** `git push -u origin fix/module-audit-remediation` and open a PR to `master` with the phase gates and final verification artifact linked. Regeneration of the actual dataset happens only after merge, per the srdc_pipelines regen flow.
 

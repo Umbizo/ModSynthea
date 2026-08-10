@@ -7436,17 +7436,12 @@
     {
       "code": "77412",
       "description": "Radiation treatment delivery, >=1 MeV; complex",
-      "weight": "0.50"
-    },
-    {
-      "code": "77427",
-      "description": "Radiation treatment management, 5 treatments",
-      "weight": "0.30"
+      "weight": "0.70"
     },
     {
       "code": "77407",
       "description": "Radiation treatment delivery, >=1 MeV; intermediate",
-      "weight": "0.20"
+      "weight": "0.30"
     }
   ],
   "133918004": [
@@ -7513,6 +7508,12 @@
     {
       "code": "G9043",
       "description": "Rehabilitation services for low vision by certified low vision rehabilitation therapist, direct one-on-one contact, each 15 minutes"
+    }
+  ],
+  "395096001": [
+    {
+      "code": "77373",
+      "description": "Stereotactic body radiation therapy, treatment delivery, per fraction to 1 or more lesions, including image guidance, entire course not to exceed 5 fractions"
     }
   ]
 }

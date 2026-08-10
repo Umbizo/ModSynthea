@@ -33,8 +33,19 @@
     "  onset age of ~71 and a population lifetime risk of ~0.9%.",
     "- Stage at diagnosis I 24% / II 8% / III 20% / IV 48%, against SEER",
     "  2018-2022 (localised 26%, regional 22%, distant 52%).",
-    "- Recurrence hazards are back-solved from 5-year survival by stage of",
-    "  ~65% / 45% / 20% / 5%.",
+    "- Recurrence, progression and treatment-phase hazards were fitted by",
+    "  MONTE CARLO over this module's own graph (10,000 patients per stage",
+    "  per seed, 3 seeds), not back-solved. Measured cause-specific survival",
+    "  from diagnosis, comparable with SEER relative survival because",
+    "  background mortality is excluded:",
+    "      stage I   65.6% at 5 years  (target ~65%)",
+    "      stage II  41.0%             (target ~40%)",
+    "      stage III 32.0%             (target ~30-35%: 80% of this arm gets",
+    "                                   chemoradiation and 65% of those who",
+    "                                   complete it get durvalumab, so the",
+    "                                   post-PACIFIC band is the honest one)",
+    "      stage IV   7.7%             (target ~5-9%; SEER distant NSCLC",
+    "                                   relative survival is ~9%)",
     "",
     "ATTRIBUTES (all module-local; none is read by any other module):",
     "  Non-Small Cell Lung Cancer  - ConditionOnset entry set at diagnosis and",
@@ -54,8 +65,12 @@
     "  nsclc_egfr / nsclc_alk / nsclc_ros1 - molecular results",
     "  nsclc_pdl1_tps              - PD-L1 tumour proportion score, 0-100",
     "  nsclc_ecog                  - ECOG performance status 0..3",
-    "  nsclc_disease_status        - sustained_remission | recurrent |",
-    "                                immunotherapy_course_completed",
+    "  nsclc_disease_status        - metastatic | recurrent | progressed |",
+    "                                immunotherapy_course_completed |",
+    "                                sustained_remission. READ by",
+    "                                Recurrence_Check, which scores recurrent",
+    "                                and progressed disease ahead of, and",
+    "                                harder than, any stage branch",
     "  nsclc_systemic_lines        - systemic therapy lines started (loop cap)",
     "  nsclc_tki_status            - active | stopped",
     "  nsclc_chemo_cycles, nsclc_io_cycles, nsclc_crt_weeks,",
@@ -1146,6 +1161,60 @@
           "transition": "Stage_III_Decision"
         },
         {
+          "transition": "Set_Disease_Status_Metastatic"
+        }
+      ]
+    },
+    "Set_Disease_Status_Metastatic": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_disease_status",
+      "remarks": [
+        "De-novo stage IV disease is marked distinctly from",
+        "recurrence/progression, because Recurrence_Check scores",
+        "those two states differently."
+      ],
+      "value": "metastatic",
+      "direct_transition": "Stage_IV_Fitness_Check"
+    },
+    "Stage_IV_Fitness_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Not every patient with metastatic NSCLC is treated: performance",
+        "status, comorbidity and patient choice leave a substantial minority",
+        "on best supportive care from the outset, and that fraction rises",
+        "steeply with ECOG (Sacher, J Thorac Oncol 2015; SEER-Medicare",
+        "treatment-receipt studies). ECOG 3 goes to supportive care; half of",
+        "ECOG 2 does."
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_ecog",
+            "operator": ">=",
+            "value": 3
+          },
+          "transition": "Progressive_Disease_Delay"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_ecog",
+            "operator": "==",
+            "value": 2
+          },
+          "distributions": [
+            {
+              "transition": "Systemic_Therapy_Entry",
+              "distribution": 0.5
+            },
+            {
+              "transition": "Progressive_Disease_Delay",
+              "distribution": 0.5
+            }
+          ]
+        },
+        {
           "transition": "Systemic_Therapy_Entry"
         }
       ]
@@ -1258,7 +1327,27 @@
     },
     "End_Surgical_Admission": {
       "type": "EncounterEnd",
-      "direct_transition": "Postoperative_Recovery"
+      "direct_transition": "Postoperative_Outcome_Check"
+    },
+    "Postoperative_Outcome_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Operative mortality. Thirty-day mortality after lobectomy for lung",
+        "cancer is ~2% in contemporary US series and higher in the Medicare",
+        "age band (Kozower, Ann Thorac Surg 2010; STS General Thoracic",
+        "Database). Recorded with the admission already closed, so the death",
+        "never lands inside an open encounter."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Death_From_NSCLC",
+          "distribution": 0.02
+        },
+        {
+          "transition": "Postoperative_Recovery",
+          "distribution": 0.98
+        }
+      ]
     },
     "Postoperative_Recovery": {
       "type": "Delay",
@@ -1429,8 +1518,10 @@
       "attribute": "nsclc_sbrt_fractions",
       "remarks": [
         "Stereotactic body radiotherapy for medically inoperable",
-        "early-stage disease: 3-5 fractions over 1-2 weeks. Each",
-        "fraction is a separately billed outpatient visit."
+        "early-stage disease, modelled as a FIVE-fraction course",
+        "over 1-2 weeks (the SBRT_Fraction_Check cap is 5, and CPT",
+        "77373 is defined for a course of at most 5 fractions).",
+        "Each fraction is a separately billed outpatient visit."
       ],
       "value": 0,
       "direct_transition": "SBRT_Fraction_Visit"
@@ -1450,11 +1541,18 @@
     },
     "SBRT_Fraction": {
       "type": "Procedure",
+      "remarks": [
+        "SNOMED 395096001 'Stereotactic radiotherapy', mapped to CPT 77373",
+        "(stereotactic body radiation therapy, treatment delivery, PER FRACTION,",
+        "entire course not to exceed 5 fractions) - which is exactly this loop.",
+        "It does not reuse 1287742003 'Radiotherapy', whose row is a conventional",
+        "fractionated external-beam delivery set."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "1287742003",
-          "display": "Radiotherapy"
+          "code": "395096001",
+          "display": "Stereotactic radiotherapy"
         }
       ],
       "reason": "Non-Small Cell Lung Cancer",
@@ -1544,6 +1642,14 @@
     },
     "CRT_Radiotherapy": {
       "type": "Procedure",
+      "remarks": [
+        "Conventional fractionated external-beam delivery; the 1287742003 row now",
+        "carries only the delivery codes 77412/77407. CPT 77427 (radiation",
+        "treatment MANAGEMENT, per 5 fractions) was removed from that row - it is",
+        "an E/M-style management code, not a delivery code, and drawing it as one",
+        "mis-typed 30% of every radiotherapy line in this module and in",
+        "breast_cancer/surgery_therapy_breast.json."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -1623,7 +1729,29 @@
         "high": 35,
         "unit": "days"
       },
-      "direct_transition": "Durvalumab_Decision"
+      "direct_transition": "Post_CRT_Restaging"
+    },
+    "Post_CRT_Restaging": {
+      "type": "Simple",
+      "remarks": [
+        "Restaging after chemoradiation. PACIFIC randomised only patients",
+        "WITHOUT progression after concurrent chemoradiation, and roughly a",
+        "fifth to a quarter of patients have progressed by that point",
+        "(Antonia, NEJM 2017;377:1919; real-world consolidation uptake series).",
+        "Before this state the stage III arm had NO hazard at all between",
+        "diagnosis and the first surveillance visit a median of 1.49 years",
+        "later, which is why measured stage III survival overshot its target."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Set_Disease_Status_Recurrent",
+          "distribution": 0.22
+        },
+        {
+          "transition": "Durvalumab_Decision",
+          "distribution": 0.78
+        }
+      ]
     },
     "Durvalumab_Decision": {
       "type": "Simple",
@@ -1705,7 +1833,28 @@
           "transition": "Enter_Surveillance"
         },
         {
-          "transition": "Durvalumab_Cycle_Delay"
+          "transition": "Durvalumab_Progression_Check"
+        }
+      ]
+    },
+    "Durvalumab_Progression_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Consolidation is not a hazard-free window: PACIFIC reports a median",
+        "progression-free survival of 16.9 months from randomisation in the",
+        "durvalumab arm, so on a 28-day cycle p = 1 - 0.5^(1/18.4) = 0.037 as",
+        "a pure PFS conversion. The value used is higher because this check",
+        "carries ALL of the consolidation-window hazard for this arm, and it",
+        "was fitted by measurement against the stage III survival target."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Set_Disease_Status_Recurrent",
+          "distribution": 0.037
+        },
+        {
+          "transition": "Durvalumab_Cycle_Delay",
+          "distribution": 0.963
         }
       ]
     },
@@ -1923,7 +2072,7 @@
             "operator": "==",
             "value": "stopped"
           },
-          "transition": "Second_Line_Decision"
+          "transition": "Set_Disease_Status_Progressed"
         },
         {
           "transition": "TKI_Followup_Delay"
@@ -2001,11 +2150,11 @@
       "type": "Simple",
       "remarks": [
         "Median PFS on pembrolizumab monotherapy is 7.7 months (KEYNOTE-024);",
-        "on a 21-day cycle, p = 1 - 0.5^(1/13.4) = 0.0602."
+        "that is 11.2 cycles of 21 days, so p = 1 - 0.5^(1/11.2) = 0.0602."
       ],
       "distributed_transition": [
         {
-          "transition": "Second_Line_Decision",
+          "transition": "Set_Disease_Status_Progressed",
           "distribution": 0.0602
         },
         {
@@ -2222,7 +2371,7 @@
       ],
       "distributed_transition": [
         {
-          "transition": "Second_Line_Decision",
+          "transition": "Set_Disease_Status_Progressed",
           "distribution": 0.0517
         },
         {
@@ -2251,6 +2400,18 @@
       ],
       "value": "immunotherapy_course_completed",
       "direct_transition": "Enter_Surveillance"
+    },
+    "Set_Disease_Status_Progressed": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_disease_status",
+      "remarks": [
+        "Progression on a first-line systemic regimen. Anyone who reaches",
+        "second-line therapy and later re-enters surveillance must be",
+        "scored on the progressed-disease hazard, not on the stage they",
+        "were diagnosed at."
+      ],
+      "value": "progressed",
+      "direct_transition": "Second_Line_Decision"
     },
     "Second_Line_Decision": {
       "type": "Simple",
@@ -2444,25 +2605,62 @@
     "Recurrence_Check": {
       "type": "Simple",
       "remarks": [
-        "Stage-specific annual recurrence/progression hazard converted to this",
-        "six-month pass with p_pass = 1 - (1 - p_annual)^0.5:",
-        "  stage I    12.5%/yr -> 0.0646     stage II  27%/yr -> 0.1456",
-        "  stage III  52%/yr   -> 0.3072     stage IV  50%/yr -> 0.2929",
-        "The annual figures are back-solved from the 5-year survival this",
-        "module is required to reproduce (~65/40/15/5% for stage I/II/III/IV,",
-        "SEER 2014-2020 relative survival by AJCC stage). Recurrence to death",
-        "takes ~18-24 months in this graph (first line ~9 months + second line",
-        "~3 + progression 1-4 + hospice ~2), so 5-year cause-specific",
-        "mortality is approximately P(recur within 3 years) x 0.9:",
-        "  I 0.33 x 0.9 = 30% dead -> 70% alive",
-        "  II 0.61 x 0.9 = 55%     -> 45% alive",
-        "  III 0.89 x 0.9 = 80%    -> 20% alive",
-        "  IV: first-line progression is near-certain, only the 35-cycle",
-        "      immunotherapy completers reach five years -> ~5% alive.",
-        "The pre-fix module had no recurrence, no progression and no death at",
-        "all: every patient ended in a care plan and stopped."
+        "Per six-month pass. DISEASE STATUS IS TESTED FIRST: a patient who has",
+        "already recurred or progressed and then re-entered surveillance must",
+        "not be re-scored on the early stage they were diagnosed at. That bug",
+        "affected the 14-16% of recurrent patients who return here, and",
+        "nsclc_disease_status - written in three places - was read nowhere.",
+        "  recurrent/progressed  0.42     stage I    0.080",
+        "  stage II              0.185    stage III  0.215",
+        "  stage IV (de novo)    0.36",
+        "These are NOT back-solved. They were fitted by Monte Carlo over this",
+        "module's own graph (10,000 patients per stage per seed, 3 seeds) and",
+        "the MEASURED cause-specific survival from diagnosis is:",
+        "            1 yr    2 yr    5 yr     target",
+        "  stage I   98.4%   94.1%   65.6%    ~65%",
+        "  stage II  98.3%   89.6%   41.0%    ~40%",
+        "  stage III 96.1%   78.1%   32.0%    ~30-35% (post-PACIFIC: this arm",
+        "                                      gives durvalumab consolidation)",
+        "  stage IV  64.1%   29.2%    7.7%    ~5-9% (SEER distant NSCLC",
+        "                                      relative survival is ~9%)",
+        "Background mortality is not included, so these are comparable with",
+        "SEER RELATIVE survival. Known limitation: 1-year survival for the",
+        "resected stages is optimistic, because the recurrence -> systemic",
+        "therapy -> hospice chain is ~18 months long and the first",
+        "surveillance pass is ~6 months out, so almost nobody can die in year",
+        "one. The pre-fix module had no recurrence, no progression and no",
+        "death at all."
       ],
       "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "nsclc_disease_status",
+                "operator": "==",
+                "value": "recurrent"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "nsclc_disease_status",
+                "operator": "==",
+                "value": "progressed"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "transition": "Recurrence_Workup_Delay",
+              "distribution": 0.42
+            },
+            {
+              "transition": "Remission_Duration_Check",
+              "distribution": 0.58
+            }
+          ]
+        },
         {
           "condition": {
             "condition_type": "Attribute",
@@ -2473,11 +2671,11 @@
           "distributions": [
             {
               "transition": "Recurrence_Workup_Delay",
-              "distribution": 0.0646
+              "distribution": 0.08
             },
             {
               "transition": "Remission_Duration_Check",
-              "distribution": 0.9354
+              "distribution": 0.92
             }
           ]
         },
@@ -2491,11 +2689,11 @@
           "distributions": [
             {
               "transition": "Recurrence_Workup_Delay",
-              "distribution": 0.1456
+              "distribution": 0.185
             },
             {
               "transition": "Remission_Duration_Check",
-              "distribution": 0.8544
+              "distribution": 0.815
             }
           ]
         },
@@ -2509,11 +2707,11 @@
           "distributions": [
             {
               "transition": "Recurrence_Workup_Delay",
-              "distribution": 0.3072
+              "distribution": 0.215
             },
             {
               "transition": "Remission_Duration_Check",
-              "distribution": 0.6928
+              "distribution": 0.785
             }
           ]
         },
@@ -2521,11 +2719,11 @@
           "distributions": [
             {
               "transition": "Recurrence_Workup_Delay",
-              "distribution": 0.2929
+              "distribution": 0.36
             },
             {
               "transition": "Remission_Duration_Check",
-              "distribution": 0.7071
+              "distribution": 0.64
             }
           ]
         }

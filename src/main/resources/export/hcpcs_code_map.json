@@ -7331,5 +7331,11 @@
       "code": "99452",
       "description": "Interprofessional referral service(s) provided by a treating/requesting physician or other qualified health care professional, 30 minutes"
     }
+  ],
+  "171231001": [
+    {
+      "code": "94010",
+      "description": "Spirometry (procedure)"
+    }
   ]
 }

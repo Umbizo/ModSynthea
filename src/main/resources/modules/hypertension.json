@@ -250,7 +250,7 @@
         {
           "system": "SNOMED-CT",
           "code": "185349003",
-          "display": "Encounter for symptom"
+          "display": "Encounter for check up (procedure)"
         }
       ],
       "direct_transition": "Diagnose_Hypertension"
@@ -1004,5 +1004,5 @@
       "direct_transition": "Set_BP_Not Controlled"
     }
   },
-  "gmf_version": 1
+  "gmf_version": 2
 }

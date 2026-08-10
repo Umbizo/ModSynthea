@@ -1,7 +1,11 @@
 {
   "name": "high_output_heart_failure",
   "remarks": [
-    "Simulates high-output heart failure in adults with risk factors such as anemia, hyperthyroidism, AV fistula, or pregnancy.",
+    "Simulates high-output heart failure in adults with risk factors: anemia or pregnancy.",
+    "Hyperthyroidism and AV fistula are also clinically recognized risk factors but are not",
+    "modelled here -- no module in this tree sets either attribute, so both were dead guard",
+    "arms (see CheckRiskFactors) until removed 2026-08. Modelling them for real would need new",
+    "hyperthyroidism/AV-fistula onset logic elsewhere in the tree, out of this task's scope.",
     "Every encounter is closed by an EncounterEnd before any delay or loop: this module otherwise holds the engine's per-person encounter reservation for life, which blocks wellness visits and every other module's encounters."
   ],
   "states": {
@@ -28,23 +32,20 @@
           },
           {
             "condition_type": "Or",
+            "remarks": [
+              "Dropped two arms that were permanently dead: `hyperthyroidism` and `av_fistula` are",
+              "both real clinical risk factors for high-output HF, but neither attribute is set by",
+              "any module in this tree (`grep -rl \"hyperthyroidism\\|av_fistula\" src/main/resources/modules/`",
+              "returns only this file), so both conditions could only ever evaluate false. Deleted",
+              "rather than wired to a setter -- this module models `anemia` and `pregnant` (both are",
+              "genuinely set elsewhere in the tree) as its risk-factor population; adding real",
+              "hyperthyroidism/AV-fistula modelling is out of this task's scope."
+            ],
             "conditions": [
               {
                 "condition_type": "Attribute",
                 "attribute": "anemia",
                 "operator": "is not nil"
-              },
-              {
-                "condition_type": "Attribute",
-                "attribute": "hyperthyroidism",
-                "operator": "==",
-                "value": true
-              },
-              {
-                "condition_type": "Attribute",
-                "attribute": "av_fistula",
-                "operator": "==",
-                "value": true
               },
               {
                 "condition_type": "Attribute",
@@ -493,18 +494,39 @@
     "HighOutputHF_Incidence_Gate": {
       "type": "Simple",
       "remarks": [
-        "High-output heart failure is rare even among patients with the",
-        "risk factors above; without this gate the Guard admits the",
-        "majority of the population. Rate needs clinical review."
+        "High-output heart failure is rare even among patients with the risk factors above;",
+        "without this gate the Guard admits the majority of the population.",
+        "",
+        "Calibration target: high-output HF should be <=2% of all heart failure. Sources:",
+        "- Reddy YNV, Melenovsky V, Redfield MM, Nishimura RA, Borlaug BA. High-Output Heart",
+        "  Failure: A 15-Year Experience. J Am Coll Cardiol. 2016;68(5):473-482 -- of patients",
+        "  referred for right-heart catheterization (already cardiac-symptomatic), only ~0.7%",
+        "  had definite high-output HF.",
+        "- Heart Failure Society of America, HF Stats 2024 -- ~6.7 million US adults (20+) live",
+        "  with heart failure, ~1.9-2.8% (~2.3% midpoint) prevalence of the adult population.",
+        "  A <=2% HOHF share of that implies HOHF should be roughly <=0.05% of all adults.",
+        "",
+        "This gate previously fired at 0.02 (2%) against the CheckRiskFactors-gated population",
+        "(anyone aged 20-70 who is ever anemic or pregnant) -- a materially larger and healthier",
+        "population than Reddy et al.'s cardiac-catheterization-referred cohort, so 2% here",
+        "overshoots the <=2%-of-all-HF target by a wide margin once anemia/pregnancy prevalence",
+        "in that gate population is accounted for. Lowered by 10x to 0.002 (0.2%), below even",
+        "Reddy et al.'s 0.7% figure for a sicker, pre-selected population -- reasonable given this",
+        "module's Guard only requires anemia or pregnancy, not any existing cardiac symptoms.",
+        "Honest caveat: the exact population-level HOHF share of all-HF output depends on this",
+        "tree's other HF modules and on anemia/pregnancy prevalence in the simulated population,",
+        "neither of which this task's scope allows verifying empirically (no smoke/generation",
+        "runs). 0.002 is a literature-anchored, order-of-magnitude-correct reduction, not a",
+        "smoke-verified final calibration -- flagging for empirical re-check once a run is available."
       ],
       "distributed_transition": [
         {
           "transition": "OnsetHighOutputHF",
-          "distribution": 0.02
+          "distribution": 0.002
         },
         {
           "transition": "Terminal",
-          "distribution": 0.98
+          "distribution": 0.998
         }
       ]
     },

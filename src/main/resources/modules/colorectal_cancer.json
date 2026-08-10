@@ -1742,11 +1742,17 @@
         {
           "category": "laboratory",
           "unit": "mL/min",
+          "vital_sign": "EGFR",
           "remarks": [
             "Was hardcoded to 4-29 mL/min, a dialysis-range eGFR (stage 5 CKD/ESRD) with no renal",
-            "disease modelled on this patient. No VitalSign enum entry exists for GFR (unlike",
-            "Creatinine above), so this stays a literal range: 90-120 mL/min/1.73m2 is the standard",
-            "normal reference interval (eGFR >= 90 = normal kidney function)."
+            "disease modelled on this patient. Correction (2026-08): VitalSign.EGFR does exist",
+            "(VitalSign.java) and is set per-person, CKD-stage-gated, in LifecycleModule.java --",
+            "defaulting to a normal creatinine-clearance range when the patient has no CKD, and to",
+            "the appropriate reduced range when they do. Switched to vital_sign-driven like",
+            "Creatinine above, matching wellness_encounters.json's Record_MetabolicPanel, which",
+            "already uses vital_sign: \"EGFR\" on this same LOINC 33914-3. This is more correct than",
+            "a static normal range: it also renders realistically low for a colorectal-cancer",
+            "patient who happens to have comorbid CKD, instead of always reporting normal."
           ],
           "codes": [
             {
@@ -1754,11 +1760,7 @@
               "code": "33914-3",
               "display": "Glomerular filtration rate/1.73 sq M.predicted [Volume Rate/Area] in Serum or Plasma by Creatinine-based formula (MDRD)"
             }
-          ],
-          "range": {
-            "low": 90,
-            "high": 120
-          }
+          ]
         },
         {
           "category": "laboratory",

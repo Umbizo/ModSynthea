@@ -892,8 +892,10 @@
         }
       ],
       "remarks": [
-        "Five modules in this repo onset SNOMED 91861009 (this one, acute_myeloid_leukemia,",
-        "acute_lymphoblastic_leukemia, myelodysplastic_syndromes, polycythemia_vera).",
+        "Four modules in this repo onset SNOMED 91861009 (this one, acute_myeloid_leukemia,",
+        "myelodysplastic_syndromes, polycythemia_vera). acute_lymphoblastic_leukemia.json only",
+        "mentions 91861009 in a remark explaining its own correction -- its actual onset code",
+        "is 91857003 (acute lymphoid leukaemia), not this one.",
         "Without this check a patient can receive two independent AML diagnoses and two",
         "unrelated treatment courses, roughly doubling apparent AML prevalence.",
         "Re-anchored here (immediately before this module's own onset, at the age drawn",

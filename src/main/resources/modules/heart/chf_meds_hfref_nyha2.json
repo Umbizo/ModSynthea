@@ -404,7 +404,27 @@
       },
       "chronic": true,
       "assign_to_attribute": "spironolactone_25_mg_oral_tablet_rx",
-      "direct_transition": "Empagliflozin"
+      "direct_transition": "Set_CHF_On_MRA"
+    },
+    "Set_CHF_On_MRA": {
+      "type": "SetAttribute",
+      "attribute": "chf_on_mra",
+      "value": true,
+      "direct_transition": "Empagliflozin",
+      "remarks": [
+        "Fix round 1 (2026-08-10): 'IVA Step' used to gate on",
+        "'condition_type: PriorState, name: MRA' to check whether MRA was",
+        "started on an earlier visit. That can never work: this submodule is",
+        "invoked fresh via CallSubmodule on every congestive follow-up visit,",
+        "and CallSubmodule.process clears the submodule's own history",
+        "(person.attributes.remove(submoduleName), State.java ~336) once a",
+        "call completes, so a later visit's PriorState check can never see",
+        "an earlier visit's MRA order -- IVA was structurally dead, before",
+        "and after the Task 1.7 typo fix. A persistent person attribute",
+        "(unlike module history, person.attributes is never cleared between",
+        "calls) makes the same intent -- 'IVA only after MRA is",
+        "established' -- actually work across visits."
+      ]
     },
     "Empagliflozin": {
       "type": "MedicationOrder",
@@ -462,11 +482,17 @@
     },
     "IVA Step": {
       "type": "Simple",
+      "remarks": [
+        "Fix round 1 (2026-08-10): gate changed from PriorState MRA (never",
+        "true across visits, see MRA/Set_CHF_On_MRA remarks) to a persistent",
+        "attribute set by the MRA order itself."
+      ],
       "complex_transition": [
         {
           "condition": {
-            "condition_type": "PriorState",
-            "name": "MRA"
+            "condition_type": "Attribute",
+            "attribute": "chf_on_mra",
+            "operator": "is not nil"
           },
           "distributions": [
             {

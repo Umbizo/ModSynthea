@@ -261186,5 +261186,39 @@
       "code": "00597015290",
       "description": "Empagliflozin 10 MG Oral Tablet [Jardiance]"
     }
+  ],
+  "1442986": [
+    {
+      "code": "57962014009",
+      "description": "ibrutinib 140 MG Oral Capsule [Imbruvica]"
+    },
+    {
+      "code": "57962014012",
+      "description": "ibrutinib 140 MG Oral Capsule [Imbruvica]"
+    }
+  ],
+  "2607734": [
+    {
+      "code": "00310351260",
+      "description": "acalabrutinib 100 MG Oral Tablet [Calquence]"
+    },
+    {
+      "code": "00310351295",
+      "description": "acalabrutinib 100 MG Oral Tablet [Calquence]"
+    }
+  ],
+  "1747561": [
+    {
+      "code": "00074057611",
+      "description": "venetoclax 100 MG Oral Tablet [Venclexta]"
+    },
+    {
+      "code": "00074057622",
+      "description": "venetoclax 100 MG Oral Tablet [Venclexta]"
+    },
+    {
+      "code": "00074057630",
+      "description": "venetoclax 100 MG Oral Tablet [Venclexta]"
+    }
   ]
 }

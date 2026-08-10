@@ -7053,5 +7053,77 @@
       "code": "48150",
       "description": "Pancreatectomy, proximal subtotal with total duodenectomy, partial gastrectomy, choledochoenterostomy and gastrojejunostomy (Whipple-type procedure); with pancreatojejunostomy"
     }
+  ],
+  "104093004": [
+    {
+      "code": "85025",
+      "description": "Blood count; complete (CBC), automated (Hgb, Hct, RBC, WBC and platelet count) and automated differential WBC count"
+    }
+  ],
+  "708058007": [
+    {
+      "code": "88184",
+      "description": "Flow cytometry, cell surface, cytoplasmic, or nuclear marker, technical component only; first marker"
+    }
+  ],
+  "21911005": [
+    {
+      "code": "38510",
+      "description": "Biopsy or excision of lymph node(s); open, deep cervical node(s)"
+    }
+  ],
+  "117617002": [
+    {
+      "code": "88342",
+      "description": "Immunohistochemistry or immunocytochemistry, per specimen; initial single antibody stain procedure"
+    }
+  ],
+  "426329006": [
+    {
+      "code": "88365",
+      "description": "In situ hybridization (eg, FISH), per specimen; initial single probe stain procedure"
+    }
+  ],
+  "418023006": [
+    {
+      "code": "74177",
+      "description": "Computed tomography, abdomen and pelvis; with contrast material"
+    }
+  ],
+  "56241004": [
+    {
+      "code": "38221",
+      "description": "Diagnostic bone marrow; biopsy(ies)"
+    }
+  ],
+  "11274001": [
+    {
+      "code": "83615",
+      "description": "Lactate dehydrogenase (LD), (LDH)"
+    }
+  ],
+  "81410005": [
+    {
+      "code": "82232",
+      "description": "Beta-2 microglobulin"
+    }
+  ],
+  "58776007": [
+    {
+      "code": "38241",
+      "description": "Hematopoietic progenitor cell (HPC); autologous transplantation"
+    }
+  ],
+  "58390007": [
+    {
+      "code": "38240",
+      "description": "Hematopoietic progenitor cell (HPC); allogeneic transplantation per donor"
+    }
+  ],
+  "1156961008": [
+    {
+      "code": "0540T",
+      "description": "Chimeric antigen receptor T-cell (CAR-T) therapy; CAR-T cell administration, autologous"
+    }
   ]
 }

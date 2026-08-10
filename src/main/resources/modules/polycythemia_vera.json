@@ -1663,7 +1663,10 @@
     },
     "Discontinue_PegInterferon": {
       "type": "MedicationEnd",
-      "referenced_by_attribute": "peginterferon_alfa_2a_180_mcg_05_rx",
+      "remarks": [
+        "CORRECTED: was referenced_by_attribute peginterferon_alfa_2a_180_mcg_05_rx -- the attribute set ONCE by the initial Prescribe_Peg_Interferon order and never updated again. Repeat_PegInterferon reassigns peg_interferon_rx to the live/latest quarterly order every cycle, so ending the wrong attribute left every quarterly order permanently open: the initial (already stale) order got closed instead of the current one, and Post_Thrombosis_Cytoreduction_Check's Active-Medication check for RxNorm 351270 could never go false again after the first refill."
+      ],
+      "referenced_by_attribute": "peg_interferon_rx",
       "direct_transition": "Clear_PV_On_Interferon"
     },
     "Clear_PV_On_Interferon": {

@@ -1092,32 +1092,56 @@
         "Disease worsening requiring treatment escalation: ~10–15%/year.",
         "Stable disease: ~70–80% per monitoring cycle.",
         "",
-        "FIX ROUND 1 (reviewer): the 0.03 AML-transform figure was being applied",
-        "per pass on this state's own Monitoring_Delay_Lower loop (3-6 months,",
-        "avg 136.97 days), which compounds to 1-(1-0.03)^(365/136.97) = 7.8%/yr --",
-        "against this exact state's own cited 2-5%/yr. Re-derived at the 3.5%/yr",
-        "midpoint, correctly converted to this loop's actual per-pass interval:",
-        "p_pass = 1-(1-0.035)^(136.97/365) = 0.01328 (annualized back:",
-        "1-(1-0.01328)^(365/136.97) = 0.0350, confirms). Freed mass (0.03-0.01328",
-        "= 0.01672) redistributed across the other three branches in their",
-        "original ratio, matching the technique used for Transfusion_Progression_",
-        "Check (below)."
+        "FIX ROUND 1 (reviewer, partially superseded by round 2 below): the 0.03",
+        "AML-transform figure was being applied per pass on this state's own",
+        "Monitoring_Delay_Lower loop, which compounds well above this exact",
+        "state's own cited 2-5%/yr. Re-derived at the 3.5%/yr midpoint, freed",
+        "mass redistributed across the other three branches.",
+        "",
+        "FIX ROUND 2 (reviewer): round 1 fixed only the AML branch and left",
+        "Escalate_To_Higher_Risk essentially untouched (0.1 -> 0.10172 from the",
+        "proportional redistribution) -- but 0.1 (10%) was ITSELF already",
+        "authored as an annual rate (this state's own cited 10-15%/yr) being",
+        "applied per pass, the identical defect class as the AML branch, one",
+        "state over from Transfusion_Progression_Check's same bug. At",
+        "0.10172/pass on a ~135-day pass that compounds to",
+        "1-(1-0.10172)^(365/135) = 25.2%/yr -- roughly double the cited range.",
+        "",
+        "Also corrected the pass length itself: the engine defines 1 month as",
+        "exactly 30 days (Utilities.convertTime, both long- and double-valued",
+        "overloads: 'case \"months\": ... 30 * value'), not the calendar-average",
+        "30.44 days round 1's 136.97-day figure assumed. Monitoring_Delay_Lower's",
+        "3-6 month range is therefore a 90-180 day range with a 135-day mean",
+        "((3+6)/2 * 30), giving 365/135 = 2.7037 passes/year.",
+        "",
+        "Both AML transform and escalation are now independently converted from",
+        "their intended annual rates at this corrected 135-day pass length",
+        "(p_pass = 1-(1-p_annual)^(135/365), the same competing-hazards technique",
+        "used on Transfusion_Progression_Check below):",
+        "  AML transform (3.5%/yr midpoint): 0.01309/pass",
+        "    (annualized back: 1-(1-0.01309)^2.7037 = 0.0350, confirms)",
+        "  Escalate (12.5%/yr midpoint of the cited 10-15%/yr): 0.04819/pass",
+        "    (annualized back: 1-(1-0.04819)^2.7037 = 0.1250, confirms)",
+        "ESA start and Loop (continue watchful waiting) were not flagged as",
+        "independently mis-authored, so they share whatever probability mass",
+        "remains (1 - 0.01309 - 0.04819 = 0.93872) in their original 0.17:0.7",
+        "ratio: ESA 0.18343, Loop 0.75529."
       ],
       "distributed_transition": [
         {
-          "distribution": 0.01328,
+          "distribution": 0.01309,
           "transition": "AML_Transformation"
         },
         {
-          "distribution": 0.10172,
+          "distribution": 0.04819,
           "transition": "Escalate_To_Higher_Risk"
         },
         {
-          "distribution": 0.17293,
+          "distribution": 0.18343,
           "transition": "Lower_Risk_ESA_Start"
         },
         {
-          "distribution": 0.71207,
+          "distribution": 0.75529,
           "transition": "Monitoring_Delay_Lower"
         }
       ]

@@ -1103,34 +1103,47 @@
       "type": "SetAttribute",
       "attribute": "nsclc_stage",
       "value": "I",
-      "direct_transition": "Stage_Observation"
+      "direct_transition": "Stage_Observation_I"
     },
     "Set_Stage_II": {
       "type": "SetAttribute",
       "attribute": "nsclc_stage",
       "value": "II",
-      "direct_transition": "Stage_Observation"
+      "direct_transition": "Stage_Observation_II"
     },
     "Set_Stage_III": {
       "type": "SetAttribute",
       "attribute": "nsclc_stage",
       "value": "III",
-      "direct_transition": "Stage_Observation"
+      "direct_transition": "Stage_Observation_III"
     },
     "Set_Stage_IV": {
       "type": "SetAttribute",
       "attribute": "nsclc_stage",
       "value": "IV",
-      "direct_transition": "Stage_Observation"
+      "direct_transition": "Stage_Observation_IV"
     },
-    "Stage_Observation": {
+    "Stage_Observation_I": {
       "type": "Observation",
       "remarks": [
-        "`nsclc_stage` is a plain string, so it can be compared with '=='",
-        "everywhere below and rendered here without a unit. The attribute was",
-        "renamed from the shared `cancer_stage` (also written by",
-        "ovarian_cancer.json and pancreatic_cancer.json) per the Task 5.4",
-        "contract; this rewrite is the rename point."
+        "LOINC 21908-9 is also written by breast_cancer.json and",
+        "breast_cancer/surgery_therapy_breast.json. person.record.",
+        "getLatestObservation() is keyed purely by code with no module",
+        "scoping, so a String-valued write here and a Code-valued read there",
+        "(or vice versa) throws 'Cannot compare String to Code' out of",
+        "Utilities.compare() for any patient who develops both cancers --",
+        "confirmed record-discarding in the 2026-08-11 gate. Task 5.4",
+        "renamed the ATTRIBUTE this module's own stage conditionals read",
+        "(`nsclc_stage`, a plain string) away from the shared `cancer_stage`",
+        "to stop an attribute-name collision with ovarian_cancer.json/",
+        "pancreatic_cancer.json; every conditional below reads that",
+        "attribute (condition_type Attribute), never this Observation, so",
+        "the Observation's value type is free to match breast_cancer.json's",
+        "value_code (SNOMED-CT) convention for the same LOINC code instead",
+        "of colliding with it as a String. Split into one state per stage",
+        "(mirroring breast_cancer.json's Stage I/II/III/IV states) since",
+        "Observation only supports a static `value`/`value_code`, not one",
+        "computed from an attribute."
       ],
       "category": "laboratory",
       "codes": [
@@ -1140,7 +1153,62 @@
           "display": "Stage group.clinical Cancer"
         }
       ],
-      "attribute": "nsclc_stage",
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": "258215001",
+        "display": "Stage 1 (qualifier value)"
+      },
+      "direct_transition": "ECOG_Router"
+    },
+    "Stage_Observation_II": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "21908-9",
+          "display": "Stage group.clinical Cancer"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": "258219007",
+        "display": "Stage 2 (qualifier value)"
+      },
+      "direct_transition": "ECOG_Router"
+    },
+    "Stage_Observation_III": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "21908-9",
+          "display": "Stage group.clinical Cancer"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": "258224005",
+        "display": "Stage 3 (qualifier value)"
+      },
+      "direct_transition": "ECOG_Router"
+    },
+    "Stage_Observation_IV": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "21908-9",
+          "display": "Stage group.clinical Cancer"
+        }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": "258228008",
+        "display": "Stage 4 (qualifier value)"
+      },
       "direct_transition": "ECOG_Router"
     },
     "ECOG_Router": {

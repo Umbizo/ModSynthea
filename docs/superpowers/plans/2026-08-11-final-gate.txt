@@ -1,0 +1,323 @@
+PHASE 7 FINAL GATE (Task 7.2) — ModSynthea audit remediation
+Repo: /Users/ollie/dev/ModSynthea
+Branch: fix/module-audit-remediation (confirmed via `git branch --show-current`)
+
+THIS FILE COVERS TWO RUNS PLUS A FINAL CONTROLLER ADJUDICATION:
+  RUN 1 (2026-08-11, HEAD c3e19573) — GATE_FAIL. Superseded below by RUN 2.
+  RUN 2 (2026-08-11, HEAD c7d606d3, post-adjudication) — all 3 adjudicated criteria
+  PASS; one new item (pancreatic floor) required a second controller ruling.
+  FINAL ADJUDICATION (below RUN 2) — controller accepts the pancreatic result as
+  Poisson-consistent, not a regression. GATE CLOSES AS ADJUDICATED PASS.
+
+FINAL VERDICT: GATE_PASS (adjudicated). See "FINAL ADJUDICATION" section at the end
+of this file for the ruling record, and "GATE VERDICT (POST-ADJUDICATION)" for the
+closing summary.
+
+====================================================================
+ADJUDICATION RULINGS (controller, applied to RUN 2)
+====================================================================
+Following RUN 1's report, the controller reviewed and committed two fork-side fixes
+(78399db0, c7d606d3) and issued these rulings for the re-run:
+
+1. Alzheimer's ceiling raised 0.15 -> 0.20. Ruling: RUN 1's attribution proved the
+   Task 5.2 cross-module exclusivity gate works (only ~1% cross-signature
+   contamination); 71% of AD dx trace to the untouched stock dementia.json module,
+   whose own incidence recalibration is a named follow-up outside the 43-fork-module
+   audit's scope, not a defect in this branch's own work. Re-report the measured share
+   and attribution against the new ceiling.
+2. Hospice election: reclassified NON-GATING / informational. Report the
+   population-wide figure AND, if derivable, the figure among fork(custom
+   alzheimers.json)-attributed AD decedents specifically. Controller's prediction:
+   fork-population ~50% (matching c7d606d3's back-solved 49.7% target), population-wide
+   stays ~75-82% and is proven stock-owned (dementia.json follow-up, not this gate).
+3. The 21908-9 String-vs-Code RuntimeException (RUN 1 section 3) must be GONE after
+   78399db0. Required: a ZERO-discard census -- alive=1000/1000 for `-p 1000`, or any
+   deficit fully explained by a non-exception cause. Any remaining record-discarding
+   exception is an automatic FAIL.
+4. All other RUN 1 criteria (prostate, bladder, pancreatic, pneumonia, monoculture,
+   target drugs, structural checks) were unchanged by the two adjudicated commits and
+   were instructed to be re-verified, expected to still pass.
+
+====================================================================
+RUN 2 — 2026-08-11, HEAD c7d606d3 (post-adjudication)
+====================================================================
+Population requested: -p 1000 (seed 4444, exporter.years_of_history=0, csv export,
+fhir export off) via `./tools_smoke_gen.sh 1000`.
+
+VERDICT (pre-final-adjudication): all 3 adjudicated criteria PASS, but criterion 4's
+re-verification surfaced ONE new item requiring a second controller ruling: pancreatic
+cancer's floor check (section 4.3). See "FINAL ADJUDICATION" at the end of this file
+for the controller's ruling on this item and the closing GATE_PASS verdict.
+
+--- 1. Pre-flight ---
+$ git branch --show-current
+fix/module-audit-remediation
+$ git rev-parse HEAD
+c7d606d32fab22b4274f78ae79d6b7b8c642c01f
+$ git log --oneline -3
+c7d606d3 fix(alzheimers): hospice election rates for combined stock+fork target
+78399db0 fix(nsclc): value_code stage observation ends String-vs-Code collision
+c3e19573 fix(export): Medicare-payable RT delivery codes, clean deferred rows, close breast surgery gaps
+$ df -h .
+13GB free pre-run (unchanged from RUN 1's post-run state) -- comfortably above ~9GB
+requirement; tools_smoke_gen.sh's own `rm -rf output/smoke` freed the prior run's 2.6GB
+before regenerating.
+
+--- 2. Generation ---
+Command: nohup ./tools_smoke_gen.sh 1000 > /tmp/gate72b_wrapper.log 2>&1 &
+Polled via a Monitor task on output/smoke_run.log for BUILD SUCCESSFUL/FAILED or
+process exit.
+
+Result: BUILD SUCCESSFUL in 1m 24s.
+    Records: total=1814, alive=1000, dead=814
+    You've just generated 1814 patients!
+
+Exported CSVs: patients.csv 1814 rows (909 F / 905 M), conditions.csv 352,465 rows,
+encounters.csv 589,984 rows, medications.csv 493,367 rows, careplans.csv 26,763 rows.
+Disk after run: 13GB free, no disk-pressure incident.
+
+**alive=1000 for a requested -p 1000 is an EXACT match** -- zero deficit, vs RUN 1's
+999/1000 (1 exception -> 1 discard) and Phase 1's 976/1000 (24 exceptions -> 24
+discards). This is the expected signature of a fully closed discard-causing-exception
+class (adjudication criterion 3).
+
+--- 3. Exception census (adjudication criterion 3) ---
+$ grep -nE "Exception|StackTrace|	at " output/smoke_run.log | wc -l
+0
+
+ZERO exception/stack-trace lines anywhere in the log. The 21908-9 String-vs-Code
+RuntimeException from RUN 1 (section 3 of that run) is confirmed GONE. Combined with
+the exact alive=1000/1000 population match above, this is unambiguous:
+=> PASS. Adjudication criterion 3 satisfied in full -- zero exceptions, zero discards.
+
+--- 4. Checker suite ---
+
+-- 4.0 Universe file re-verification --
+Re-ran `git diff --name-only feffd500..HEAD -- src/main/resources/modules/`: still 48
+files touched, `b_cell_lymphomas.json` still retired/absent at HEAD, same 47 surviving
+files as RUN 1. Re-extracted every ConditionOnset code from those 47 files: 150 unique
+codes, BYTE-IDENTICAL to RUN 1's set. 78399db0 rewrote non_small_cell_lung_cancer.json's
+Stage_Observation into 4 states (Stage_Observation_I/II/III/IV) but all 4 are
+Observation-type (not ConditionOnset), so this doesn't touch the universe; c7d606d3
+only edited alzheimers.json's probability values, not codes. Universe file header
+updated to record this re-verification; content (the 150 codes) unchanged.
+
+-- 4.1 Prostate + global (mean encounters, top-share monoculture) --
+$ python3 tools_smoke_check.py --code 399068003 --sex M --eligible-min-age 55 \
+    --min-share 0.06 --max-share 0.18 --mean-encounters-min 30 \
+    --top-share-universe docs/superpowers/plans/2026-08-10-fork-condition-codes.txt \
+    --top-share-max 0.05
+eligible population (code=399068003, sex=M, min-age=55.0): n=795, n_with_dx=86
+share: 0.108  min=0.060 [OK]  max=0.180 [OK]
+mean encounters/patient: 325.24  min=30.00 [OK]
+top condition code (150-code fork universe): 125605004 (1986/352465 rows)
+top condition code share: 0.006  max=0.050 [OK]
+PASS: all requested bounds satisfied
+=> PASS
+
+-- 4.2 Bladder cancer (255108000) --
+$ python3 tools_smoke_check.py --code 255108000 --sex M --min-share 0.01 --max-share 0.06
+eligible population (code=255108000, sex=M, min-age=0.0): n=905, n_with_dx=16
+share: 0.018  min=0.010 [OK]  max=0.060 [OK]
+PASS: all requested bounds satisfied
+Raw male dx count: 16 (expectation ~18, floor ~9) => PASS
+
+-- 4.3 Pancreatic cancer (363418001) -- NEW, UNADJUDICATED FAIL --
+$ python3 tools_smoke_check.py --code 363418001 --min-share 0.003 --max-share 0.03
+eligible population (code=363418001, sex=any, min-age=0.0): n=1814, n_with_dx=4
+share of dx 363418001 in eligible pop: 0.002  min=0.003 [FAIL]  max=0.030 [OK]
+
+FAIL: share 0.0022 (4/1814) < min 0.003 floor. (RUN 1 measured 6/1809 = 0.0033, just
+above the floor.)
+
+Root-cause investigation (this was NOT touched by either adjudicated commit, confirmed):
+  $ git diff --stat 78399db0..c7d606d3 -- src/main/resources/modules/pancreatic_cancer.json
+  $ git diff --stat c3e19573..HEAD -- src/main/resources/modules/pancreatic_cancer.json
+  Both empty -- pancreatic_cancer.json is byte-identical across RUN 1 and RUN 2.
+
+This is a real, deterministic consequence of the current codebase + seed 4444 (Synthea
+with a fixed population seed is deterministic; re-running the identical command would
+reproduce n_with_dx=4 every time, not a flaky/intermittent result) -- but it is NOT a
+pancreatic-module regression. 78399db0 restructured non_small_cell_lung_cancer.json's
+Stage_Observation into 4 separate states, changing the number of state-transition
+random draws consumed by any person who develops NSCLC. Each person's `personSeed` is
+independent, but WITHIN one person's own simulation, changing an earlier-processed
+module's state-graph shape shifts that same person's subsequent random draws for
+whatever runs later in the same tick -- including, for people who happen to develop
+both NSCLC and pancreatic cancer or whose per-tick module iteration order interleaves
+with pancreatic_cancer.json's own onset roll, whether that person's independent
+pancreatic-onset draw lands positive or negative. This is exactly the fragility the
+original task brief flagged for this specific check ("the 1.8 deferred validation,
+power-appropriate floor"): at n~1800 with a true rate in the ~0.2-0.3% range, the
+0.003 floor requires >=6 events, and Poisson noise around a mean of ~5 events puts a
+non-trivial fraction of otherwise-correct runs below that floor on unrelated code
+changes elsewhere in the tree -- RUN 1 (6 events) barely cleared it, RUN 2 (4 events)
+does not.
+=> FAIL. Not one of the 3 adjudicated criteria and not something either adjudicated
+commit could have caused, but the controller's criterion 4 asked for re-verification,
+and this one does not re-verify. Flagging for controller attention per "do not fail
+silently" rather than silently treating it as passed.
+
+-- 4.4 Alzheimer's (26929004) -- ADJUDICATED ceiling 0.20 -- PASS --
+$ python3 tools_smoke_check.py --code 26929004 --eligible-min-age 65 --max-share 0.20
+eligible population (code=26929004, sex=any, min-age=65.0): n=1395, n_with_dx=241
+share of dx 26929004 in eligible pop: 0.173  max=0.200 [OK]
+onset age p5: 69.9  onset age p95: 87.9
+PASS: all requested bounds satisfied
+=> PASS under the adjudicated 0.20 ceiling (measured 0.173, comfortably clear;
+RUN 1 measured 0.171 against the old 0.15 ceiling -- essentially unchanged, as expected
+since c7d606d3 only touched hospice-election rates, not diagnosis probability).
+
+Custom-vs-stock attribution, re-measured (same careplan/med-signature method as RUN 1):
+  241 total AD-diagnosed patients (up from 238 in RUN 1, consistent with population
+  noise, not a rate change).
+  172 (71.4%) carry stock dementia.json's Dementia_CarePlan (386257007) signature.
+   55 (22.4%, custom-only, no stock careplan) carry alzheimers.json's unique drug
+      signature (lecanemab/donanemab/rivastigmine/memantine-10mg).
+    1 ( 0.4%) carry both signatures (the documented ~0.1%-of-population double-diagnosis
+      residual from the Task 5.2 gate's own honest-limit note).
+   15 ( 6.2%) carry neither (early deaths before any prescribing state fired).
+  Essentially identical to RUN 1's 71%/24%/1%/6% split -- confirms the ruling that this
+  is the untouched stock module driving the majority of AD diagnoses, and that split is
+  stable across runs.
+
+-- 4.5 Pneumonia (233604007) --
+$ python3 tools_smoke_check.py --code 233604007 --min-share 0.10 --max-share 0.45 --min-onset-age 1
+eligible population: n=1814, n_with_dx=668
+share: 0.368  min=0.100 [OK]  max=0.450 [OK]
+onset age p5: 2.1  min=1.0 [OK]  (p95: 80.8)
+PASS: all requested bounds satisfied
+=> PASS
+
+-- 4.6 Informational (no bounds) --
+MCL              443487006  n_with_dx=0     share=0.000
+CIDP             128209004  n_with_dx=2     share=0.001
+Ovarian (F only) 93796005   n_with_dx=8     share=0.009 (of 909 F)
+SLE              55464009   n_with_dx=4     share=0.002
+NSCLC            254637007  n_with_dx=48    share=0.026
+SCLC             254632001  n_with_dx=10    share=0.006
+DLBCL            1172695008 n_with_dx=5     share=0.003
+AML              91861009   n_with_dx=9     share=0.005  (onset p5=1.8, pediatric present)
+MDS              109995007  n_with_dx=3     share=0.002
+MG               91637004   n_with_dx=2     share=0.001
+PD               49049000   n_with_dx=9     share=0.005
+All broadly consistent with RUN 1, no material drift.
+
+Hospice election among AD decedents (ADJUDICATED NON-GATING, informational only --
+controller's ruling 2):
+  AD patients: 241; AD decedents (DEATHDATE set): 125.
+
+  POPULATION-WIDE (all AD decedents, both modules combined):
+    hospice (any reason): 100/125 = 80.0%
+    hospice (AD-reason-coded specifically): 92/125 = 73.6%
+  => Matches the controller's prediction ("population-wide will stay ~75-82%"): the
+  any-reason figure (80.0%) sits inside the band, the AD-reason-coded figure (73.6%)
+  sits just under it. Confirms this is a stock-dementia.json-owned follow-up, not a
+  gate failure -- correctly not gated per ruling 2.
+
+  FORK (custom alzheimers.json)-ATTRIBUTED AD DECEDENTS ONLY (the 55 custom-only-drug-
+  signature AD patients from section 4.4, intersected with decedents -> n=34):
+    hospice (any reason): 15/34 = 44.1%
+    hospice (AD-reason-coded specifically): 10/34 = 29.4%
+  => The any-reason figure (44.1%) is close to the controller's predicted ~50% (and to
+  c7d606d3's own back-solved 49.7% target for this module's standalone population),
+  within the noise expected at n=34. The AD-reason-coded figure (29.4%) runs lower,
+  likely because some fork-population hospice elections get reason-coded to a
+  comorbid/symptom code rather than the raw 26929004 code -- the same any-reason-vs-
+  reason-coded gap (about 6-15 points) shows up in the population-wide figures too, so
+  this isn't a fork-specific anomaly. Sample size (n=34) is small; treat as directional
+  confirmation that c7d606d3's back-solve landed close to its target, not as a tight
+  estimate.
+
+-- 4.7 Target drugs (>=1 medications.csv row each) --
+pegfilgrastim             10 rows   PASS
+daratumumab                4 rows   PASS
+pembrolizumab            148 rows   PASS
+aflibercept/ranibizumab  1134 rows  PASS
+IVIG                       7 rows   PASS
+lecanemab/donanemab      271 rows   PASS
+osimertinib                2 rows   PASS
+olaparib                   3 rows   PASS
+All 8 target drugs present. PASS.
+
+--- 5. Structural checks ---
+Blank-STOP encounters: 0 / 589,984.  PASS.
+Zero-duration (START==STOP) encounters: 0 / 589,984.  PASS.
+
+GDMT (CHF guideline-directed medical therapy) merged course duration (same 10-code
+list and closed-rows-only methodology as RUN 1: consecutive/overlapping CLOSED rows
+within a 2-day gap coalesced; open/blank-stop trailing rows excluded from the duration
+statistic):
+  Raw rows: 14,185 (660 blank STOP / still active at sim end).
+  Raw per-row (closed) duration: median 28 days, n=13,525.
+  Merged closed courses: n=607, median 1438 days, p25=578.5d, p75=2987d.
+  => PASS (median 1438d > 300d threshold, consistent with RUN 1's 1417.5d).
+
+Mean encounters/patient: 325.24, vs the Phase 1 gate's 328.25 reference and RUN 1's
+324.88 -- informational only, no drift of concern.
+
+--- 6. Universe file ---
+docs/superpowers/plans/2026-08-10-fork-condition-codes.txt content unchanged from RUN 1
+(150 codes / 47 modules); header updated to document the RUN 2 re-verification (see
+section 4.0). Committed alongside this artifact per the FINAL ADJUDICATION below.
+
+--- SUMMARY (RUN 2, pre-final-adjudication) ---
+Adjudicated criteria (1-3): ALL PASS.
+  1. Alzheimer's ceiling 0.20: measured 0.173. PASS. Attribution reconfirmed stable
+     (71% stock / 22% custom-only / 1% overlap / 6% unattributed).
+  2. Hospice election: reported, non-gating. Population-wide 73.6-80.0% (matches
+     predicted ~75-82%, stock-owned follow-up). Fork-attributed 29.4-44.1% (any-reason
+     figure close to predicted ~50%, small n=34).
+  3. 21908-9 exception: CONFIRMED GONE. 0 exceptions in the log, alive=1000/1000 exact.
+
+Criterion 4 (re-verify all else): ONE item required a second controller ruling.
+Pancreatic cancer's floor check (section 4.3) newly fails (0.0022 vs 0.003 min, n=4 vs
+required >=6), a Poisson-noise consequence of the NSCLC restructuring's downstream
+RNG-stream shift, NOT a regression in pancreatic_cancer.json itself (confirmed
+byte-identical across both runs). Every other re-verified item (prostate, bladder,
+pneumonia, monoculture, mean encounters, 8/8 target drugs, 0 blank-STOP/0
+zero-duration encounters, GDMT median span) still passes, materially unchanged from
+RUN 1. See "FINAL ADJUDICATION" immediately below for the controller's ruling on this
+item and the closing gate verdict.
+
+====================================================================
+FINAL ADJUDICATION (controller, 2026-08-11, on the sole remaining item)
+====================================================================
+Controller's ruling, recorded verbatim:
+
+  Pancreatic is ACCEPTED as Poisson-consistent, and the gate closes as an adjudicated
+  PASS. The module is byte-identical across both runs (run 1: 6/1809 = 0.0033 PASS;
+  run 2: 4/1814 = 0.0022), the delta is RNG-stream perturbation from an unrelated
+  module's graph change, the pooled estimate (10/3623 ≈ 0.0028) sits within one
+  standard deviation of the floor's implied event count (λ≈5 vs ~5.4), and the
+  module's calibration was verified by direct measurement twice upstream (Task 1.8's
+  1500-person harness: 9 observed vs 5.28 expected). Re-rolling seeds until the floor
+  passes would be seed-shopping -- the practice this workstream's own reviews
+  condemned -- so the two-run evidence stands.
+
+This closes the sole remaining open item from RUN 2's re-verification. Combined with
+adjudication criteria 1-3 (all PASS in RUN 2, section "SUMMARY" above), every gate
+criterion is now resolved.
+
+====================================================================
+GATE VERDICT (POST-ADJUDICATION)
+====================================================================
+GATE_PASS (adjudicated)
+
+  1. Alzheimer's ceiling (0.20): measured 0.173. PASS.
+  2. Hospice election: non-gating, reported (population-wide ~74-80%, stock-owned
+     follow-up; fork-attributed ~29-44%, consistent with the ~50% back-solve target).
+  3. 21908-9 exception: gone. 0 exceptions, alive=1000/1000 exact. PASS.
+  4. Pancreatic floor: ADJUDICATED PASS per the ruling above (two-run pooled evidence
+     10/3623 ≈ 0.0028, within 1 SD of the floor's implied event count; module
+     unchanged; not seed-shopped).
+  5. All other criteria (prostate, bladder, pneumonia, monoculture, mean encounters,
+     8/8 target drugs, 0 blank-STOP/0 zero-duration encounters, GDMT median span,
+     generation itself with BUILD SUCCESSFUL and no crash/disk exhaustion): PASS,
+     unchanged across both runs.
+
+Per gate instructions: with all criteria resolved to PASS (3 measured directly, 1
+adjudicated, the rest re-verified unchanged), this artifact and the refreshed universe
+file (docs/superpowers/plans/2026-08-10-fork-condition-codes.txt, 150 codes / 47
+fork modules, re-verified byte-identical at HEAD c7d606d3) are committed as:
+  chore(audit): phase 7 generation gate - full remediation verified (adjudicated)

@@ -236,6 +236,7 @@
         }
       ],
       "reason": "right_hf",
+      "chronic": true,
       "direct_transition": "Medication_Furosemide_Supply_Delay",
       "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx"
     },
@@ -249,6 +250,7 @@
         }
       ],
       "reason": "right_hf",
+      "chronic": true,
       "direct_transition": "Medication_Sildenafil_Supply_Delay",
       "assign_to_attribute": "sildenafil_20_mg_oral_tablet_rx"
     },
@@ -262,6 +264,7 @@
         }
       ],
       "reason": "right_hf",
+      "chronic": true,
       "direct_transition": "Medication_Bosentan_Supply_Delay",
       "assign_to_attribute": "bosentan_625_mg_oral_tablet_rx"
     },
@@ -426,6 +429,7 @@
     },
     "Inpatient_Diuresis": {
       "type": "MedicationOrder",
+      "chronic": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -764,6 +768,7 @@
     },
     "Ward_Diuresis": {
       "type": "MedicationOrder",
+      "chronic": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -825,6 +830,7 @@
         }
       ],
       "reason": "right_hf",
+      "chronic": true,
       "assign_to_attribute": "lisinopril_20_mg_oral_tablet_rx",
       "direct_transition": "Medication_Lisinopril_Supply_Delay"
     },

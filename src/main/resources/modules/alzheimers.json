@@ -369,6 +369,7 @@
     },
     "StartGalantamine": {
       "type": "MedicationOrder",
+      "chronic": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -381,6 +382,7 @@
     },
     "StartRivastigmine": {
       "type": "MedicationOrder",
+      "chronic": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -486,6 +488,7 @@
     },
     "AddMemantine": {
       "type": "MedicationOrder",
+      "chronic": true,
       "codes": [
         {
           "system": "RxNorm",

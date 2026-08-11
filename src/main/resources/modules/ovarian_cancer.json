@@ -543,6 +543,7 @@
     },
     "Neoadjuvant_Chemotherapy": {
       "type": "MedicationOrder",
+      "administration": true,
       "direct_transition": "Interval_Surgery",
       "codes": [
         {
@@ -570,6 +571,7 @@
     },
     "Adjuvant_Chemotherapy": {
       "type": "MedicationOrder",
+      "administration": true,
       "direct_transition": "Response_Assessment",
       "codes": [
         {
@@ -611,6 +613,7 @@
     },
     "PARP_Inhibitor_Maintenance": {
       "type": "MedicationOrder",
+      "chronic": true,
       "direct_transition": "Surveillance_Phase",
       "codes": [
         {
@@ -658,6 +661,7 @@
     },
     "Second_Line_Treatment": {
       "type": "MedicationOrder",
+      "administration": true,
       "direct_transition": "Palliative_Care",
       "codes": [
         {

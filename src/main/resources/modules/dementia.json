@@ -841,7 +841,21 @@
         "high": 14,
         "unit": "days"
       },
-      "condition_onset": "Pneumonia",
+      "referenced_by_attribute": "hospice_reason",
+      "remarks": [
+        "Task 2.11 (sweep): was condition_onset: \"Pneumonia\", at risk of the",
+        "renamed-entry null-cause bug -- 233604007 is also ConditionOnset'd",
+        "by cerebral_palsy.json, covid19/outcomes.json, pneumonia.json, and",
+        "primary_immunodeficiency.json, each under a different state name,",
+        "and HealthRecord.conditionStart is idempotent per code, so",
+        "whichever of those fires last on a comorbid patient renames the",
+        "shared present-map entry away from 'Pneumonia' and this state's",
+        "condition_onset scan silently records a null cause. Converted to",
+        "referenced_by_attribute (immune to the rename); hospice_reason is",
+        "this module's existing assign_to_attribute on the Pneumonia state",
+        "above (its only writer tree-wide, grep-verified), which dominates",
+        "this state (verified by dominator analysis)."
+      ],
       "direct_transition": "Admit to Hospice"
     },
     "Death": {

@@ -402,6 +402,7 @@
     "Start_HCQ": {
       "type": "MedicationOrder",
       "name": "Start_HCQ",
+      "chronic": true,
       "codes": [
         {
           "system": "RxNorm",

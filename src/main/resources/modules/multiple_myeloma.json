@@ -508,6 +508,7 @@
     },
     "Zoledronic_Acid": {
       "type": "MedicationOrder",
+      "chronic": true,
       "administration": true,
       "codes": [
         {
@@ -591,7 +592,8 @@
           "display": "lenalidomide"
         }
       ],
-      "direct_transition": "Maintenance_Lenalidomide_Cycle_Delay"
+      "direct_transition": "Maintenance_Lenalidomide_Cycle_Delay",
+      "chronic": true
     },
 
     "Maintenance_Lenalidomide_Cycle_Delay": {
@@ -902,6 +904,7 @@
           "display": "Sulfamethoxazole/Trimethoprim"
         }
       ],
+      "chronic": true,
       "direct_transition": "Transplant_Eligibility"
     },
     "Carfilzomib_Induction": {
@@ -914,6 +917,7 @@
           "display": "Carfilzomib"
         }
       ],
+      "chronic": true,
       "direct_transition": "Lenalidomide_KRd"
     },
 
@@ -926,12 +930,12 @@
           "display": "Lenalidomide"
         }
       ],
+      "chronic": true,
       "direct_transition": "Dexamethasone_KRd"
     },
 
     "Dexamethasone_KRd": {
       "type": "MedicationOrder",
-      "administration": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -939,6 +943,7 @@
           "display": "Dexamethasone"
         }
       ],
+      "chronic": true,
       "direct_transition": "Post_Induction_Supportive_Care"
     },
     "Cyclophosphamide": {
@@ -950,6 +955,7 @@
           "display": "Cyclophosphamide"
         }
       ],
+      "chronic": true,
       "direct_transition": "Bortezomib_CyBorD"
     },
 
@@ -1088,11 +1094,13 @@
           "display": "Lenalidomide"
         }
       ],
+      "chronic": true,
       "direct_transition": "Dexamethasone_VRd"
     },
 
     "Dexamethasone_VRd": {
       "type": "MedicationOrder",
+      "chronic": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -1117,6 +1125,7 @@
 
     "Lenalidomide_DaraVRd": {
       "type": "MedicationOrder",
+      "chronic": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -1129,6 +1138,7 @@
 
     "Dexamethasone_DaraVRd": {
       "type": "MedicationOrder",
+      "chronic": true,
       "codes": [
         {
           "system": "RxNorm",

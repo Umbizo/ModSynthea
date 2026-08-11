@@ -597,6 +597,18 @@
     },
     "AKI_Death": {
       "type": "Death",
+      "condition_onset": "AKI_Diagnosis",
+      "remarks": [
+        "Task 2.11 (sweep): had none of codes/condition_onset/",
+        "referenced_by_attribute -- null cause of death for every AKI death.",
+        "condition_onset (not referenced_by_attribute) because AKI_Diagnosis",
+        "has no assign_to_attribute; safe from the renamed-entry null-cause",
+        "trap (State.Death.process, condition_onset form) because 14669001",
+        "is not ConditionOnset'd by any other state tree-wide (grep-",
+        "verified), so nothing can overwrite the shared present-map entry's",
+        "name away from 'AKI_Diagnosis'. AKI_Diagnosis dominates this state",
+        "(verified by dominator analysis)."
+      ],
       "direct_transition": "Terminal"
     },
     "Terminal": {

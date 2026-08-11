@@ -324,6 +324,22 @@
     },
     "BenignFindings": {
       "type": "ConditionEnd",
+      "condition_onset": "EndometrialHyperplasia",
+      "remarks": [
+        "Task 2.11 (sweep): was a no-op ConditionEnd (no codes/condition_onset/",
+        "referenced_by_attribute -- ConditionEnd.process is a guarded no-op in",
+        "that state, not a crash, but it silently left EndometrialHyperplasia",
+        "as the tree's only never-ended condition). Pointed at",
+        "EndometrialHyperplasia for consistency with ProgressionToCancer/",
+        "RegressionToNormal below. On THIS specific branch it is itself a",
+        "true no-op either way: BenignFindings is reached directly from",
+        "PathologyResults (5% arm), the same state that alternatively routes",
+        "to EndometrialHyperplasia (15%) or EndometrialCancerDiagnosis (80%)",
+        "-- a patient on the BenignFindings arm never had",
+        "EndometrialHyperplasia onset, so OnsetConditionRecord.",
+        "getConditionFromState returns null and conditionEndByState no-ops",
+        "safely, same as before."
+      ],
       "direct_transition": "Terminal"
     },
     "EndometrialHyperplasia": {
@@ -425,6 +441,15 @@
     },
     "RegressionToNormal": {
       "type": "ConditionEnd",
+      "condition_onset": "EndometrialHyperplasia",
+      "remarks": [
+        "Task 2.11 (sweep): was a no-op ConditionEnd; see BenignFindings'",
+        "remark for the mechanism. Here it is a real fix -- this branch is",
+        "reached after progestin therapy resolves the hyperplasia (60% of",
+        "End_ProgesteroneTherapy), and EndometrialHyperplasia was previously",
+        "the tree's only never-ended condition, left permanently active for",
+        "every one of these patients."
+      ],
       "direct_transition": "Terminal"
     },
     "PersistentHyperplasia": {
@@ -433,6 +458,15 @@
     },
     "ProgressionToCancer": {
       "type": "ConditionEnd",
+      "condition_onset": "EndometrialHyperplasia",
+      "remarks": [
+        "Task 2.11 (sweep): was a no-op ConditionEnd; see BenignFindings'",
+        "remark for the mechanism. Here it is a real fix -- reached after",
+        "progestin therapy fails and hyperplasia progresses to cancer (10% of",
+        "End_ProgesteroneTherapy); ends the hyperplasia condition as the",
+        "distinct EndometrialCancerDiagnosis ConditionOnset (93781006) begins,",
+        "instead of leaving both active simultaneously forever."
+      ],
       "direct_transition": "EndometrialCancerDiagnosis"
     },
     "Hysterectomy_Hyperplasia_Encounter": {
@@ -610,6 +644,23 @@
           "display": "Pathology report cancer staging"
         }
       ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": "1222724007",
+        "display": "IA (AJCC)"
+      },
+      "remarks": [
+        "Task 2.11 (sweep, srdc_pipelines validate_synthea_modules.py finding):",
+        "this Observation had no value -- person.record.observation() accepts a",
+        "null value without throwing, but it exports a blank pathology-staging",
+        "result for every low-risk patient. Value now matches the FIGO/AJCC",
+        "stage this state's caller chain routes on (StageIA -> LowRiskDisease).",
+        "1222724007 is the generic, disease-agnostic AJCC stage-grouping",
+        "concept (active, Verhoeff-valid, verified via Ontoserver); the",
+        "endometrial-specific 'FIGO EC stage I A' (46756001) was checked first",
+        "and is fully retired (inactive=true), as is the whole FIGO EC stage",
+        "family -- not used."
+      ],
       "direct_transition": "StagingReview_Encounter_End_LowRisk"
     },
     "StagingReview_Encounter_End_LowRisk": {
@@ -647,6 +698,16 @@
           "code": "21905-5",
           "display": "Pathology report cancer staging"
         }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": "1222728005",
+        "display": "IB (AJCC)"
+      },
+      "remarks": [
+        "Task 2.11 (sweep): see LowRiskDisease_Action_1's remark for the",
+        "mechanism. Value matches this state's caller chain (StageIB ->",
+        "IntermediateRiskDisease); active, Verhoeff-valid AJCC stage code."
       ],
       "direct_transition": "StagingReview_Encounter_End_Intermediate"
     },
@@ -769,6 +830,16 @@
           "display": "Pathology report cancer staging"
         }
       ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": "1222765007",
+        "display": "II (AJCC)"
+      },
+      "remarks": [
+        "Task 2.11 (sweep): see LowRiskDisease_Action_1's remark for the",
+        "mechanism. Value matches this state's caller chain (StageII ->",
+        "HighIntermediateRiskDisease); active, Verhoeff-valid AJCC stage code."
+      ],
       "direct_transition": "StagingReview_Encounter_End_HighIntermediate"
     },
     "StagingReview_Encounter_End_HighIntermediate": {
@@ -871,6 +942,18 @@
           "code": "21905-5",
           "display": "Pathology report cancer staging"
         }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": "1222801008",
+        "display": "III (AJCC)"
+      },
+      "remarks": [
+        "Task 2.11 (sweep): see LowRiskDisease_Action_1's remark for the",
+        "mechanism. This state's caller (StageIII_IV) combines FIGO III and",
+        "IV into one attribute value without distinguishing them, so 'III",
+        "(AJCC)' -- the lower bound of the combined tier -- is used as the",
+        "representative staging finding; active, Verhoeff-valid."
       ],
       "direct_transition": "StagingReview_Encounter_End_Advanced"
     },
@@ -1716,6 +1799,19 @@
           "code": "30954-2",
           "display": "Relevant physical findings"
         }
+      ],
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": "281900007",
+        "display": "No abnormality detected"
+      },
+      "remarks": [
+        "Task 2.11 (sweep): see LowRiskDisease_Action_1's remark for the",
+        "mechanism. This is a routine post-treatment surveillance exam on a",
+        "patient not otherwise flagged with recurrence (RecurrenceCheck sits",
+        "upstream in NoEvidenceDisease's chain), so a normal/negative finding",
+        "is the representative value; active, Verhoeff-valid, widely used",
+        "elsewhere in the module tree for the same purpose."
       ],
       "complex_transition": [
         {

@@ -1110,6 +1110,7 @@
     },
     "RCHOP_Rituximab_Admin": {
       "type": "MedicationOrder",
+      "administration": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -1121,6 +1122,7 @@
     },
     "RCHOP_Cyclophosphamide_Admin": {
       "type": "MedicationOrder",
+      "administration": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -1132,6 +1134,7 @@
     },
     "RCHOP_Doxorubicin_Admin": {
       "type": "MedicationOrder",
+      "administration": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -1143,6 +1146,7 @@
     },
     "RCHOP_Vincristine_Admin": {
       "type": "MedicationOrder",
+      "administration": true,
       "codes": [
         {
           "system": "RxNorm",

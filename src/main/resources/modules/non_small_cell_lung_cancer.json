@@ -2909,8 +2909,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "1259237005",
-          "display": "Recurrent malignant neoplasm"
+          "code": "314954002",
+          "display": "Local recurrence of malignant neoplasm of lung"
         }
       ],
       "assign_to_attribute": "Recurrent Non-Small Cell Lung Cancer",

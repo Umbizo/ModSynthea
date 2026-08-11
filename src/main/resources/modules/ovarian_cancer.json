@@ -1730,8 +1730,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "1259237005",
-          "display": "Recurrent malignant neoplasm"
+          "code": "254849005",
+          "display": "Malignant epithelial neoplasm of ovary"
         }
       ],
       "assign_to_attribute": "Recurrent Ovarian Cancer",

@@ -2640,8 +2640,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "1259237005",
-          "display": "Recurrent malignant neoplasm"
+          "code": "234522008",
+          "display": "Disease relapse in transplant marrow"
         }
       ],
       "direct_transition": "AML_Transformation"

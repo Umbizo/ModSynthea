@@ -1704,8 +1704,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "25173007",
-          "display": "Recurrent tumour"
+          "code": "446022000",
+          "display": "Malignant epithelial neoplasm of uterus"
         }
       ],
       "remarks": [

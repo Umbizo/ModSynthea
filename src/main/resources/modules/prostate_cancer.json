@@ -1216,8 +1216,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "1259237005",
-          "display": "Recurrent malignant neoplasm"
+          "code": "1098981000119101",
+          "display": "Recurrent malignant neoplasm of prostate"
         }
       ],
       "direct_transition": "Start_ADT_Salvage"

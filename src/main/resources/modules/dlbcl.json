@@ -249,8 +249,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "118601006",
-          "display": "Diffuse large B-cell lymphoma"
+          "code": "1172695008",
+          "display": "Diffuse large B cell lymphoma"
         }
       ],
       "direct_transition": "PET_CT",
@@ -757,8 +757,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "1259237005",
-          "display": "Recurrent malignant neoplasm"
+          "code": "109969005",
+          "display": "Diffuse non-Hodgkin's lymphoma, large cell"
         }
       ],
       "direct_transition": "Salvage_Oncology_Encounter"
@@ -808,8 +808,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "1259237005",
-          "display": "Recurrent malignant neoplasm"
+          "code": "109969005",
+          "display": "Diffuse non-Hodgkin's lymphoma, large cell"
         }
       ],
       "direct_transition": "Salvage_Oncology_Encounter"

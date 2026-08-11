@@ -289,8 +289,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "430448007",
-          "display": "CT of neck and thorax"
+          "code": "75385009",
+          "display": "CT of thorax with contrast"
         }
       ],
       "direct_transition": "Biopsy_Decision"
@@ -633,8 +633,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "1259237005",
-          "display": "Recurrent malignant neoplasm"
+          "code": "314954002",
+          "display": "Local recurrence of malignant neoplasm of lung"
         }
       ],
       "direct_transition": "Second_Line_Therapy"

@@ -136,6 +136,7 @@
     },
     "Corticosteroids_Therapy": {
       "type": "MedicationOrder",
+      "chronic": true,
       "direct_transition": "Treatment_Response_Assessment",
       "codes": [
         {
@@ -211,6 +212,7 @@
     },
     "Second_Line_Treatment": {
       "type": "MedicationOrder",
+      "chronic": true,
       "direct_transition": "Followup_Response",
       "codes": [
         {

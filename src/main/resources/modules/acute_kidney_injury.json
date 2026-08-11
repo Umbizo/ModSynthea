@@ -471,7 +471,7 @@
         },
         {
           "distribution": 0.35,
-          "transition": "Progress_to_CKD"
+          "transition": "Progress_to_CKD_Encounter"
         },
         {
           "distribution": 0.5,
@@ -489,7 +489,7 @@
       "distributed_transition": [
         {
           "distribution": 0.15,
-          "transition": "Progress_to_CKD"
+          "transition": "Progress_to_CKD_Encounter"
         },
         {
           "distribution": 0.85,
@@ -510,6 +510,49 @@
       "type": "ConditionEnd",
       "condition_onset": "AKI_Diagnosis",
       "direct_transition": "AKI_Annual_Check"
+    },
+    "Progress_to_CKD_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "390906007",
+          "display": "Follow-up encounter (procedure)"
+        }
+      ],
+      "remarks": [
+        "Task 2.11 (sweep, P3b review finding): AKI_Outcome_Severe/Moderate",
+        "previously routed straight into Progress_to_CKD/CKD_Lisinopril with",
+        "no open encounter -- Nephrology_Followup_End had already closed the",
+        "last one, and AKI_Monitoring (7-21 day Delay) elapses in between, so",
+        "HealthRecord.currentEncounter() silently re-attached the new CKD",
+        "diagnosis and the lisinopril order to that stale, already-closed",
+        "follow-up encounter instead of throwing. This wraps both in their",
+        "own visit, reusing the same follow-up encounter code as",
+        "Nephrology_Followup above."
+      ],
+      "direct_transition": "AKI_ConditionEnd_CKD"
+    },
+    "AKI_ConditionEnd_CKD": {
+      "type": "ConditionEnd",
+      "condition_onset": "AKI_Diagnosis",
+      "remarks": [
+        "Task 2.11 (sweep, P3b review finding): the CKD-progression arm never",
+        "reached AKI_ConditionEnd, so Acute kidney injury (14669001) stayed",
+        "active in HealthRecord.present forever for every patient who",
+        "progressed to CKD -- concurrently with the new Chronic kidney",
+        "disease diagnosis below, which is what progression to CKD actually",
+        "means clinically. A dedicated state (rather than routing through",
+        "the existing AKI_ConditionEnd) because that one's own",
+        "direct_transition is AKI_Annual_Check, the recovery-arm's re-entry",
+        "point into the annual recurrence loop -- reusing it here would skip",
+        "Progress_to_CKD/CKD_Lisinopril entirely. This module's post-CKD",
+        "loop-back behavior (CKD_Lisinopril -> Terminal, not back into",
+        "AKI_Annual_Check) is unchanged; only the missing condition-end and",
+        "encounter wrap are in scope here."
+      ],
+      "direct_transition": "Progress_to_CKD"
     },
     "Progress_to_CKD": {
       "type": "ConditionOnset",
@@ -546,6 +589,10 @@
           "unit": "days"
         }
       },
+      "direct_transition": "Progress_to_CKD_Encounter_End"
+    },
+    "Progress_to_CKD_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "Terminal"
     },
     "AKI_Death": {

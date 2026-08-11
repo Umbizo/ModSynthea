@@ -255,7 +255,7 @@
       "distributed_transition": [
         {
           "distribution": 0.000159,
-          "transition": "Diagnose_SLE"
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
           "distribution": 0.999841,
@@ -273,7 +273,7 @@
       "distributed_transition": [
         {
           "distribution": 0.000068,
-          "transition": "Diagnose_SLE"
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
           "distribution": 0.999932,
@@ -291,7 +291,7 @@
       "distributed_transition": [
         {
           "distribution": 0.000076,
-          "transition": "Diagnose_SLE"
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
           "distribution": 0.999924,
@@ -315,7 +315,7 @@
       "distributed_transition": [
         {
           "distribution": 0.000104,
-          "transition": "Diagnose_SLE"
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
           "distribution": 0.999896,
@@ -333,7 +333,7 @@
       "distributed_transition": [
         {
           "distribution": 0.000057,
-          "transition": "Diagnose_SLE"
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
           "distribution": 0.999943,
@@ -370,7 +370,7 @@
       "distributed_transition": [
         {
           "distribution": 0.000024,
-          "transition": "Diagnose_SLE"
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
           "distribution": 0.999976,
@@ -389,7 +389,7 @@
       "distributed_transition": [
         {
           "distribution": 0.000009,
-          "transition": "Diagnose_SLE"
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
           "distribution": 0.999991,
@@ -408,7 +408,7 @@
       "distributed_transition": [
         {
           "distribution": 0.000004,
-          "transition": "Diagnose_SLE"
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
           "distribution": 0.999996,
@@ -428,7 +428,7 @@
       "distributed_transition": [
         {
           "distribution": 0.000038,
-          "transition": "Diagnose_SLE"
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
           "distribution": 0.999962,
@@ -447,7 +447,7 @@
       "distributed_transition": [
         {
           "distribution": 0.000008,
-          "transition": "Diagnose_SLE"
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
           "distribution": 0.999992,
@@ -520,6 +520,54 @@
             "unit": "years"
           },
           "transition": "Terminal"
+        }
+      ]
+    },
+    "Stock_Lupus_Dx_Guard": {
+      "type": "Simple",
+      "name": "Stock_Lupus_Dx_Guard",
+      "remarks": [
+        "CROSS-MODULE GATE (audit Class 7, task 5.2) -- SLE <-> stock lupus.json.",
+        "Contract: this module (SNOMED 55464009, 'Systemic lupus erythematosus')",
+        "and the stock module lupus.json (SNOMED 200936003, 'Lupus erythematosus')",
+        "model the same disease with no coordination, so before this fix a single",
+        "patient could carry both codes. The rule is FIRST-TO-DIAGNOSE WINS, and",
+        "it is enforced symmetrically: this state blocks our onset when the stock",
+        "code is already an Active Condition, and lupus.json's SLE_Dx_Guard blocks",
+        "its onset when 55464009 is already active.",
+        "Every one of the ten per-race/per-sex incidence rolls routes through here,",
+        "so 55464009 has exactly one entry point and exactly one gate. Neither",
+        "module ever emits a ConditionEnd for its code (verified by grep), so once",
+        "either code is present the corresponding Active Condition check is true",
+        "for the remainder of the patient's life -- there is no re-open window.",
+        "Losing the race sends the patient to Terminal rather than back into the",
+        "annual reroll: with the stock code already on the record the patient is a",
+        "diagnosed lupus patient and this module has nothing further to contribute.",
+        "Known, accepted asymmetry: home_hospice_snf.json's home-health eligibility",
+        "check lists 200936003 but not 55464009, so a patient gated out here loses",
+        "a home-health route they would previously have picked up from the stock",
+        "module. P(both modules firing for one patient) is about 4e-7 (P(SLE) ~1.3e-3",
+        "x P(stock lupus) ~3e-4), so the volume effect is nil. Adding 55464009 to",
+        "that stock Or-list was deliberately NOT done here: this module is roughly",
+        "5x more prevalent than stock lupus, so it would materially expand the",
+        "home-health-eligible pool -- a volume change outside this task's charter."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "200936003",
+                "display": "Lupus erythematosus (disorder)"
+              }
+            ]
+          },
+          "transition": "Terminal"
+        },
+        {
+          "transition": "Diagnose_SLE"
         }
       ]
     },

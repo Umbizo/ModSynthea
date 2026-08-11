@@ -63,7 +63,48 @@
         "high": 80,
         "unit": "years"
       },
-      "direct_transition": "Lupus"
+      "direct_transition": "SLE_Dx_Guard"
+    },
+    "SLE_Dx_Guard": {
+      "type": "Simple",
+      "remarks": [
+        "CROSS-MODULE GATE (audit Class 7, task 5.2) -- stock lupus <-> SLE.json.",
+        "SLE.json is a ModSynthea module that diagnoses the same disease under",
+        "SNOMED 55464009 ('Systemic lupus erythematosus') on an annual reroll",
+        "between ages 15 and 45. This module's own onset time is a single 25-80",
+        "year delay drawn at birth, so either module can win the race and both",
+        "orderings really occur; a gate on only one side would leave the other",
+        "ordering producing two lupus diagnoses on one patient.",
+        "Rule: FIRST-TO-DIAGNOSE WINS. If 55464009 is already an Active Condition",
+        "this module stands down entirely (Terminal) instead of adding 200936003.",
+        "Placed after Delay_Until_Lupus, i.e. immediately before the ConditionOnset,",
+        "so the check reads the record at the moment of onset and not at birth.",
+        "Symmetric partner: SLE.json's Stock_Lupus_Dx_Guard, which blocks 55464009",
+        "when 200936003 is already active. Neither module emits a ConditionEnd for",
+        "its code, so neither Active Condition check can ever go false again.",
+        "Terminal (not a re-delay) is correct: the entire downstream of this module",
+        "-- careplan, corticosteroid/immunosuppressant cycling, anemia submodule --",
+        "presupposes this module's own diagnosis, and SLE.json runs the equivalent",
+        "HCQ + flare follow-up loop for the patients gated out here."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "55464009",
+                "display": "Systemic lupus erythematosus"
+              }
+            ]
+          },
+          "transition": "Terminal"
+        },
+        {
+          "transition": "Lupus"
+        }
+      ]
     },
     "Lupus": {
       "type": "ConditionOnset",

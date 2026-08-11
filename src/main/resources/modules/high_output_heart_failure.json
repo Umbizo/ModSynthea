@@ -75,9 +75,12 @@
         "failure and the other three stand down.",
         "Only the primary code of each rival is tested. That is not a shortcut: the",
         "record key is codes[0] (HealthRecord.conditionStart keys `present` by",
-        "primaryCode), so high_output_heart_failure.json's secondary ICD-10 entries",
-        "I50.9 / I50.89 never enter `present` and cannot be matched by an Active",
-        "Condition check. No module in the tree emits a ConditionEnd for any of these",
+        "primaryCode), so a secondary entry can never be matched by an Active",
+        "Condition check anyway. (This module used to carry ICD-10-CM I50.9 / I50.89",
+        "as secondary entries on its onset; task 6.1 removed them -- ICD-10-CM is not",
+        "an export-map source system, so they were inert in the record and surfaced",
+        "only as scanner `bad-system` rows.)",
+        "No module in the tree emits a ConditionEnd for any of these",
         "four codes (verified by grep), so once one is set the other three modules'",
         "checks stay true for life.",
         "",
@@ -168,16 +171,6 @@
           "system": "SNOMED-CT",
           "code": "10091002",
           "display": "High output heart failure"
-        },
-        {
-          "system": "ICD-10-CM",
-          "code": "I50.9",
-          "display": "Heart failure, unspecified"
-        },
-        {
-          "system": "ICD-10-CM",
-          "code": "I50.89",
-          "display": "Other heart failure"
         }
       ],
       "direct_transition": "OnsetHighOutputHF_Action_3"
@@ -437,8 +430,8 @@
       "type": "Procedure",
       "codes": [
         {
-          "system": "CPT",
-          "code": "93306",
+          "system": "SNOMED-CT",
+          "code": "433236007",
           "display": "Transthoracic echocardiography"
         }
       ],
@@ -632,9 +625,12 @@
         "failure and the other three stand down.",
         "Only the primary code of each rival is tested. That is not a shortcut: the",
         "record key is codes[0] (HealthRecord.conditionStart keys `present` by",
-        "primaryCode), so high_output_heart_failure.json's secondary ICD-10 entries",
-        "I50.9 / I50.89 never enter `present` and cannot be matched by an Active",
-        "Condition check. No module in the tree emits a ConditionEnd for any of these",
+        "primaryCode), so a secondary entry can never be matched by an Active",
+        "Condition check anyway. (This module used to carry ICD-10-CM I50.9 / I50.89",
+        "as secondary entries on its onset; task 6.1 removed them -- ICD-10-CM is not",
+        "an export-map source system, so they were inert in the record and surfaced",
+        "only as scanner `bad-system` rows.)",
+        "No module in the tree emits a ConditionEnd for any of these",
         "four codes (verified by grep), so once one is set the other three modules'",
         "checks stay true for life.",
         "",

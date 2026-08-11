@@ -258,8 +258,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "113091000",
-          "display": "Magnetic resonance imaging of brain"
+          "code": "816077007",
+          "display": "MRI of brain"
         }
       ],
       "remarks": [
@@ -359,8 +359,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "113091000",
-          "display": "Magnetic resonance imaging of brain"
+          "code": "816077007",
+          "display": "MRI of brain"
         }
       ],
       "remarks": [
@@ -550,8 +550,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "113091000",
-          "display": "Magnetic resonance imaging of brain"
+          "code": "816077007",
+          "display": "MRI of brain"
         }
       ],
       "direct_transition": "End_Infusion_Visit"

@@ -2610,8 +2610,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "108290001",
-          "display": "Radiation oncology AND/OR radiotherapy"
+          "code": "33195004",
+          "display": "External beam radiation therapy procedure"
         }
       ],
       "direct_transition": "Chemoradiation_Visit_End",
@@ -4151,8 +4151,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "108290001",
-          "display": "Radiation oncology AND/OR radiotherapy"
+          "code": "33195004",
+          "display": "External beam radiation therapy procedure"
         }
       ],
       "direct_transition": "Salvage_Radiotherapy_Visit_End",
@@ -4474,8 +4474,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "108290001",
-          "display": "Radiation oncology AND/OR radiotherapy"
+          "code": "33195004",
+          "display": "External beam radiation therapy procedure"
         }
       ],
       "direct_transition": "Palliative_Radiation_Visit_End",

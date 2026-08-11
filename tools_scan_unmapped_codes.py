@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
-"""Scan modules (recursively) for codes the RIF export maps cannot map."""
-import argparse, csv, glob, json, os, sys
+"""Scan modules (recursively) for codes the RIF export maps cannot map.
+
+Also checks the export maps themselves for duplicate top-level keys. Gson
+(CodeMapper's parser) silently keeps the LAST duplicate, so a second row for a
+code already in the map shadows the first with no error anywhere -- python's
+json.load hides it the same way. See the 113091000 (brain vs spine MRI) and
+10847001 (bronchoscopy) incidents.
+"""
+import argparse, collections, csv, glob, json, os, sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 MOD = os.path.join(ROOT, 'src', 'main', 'resources', 'modules')
@@ -24,8 +31,23 @@ def verhoeff_ok(num):
     return c == 0
 
 def load(name):
+    """Return (map, duplicate top-level keys) for an export map.
+
+    object_pairs_hook sees the raw key order of every object before dict()
+    collapses duplicates. Each decoded object is stashed against its identity
+    (holding a strong reference so ids cannot be recycled mid-parse), then the
+    object json.load actually returns -- the top level -- is looked up.
+    """
+    seen = {}
+    def hook(pairs):
+        obj = dict(pairs)
+        seen[id(obj)] = (obj, [k for k, _ in pairs])
+        return obj
     with open(os.path.join(EXP, name)) as f:
-        return json.load(f)
+        data = json.load(f, object_pairs_hook=hook)
+    keys = seen.get(id(data), (None, []))[1]
+    dups = sorted(k for k, n in collections.Counter(keys).items() if n > 1)
+    return data, dups
 
 def main():
     ap = argparse.ArgumentParser()
@@ -33,9 +55,16 @@ def main():
                     help='relative module path(s) to scan; default all')
     ap.add_argument('--csv', help='also write full-tree results to this CSV')
     args = ap.parse_args()
-    med, jmap = load('medication_code_map.json'), load('rxnorm_hcpcs_map.json')
-    cond, proc = load('condition_code_map.json'), load('hcpcs_code_map.json')
     rows = []
+    maps = {}
+    for name in ('medication_code_map.json', 'rxnorm_hcpcs_map.json',
+                 'condition_code_map.json', 'hcpcs_code_map.json'):
+        maps[name], dups = load(name)
+        for key in dups:
+            rows.append(('dup-map-key', '', f'{key} (Gson keeps the last entry)',
+                         f'export/{name}'))
+    med, jmap = maps['medication_code_map.json'], maps['rxnorm_hcpcs_map.json']
+    cond, proc = maps['condition_code_map.json'], maps['hcpcs_code_map.json']
     for f in sorted(glob.glob(os.path.join(MOD, '**', '*.json'), recursive=True)):
         rel = os.path.relpath(f, MOD)
         if os.path.sep in rel and rel.split(os.path.sep)[0] == 'lookup_tables':

@@ -533,7 +533,19 @@
         "model does not stratify treatment intensity/fitness, and reuses",
         "Response_Assessment's 60% CR -- realistic for frontline induction -- for",
         "salvage rounds too, where real CR rates are considerably lower). Flagged",
-        "as a follow-up concern, not fixed here (out of this round's scope)."
+        "as a follow-up concern, not fixed here (out of this round's scope).",
+        "",
+        "FIX ROUND 2 (reviewer): the 0.5988/0.5095/0.3868 figures above described",
+        "a graph that round 1 did not actually build -- Surveillance's counter ran",
+        "before its relapse roll, so discharge fired after only 4 real rolls, not",
+        "5 (see Surveillance_Outcome_Check's remarks). Re-sequenced so the roll",
+        "happens first; this state's math (q = 0.5989*p, p = 0.2 + 0.8*(0.6*q +",
+        "0.4*p) = 0.5095, P(death|diagnosed) = 0.3869) now matches the shipped",
+        "graph. Confirmed by re-deriving both the buggy 4-roll chain (relapse-in-",
+        "window 0.5185, p(death|relapsed) 0.4639, p(death|diagnosed) 0.3299,",
+        "48.15% cure) and the fixed 5-roll chain (0.5989 / 0.5095 / 0.3869,",
+        "40.11% cure) independently in Python -- both match the reviewer's",
+        "figures (0.5185/0.4639/0.3299/48.2% buggy; exact solve + 400k MC)."
       ],
       "distributed_transition": [
         {
@@ -559,7 +571,10 @@
         "attached to whatever encounter was most recent in the person's overall",
         "record (HealthRecord.currentEncounter's fallback, State.java/",
         "HealthRecord.java) rather than a dedicated visit. Every salvage cycle now",
-        "opens its own ambulatory encounter."
+        "opens its own ambulatory encounter.",
+        "Fix round 2 (reviewer): reason corrected from the non-resolving literal",
+        "'relapsed_acute_myeloid_leukemia' to 'acute_myeloid_leukemia' -- see",
+        "Relapsed_Venetoclax_Therapy's remarks for the mechanism."
       ],
       "encounter_class": "ambulatory",
       "codes": [
@@ -569,12 +584,24 @@
           "display": "Encounter for symptom"
         }
       ],
-      "reason": "relapsed_acute_myeloid_leukemia",
+      "reason": "acute_myeloid_leukemia",
       "direct_transition": "Relapsed_Venetoclax_Therapy"
     },
     "Relapsed_Venetoclax_Therapy": {
       "type": "MedicationOrder",
-      "reason": "relapsed_acute_myeloid_leukemia",
+      "remarks": [
+        "Fix round 2 (reviewer): reason was 'relapsed_acute_myeloid_leukemia',",
+        "which matches neither an attribute name nor a state name anywhere in",
+        "this module and so resolves to nothing (State.java:1560ish's reason",
+        "resolution, same three-branch check as Encounter's -- see AML_Diagnosis's",
+        "round-1 remarks for the mechanism): this salvage encounter and its",
+        "medication order billed with no diagnosis. Pointed at 'acute_myeloid_",
+        "leukemia' (the attribute AML_Condition assigns) instead of inventing a",
+        "separate relapse ConditionOnset -- relapsed AML is still AML for claims",
+        "purposes, and this is the same attribute Azacitidine_Administration and",
+        "Venetoclax_Therapy already use for the frontline course."
+      ],
+      "reason": "acute_myeloid_leukemia",
       "assign_to_attribute": "relapsed_venetoclax",
       "chronic": true,
       "codes": [
@@ -655,10 +682,46 @@
         "high": 13,
         "unit": "months"
       },
-      "direct_transition": "Count_Surveillance_Year"
+      "direct_transition": "Surveillance_Relapse_Roll"
+    },
+    "Surveillance_Relapse_Roll": {
+      "type": "Simple",
+      "remarks": [
+        "0.167/yr -- see Surveillance_Outcome_Check's remarks for the derivation",
+        "against a ~40% 5-year cure target (Dohner et al. 2015 NEJM). Cumulative",
+        "relapse probability within the 5-year discharge window = 1 - 0.4011 =",
+        "0.5989, the figure Relapse_Mortality_Check's remarks use as 'q's",
+        "coefficient.",
+        "",
+        "Fix round 2 (reviewer): the roll now happens BEFORE the year is counted",
+        "(direct_transition from Surveillance lands here first) -- round 1 had",
+        "Count_Surveillance_Year increment and Surveillance_Outcome_Check test",
+        "the threshold BEFORE this roll, which let a patient reach year 5 and",
+        "discharge without ever rolling that 5th year's relapse risk: only 4",
+        "real rolls occurred, not 5. See Surveillance_Outcome_Check's remarks",
+        "for the corrected sequencing and the recomputed chain."
+      ],
+      "distributed_transition": [
+        {
+          "transition": "Relapsed_AML",
+          "distribution": 0.167
+        },
+        {
+          "transition": "Count_Surveillance_Year",
+          "distribution": 0.833
+        }
+      ]
     },
     "Count_Surveillance_Year": {
       "type": "Counter",
+      "remarks": [
+        "Fix round 2 (reviewer): moved to fire only on the 'survived this year'",
+        "(0.833) branch of Surveillance_Relapse_Roll, not unconditionally before",
+        "the roll. A relapse in any year does not count toward the 5-consecutive-",
+        "relapse-free-years streak (correct -- 'consecutive' requires surviving",
+        "the year), and every survived year now genuinely gets counted and rolled",
+        "exactly once before discharge can trigger."
+      ],
       "attribute": "aml_surveillance_years",
       "action": "increment",
       "direct_transition": "Surveillance_Outcome_Check"
@@ -678,7 +741,21 @@
         "survivors/cured). Surveillance_Relapse_Roll's annual rate is calibrated so",
         "P(5 consecutive relapse-free years) ~= 0.40: solving (1-p)^5 = 0.40 gives",
         "p = 1 - 0.40^(1/5) = 0.1674/yr; rounded to 0.167 below.",
-        "Check: (1-0.167)^5 = 0.833^5 = 0.4012 (~40.1%, matches target)."
+        "Check: (1-0.167)^5 = 0.833^5 = 0.4011 (~40.1%, matches target).",
+        "",
+        "FIX ROUND 2 (reviewer): round 1 reached this check by counting the year",
+        "BEFORE the roll happened (Surveillance -> Count_Surveillance_Year ->",
+        "here -> Surveillance_Relapse_Roll), so a patient discharged at year 5",
+        "had only rolled 4 times, not 5: (1-0.167)^4 = 0.4815 cure, i.e. 48.2% --",
+        "not the intended ~40%. Reviewer's exact solve (matching an independent",
+        "400k-person Monte Carlo) of the full Relapse_Mortality_Check chain under",
+        "that 4-roll graph: relapse-within-window 0.5185, P(death|relapsed)",
+        "0.4639, P(death|diagnosed) 0.3299. Now fixed by re-sequencing so the",
+        "roll (Surveillance_Relapse_Roll) happens first and only the 'survived'",
+        "branch reaches Count_Surveillance_Year -> here -- 5 real rolls occur",
+        "before year-5 discharge can trigger, restoring the originally-intended",
+        "~40.1% cure / 59.89% relapse-in-window figures used throughout this",
+        "module's remarks (Surveillance_Relapse_Roll, Relapse_Mortality_Check)."
       ],
       "conditional_transition": [
         {
@@ -697,27 +774,7 @@
             "operator": "<",
             "value": 5
           },
-          "transition": "Surveillance_Relapse_Roll"
-        }
-      ]
-    },
-    "Surveillance_Relapse_Roll": {
-      "type": "Simple",
-      "remarks": [
-        "0.167/yr -- see Surveillance_Outcome_Check's remarks for the derivation",
-        "against a ~40% 5-year cure target (Dohner et al. 2015 NEJM). Cumulative",
-        "relapse probability within the 5-year discharge window = 1 - 0.4012 =",
-        "0.5988, the figure Relapse_Mortality_Check's remarks use as 'q's",
-        "coefficient."
-      ],
-      "distributed_transition": [
-        {
-          "transition": "Relapsed_AML",
-          "distribution": 0.167
-        },
-        {
-          "transition": "Surveillance",
-          "distribution": 0.833
+          "transition": "Surveillance"
         }
       ]
     },

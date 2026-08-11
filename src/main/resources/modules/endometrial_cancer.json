@@ -380,6 +380,14 @@
     },
     "ProgesteroneTherapy": {
       "type": "MedicationOrder",
+      "remarks": [
+        "refills 1 (task 6.1): the course is order -> FollowUpBiopsy Delay of 3-6",
+        "months -> End_ProgesteroneTherapy, i.e. 91-183 days, but a fill covers at",
+        "most a 90-day supply and PrescriptionFill.refillsRemaining() is false at",
+        "fill 1 when refills is unset -- so the whole course exported as one Part D",
+        "fill. One refill covers the 6-month end of the range; the exporter stops at",
+        "medication.stop, so 3-month courses still get their single fill."
+      ],
       "reason": "EndometrialHyperplasia",
       "assign_to_attribute": "progesterone_therapy",
       "codes": [
@@ -399,7 +407,8 @@
         "duration": {
           "quantity": 90,
           "unit": "days"
-        }
+        },
+        "refills": 1
       },
       "direct_transition": "ProgesteroneTherapy_Encounter_End"
     },

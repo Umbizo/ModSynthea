@@ -1430,7 +1430,14 @@
         "the ingredient concept 1597582, because only a clinical-drug concept",
         "can be resolved to an NDC for the PDE export.",
         "Fixed 2-year course (SOLO-1), ended by Stop_Olaparib_Course after 8",
-        "quarterly surveillance visits, or early at recurrence."
+        "quarterly surveillance visits, or early at recurrence.",
+        "refills 8 (task 6.1): PDEExporter caps one fill at a 90-day supply and,",
+        "with refills unset, PrescriptionFill.refillsRemaining() is false at fill 1",
+        "-- so this whole 2-year course used to export as a SINGLE Part D fill. The",
+        "course runs 8 x 80-100 days = 640-800 days, and 9 fills x 90 days = 810",
+        "days covers its maximum. Refills is only a ceiling: the exporter's loop",
+        "condition is time < medication.stop, so no fill is generated past the",
+        "modelled course, including the early-recurrence exit."
       ],
       "codes": [
         {
@@ -1440,6 +1447,9 @@
         }
       ],
       "reason": "Ovarian Cancer",
+      "prescription": {
+        "refills": 8
+      },
       "direct_transition": "Set_PARP_Active"
     },
     "Set_PARP_Active": {

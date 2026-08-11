@@ -2067,7 +2067,14 @@
         "administration:true. The code is the RxNorm SCD 1721581, not the",
         "ingredient 1721560 the pre-fix module used, because only a clinical",
         "drug concept resolves to an NDC for the PDE export. Continued until",
-        "progression, then closed by Stop_Osimertinib."
+        "progression, then closed by Stop_Osimertinib.",
+        "refills 27 (task 6.1): without it PrescriptionFill stops after fill 1, so",
+        "a median-18.9-month therapy exported as one 90-day Part D fill. This arm",
+        "has no fixed length -- TKI_Progression_Check stops it at 0.104 per ~90-day",
+        "pass -- so the ceiling is set at the 95th percentile of that geometric",
+        "distribution: 0.896^28 = 0.046, i.e. 28 fills. Refills never extends",
+        "therapy (the exporter loops only while time < medication.stop); the 4.6%",
+        "of courses running past 28 passes are truncated, which is the residual."
       ],
       "codes": [
         {
@@ -2077,6 +2084,9 @@
         }
       ],
       "reason": "Non-Small Cell Lung Cancer",
+      "prescription": {
+        "refills": 27
+      },
       "direct_transition": "Set_TKI_Active"
     },
     "Set_TKI_Active": {

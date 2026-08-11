@@ -429,7 +429,6 @@
     },
     "Inpatient_Diuresis": {
       "type": "MedicationOrder",
-      "chronic": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -768,7 +767,6 @@
     },
     "Ward_Diuresis": {
       "type": "MedicationOrder",
-      "chronic": true,
       "codes": [
         {
           "system": "RxNorm",

@@ -91,10 +91,28 @@
     "encounters from this module; a full-tree run gets them from",
     "hospice_treatment.json with a correct `reason`.",
     "",
-    "KNOWN COORDINATION GAP (deferred to Task 5.2, deliberately not addressed",
-    "here): stock dementia.json independently diagnoses the same SNOMED 26929004",
-    "with no cross-gating. Measured at the Phase 1 gate: combined 65+ share 0.166",
-    "vs 0.078 for this module alone."
+    "COORDINATION WITH stock dementia.json (Task 5.2, group 2 -- CLOSED). Both",
+    "modules diagnose SNOMED 26929004 and had no cross-gating; dementia.json also",
+    "diagnoses 230265002 (familial early-onset AD) from the same encounter. The",
+    "two are now mutually exclusive, first-to-diagnose wins, gated on both sides:",
+    "Stock_Dementia_Dx_Guard / Stock_Dementia_Dx_Recheck here, and",
+    "Custom_AD_Dx_Guard / Custom_AD_Dx_Recheck in dementia.json (which tests this",
+    "module's `alzheimers_disease` attribute).",
+    "The single most damaging consequence this closes is NOT the duplicate",
+    "diagnosis -- HealthRecord.conditionStart is idempotent per code, so 26929004",
+    "never produced two condition rows -- it is dementia.json's EndFirstPrescription",
+    "(MedicationEnd, referenced_by_attribute 'Alzheimer's Medication'). Because",
+    "HealthRecord.medicationStart is idempotent per RxCUI, dementia.json's donepezil",
+    "997223 / galantamine 310436 orders bound that attribute to THIS module's",
+    "already-open chronic order, and the MedicationEnd then ran",
+    "HealthRecord.chronicMedicationEnd on it -- deleting the lifelong refill stream",
+    "for the ~80% of this module's patients on those two drugs. See",
+    "task-4.2-report.md section 5 item 3 and task-5.2-report.md group 2.",
+    "What the gate does NOT do: it does not move the Phase 1 gate's combined 65+",
+    "26929004 share of 0.166 (vs 0.078 for this module alone). Mutual exclusion",
+    "removes overlapping care pathways, not patients -- the union of the two",
+    "modules' diagnosed populations is unchanged by construction. That 0.166 is a",
+    "calibration question for whoever owns the ceiling, not a coordination bug."
   ],
   "gmf_version": 2,
   "states": {
@@ -653,7 +671,7 @@
       "distributed_transition": [
         {
           "distribution": 0.1,
-          "transition": "AD_Diagnosis_Visit"
+          "transition": "Stock_Dementia_Dx_Guard"
         },
         {
           "distribution": 0.05,
@@ -680,6 +698,58 @@
       "direct_transition": "Terminal"
     },
 
+    "Stock_Dementia_Dx_Guard": {
+      "type": "Simple",
+      "remarks": [
+        "CROSS-MODULE GATE (audit Class 7, task 5.2 group 2) -- this module <->",
+        "stock dementia.json. Closes the KNOWN COORDINATION GAP recorded in this",
+        "module's header remarks and in task-4.2-report.md section 5.",
+        "Rule: FIRST-TO-DIAGNOSE WINS. dementia.json records the very same SNOMED",
+        "26929004 from its AlzheimersOnset arm, and 230265002 (familial early-onset",
+        "AD) from its PreEarlyOnsetAlzheimers arm; both are checked here because",
+        "both are a dementia diagnosis on the same patient. If either is already",
+        "an Active Condition this module stands down (Terminal) rather than adding",
+        "a second, parallel AD care pathway.",
+        "This is the only entry point to AD_Diagnosis_Visit -> MildDementia, so",
+        "26929004 has exactly one gate on this side.",
+        "Terminal, not a return to Annual_MCI_Progression_Check: the patient keeps",
+        "the MCI condition this module already gave them and dementia.json owns",
+        "their AD course from here (staging, ChEIs, MMSE, hospice via",
+        "`Type of Alzheimer's`). Rerouting into the reroll loop would just retry",
+        "the same blocked diagnosis every year.",
+        "Timing note (why a second check follows the visit): AD_Diagnosis_Visit is",
+        "a non-wellness Encounter, and State.Encounter.process returns false --",
+        "i.e. blocks across ticks -- while another module holds the person's",
+        "encounter lock. So passing this gate does not guarantee the diagnosis",
+        "lands in the same tick, and dementia.json could win the race in between.",
+        "Stock_Dementia_Dx_Recheck re-tests immediately before MildDementia, where",
+        "the chain to the ConditionOnset really is Delay-free and atomic."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "26929004",
+                "display": "Alzheimer's disease (disorder)"
+              },
+              {
+                "system": "SNOMED-CT",
+                "code": "230265002",
+                "display": "Familial Alzheimer's disease of early onset (disorder)"
+              }
+            ]
+          },
+          "transition": "Terminal"
+        },
+        {
+          "transition": "AD_Diagnosis_Visit"
+        }
+      ]
+    },
+
     "AD_Diagnosis_Visit": {
       "type": "Encounter",
       "encounter_class": "ambulatory",
@@ -695,7 +765,67 @@
         "Task 4.2: the AD diagnosis used to fire before its memory-clinic visit",
         "opened (reported by Task 1.6, deferred here). Encounter first now."
       ],
-      "direct_transition": "MildDementia"
+      "direct_transition": "Stock_Dementia_Dx_Recheck"
+    },
+
+    "Stock_Dementia_Dx_Recheck": {
+      "type": "Simple",
+      "remarks": [
+        "CROSS-MODULE GATE, second half (task 5.2 group 2). Same test as",
+        "Stock_Dementia_Dx_Guard, re-run after the memory-clinic visit has",
+        "actually opened. This is the check that makes the exclusion airtight on",
+        "this side: from here to MildDementia there is no Delay and no blocking",
+        "state, and module processing is single-threaded per person per tick, so",
+        "no other module can diagnose between this test and our ConditionOnset.",
+        "Using the CODE (not dementia.json's `Type of Alzheimer's` attribute) is",
+        "deliberate: that attribute is set at dementia.json's AlzheimersOnset,",
+        "which precedes its diagnosis by years of undiagnosed prodrome, and about",
+        "38% of the population passes through that prodrome. Gating on it would",
+        "suppress this module for roughly a third of the elderly and would push",
+        "the combined 26929004 prevalence BELOW either module's own calibration.",
+        "Gating on the recorded diagnosis keeps the union of the two modules",
+        "exactly what it was -- see the report for why 5.2 therefore does not, and",
+        "cannot, move the Phase 1 gate's 0.166 combined 65+ share.",
+        "Cost of a hit here: this patient keeps one ambulatory 'encounter for",
+        "problem' with reason = their MCI entry and no further clinical content.",
+        "That is a real memory-clinic follow-up visit, so it is left in the record",
+        "rather than suppressed."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "26929004",
+                "display": "Alzheimer's disease (disorder)"
+              },
+              {
+                "system": "SNOMED-CT",
+                "code": "230265002",
+                "display": "Familial Alzheimer's disease of early onset (disorder)"
+              }
+            ]
+          },
+          "transition": "End_Gated_AD_Diagnosis_Visit"
+        },
+        {
+          "transition": "MildDementia"
+        }
+      ]
+    },
+
+    "End_Gated_AD_Diagnosis_Visit": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Closes the memory-clinic visit opened by AD_Diagnosis_Visit when",
+        "Stock_Dementia_Dx_Recheck hands the patient to dementia.json. Required:",
+        "leaving the encounter open would hold this person's encounter lock",
+        "forever -- the exact Class 6 defect the audit recorded for",
+        "high_output_heart_failure.json."
+      ],
+      "direct_transition": "Terminal"
     },
 
     "MildDementia": {
@@ -1613,17 +1743,33 @@
 
     "Death_From_Alzheimers": {
       "type": "Death",
-      "condition_onset": "MildDementia",
+      "referenced_by_attribute": "alzheimers_disease",
       "remarks": [
         "Single Death state, reached from the mild, moderate, community-severe and",
         "long-term-care annual/periodic checks and from the hospice period. Task",
         "1.6 introduced mortality (the pre-1.6 module had no Death state at all);",
         "Task 4.2 spreads it across the stages instead of concentrating it in one",
-        "end-stage arm. `condition_onset: MildDementia` makes AD the recorded",
-        "cause of death, so 100% of this module's deaths carry the diagnosis.",
+        "end-stage arm. AD is the recorded cause of death, so 100% of this",
+        "module's deaths carry the diagnosis.",
         "No encounter is open at any of the five call sites: every one of them is",
         "reached from a Delay that sits after an EncounterEnd (verified by the",
-        "both-context BFS -- see the report)."
+        "both-context BFS -- see the report).",
+        "Task 5.2: switched from `condition_onset: MildDementia` to",
+        "`referenced_by_attribute: alzheimers_disease`, which resolves to the same",
+        "26929004 entry in the normal case but is immune to one residual",
+        "cross-module effect. State.Death resolves `condition_onset` by scanning",
+        "person.record.present for an entry whose `name` equals the state name",
+        "(State.java, Death.process). HealthRecord.conditionStart is idempotent per",
+        "code, and State.ConditionOnset.diagnose overwrites `entry.name` on the",
+        "entry it gets back -- so if dementia.json's deferred AlzheimersOnset is",
+        "diagnosed onto our already-present 26929004, the entry is renamed to",
+        "'AlzheimersOnset' and the by-name scan finds nothing, silently recording",
+        "a death with a NULL cause. The attribute holds the Entry object itself, so",
+        "it survives the rename. Safety: `alzheimers_disease` is assigned by",
+        "MildDementia, which dominates every path to this state (verified by BFS",
+        "from Initial with MildDementia removed -- this state becomes unreachable),",
+        "so the RuntimeException that Death.process throws for an unset referenced",
+        "attribute cannot fire."
       ],
       "direct_transition": "Terminal"
     },

@@ -206,9 +206,10 @@
             "operator": ">",
             "value": 40
           },
-          "transition": "DiagnosisEncounter",
+          "transition": "Custom_AD_Dx_Guard",
           "remarks": [
-            "if the symptom is sufficiently noticeable enough people can be diagnosed in this stage, if not they will be diagnosed in the next stage"
+            "if the symptom is sufficiently noticeable enough people can be diagnosed in this stage, if not they will be diagnosed in the next stage",
+            "Task 5.2: routed via Custom_AD_Dx_Guard instead of straight to DiagnosisEncounter."
           ]
         },
         {
@@ -225,6 +226,64 @@
         }
       ]
     },
+    "Custom_AD_Dx_Guard": {
+      "type": "Simple",
+      "remarks": [
+        "CROSS-MODULE GATE (audit Class 7, task 5.2 group 2) -- stock dementia <->",
+        "ModSynthea's alzheimers.json. Both modules diagnose SNOMED 26929004 with",
+        "no coordination; this module additionally diagnoses 230265002 from the",
+        "same encounter. Rule: FIRST-TO-DIAGNOSE WINS. If alzheimers.json has",
+        "already diagnosed, this module stands down (Terminal) instead of running a",
+        "second, parallel AD course on the same patient.",
+        "The test is the ATTRIBUTE `alzheimers_disease`, not Active Condition",
+        "26929004, and that is load-bearing. `alzheimers_disease` is assigned by",
+        "alzheimers.json's MildDementia ConditionOnset and is written by nothing",
+        "else in the tree (verified by grep: the only other hits are alz.org URLs",
+        "in this file's own remarks). The code cannot be used at the twin",
+        "Custom_AD_Dx_Recheck below, because by the time that state runs THIS",
+        "module has just recorded 26929004 itself -- the code test would be true",
+        "for every patient. One signal is used at both gates so the two cannot",
+        "disagree.",
+        "What this closes, in order of importance:",
+        "1. EndFirstPrescription. HealthRecord.medicationStart is idempotent per",
+        "   RxCUI, so this module's FirstPrescription2 (donepezil 997223) and",
+        "   FirstPrescription1 (galantamine 310436) bind 'Alzheimer's Medication'",
+        "   to alzheimers.json's ALREADY-OPEN chronic order for the same drug;",
+        "   EndFirstPrescription then reaches HealthRecord.medicationEnd ->",
+        "   chronicMedicationEnd and deletes that patient's lifelong ChEI refill",
+        "   stream (~80% of alzheimers.json's patients are on one of those two",
+        "   drugs). Blocking DiagnosisEncounter closes this completely:",
+        "   ModerateDecline only reaches ModeratelySevere_Encounter -- the sole",
+        "   route to EndFirstPrescription -- on its PriorState DiagnosisEncounter",
+        "   branch, and Dementia_CarePlan/FirstPrescription* are reachable only",
+        "   downstream of DiagnosisEncounter.",
+        "2. Two parallel dementia care pathways (careplan, MMSE series, ChEI and",
+        "   memantine arms, staging encounters) billed for one disease.",
+        "3. Entry.name corruption on the shared 26929004 condition -- see",
+        "   Custom_AD_Dx_Recheck.",
+        "Not a duplicate condition ROW: HealthRecord.conditionStart is idempotent",
+        "per code, so co-diagnosis never produced two 26929004 rows. The audit's",
+        "'double diagnosis' framing overstates that part; the damage was the",
+        "duplicated pathway and the medication strip.",
+        "Timing: DiagnosisEncounter is `wellness: true`, so State.Encounter.process",
+        "blocks until the encounter module's next wellness visit -- this guard's",
+        "verdict can be up to about a year stale by the time the encounter opens.",
+        "Custom_AD_Dx_Recheck re-tests once it has."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "alzheimers_disease",
+            "operator": "is not nil"
+          },
+          "transition": "Terminal"
+        },
+        {
+          "transition": "DiagnosisEncounter"
+        }
+      ]
+    },
     "DiagnosisEncounter": {
       "type": "Encounter",
       "wellness": true,
@@ -232,8 +291,63 @@
         "This is the enounter where alzheimer's is diagnosed. ",
         "Typical life expectancy after an Alzheimer’s diagnosis is 4-to-8 years. (Alzheimer’s Association)"
       ],
-      "direct_transition": "Diagnosis_MMSE_Score",
+      "direct_transition": "Custom_AD_Dx_Recheck",
       "reason": "Type of Alzheimer's"
+    },
+    "Custom_AD_Dx_Recheck": {
+      "type": "Simple",
+      "remarks": [
+        "CROSS-MODULE GATE, second half (task 5.2 group 2). Same `alzheimers_disease`",
+        "test as Custom_AD_Dx_Guard, re-run after the wellness encounter has opened,",
+        "to catch an alzheimers.json diagnosis that landed during the wellness wait.",
+        "Everything that does the damage sits downstream of here -- Dementia_CarePlan,",
+        "FirstPrescription*, and (via ModerateDecline's PriorState branch) the whole",
+        "ModeratelySevere arm including EndFirstPrescription -- so a hit here closes",
+        "the chronic-ChEI strip and the duplicate care pathway completely, in both",
+        "orderings.",
+        "HONEST LIMIT, and the one thing this gate CANNOT undo: State.Encounter.process",
+        "calls diagnosePastConditions BEFORE handing control to this state, so a",
+        "patient who reaches here already had AlzheimersOnset diagnosed onto the",
+        "record. Because conditionStart is idempotent that adds no second row, but",
+        "State.ConditionOnset.diagnose does `entry.name = this.name` on the entry it",
+        "gets back, renaming alzheimers.json's shared 26929004 entry to",
+        "'AlzheimersOnset', and it sets `Type of Alzheimer's` to that entry.",
+        "The rename used to break alzheimers.json's Death_From_Alzheimers, which",
+        "resolved its cause of death by scanning for entry.name == 'MildDementia';",
+        "task 5.2 re-pointed that state at its `alzheimers_disease` attribute, which",
+        "holds the Entry object and survives the rename, so the residual is now",
+        "cosmetic. Exposure: only patients whose alzheimers.json diagnosis falls",
+        "inside the wellness-wait window (order 0.1% of the 65+ population).",
+        "Fixing it properly would mean making this module's diagnosis encounter",
+        "non-wellness, which changes ambulatory encounter volume -- out of scope",
+        "for a coordination task."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "alzheimers_disease",
+            "operator": "is not nil"
+          },
+          "transition": "End_Gated_Diagnosis_Encounter"
+        },
+        {
+          "transition": "Diagnosis_MMSE_Score"
+        }
+      ]
+    },
+    "End_Gated_Diagnosis_Encounter": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Releases the wellness encounter when Custom_AD_Dx_Recheck hands the patient",
+        "to alzheimers.json. Mirrors End_Diagnosis_Encounter but goes to Terminal",
+        "instead of ModerateDecline, so none of the downstream prescribing or",
+        "MedicationEnd states can be reached. Ending it is required rather than",
+        "optional: State.EncounterEnd clears this module's ACTIVE_WELLNESS_ENCOUNTER",
+        "key, and skipping it would leave the module holding a wellness check-in it",
+        "never releases."
+      ],
+      "direct_transition": "Terminal"
     },
     "Diagnosis_MMSE_Score": {
       "type": "Observation",
@@ -392,7 +506,15 @@
               "name": "DiagnosisEncounter"
             }
           },
-          "transition": "DiagnosisEncounter"
+          "transition": "Custom_AD_Dx_Guard",
+          "remarks": [
+            "Task 5.2: routed via Custom_AD_Dx_Guard instead of straight to",
+            "DiagnosisEncounter. The PriorState test still names DiagnosisEncounter",
+            "-- the question is whether the diagnosis visit has happened, and the",
+            "guard is not that visit. A patient gated out at the guard goes to",
+            "Terminal and never re-enters ModerateDecline, so this branch cannot",
+            "spin."
+          ]
         },
         {
           "condition": {

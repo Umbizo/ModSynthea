@@ -704,6 +704,18 @@
     },
     "Death_From_SCLC": {
       "type": "Death",
+      "referenced_by_attribute": "Small Cell Lung Cancer",
+      "remarks": [
+        "Task 2.11 (sweep): had none of codes/condition_onset/",
+        "referenced_by_attribute -- State.Death.process leaves `reason` null",
+        "unconditionally in that case, so every SCLC death recorded a null",
+        "cause of death. `Small Cell Lung Cancer` is assign_to_attribute'd by",
+        "Pathology_Diagnosis, which dominates this state (every path to",
+        "Death_From_SCLC passes through Pathology_Diagnosis first --",
+        "verified by dominator analysis over the module's state graph), so",
+        "the attribute is guaranteed set and this cannot throw the",
+        "'referenced but not yet diagnosed' RuntimeException."
+      ],
       "direct_transition": "Terminal"
     },
     "Terminal": {

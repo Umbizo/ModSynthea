@@ -531,6 +531,28 @@
       "type": "EncounterEnd",
       "direct_transition": "Response_Assessment"
     },
+    "Maintenance_Mercaptopurine_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for oncology service"
+        }
+      ],
+      "remarks": [
+        "Task 2.11 (sweep): Remission_Symptoms_Improved previously",
+        "transitioned straight to Maintenance_Mercaptopurine with no",
+        "encounter open (ALL_Monitoring_End had already closed the",
+        "monitoring encounter, well before Response_Assessment/",
+        "Adult_Treatment_Response/Pediatric_Treatment_Response/ALL_",
+        "Remission run). Wraps only the prescribing moment -- the delay",
+        "below stays closed-before-blocked, same idiom as ALL_Monitoring",
+        "elsewhere in this module."
+      ],
+      "direct_transition": "Maintenance_Mercaptopurine"
+    },
     "Maintenance_Mercaptopurine": {
       "type": "MedicationOrder",
       "assign_to_attribute": "maintenance_6mp",
@@ -554,6 +576,10 @@
           "unit": "days"
         }
       },
+      "direct_transition": "Maintenance_Mercaptopurine_Encounter_End"
+    },
+    "Maintenance_Mercaptopurine_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "Maintenance_Mercaptopurine_Supply_Delay"
     },
     "Rapid_Disease_Progression": {
@@ -873,7 +899,7 @@
         "low": 10,
         "high": 30
       },
-      "direct_transition": "Maintenance_Mercaptopurine"
+      "direct_transition": "Maintenance_Mercaptopurine_Encounter"
     },
     "Long_Term_Follow_Up": {
       "type": "Delay",

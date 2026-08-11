@@ -684,6 +684,7 @@
     },
     "Prescribe_Aspirin": {
       "type": "MedicationOrder",
+      "chronic": true,
       "reason": "PV_Condition_Onset",
       "remarks": [
         "FIX 1: Aspirin is LIFELONG therapy - duration set to 50 years.",
@@ -692,7 +693,10 @@
         "Contraindications: extreme thrombocytosis >1500e9/L, active bleeding, acquired vWD.",
         "Reduces microvascular events and CVD (ECLAP trial, Landolfi 2004 NEJM).",
         "FIX 2: Aspirin is ended (MedicationEnd state) when anticoagulation is initiated.",
-        "Concurrent aspirin + anticoagulation: major bleeding HR 5.83 (ECLAP data)."
+        "Concurrent aspirin + anticoagulation: major bleeding HR 5.83 (ECLAP data).",
+        "MERGE (master): chronic:true ported -- consistent with FIX 1 (lifelong);",
+        "the FIX 2 MedicationEnd is a clinical discontinuation event, not the end",
+        "of a fixed course, and medicationEnd removes it from chronicMedications."
       ],
       "codes": [
         {
@@ -857,6 +861,7 @@
     },
     "Prescribe_Hydroxyurea": {
       "type": "MedicationOrder",
+      "chronic": true,
       "reason": "PV_Condition_Onset",
       "remarks": [
         "RxNorm: 202591 - Hydroxyurea 500 MG Oral Capsule.",
@@ -864,7 +869,9 @@
         "amount:2 frequency:1 = 1000 mg/day starting dose.",
         "Reduces thrombotic risk vs phlebotomy alone (PVSG data; ECLAP subanalysis).",
         "Resistance/intolerance: ~15-25% at 5 years (ELN 2011 criteria).",
-        "Adverse effects: cytopenias, leg ulcers, mucocutaneous toxicity, fever."
+        "Adverse effects: cytopenias, leg ulcers, mucocutaneous toxicity, fever.",
+        "MERGE (master): chronic:true ported -- HU cytoreduction in PV continues",
+        "indefinitely; the only stop is Switch_To_Ruxolitinib on resistance."
       ],
       "codes": [
         {
@@ -1384,8 +1391,11 @@
     "Prescribe_Hydroxyurea_Post_Event": {
       "type": "MedicationOrder",
       "reason": "PV_Condition_Onset",
+      "chronic": true,
       "remarks": [
-        "Initiating HU post-thrombotic event in previously untreated patient."
+        "Initiating HU post-thrombotic event in previously untreated patient.",
+        "MERGE (master): chronic:true ported -- same drug and same indefinite",
+        "cytoreduction as Prescribe_Hydroxyurea."
       ],
       "codes": [
         {
@@ -1443,13 +1453,16 @@
     "Prescribe_Ruxolitinib": {
       "type": "MedicationOrder",
       "reason": "PV_Condition_Onset",
+      "chronic": true,
       "remarks": [
         "RxNorm: 1373464 - Ruxolitinib 5 MG Oral Tablet.",
         "FDA-approved for HU-resistant/intolerant PV (December 2014).",
         "Starting dose PV: 10 mg BID = 2 x 5mg tablets twice daily (amount:2 frequency:2).",
         "RESPONSE trial: hematocrit control 60% vs 20%; primary endpoint 21% vs 1%.",
         "Adverse effects: anaemia, thrombocytopenia, herpes zoster reactivation,",
-        "non-melanoma skin cancer (long-term monitoring required)."
+        "non-melanoma skin cancer (long-term monitoring required).",
+        "MERGE (master): chronic:true ported -- ruxolitinib is continued until",
+        "loss of response or death; no MedicationEnd stops it in this module."
       ],
       "codes": [
         {
@@ -1497,6 +1510,7 @@
     },
     "Switch_To_Busulfan": {
       "type": "MedicationOrder",
+      "chronic": true,
       "reason": "PV_Condition_Onset",
       "remarks": [
         "RxNorm: 1860384 - Busulfan 2 MG Oral Tablet.",
@@ -1504,7 +1518,9 @@
         "Induction: 4-6 mg/day until response; maintenance 2-4 mg/day or pulsed.",
         "amount:2 frequency:1 = 4mg/day (induction range lower end).",
         "Effective and well-tolerated in elderly PV; secondary leukaemia risk lower",
-        "than historically thought at standard therapeutic doses."
+        "than historically thought at standard therapeutic doses.",
+        "MERGE (master): chronic:true ported -- this is the terminal cytoreductive",
+        "switch, modelled with an ongoing maintenance dose and no MedicationEnd."
       ],
       "codes": [
         {

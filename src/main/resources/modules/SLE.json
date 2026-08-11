@@ -629,6 +629,13 @@
     "Start_HCQ": {
       "type": "MedicationOrder",
       "name": "Start_HCQ",
+      "remarks": [
+        "MERGE (master): chronic:true ported. Hydroxychloroquine is the SLE",
+        "backbone -- continued indefinitely, including through remission; no",
+        "MedicationEnd exists anywhere in this module, so wellness auto-renewal",
+        "is the correct claims behaviour for genuinely lifelong therapy."
+      ],
+      "chronic": true,
       "codes": [
         {
           "system": "RxNorm",

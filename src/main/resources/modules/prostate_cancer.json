@@ -904,6 +904,15 @@
     },
     "Start_ADT_Systemic": {
       "type": "MedicationOrder",
+      "remarks": [
+        "MERGE (master): chronic:true on the old 'Systemic_Therapy'/'Salvage_Therapy'",
+        "states REJECTED. Depot leuprolide is a clinician-administered injection",
+        "(administration:true -> J9217), and continuation is already modelled",
+        "explicitly by Continue_ADT on the Advanced_Disease_Monitoring loop. chronic",
+        "alongside administration records both an administration and a prescription",
+        "for the same order (State.java:1527-1536) and would stack a second,",
+        "wellness-driven depot series on top of Continue_ADT."
+      ],
       "codes": [
         {
           "system": "RxNorm",

@@ -212,6 +212,13 @@
     },
     "Corticosteroids_Therapy": {
       "type": "MedicationOrder",
+      "remarks": [
+        "MERGE (master): chronic:true REJECTED. This is a fixed-course prednisone",
+        "induction/taper (~8-12 weeks) that End_Corticosteroids_Course explicitly",
+        "stops; chronic would auto-renew it at every wellness visit for the rest of",
+        "the patient's life. Contrast Second_Line_Treatment (azathioprine), which is",
+        "genuinely open-ended and already carries chronic:true on both sides."
+      ],
       "direct_transition": "End_Diagnostic_Treatment_Encounter",
       "codes": [
         {

@@ -1,9 +1,11 @@
 {
-  "name": "Multiple Myeloma Claims Realistic",
+  "name": "Multiple Myeloma",
   "remarks": [
     "Merged disease-natural-history and claims-utilization multiple myeloma module",
     "Preserves MGUS \u2192 smoldering \u2192 active MM progression",
-    "Adds Medicare oncology utilization realism for BB2 RIF generation"
+    "Adds Medicare oncology utilization realism for BB2 RIF generation",
+    "MERGE (master): renamed from 'Multiple Myeloma Claims Realistic'. No file in",
+    "this tree references the old display name; module loading is by filename."
   ],
   "states": {
     "Initial": {
@@ -572,6 +574,13 @@
     },
     "Zoledronic_Maintenance": {
       "type": "MedicationOrder",
+      "remarks": [
+        "MERGE (master): master's 90-day Zoledronic_Delay before Relapse_Check is",
+        "already expressed here -- this state is reached only from Stable_MM, a 1-3",
+        "month Delay, so the maintenance/relapse loop is spaced exactly as master",
+        "intended. Inserting a second 90-day delay would roughly halve the measured",
+        "MM_Longitudinal_Monitoring cadence."
+      ],
       "administration": true,
       "codes": [
         {
@@ -768,6 +777,15 @@
     },
     "Zoledronic_Acid": {
       "type": "MedicationOrder",
+      "remarks": [
+        "MERGE (master): chronic:true REJECTED. This is the single acute IV",
+        "bisphosphonate dose given during a hypercalcaemia admission, not ongoing",
+        "therapy -- chronic would auto-renew an inpatient IV drug at every wellness",
+        "visit for life, and combined with administration:true it would record both",
+        "an administration and a prescription for the same order",
+        "(State.java:1527-1536). Ongoing bisphosphonate is already modelled",
+        "separately by Zoledronic_Maintenance on the Stable_MM loop."
+      ],
       "administration": true,
       "codes": [
         {
@@ -881,6 +899,15 @@
     },
     "Hospice_Check": {
       "type": "Simple",
+      "remarks": [
+        "MERGE (master): master's 0.70/0.30 re-weighting REJECTED. It was written",
+        "against the pre-remediation graph where this state was ORPHANED (see the",
+        "Task 2.9 note on Relapse_Check) and was made reachable only by master's",
+        "flat 10% Relapse_Check branch, which bypasses the 4-line salvage cap. In",
+        "our structure Hospice_Check is entered once salvage is exhausted and loops",
+        "back to monitoring, so cumulative hospice election is already high. A",
+        "measured re-calibration of this split is a follow-up, not a merge action."
+      ],
       "distributed_transition": [
         {
           "transition": "Hospice_Enrollment",
@@ -939,6 +966,25 @@
       "type": "MedicationOrder",
       "reason": "Multiple myeloma",
       "assign_to_attribute": "maintenance_lenalidomide",
+      "remarks": [
+        "MERGE (master): chronic:true ported. Post-ASCT lenalidomide maintenance is",
+        "continued until progression or intolerance -- ongoing therapy, not a fixed",
+        "protocol course -- and Maintenance_Lenalidomide_Delay (12-36 months) is our",
+        "stochastic model of time-to-progression, not a protocol duration. Without",
+        "chronic the whole 1-3 year maintenance exported as ONE Part D fill.",
+        "Safe with the existing MedicationEnd: State.java:1622-1625 ends by",
+        "medication.type, and HealthRecord.medicationEnd calls chronicMedicationEnd,",
+        "so Maintenance_Lenalidomide_End still stops it and removes it from",
+        "person.chronicMedications (the attribute pointing at the pre-renewal object",
+        "is only used to read the type). Master's version of this state ALSO dropped",
+        "'assign_to_attribute' -- REJECTED: that would NPE in MedicationEnd, which",
+        "dereferences the attribute before reading the type.",
+        "Master's 28-day Maintenance_Lenalidomide_Cycle_Delay loop is REJECTED",
+        "separately: it deleted Maintenance_Lenalidomide_Encounter_End, so the",
+        "Induction_Chemotherapy_Encounter would have been held open across an",
+        "unbounded chain of 28-day delays -- the encounter-lock defect class."
+      ],
+      "chronic": true,
       "codes": [
         {
           "system": "RxNorm",

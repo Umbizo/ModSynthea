@@ -1437,7 +1437,11 @@
         "course runs 8 x 80-100 days = 640-800 days, and 9 fills x 90 days = 810",
         "days covers its maximum. Refills is only a ceiling: the exporter's loop",
         "condition is time < medication.stop, so no fill is generated past the",
-        "modelled course, including the early-recurrence exit."
+        "modelled course, including the early-recurrence exit.",
+        "MERGE (master): chronic:true on the old 'PARP_Inhibitor_Maintenance' state",
+        "REJECTED. This is a FIXED 2-year SOLO-1 course with two MedicationEnds --",
+        "exactly the case the chronic invariant excludes -- and the refills ceiling",
+        "above already delivers the recurring Part D fills master was after."
       ],
       "codes": [
         {

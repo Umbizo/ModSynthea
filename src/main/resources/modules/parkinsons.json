@@ -178,8 +178,25 @@
         "the engine's wellness-visit renewal mechanism (State.java:963,",
         "person.chronicMedications) never touches it, so it exports exactly one",
         "claim per patient ever, for a drug taken for the rest of the patient's",
-        "life. Same idiom/precedent as Task 1.7's GDMT chronic-medication fix."
+        "life. Same idiom/precedent as Task 1.7's GDMT chronic-medication fix.",
+        "MERGE (master): prescription dosage/duration ported (1 tab TID, 30-day",
+        "supply). duration does not set medication.stop -- it only feeds",
+        "Medication.getQuantity() and PrescriptionFill.initDaysAndQuantity, so the",
+        "chronic course is unaffected and the Part D line now carries a real",
+        "quantity (3/day) instead of the default 1/day."
       ],
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 3,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        }
+      },
       "direct_transition": "StartLevodopaMonotherapy_Encounter_End"
     },
     "InitialResponsePeriod": {
@@ -267,8 +284,21 @@
       "reason": "has_parkinsons",
       "chronic": true,
       "remarks": [
-        "Task 2.2 fix round 1: chronic:true, same reasoning as StartLevodopaMonotherapy."
+        "Task 2.2 fix round 1: chronic:true, same reasoning as StartLevodopaMonotherapy.",
+        "MERGE (master): prescription dosage/duration ported (1 tab BID, 30-day supply)."
       ],
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 2,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        }
+      },
       "direct_transition": "AddDopamineAgonist_Encounter_End"
     },
     "AddCOMTInhibitor": {
@@ -283,8 +313,21 @@
       "reason": "has_parkinsons",
       "chronic": true,
       "remarks": [
-        "Task 2.2 fix round 1: chronic:true, same reasoning as StartLevodopaMonotherapy."
+        "Task 2.2 fix round 1: chronic:true, same reasoning as StartLevodopaMonotherapy.",
+        "MERGE (master): prescription dosage/duration ported (1 tab TID, 30-day supply)."
       ],
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 3,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        }
+      },
       "direct_transition": "AddCOMTInhibitor_Encounter_End"
     },
     "StablePeriod": {
@@ -320,7 +363,7 @@
             "operator": "==",
             "value": true
           },
-          "transition": "AddAmantadine"
+          "transition": "PD_Amantadine_Encounter"
         },
         {
           "condition": {
@@ -329,12 +372,33 @@
             "operator": "==",
             "value": true
           },
-          "transition": "AddMAOBInhibitor"
+          "transition": "PD_MAOB_Initial_Encounter"
         },
         {
           "transition": "AdvancedSymptoms"
         }
       ]
+    },
+    "PD_Amantadine_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "remarks": [
+        "MERGE (master): ported. MedicationAdjustment is reached from StablePeriod",
+        "(a 2-4 year Delay), so AddAmantadine used to fire with NO encounter open --",
+        "HealthRecord.currentEncounter then attaches the order to the previous,",
+        "already-closed encounter, backdating the drug to that visit. Master wrapped",
+        "the order in its own visit; ported with the matching EncounterEnd our",
+        "structure requires (master's version closed nothing here)."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "AddAmantadine"
     },
     "AddAmantadine": {
       "type": "MedicationOrder",
@@ -348,9 +412,43 @@
       "reason": "has_parkinsons",
       "chronic": true,
       "remarks": [
-        "Task 2.2 fix round 1: chronic:true, same reasoning as StartLevodopaMonotherapy."
+        "Task 2.2 fix round 1: chronic:true, same reasoning as StartLevodopaMonotherapy.",
+        "MERGE (master): prescription dosage/duration ported (1 cap BID, 30-day supply)."
       ],
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 2,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        }
+      },
+      "direct_transition": "PD_Amantadine_Encounter_End"
+    },
+    "PD_Amantadine_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "AdvancedSymptoms"
+    },
+    "PD_MAOB_Initial_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "remarks": [
+        "MERGE (master): ported, same rationale as PD_Amantadine_Encounter -- the",
+        "rasagiline start had no open encounter to attach to."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "AddMAOBInhibitor"
     },
     "AddMAOBInhibitor": {
       "type": "MedicationOrder",
@@ -364,8 +462,29 @@
       "reason": "has_parkinsons",
       "chronic": true,
       "remarks": [
-        "Task 2.2 fix round 1: chronic:true, same reasoning as StartLevodopaMonotherapy."
+        "Task 2.2 fix round 1: chronic:true, same reasoning as StartLevodopaMonotherapy.",
+        "MERGE (master): prescription dosage/duration ported (1 tab daily, 30-day",
+        "supply). Master also recoded this to RxNorm 896781 -- REJECTED: 608328 is",
+        "the SCD already carrying verified 'rasagiline 1 MG Oral Tablet' NDC rows in",
+        "medication_code_map.json, while 896781 has no row in any export map and",
+        "would open a med->NDC scanner gap."
       ],
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 1,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        }
+      },
+      "direct_transition": "AddMAOBInhibitor_Encounter_End"
+    },
+    "AddMAOBInhibitor_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "AdvancedSymptoms"
     },
     "AdvancedSymptoms": {
@@ -555,17 +674,60 @@
       "distributed_transition": [
         {
           "distribution": 0.4,
-          "transition": "LCIG_Therapy"
+          "transition": "LCIG_Encounter"
         },
         {
           "distribution": 0.3,
-          "transition": "ApomorphinePump"
+          "transition": "Apomorphine_Encounter"
         },
         {
           "distribution": 0.3,
           "transition": "PalliativeCareReferral"
         }
       ]
+    },
+    "LCIG_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "remarks": [
+        "MERGE (master): ported. AdvancedTherapiesEvaluation is entered with no",
+        "encounter open (DBSFollowUp_Encounter_End and DBSEvaluation both leave it",
+        "closed), so the LCIG start had no visit to attach to. Master's version had",
+        "no close on the DBS/AdvancedTherapies path; ported with the EncounterEnd."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "LCIG_Therapy"
+    },
+    "LCIG_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "PalliativeCareReferral"
+    },
+    "Apomorphine_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "remarks": [
+        "MERGE (master): ported, same rationale as LCIG_Encounter."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "reason": "has_parkinsons",
+      "direct_transition": "ApomorphinePump"
+    },
+    "Apomorphine_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "PalliativeCareReferral"
     },
     "LCIG_Therapy": {
       "type": "MedicationOrder",
@@ -583,7 +745,7 @@
         "-- LCIG (Duopa) is a continuous, ongoing advanced-therapy infusion, not a",
         "one-off order."
       ],
-      "direct_transition": "PalliativeCareReferral"
+      "direct_transition": "LCIG_Encounter_End"
     },
     "ApomorphinePump": {
       "type": "MedicationOrder",
@@ -598,9 +760,14 @@
       "chronic": true,
       "remarks": [
         "Task 2.2 fix round 1: chronic:true, same reasoning as StartLevodopaMonotherapy",
-        "-- apomorphine pump is ongoing advanced-therapy, not a one-off order."
+        "-- apomorphine pump is ongoing advanced-therapy, not a one-off order.",
+        "MERGE (master): administration:true REJECTED here. With chronic:true also",
+        "set, State.java:1527-1536 records BOTH a MedicationAdministration and a",
+        "chronic prescription for the same order, double-counting the drug; the pump",
+        "is a patient-administered continuous home infusion, correctly modelled as",
+        "ongoing Part D therapy (199929 has an NDC row in medication_code_map)."
       ],
-      "direct_transition": "PalliativeCareReferral"
+      "direct_transition": "Apomorphine_Encounter_End"
     },
     "DementiaOnset": {
       "type": "ConditionOnset",

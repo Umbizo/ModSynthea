@@ -2142,7 +2142,11 @@
         "pass -- so the ceiling is set at the 95th percentile of that geometric",
         "distribution: 0.896^28 = 0.046, i.e. 28 fills. Refills never extends",
         "therapy (the exporter loops only while time < medication.stop); the 4.6%",
-        "of courses running past 28 passes are truncated, which is the residual."
+        "of courses running past 28 passes are truncated, which is the residual.",
+        "MERGE (master): chronic:true on the old 'Targeted Therapy' state REJECTED.",
+        "The refills ceiling above is the measured Task 6.1 expression of the same",
+        "recurring-fill intent; chronic would add wellness auto-renewals on top of",
+        "it and fight Stop_Osimertinib, which ends the drug at progression."
       ],
       "codes": [
         {

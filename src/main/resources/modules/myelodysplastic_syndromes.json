@@ -1468,8 +1468,14 @@
         "MDS-003 trial: ~67% TI; ~45% cytogenetic response.",
         "Screen for TP53 mutation before starting: co-mutation → AML risk with lenalidomide.",
         "Requires REMS enrolment (RevAssist programme — teratogenicity).",
-        "AML transformation on lenalidomide (TP53 co-mutated del5q): up to 25–30%."
+        "AML transformation on lenalidomide (TP53 co-mutated del5q): up to 25–30%.",
+        "MERGE (master): chronic:true ported. Revlimid is an oral specialty-pharmacy",
+        "(Part D) drug taken 21-of-28 days continuously until progression, and no",
+        "MedicationEnd in this module stops it -- so it is genuinely ongoing therapy",
+        "and wellness auto-renewal is the correct claims behaviour. Contrast the",
+        "azacitidine note below, where the drug is administered, not dispensed."
       ],
+      "chronic": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -1695,7 +1701,10 @@
         "medication_code_map NDC row.",
         "Dosing: 5 mg/kg/day PO in 2 divided doses; adjust to trough 150–250 ng/mL.",
         "Continued for 12–18 months in responders; taper gradually.",
-        "Monitor: renal function, blood pressure, drug levels monthly."
+        "Monitor: renal function, blood pressure, drug levels monthly.",
+        "MERGE (master): chronic:true REJECTED. The dosing note above models a",
+        "12-18-month tapered IST course, not lifelong therapy; chronic would",
+        "auto-renew it at every wellness visit for the rest of the patient's life."
       ],
       "codes": [
         {
@@ -2173,7 +2182,13 @@
         "administration is itself the clinical event. Azacitidine_Order_Guard",
         "(above) already prevents this state from re-ordering/re-stacking on",
         "every HMA_Azacitidine_Encounter re-entry; sibling HMA_Decitabine_",
-        "Encounter's Decitabine_Medication is non-chronic for the same reason."
+        "Encounter's Decitabine_Medication is non-chronic for the same reason.",
+        "MERGE (master): administration:true ported. It is the flag that matches",
+        "the reasoning above -- azacitidine is never retail-dispensed, so route it",
+        "through rxnorm_hcpcs_map (J9025, verified row for 485246) as a",
+        "clinician-administered drug rather than an NDC fill. chronic stays off.",
+        "Same precedent as ESA_Medication FIX 17. No MedicationEnd references this",
+        "state, so suppressing the prescription (State.java:1527) breaks nothing."
       ],
       "codes": [
         {
@@ -2182,6 +2197,7 @@
           "display": "azacitidine 100 MG Injection"
         }
       ],
+      "administration": true,
       "reason": "MDS_Onset",
       "assign_to_attribute": "azacitidine_active",
       "direct_transition": "HMA_Encounter_End"
@@ -2207,7 +2223,10 @@
         "FDA approved 2006. ADOPT trial: ~17–26% ORR.",
         "Dosing: 20 mg/m² IV × 5 days q28 days (most common).",
         "Oral decitabine + cedazuridine (Inqovi) FDA approved 2020 — bioequivalent to IV.",
-        "Similar efficacy to azacitidine; centre/patient preference drives selection."
+        "Similar efficacy to azacitidine; centre/patient preference drives selection.",
+        "MERGE (master): administration:true ported, same rationale as the sibling",
+        "Azacitidine_Medication -- IV-only in-clinic HMA, verified J0894 row for",
+        "636631 in rxnorm_hcpcs_map, no MedicationEnd references this state."
       ],
       "codes": [
         {
@@ -2216,6 +2235,7 @@
           "display": "decitabine 50 MG Injection"
         }
       ],
+      "administration": true,
       "reason": "MDS_Onset",
       "direct_transition": "HMA_Encounter_End"
     },
@@ -2733,7 +2753,13 @@
         "Bridge to allo-SCT if CR achieved.",
         "NOT appropriate for: MDS-biTP53, monosomal karyotype, TP53 single-hit, ECOG ≥2.",
         "Significant morbidity: prolonged BM aplasia (4–6 weeks), febrile neutropaenia,",
-        "mucositis, organ toxicity."
+        "mucositis, organ toxicity.",
+        "MERGE (master): administration:true REJECTED here and on Idarubicin_Medication.",
+        "administration sets createPrescription=false (State.java:1527-1533), so no",
+        "prescription is started and FIX 16's paired Cytarabine_End/Idarubicin_End",
+        "MedicationEnds become no-ops -- erasing the modelled 3-day/7-day '3+7'",
+        "course durations. Ported only where no MedicationEnd depends on the order",
+        "(Azacitidine_Medication, Decitabine_Medication)."
       ],
       "codes": [
         {

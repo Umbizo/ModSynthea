@@ -347,6 +347,27 @@
       "value": 0,
       "direct_transition": "Rituximab"
     },
+    "Interim_PET_CT_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for oncology service"
+        }
+      ],
+      "remarks": [
+        "Task 2.11 (sweep): RCHOP_Cycle_Check previously transitioned",
+        "straight to Interim_PET_CT with no open encounter (Medical_",
+        "Oncology_Encounter_End had already closed the last cycle's",
+        "encounter). Wraps the scan in its own outpatient visit, matching",
+        "the same same-instant open/close idiom this module uses for every",
+        "other oncology touchpoint (Medical_Oncology_Encounter, RCHOP_",
+        "Cycle_Visit, Salvage_Oncology_Encounter)."
+      ],
+      "direct_transition": "Interim_PET_CT"
+    },
     "Interim_PET_CT": {
       "type": "Procedure",
       "codes": [
@@ -356,6 +377,10 @@
           "display": "Positron emission tomography with computed tomography"
         }
       ],
+      "direct_transition": "Interim_PET_CT_Encounter_End"
+    },
+    "Interim_PET_CT_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "Response_Assessment"
     },
     "Response_Assessment": {
@@ -523,13 +548,39 @@
       "distributed_transition": [
         {
           "distribution": 0.65,
-          "transition": "Autologous_Stem_Cell_Transplant"
+          "transition": "ASCT_Encounter"
         },
         {
           "distribution": 0.35,
           "transition": "CAR_T_Assessment"
         }
       ]
+    },
+    "ASCT_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for oncology service"
+        }
+      ],
+      "remarks": [
+        "Task 2.11 (sweep): Salvage_Oncology_Encounter_End closes the salvage",
+        "chemo encounter before Transplant_Assessment, so the whole salvage",
+        "tail (Transplant_Assessment, Autologous_Stem_Cell_Transplant,",
+        "Post_Transplant_Response, CAR_T_Assessment, CAR_T_Therapy,",
+        "CAR_T_Response, Palliative_Care, Hospice) was reachable with no",
+        "encounter open. Wraps ASCT in the same same-instant outpatient",
+        "idiom used tree-wide in this module (see Interim_PET_CT_Encounter's",
+        "remark). The real-world ~2-4 week inpatient conditioning/",
+        "engraftment stay (modeled with encounter_class:inpatient + a",
+        "Procedure duration in myelodysplastic_syndromes.json's Allo_SCT_",
+        "Procedure for the same 58776007 code) is not reproduced here --",
+        "out of scope for this structural fix, follow-up candidate."
+      ],
+      "direct_transition": "Autologous_Stem_Cell_Transplant"
     },
     "Autologous_Stem_Cell_Transplant": {
       "type": "Procedure",
@@ -540,6 +591,10 @@
           "display": "Autologous bone marrow transplant"
         }
       ],
+      "direct_transition": "ASCT_Encounter_End"
+    },
+    "ASCT_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "Post_Transplant_Response"
     },
     "Post_Transplant_Response": {
@@ -560,13 +615,31 @@
       "distributed_transition": [
         {
           "distribution": 0.5,
-          "transition": "CAR_T_Therapy"
+          "transition": "CAR_T_Encounter"
         },
         {
           "distribution": 0.5,
-          "transition": "Palliative_Care"
+          "transition": "Palliative_Care_Encounter"
         }
       ]
+    },
+    "CAR_T_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for oncology service"
+        }
+      ],
+      "remarks": [
+        "Task 2.11 (sweep): see ASCT_Encounter's remark -- same no-encounter",
+        "defect, same fix. Real-world CAR-T administration typically",
+        "involves ~1-2 weeks of inpatient monitoring for cytokine release",
+        "syndrome; not reproduced here, out of scope for this structural fix."
+      ],
+      "direct_transition": "CAR_T_Therapy"
     },
     "CAR_T_Therapy": {
       "type": "Procedure",
@@ -577,6 +650,10 @@
           "display": "Chimeric antigen receptor T-cell immunotherapy"
         }
       ],
+      "direct_transition": "CAR_T_Encounter_End"
+    },
+    "CAR_T_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "CAR_T_Response"
     },
     "CAR_T_Response": {
@@ -588,9 +665,30 @@
         },
         {
           "distribution": 0.45,
-          "transition": "Palliative_Care"
+          "transition": "Palliative_Care_Encounter"
         }
       ]
+    },
+    "Palliative_Care_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for oncology service"
+        }
+      ],
+      "remarks": [
+        "Task 2.11 (sweep): see ASCT_Encounter's remark -- same no-encounter",
+        "defect (reachable from both CAR_T_Assessment's 50% branch and",
+        "CAR_T_Response's 45% branch, both converging here), same fix. Wraps",
+        "both palliative-care and hospice enrollment in one end-of-life",
+        "planning visit, closed before Death_From_DLBCL (never left open",
+        "through death, matching the convention established in Task 1.1's",
+        "prostate_cancer.json fix)."
+      ],
+      "direct_transition": "Palliative_Care"
     },
     "Palliative_Care": {
       "type": "CarePlanStart",
@@ -612,6 +710,10 @@
           "display": "Hospice care"
         }
       ],
+      "direct_transition": "Palliative_Care_Encounter_End"
+    },
+    "Palliative_Care_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "Death_From_DLBCL"
     },
     "Death_From_DLBCL": {
@@ -928,7 +1030,7 @@
             "operator": ">=",
             "value": 6
           },
-          "transition": "Interim_PET_CT"
+          "transition": "Interim_PET_CT_Encounter"
         },
         {
           "condition": {

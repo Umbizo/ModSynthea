@@ -1610,8 +1610,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "65710008",
-          "display": "Acute respiratory failure (disorder)"
+          "code": "371908008",
+          "display": "Oxygen administration by mask (procedure)"
         }
       ],
       "duration": {
@@ -1631,7 +1631,23 @@
           "transition": "Release_From_Hospital"
         }
       ],
-      "reason": "CF_Complication"
+      "reason": "CF_Complication",
+      "remarks": [
+        "Task 2.11 (present-map collision sweep): was 65710008 'Acute",
+        "respiratory failure (disorder)' -- the DISEASE code, not a",
+        "procedure, and it collided with HealthRecord.present against the",
+        "6 modules that ConditionOnset/End that same code for the actual",
+        "diagnosis (present is a single map keyed by code shared across",
+        "Condition/Procedure/CarePlan/Medication/Device/Allergy entries;",
+        "a Procedure write silently overwrites/orphans a same-coded",
+        "Condition entry with no exception). Recoded to 371908008, the",
+        "code already used for the same clinical act by congestive_",
+        "heart_failure.json, right_sided_heart_failure.json,",
+        "valvular_heart_failure.json, covid19/admission.json, and",
+        "heart/acs_arrival_medications.json (all Procedure, all this same",
+        "code, no collision) -- already mapped to CPT 94640 in",
+        "hcpcs_code_map.json, so no export-map change needed."
+      ]
     },
     "Release_From_Hospital": {
       "type": "EncounterEnd",

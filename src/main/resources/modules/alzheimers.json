@@ -1326,8 +1326,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "713603004",
-          "display": "Advance care planning"
+          "code": "713662007",
+          "display": "Discussion about advance care planning (procedure)"
         }
       ],
       "remarks": [
@@ -1336,7 +1336,25 @@
         "713603004 'Advance care planning' is active (verified via Ontoserver",
         "CodeSystem/$lookup, inactive=false) and already carries the same",
         "hcpcs_code_map row -> CPT 99497, so no export-map change is needed and",
-        "the billing code is unchanged."
+        "the billing code is unchanged.",
+        "Task 2.11 (present-map collision sweep): 713603004 turned out to",
+        "collide with parkinsons.json's AdvanceCarePlanning CarePlanStart,",
+        "which independently verified and adopted the same code for the",
+        "same reason (Task 2.2, before this module's Task 4.2 reused it).",
+        "present is a single map keyed by code shared across Condition/",
+        "Procedure/CarePlan/Medication/Device/Allergy entries; a Procedure",
+        "write here would silently overwrite/orphan a same-coded, still-",
+        "open Parkinson's ACP CarePlan for any comorbid patient, or the",
+        "reverse ordering would throw ClassCastException in",
+        "HealthRecord.careplanStart. Parkinsons' CarePlanStart usage is",
+        "left at 713603004 (first claim on the code, and CarePlanStart is",
+        "the correct fit for an unbounded, never-ended plan state).",
+        "Recoded this one-shot Procedure event to 713662007 'Discussion",
+        "about advance care planning (procedure)' -- active, Verhoeff-",
+        "valid, unused elsewhere in the module tree, semantically a closer",
+        "fit for a single billable ACP conversation anyway -- with a new",
+        "hcpcs_code_map.json row mapping it to the same CPT 99497 used by",
+        "713603004/310303002, so billing is unchanged."
       ],
       "direct_transition": "Set_ACP_Completed"
     },

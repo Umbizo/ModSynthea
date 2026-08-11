@@ -613,6 +613,32 @@
       "description": "Hospice care, in the home, per diem"
     }
   ],
+  "385765002": [
+    {
+      "code": "G0156",
+      "description": "Services of home health/hospice aide in home health or hospice settings, each 15 minutes"
+    },
+    {
+      "code": "G0299",
+      "description": "Direct skilled nursing services of a registered nurse (rn) in the home health or hospice setting, each 15 minutes"
+    },
+    {
+      "code": "G0155",
+      "description": "Services of clinical social worker in home health or hospice settings, each 15 minutes"
+    },
+    {
+      "code": "G9857",
+      "description": "Patient admitted to hospice"
+    },
+    {
+      "code": "G9858",
+      "description": "Patient enrolled in hospice"
+    },
+    {
+      "code": "S9126",
+      "description": "Hospice care, in the home, per diem"
+    }
+  ],
   "243185007": [
     {
       "code": "A0433",
@@ -7045,6 +7071,12 @@
     }
   ],
   "713603004": [
+    {
+      "code": "99497",
+      "description": "Advance care planning including explanation and discussion of advance directives such as standard forms, first 30 minutes"
+    }
+  ],
+  "713662007": [
     {
       "code": "99497",
       "description": "Advance care planning including explanation and discussion of advance directives such as standard forms, first 30 minutes"

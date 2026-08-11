@@ -895,8 +895,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "385763009",
-          "display": "Hospice care (regime/therapy)"
+          "code": "385765002",
+          "display": "Hospice care management (procedure)"
         }
       ],
       "remarks": [
@@ -904,7 +904,20 @@
         "export/hcpcs_code_map.json) to 385763009, the same code this",
         "module's own Hospice_Enrollment encounter already uses and which",
         "already carries a full hospice HCPCS mapping (G0299 RN visit,",
-        "S9126 per diem, etc.)."
+        "S9126 per diem, etc.).",
+        "Task 2.11 (present-map collision sweep): 385763009 turned out to",
+        "collide with dlbcl.json's Hospice CarePlanStart (present is a",
+        "single map keyed by code shared across Condition/Procedure/",
+        "CarePlan/Medication/Device/Allergy entries -- a repeating",
+        "Procedure write here would silently orphan a DLBCL patient's",
+        "still-open, same-coded hospice CarePlan, or crash with",
+        "ClassCastException on the reverse ordering). Hospice_Enrollment's",
+        "own Encounter code above is unaffected (Encounter never touches",
+        "present) and is left at 385763009. Recoded this state to",
+        "385765002 'Hospice care management (procedure)' -- active,",
+        "Verhoeff-valid, unused elsewhere -- with a new hcpcs_code_map.json",
+        "row mirroring 385763009's existing G0156/G0299/G0155/G9857/G9858/",
+        "S9126 mapping, so per-visit billing is unchanged."
       ],
       "direct_transition": "Hospice_Visit_Encounter_End"
     },

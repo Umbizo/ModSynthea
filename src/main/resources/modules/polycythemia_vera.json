@@ -1816,12 +1816,15 @@
     },
     "AML_Transformation": {
       "type": "ConditionOnset",
+      "assign_to_attribute": "pv_aml_transformation",
       "remarks": [
         "SNOMED: 91861009 - Acute myeloid leukemia, disease.",
         "AML transformation in PV: ~4-5% at 20 years.",
         "Risk factors: prior alkylating agents, leukocytosis, SRSF2/IDH2/TP53 mutations.",
         "Median OS post-transformation: 2-5 months.",
-        "HU-associated AML risk is low at standard therapeutic doses."
+        "HU-associated AML risk is low at standard therapeutic doses.",
+        "Task 2.11 (sweep): assign_to_attribute added so AML_Death can",
+        "resolve its cause of death safely -- see AML_Death's remark."
       ],
       "codes": [
         {
@@ -1854,9 +1857,21 @@
     "AML_Death": {
       "type": "Death",
       "remarks": [
-        "Death from AML transformation. Median OS post-transformation ~2-5 months."
+        "Death from AML transformation. Median OS post-transformation ~2-5 months.",
+        "Task 2.11 (sweep): was condition_onset: \"AML_Transformation\", at",
+        "risk of the renamed-entry null-cause bug -- 91861009 is also",
+        "ConditionOnset'd by acute_myeloid_leukemia.json, acute_myeloid_",
+        "leukemia_pediatric_prophylaxis.json, and myelodysplastic_",
+        "syndromes.json, each under a different state name, and",
+        "HealthRecord.conditionStart is idempotent per code, so whichever",
+        "fires last on a comorbid patient renames the shared present-map",
+        "entry away from 'AML_Transformation' and this state's",
+        "condition_onset scan silently records a null cause. Converted to",
+        "referenced_by_attribute (immune to the rename); pv_aml_",
+        "transformation is assign_to_attribute'd by AML_Transformation,",
+        "which dominates this state (verified by dominator analysis)."
       ],
-      "condition_onset": "AML_Transformation",
+      "referenced_by_attribute": "pv_aml_transformation",
       "direct_transition": "Terminal"
     },
     "Follow_Up_Encounter_End": {

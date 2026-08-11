@@ -360,6 +360,7 @@
     "DMARD": {
       "type": "MedicationOrder",
       "reason": "Rheumatoid_Arthritis_Onset",
+      "chronic": true,
       "codes": [
         {
           "system": "RxNorm",

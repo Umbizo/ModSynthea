@@ -2248,10 +2248,12 @@
   "385762004": [
     {
       "code": "G0337",
+      "weight": "1.0",
       "description": "Hospice evaluation and counseling services, pre-election"
     },
     {
       "code": "G9524",
+      "weight": "0.0",
       "description": "Patient was referred to hospice care"
     }
   ],
@@ -3109,12 +3111,14 @@
   ],
   "302497006": [
     {
-      "code": "G8714",
-      "description": "Hemodialysis treatment performed exactly three times per week for > 90 days"
+      "code": "90935",
+      "weight": "1.0",
+      "description": "Hemodialysis procedure with physician evaluation"
     },
     {
-      "code": "G8715",
-      "description": "Hemodialysis treatment performed less than three times per week or greater than three times per week"
+      "code": "90937",
+      "weight": "0.0",
+      "description": "Hemodialysis procedure requiring repeated evaluation"
     }
   ],
   "424753004": [
@@ -3891,12 +3895,14 @@
   ],
   "367336001": [
     {
-      "code": "G9829",
-      "description": "Breast adjuvant chemotherapy administered"
+      "code": "96413",
+      "weight": "1.0",
+      "description": "Administration of chemotherapy into vein, 1 hour or less"
     },
     {
-      "code": "G9833",
-      "description": "Patient transfer to practice after initiation of chemotherapy"
+      "code": "96415",
+      "weight": "0.0",
+      "description": "Administration of chemotherapy into vein, each additional hour"
     }
   ],
   "260874000": [

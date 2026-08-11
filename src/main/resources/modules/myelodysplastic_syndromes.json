@@ -953,6 +953,7 @@
     },
     "ESA_Medication": {
       "type": "MedicationOrder",
+      "administration": true,
       "remarks": [
         "Epoetin alfa (Procrit / Epogen) — ESA first-line for lower-risk MDS with anaemia.",
         "RxNorm 1237808 = epoetin alfa 40000 UNT/ML Injectable Solution.",
@@ -1154,6 +1155,7 @@
     },
     "Luspatercept_Medication": {
       "type": "MedicationOrder",
+      "administration": true,
       "remarks": [
         "Luspatercept-aamt (Reblozyl) — TGF-β superfamily ligand trap.",
         "RxNorm 2200671 = luspatercept-aamt 25 MG/ML Injectable Solution.",
@@ -1326,6 +1328,7 @@
     },
     "Imetelstat_Medication": {
       "type": "MedicationOrder",
+      "administration": true,
       "remarks": [
         "Imetelstat (Rytelo) — first-in-class oligonucleotide telomerase inhibitor.",
         "RxNorm 2638073 = imetelstat 47 MG/ML Injectable Solution.",
@@ -1411,6 +1414,7 @@
     },
     "ATG_Medication": {
       "type": "MedicationOrder",
+      "administration": true,
       "remarks": [
         "Anti-thymocyte globulin (horse ATG, Atgam) — immunosuppressive therapy (IST).",
         "RxNorm 205460 = antithymocyte globulin (equine) 50 MG/ML Injectable Solution.",
@@ -1781,6 +1785,7 @@
     },
     "Azacitidine_Medication": {
       "type": "MedicationOrder",
+      "administration": true,
       "remarks": [
         "Azacitidine (Vidaza) — hypomethylating agent (HMA); first-line for higher-risk MDS.",
         "RxNorm 278177 = azacitidine 100 MG Injection.",
@@ -1816,6 +1821,7 @@
     },
     "Decitabine_Medication": {
       "type": "MedicationOrder",
+      "administration": true,
       "remarks": [
         "Decitabine (Dacogen) — alternative HMA for higher-risk MDS.",
         "RxNorm 583214 = decitabine 50 MG Injection.",
@@ -2306,6 +2312,7 @@
     },
     "Cytarabine_Medication": {
       "type": "MedicationOrder",
+      "administration": true,
       "remarks": [
         "Cytarabine — cornerstone of intensive '3+7' induction for higher-risk MDS.",
         "RxNorm 28648 = cytarabine 20 MG/ML Injectable Solution.",
@@ -2330,6 +2337,7 @@
     },
     "Idarubicin_Medication": {
       "type": "MedicationOrder",
+      "administration": true,
       "remarks": [
         "Idarubicin — anthracycline component of '3+7' induction.",
         "RxNorm 25463 = idarubicin hydrochloride 5 MG/ML Injectable Solution.",

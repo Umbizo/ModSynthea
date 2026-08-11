@@ -789,7 +789,24 @@
     },
     "Rapid_AML_Progression": {
       "type": "Death",
-      "condition_onset": "AML_Condition",
+      "referenced_by_attribute": "acute_myeloid_leukemia",
+      "remarks": [
+        "Task 2.11 (sweep): was condition_onset: \"AML_Condition\", at risk of",
+        "the renamed-entry null-cause bug (fixed in dementia/",
+        "polycythemia_vera below with the same mechanism) -- 91861009 is",
+        "also ConditionOnset'd by acute_myeloid_leukemia_pediatric_",
+        "prophylaxis.json, myelodysplastic_syndromes.json, and",
+        "polycythemia_vera.json, each under a different state name, and",
+        "HealthRecord.conditionStart is idempotent per code, so whichever",
+        "of those fires last on a comorbid patient renames the shared",
+        "present-map entry away from 'AML_Condition' and this state's",
+        "condition_onset scan (State.Death.process, State.java ~2515) finds",
+        "no match and silently records a null cause. Converted to",
+        "referenced_by_attribute, which reads the Entry object directly",
+        "and is immune to the rename; acute_myeloid_leukemia is",
+        "assign_to_attribute'd by AML_Condition, which dominates this state",
+        "(verified by dominator analysis)."
+      ],
       "direct_transition": "Final_Delay"
     },
     "Terminal": {

@@ -391,6 +391,7 @@
     },
     "Adjuvant_Chemotherapy": {
       "type": "MedicationOrder",
+      "administration": true,
       "direct_transition": "Surveillance",
       "codes": [
         {

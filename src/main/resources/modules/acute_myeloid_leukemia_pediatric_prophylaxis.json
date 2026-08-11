@@ -752,7 +752,50 @@
     "End_AML": {
       "type": "ConditionEnd",
       "direct_transition": "End_Non-Febrile_Neutropenia",
-      "condition_onset": "Acute_Myeloid_Leukemia_AML"
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "91861009",
+          "display": "Acute myeloid leukemia (disorder)"
+        }
+      ],
+      "remarks": [
+        "Task 2.11 sweep fix round 1: was condition_onset:",
+        "\"Acute_Myeloid_Leukemia_AML\", at risk of the renamed-entry silent-",
+        "no-op bug -- 91861009 is also ConditionOnset'd by",
+        "acute_myeloid_leukemia.json [AML_Condition],",
+        "myelodysplastic_syndromes.json [AML_Transformation], and",
+        "polycythemia_vera.json [AML_Transformation], each under a different",
+        "state name. HealthRecord.conditionStart is idempotent per code, so",
+        "whichever of those fires last on a comorbid patient renames the",
+        "shared present-map entry away from",
+        "'Acute_Myeloid_Leukemia_AML'. State.ConditionEnd.process's",
+        "condition_onset form unconditionally calls",
+        "person.record.conditionEndByState(time, conditionOnset), which",
+        "scans present.values() for entry.name.equals(stateName) and does",
+        "nothing if no match -- a SILENT NO-OP, not a crash: the AML",
+        "condition would stay active in present forever.",
+        "Acute_Myeloid_Leukemia_AML (this module's own onset) does",
+        "assign_to_attribute: \"acute_myeloid_leukemia\" and dominates this",
+        "state (verified by dominator analysis), so",
+        "referenced_by_attribute would also resolve safely against a",
+        "renamed entry -- but that exact attribute name",
+        "(\"acute_myeloid_leukemia\") is ALSO written by",
+        "acute_myeloid_leukemia.json's own AML_Condition state (grep-",
+        "verified, only these two modules use that attribute name tree-",
+        "wide), the same class of shared-mutable-attribute risk that",
+        "dementia.json's PneumoniaDeath fix (this same commit) had to back",
+        "out of for hospice_reason. Used the static codes form instead:",
+        "HealthRecord.conditionEnd(time, code) resolves by",
+        "present.containsKey(code) -- by CODE, not by name or by attribute",
+        "-- so it is immune to both the renamed-entry trap and the shared-",
+        "attribute-name trap, and ends whichever entry currently holds",
+        "91861009 regardless of which of the four sharing modules put it",
+        "there. No precision is lost: unlike Death's codes form (which",
+        "hardcodes a cause that may not match the patient's actual",
+        "diagnosed variant), ConditionEnd's codes form ends exactly the",
+        "condition this state names -- there is no variant to lose."
+      ]
     },
     "Cancerous": {
       "type": "Simple",

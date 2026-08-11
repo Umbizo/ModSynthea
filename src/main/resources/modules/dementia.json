@@ -841,7 +841,13 @@
         "high": 14,
         "unit": "days"
       },
-      "referenced_by_attribute": "hospice_reason",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "233604007",
+          "display": "Pneumonia (disorder)"
+        }
+      ],
       "remarks": [
         "Task 2.11 (sweep): was condition_onset: \"Pneumonia\", at risk of the",
         "renamed-entry null-cause bug -- 233604007 is also ConditionOnset'd",
@@ -850,11 +856,31 @@
         "and HealthRecord.conditionStart is idempotent per code, so",
         "whichever of those fires last on a comorbid patient renames the",
         "shared present-map entry away from 'Pneumonia' and this state's",
-        "condition_onset scan silently records a null cause. Converted to",
-        "referenced_by_attribute (immune to the rename); hospice_reason is",
-        "this module's existing assign_to_attribute on the Pneumonia state",
-        "above (its only writer tree-wide, grep-verified), which dominates",
-        "this state (verified by dominator analysis)."
+        "condition_onset scan silently records a null cause.",
+        "Sweep fix round 1 CORRECTION: the first pass converted this to",
+        "referenced_by_attribute: \"hospice_reason\", on the false claim that",
+        "hospice_reason was 'this module's existing assign_to_attribute ...",
+        "its only writer tree-wide'. It is not -- hospice_reason is the",
+        "tree's shared hospice-routing contract: alzheimers.json,",
+        "colorectal_cancer.json, home_hospice_snf.json (9 separate writers),",
+        "congestive_heart_failure.json, lung_cancer.json, breast_cancer.json,",
+        "and copd.json all SetAttribute it via value_attribute, by design,",
+        "so it can be legitimately reassigned to a different condition's",
+        "entry after Pneumonia sets it here. A comorbid patient whose other",
+        "disease module writes hospice_reason during the",
+        "PneumoniaEncounter->PneumoniaDeath window (4-14 days) would have",
+        "this Death misattributed to that other condition instead of",
+        "pneumonia -- the same silent-misattribution failure mode this",
+        "task exists to close, just via a shared attribute instead of a",
+        "renamed present-map entry. The Pneumonia ConditionOnset state",
+        "above already spends its one assign_to_attribute slot on",
+        "hospice_reason (for the hospice-routing contract, which is correct",
+        "and unrelated to this fix), so referenced_by_attribute isn't",
+        "available for cause-of-death use here. Uses the static codes form",
+        "instead: always populates reason, doesn't depend on any attribute",
+        "or present-map entry, immune to both failure classes. Loses no",
+        "patient-specific precision (233604007 is the only pneumonia code",
+        "this module ever onsets)."
       ],
       "direct_transition": "Admit to Hospice"
     },

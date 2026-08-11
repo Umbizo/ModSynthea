@@ -973,7 +973,91 @@
     },
     "CHF onset": {
       "type": "Simple",
-      "direct_transition": "Reset inpatient count"
+      "remarks": [
+        "CROSS-MODULE GATE (audit Class 7, task 5.2 group 4) -- the heart-failure",
+        "quartet. Four top-level modules each diagnose their own heart-failure code",
+        "with no coordination, so one patient could carry all four at once and run",
+        "four competing maintenance/decompensation loops against them:",
+        "  congestive_heart_failure.json   88805009 Chronic congestive heart failure",
+        "  high_output_heart_failure.json  10091002 High output heart failure",
+        "  right_sided_heart_failure.json  10335000 Chronic right sided heart failure",
+        "  valvular_heart_failure.json     42343007 Congestive heart failure",
+        "Rule: FIRST-TO-DIAGNOSE WINS. Each module tests the other three codes on its",
+        "own onset path; whichever module gets there first owns the patient's heart",
+        "failure and the other three stand down.",
+        "Only the primary code of each rival is tested. That is not a shortcut: the",
+        "record key is codes[0] (HealthRecord.conditionStart keys `present` by",
+        "primaryCode), so high_output_heart_failure.json's secondary ICD-10 entries",
+        "I50.9 / I50.89 never enter `present` and cannot be matched by an Active",
+        "Condition check. No module in the tree emits a ConditionEnd for any of these",
+        "four codes (verified by grep), so once one is set the other three modules'",
+        "checks stay true for life.",
+        "",
+        "Placement: this state was already a no-op marker sitting between the NYHA",
+        "class assignment and the counter resets, and it is the single choke point --",
+        "`CHF Condition Start` (88805009) has exactly one predecessor chain and it",
+        "runs through here. Gating here rather than nearer the ConditionOnset is",
+        "deliberate: `CHF Condition Start` carries assign_to_attribute `chf` with a",
+        "deferred target_encounter, and State$OnsetState.process sets that attribute",
+        "from a TEMPORARY entry as soon as it processes, before any encounter opens.",
+        "A gate placed after it would leave `chf` set on a patient with no CHF on the",
+        "record, and home_hospice_snf.json's Hospice Check routes on exactly that",
+        "attribute. Gating before it keeps the attribute and the diagnosis together.",
+        "No encounter is open here (Initial -> Age Guard -> Determine CHF -> an age",
+        "Delay -> Determine Type -> LVEF VitalSign -> NYHA SetAttribute -> here",
+        "contains no Encounter state), so Terminal leaks no encounter lock.",
+        "Single gate, no recheck -- and the honest reason why: 88805009 is recorded",
+        "when `CHF initial workup encounter` opens, not when this gate passes, so the",
+        "tight check would have to sit after the encounter, which is too late (the",
+        "encounter is what records the condition) and after the `chf` attribute is",
+        "already set (see above). The chain from here to that encounter is entirely",
+        "Delay-free, so in the normal case gate and record land in the same tick and",
+        "the exclusion is exact. The residual is a rival diagnosing while",
+        "State$Encounter.process is blocked because another module holds this",
+        "person's encounter lock.",
+        "Calibration note: CHF's own incidence (Determine CHF, ~19-21% lifetime for",
+        "adults reaching 20) is far larger than the three rivals', so this gate",
+        "removes only ~1-2% of this module's cohort, while the rival modules lose a",
+        "larger share of theirs. Mutual exclusion never removes a patient from the",
+        "union of HF-diagnosed patients -- it only stops one patient carrying two to",
+        "four HF diagnoses (previously on the order of 0.5% of adults) and shifts",
+        "counts between the four codes.",
+        "Known asymmetry: `chf` is the only HF attribute home_hospice_snf.json knows",
+        "about (its Hospice Check has a CHF branch and none for high-output,",
+        "right-sided or valvular HF). A patient gated out here therefore loses that",
+        "hospice route, because the rival module that won has no route of its own to",
+        "offer. That affects ~1-2% of this module's cohort. Wiring the other three",
+        "modules into the hospice contract is the right fix and is out of scope for a",
+        "coordination task."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "10091002",
+                "display": "High output heart failure"
+              },
+              {
+                "system": "SNOMED-CT",
+                "code": "10335000",
+                "display": "Chronic right sided heart failure"
+              },
+              {
+                "system": "SNOMED-CT",
+                "code": "42343007",
+                "display": "Congestive heart failure"
+              }
+            ]
+          },
+          "transition": "Terminal"
+        },
+        {
+          "transition": "Reset inpatient count"
+        }
+      ]
     },
     "HFrEF": {
       "type": "SetAttribute",

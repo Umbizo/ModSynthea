@@ -297,6 +297,7 @@
     },
     "Targeted Therapy": {
       "type": "MedicationOrder",
+      "chronic": true,
       "direct_transition": "Surveillance",
       "codes": [
         {
@@ -308,6 +309,7 @@
     },
     "Immunotherapy": {
       "type": "MedicationOrder",
+      "administration": true,
       "direct_transition": "Surveillance",
       "codes": [
         {

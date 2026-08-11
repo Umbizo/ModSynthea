@@ -16,8 +16,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "392023007",
-          "display": "Excision of lesion of breast (procedure)"
+          "code": "172043006",
+          "display": "Simple mastectomy"
         }
       ],
       "duration": {

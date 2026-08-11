@@ -25,13 +25,6 @@ admin-med->HCPCS,Abemaciclib,1946840 abemaciclib 100 MG Oral Tablet [Verzenio],b
 admin-med->HCPCS,Palbociclib,1601380 palbociclib 100 MG Oral Capsule,breast_cancer/hormonetherapy_breast.json
 admin-med->HCPCS,Ribociclib,1873983 ribociclib 200 MG Oral Tablet,breast_cancer/hormonetherapy_breast.json
 admin-med->HCPCS,Tamoxifen,198240 Tamoxifen 10 MG Oral Tablet,breast_cancer/hormonetherapy_breast.json
-procedure->HCPCS,Mastectomy,392023007 Excision of lesion of breast (procedure),breast_cancer/surgery_therapy_breast.json
-procedure->HCPCS,Brachytherapy,447759004 Brachytherapy of breast (procedure),breast_cancer/surgery_therapy_breast.json
-procedure->HCPCS,Interstitial Brachytherapy,113120007 Interstitial brachytherapy (procedure),breast_cancer/surgery_therapy_breast.json
-procedure->HCPCS,Sentinel_Lymph_Node_Biopsy__SLNB_,396487001 Sentinel lymph node biopsy (procedure),breast_cancer/surgery_therapy_breast.json
-procedure->HCPCS,Pamidronate IV Injection,43060002 Intravenous injection (procedure),breast_cancer/surgery_therapy_breast.json
-procedure->HCPCS,Advanced Drugs IV Injection,43060002 Intravenous injection (procedure),breast_cancer/surgery_therapy_breast.json
-procedure->HCPCS,Excision_Of_Sentinel_Lymph_Node,443497002 Excision of sentinel lymph node (procedure),breast_cancer/surgery_therapy_breast.json
 procedure->HCPCS,Oral_Appliance_Fitting,1259900009 Fitting of intraoral appliance (procedure),cerebral_palsy.json
 procedure->HCPCS,Flexible _Fiberoptic_Endoscopic_Evaluation_of_Swallowing_FEES,311834001 Fiberoptic endoscopic evaluation of swallowing (procedure),cerebral_palsy.json
 procedure->HCPCS,Oral_Hygiene2,717778001 Mouth care (regime/therapy),cerebral_palsy.json

@@ -257,14 +257,24 @@
   ],
   "33195004": [
     {
-      "code": "77412",
-      "weight": "0.70",
-      "description": "Radiation treatment delivery, >=1 MeV; complex"
+      "code": "G6011",
+      "weight": "0.007",
+      "description": "Radiation treatment delivery,3 or more separate treatment areas, custom blocking, tangential ports, wedges, rotational beam, compensators, electron beam; up to 5 mev"
     },
     {
-      "code": "77407",
-      "weight": "0.30",
-      "description": "Radiation treatment delivery, >=1 MeV; intermediate"
+      "code": "G6012",
+      "weight": "0.667",
+      "description": "Radiation treatment delivery,3 or more separate treatment areas, custom blocking, tangential ports, wedges, rotational beam, compensators, electron beam; 6-10 mev"
+    },
+    {
+      "code": "G6013",
+      "weight": "0.310",
+      "description": "Radiation treatment delivery,3 or more separate treatment areas, custom blocking, tangential ports, wedges, rotational beam, compensators, electron beam; 11-19 mev"
+    },
+    {
+      "code": "G6014",
+      "weight": "0.016",
+      "description": "Radiation treatment delivery,3 or more separate treatment areas, custom blocking, tangential ports, wedges, rotational beam, compensators, electron beam; 20 mev or greater"
     }
   ],
   "315124004": [
@@ -407,8 +417,8 @@
   ],
   "392021009": [
     {
-      "code": "19120",
-      "description": "Lumpectomy of breast (procedure)"
+      "code": "19301",
+      "description": "Partial removal of breast"
     }
   ],
   "24623002": [
@@ -575,22 +585,8 @@
   ],
   "234262008": [
     {
-      "code": "38505",
-      "description": "Excision of axillary lymph node (procedure)"
-    }
-  ],
-  "108290001": [
-    {
-      "code": "77402",
-      "description": "Radiation treatment delivery"
-    },
-    {
-      "code": "77407",
-      "description": "Radiation treatment delivery"
-    },
-    {
-      "code": "77412",
-      "description": "Radiation treatment delivery"
+      "code": "38745",
+      "description": "Removal of lymph nodes of underarm"
     }
   ],
   "385763009": [
@@ -622,26 +618,32 @@
   "385765002": [
     {
       "code": "G0156",
+      "weight": "1.0",
       "description": "Services of home health/hospice aide in home health or hospice settings, each 15 minutes"
     },
     {
       "code": "G0299",
+      "weight": "0.0",
       "description": "Direct skilled nursing services of a registered nurse (rn) in the home health or hospice setting, each 15 minutes"
     },
     {
       "code": "G0155",
+      "weight": "0.0",
       "description": "Services of clinical social worker in home health or hospice settings, each 15 minutes"
     },
     {
       "code": "G9857",
+      "weight": "0.0",
       "description": "Patient admitted to hospice"
     },
     {
       "code": "G9858",
+      "weight": "0.0",
       "description": "Patient enrolled in hospice"
     },
     {
       "code": "S9126",
+      "weight": "0.0",
       "description": "Hospice care, in the home, per diem"
     }
   ],
@@ -1339,10 +1341,6 @@
     {
       "code": "G0102",
       "description": "Prostate cancer screening; digital rectal examination"
-    },
-    {
-      "code": "S0605",
-      "description": "DIGITAL RECTAL EXAMINATION, MALE, ANNUAL"
     }
   ],
   "44441009": [
@@ -1475,11 +1473,13 @@
   ],
   "104435004": [
     {
-      "code": "G0107",
-      "description": "COLORECTAL CANCER SCREENING; FECAL-OCCULT BLOOD TEST DETERMINATIONS"
+      "code": "G0328",
+      "weight": "1.0",
+      "description": "Colorectal cancer screening; fecal occult blood test, immunoassay, 1-3 simultaneous"
     },
     {
       "code": "G0464",
+      "weight": "0.0",
       "description": "Colorectal cancer screening; stool-based dna and fecal occult hemoglobin (e.g., kras, ndrg4 and bmp3)"
     }
   ],
@@ -1644,23 +1644,28 @@
   "410401003": [
     {
       "code": "G0299",
+      "weight": "1.0",
       "description": "Direct skilled nursing services of a registered nurse (rn) in the home health or hospice setting, each 15 minutes"
     },
     {
       "code": "G0300",
+      "weight": "0.0",
       "description": "Direct skilled nursing services of a licensed practical nurse (lpn) in the home health or hospice setting, each 15 minutes"
     },
     {
       "code": "G0154",
+      "weight": "0.0",
       "description": "Direct skilled nursing services of a licensed nurse (lpn or rn) in the home health or hospice setting, each 15 minutes"
     },
     {
-      "code": "Q5001",
-      "description": "Hospice or home health care provided in patient's home/residence"
+      "code": "G0155",
+      "weight": "0.0",
+      "description": "Services of clinical social worker in home health or hospice settings, each 15 minutes"
     },
     {
-      "code": "G0155",
-      "description": "Services of clinical social worker in home health or hospice settings, each 15 minutes"
+      "code": "Q5001",
+      "weight": "0.0",
+      "description": "Hospice or home health care provided in patient's home/residence"
     }
   ],
   "183418007": [
@@ -2789,8 +2794,8 @@
   ],
   "384692006": [
     {
-      "code": "G0458",
-      "description": "Low dose rate (ldr) prostate brachytherapy services, composite rate"
+      "code": "77770",
+      "description": "High dose radiation therapy, 1 channel"
     }
   ],
   "134262009": [
@@ -6994,14 +6999,14 @@
   ],
   "785706005": [
     {
-      "code": "77386",
-      "description": "Intensity modulated radiation treatment delivery (IMRT), includes guidance and tracking, when performed; complex",
-      "weight": "0.7"
+      "code": "G6015",
+      "weight": "0.7",
+      "description": "Intensity modulated treatment delivery, single or multiple fields/arcs,via narrow spatially and temporally modulated beams, binary, dynamic mlc, per treatment session"
     },
     {
       "code": "77373",
-      "description": "Stereotactic body radiation therapy, treatment delivery, per fraction to 1 or more lesions, including image guidance, entire course not to exceed 5 fractions",
-      "weight": "0.3"
+      "weight": "0.3",
+      "description": "Stereotactic body radiation therapy, treatment delivery, per fraction to 1 or more lesions, including image guidance, entire course not to exceed 5 fractions"
     }
   ],
   "405824009": [
@@ -7428,8 +7433,19 @@
   ],
   "428412000": [
     {
-      "code": "77402",
-      "description": "Radiation treatment delivery, >=1 MeV; simple"
+      "code": "G6003",
+      "weight": "0.426",
+      "description": "Radiation treatment delivery, single treatment area,single port or parallel opposed ports, simple blocks or no blocks: up to 5 mev"
+    },
+    {
+      "code": "G6004",
+      "weight": "0.451",
+      "description": "Radiation treatment delivery, single treatment area,single port or parallel opposed ports, simple blocks or no blocks: 6-10 mev"
+    },
+    {
+      "code": "G6005",
+      "weight": "0.123",
+      "description": "Radiation treatment delivery, single treatment area,single port or parallel opposed ports, simple blocks or no blocks: 11-19 mev"
     }
   ],
   "10847001": [
@@ -7474,14 +7490,24 @@
   ],
   "1287742003": [
     {
-      "code": "77412",
-      "description": "Radiation treatment delivery, >=1 MeV; complex",
-      "weight": "0.70"
+      "code": "G6011",
+      "weight": "0.007",
+      "description": "Radiation treatment delivery,3 or more separate treatment areas, custom blocking, tangential ports, wedges, rotational beam, compensators, electron beam; up to 5 mev"
     },
     {
-      "code": "77407",
-      "description": "Radiation treatment delivery, >=1 MeV; intermediate",
-      "weight": "0.30"
+      "code": "G6012",
+      "weight": "0.667",
+      "description": "Radiation treatment delivery,3 or more separate treatment areas, custom blocking, tangential ports, wedges, rotational beam, compensators, electron beam; 6-10 mev"
+    },
+    {
+      "code": "G6013",
+      "weight": "0.310",
+      "description": "Radiation treatment delivery,3 or more separate treatment areas, custom blocking, tangential ports, wedges, rotational beam, compensators, electron beam; 11-19 mev"
+    },
+    {
+      "code": "G6014",
+      "weight": "0.016",
+      "description": "Radiation treatment delivery,3 or more separate treatment areas, custom blocking, tangential ports, wedges, rotational beam, compensators, electron beam; 20 mev or greater"
     }
   ],
   "133918004": [
@@ -7698,6 +7724,42 @@
     {
       "code": "55840",
       "description": "Removal of prostate"
+    }
+  ],
+  "172043006": [
+    {
+      "code": "19303",
+      "description": "Simple complete removal of breast"
+    }
+  ],
+  "447759004": [
+    {
+      "code": "19298",
+      "description": "Placement of tubes in breast for radiation treatment using imaging guidance during or after partial removal of breast"
+    }
+  ],
+  "113120007": [
+    {
+      "code": "77778",
+      "description": "Complex application of radiation source"
+    }
+  ],
+  "396487001": [
+    {
+      "code": "38792",
+      "description": "Injection of radioactive material for x-ray identification of lymph node"
+    }
+  ],
+  "443497002": [
+    {
+      "code": "38525",
+      "description": "Biopsy or removal of deep lymph nodes of underarm"
+    }
+  ],
+  "43060002": [
+    {
+      "code": "96365",
+      "description": "Infusion into a vein for therapy, prevention, or diagnosis, 1 hour or less"
     }
   ]
 }

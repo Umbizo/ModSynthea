@@ -116,10 +116,14 @@
   ],
   "1010033": [
     {
-      "code": "J2003"
+      "code": "J2003",
+      "weight": "1.0",
+      "description": "Injection, lidocaine hydrochloride, 1 mg"
     },
     {
-      "code": "J2001"
+      "code": "J2001",
+      "weight": "0.0",
+      "description": "Injection, lidocaine hcl for intravenous infusion, 10 mg"
     }
   ],
   "1010035": [
@@ -249,18 +253,26 @@
   ],
   "1010844": [
     {
-      "code": "J2001"
+      "code": "J2001",
+      "weight": "0.0",
+      "description": "Injection, lidocaine hcl for intravenous infusion, 10 mg"
     },
     {
-      "code": "J2003"
+      "code": "J2003",
+      "weight": "1.0",
+      "description": "Injection, lidocaine hydrochloride, 1 mg"
     }
   ],
   "1010846": [
     {
-      "code": "J2001"
+      "code": "J2001",
+      "weight": "0.0",
+      "description": "Injection, lidocaine hcl for intravenous infusion, 10 mg"
     },
     {
-      "code": "J2003"
+      "code": "J2003",
+      "weight": "1.0",
+      "description": "Injection, lidocaine hydrochloride, 1 mg"
     }
   ],
   "1010900": [
@@ -780,10 +792,14 @@
   ],
   "1085680": [
     {
-      "code": "J3301"
+      "code": "J3301",
+      "weight": "0.0",
+      "description": "Injection, triamcinolone acetonide, not otherwise specified, 10 mg"
     },
     {
-      "code": "J3302"
+      "code": "J3302",
+      "weight": "1.0",
+      "description": "Injection, triamcinolone diacetate, per 5 mg"
     }
   ],
   "1085691": [
@@ -1374,10 +1390,14 @@
   ],
   "1191228": [
     {
-      "code": "J2312"
+      "code": "J2312",
+      "weight": "0.0",
+      "description": "Injection, naloxone hydrochloride, not otherwise specified, 0.01 mg"
     },
     {
-      "code": "J2310"
+      "code": "J2310",
+      "weight": "1.0",
+      "description": "Injection, naloxone hydrochloride, per 1 mg"
     }
   ],
   "1191230": [
@@ -1733,10 +1753,14 @@
   ],
   "1299682": [
     {
-      "code": "J7658"
+      "code": "J7658",
+      "weight": "0.0",
+      "description": "Isoproterenol hcl, inhalation solution, fda-approved final product, non-compounded, administered through dme, concentrated form, per milligram"
     },
     {
-      "code": "J7659"
+      "code": "J7659",
+      "weight": "1.0",
+      "description": "Isoproterenol hcl, inhalation solution, fda-approved final product, non-compounded, administered through dme, unit dose form, per milligram"
     }
   ],
   "1299687": [
@@ -2021,10 +2045,14 @@
   ],
   "1361029": [
     {
-      "code": "J1642"
+      "code": "J1642",
+      "weight": "1.0",
+      "description": "Injection, heparin sodium, (heparin lock flush), per 10 units"
     },
     {
-      "code": "J1644"
+      "code": "J1644",
+      "weight": "0.0",
+      "description": "Injection, heparin sodium, per 1000 units"
     }
   ],
   "1361035": [
@@ -2034,10 +2062,14 @@
   ],
   "1361048": [
     {
-      "code": "J1642"
+      "code": "J1642",
+      "weight": "0.0",
+      "description": "Injection, heparin sodium, (heparin lock flush), per 10 units"
     },
     {
-      "code": "J1644"
+      "code": "J1644",
+      "weight": "1.0",
+      "description": "Injection, heparin sodium, per 1000 units"
     }
   ],
   "1361198": [
@@ -3278,18 +3310,26 @@
   ],
   "1652640": [
     {
-      "code": "J1817"
+      "code": "J1817",
+      "weight": "0.0",
+      "description": "Insulin for administration through dme (i.e., insulin pump) per 50 units"
     },
     {
-      "code": "J1815"
+      "code": "J1815",
+      "weight": "1.0",
+      "description": "Injection, insulin, per 5 units"
     }
   ],
   "1652646": [
     {
-      "code": "J1817"
+      "code": "J1817",
+      "weight": "0.0",
+      "description": "Insulin for administration through dme (i.e., insulin pump) per 50 units"
     },
     {
-      "code": "J1815"
+      "code": "J1815",
+      "weight": "1.0",
+      "description": "Injection, insulin, per 5 units"
     }
   ],
   "1653144": [
@@ -4060,18 +4100,26 @@
   ],
   "1661208": [
     {
-      "code": "J0256"
+      "code": "J0256",
+      "weight": "1.0",
+      "description": "Injection, alpha 1 proteinase inhibitor (human), not otherwise specified, 10 mg"
     },
     {
-      "code": "J0257"
+      "code": "J0257",
+      "weight": "0.0",
+      "description": "Injection, alpha 1 proteinase inhibitor (human), (glassia), 10 mg"
     }
   ],
   "1661220": [
     {
-      "code": "J0256"
+      "code": "J0256",
+      "weight": "1.0",
+      "description": "Injection, alpha 1 proteinase inhibitor (human), not otherwise specified, 10 mg"
     },
     {
-      "code": "J0257"
+      "code": "J0257",
+      "weight": "0.0",
+      "description": "Injection, alpha 1 proteinase inhibitor (human), (glassia), 10 mg"
     }
   ],
   "1661332": [
@@ -4121,10 +4169,14 @@
   ],
   "1662285": [
     {
-      "code": "J2021"
+      "code": "J2021",
+      "weight": "0.0",
+      "description": "Injection, linezolid (hospira), not therapeutically equivalent to j2020, 200 mg"
     },
     {
-      "code": "J2020"
+      "code": "J2020",
+      "weight": "1.0",
+      "description": "Injection, linezolid, 200 mg"
     }
   ],
   "1662286": [
@@ -4234,21 +4286,31 @@
   ],
   "1665060": [
     {
-      "code": "J0690"
+      "code": "J0690",
+      "weight": "1.0",
+      "description": "Injection, cefazolin sodium, 500 mg"
     },
     {
-      "code": "J0689"
+      "code": "J0689",
+      "weight": "0.0",
+      "description": "Injection, cefazolin sodium (baxter), not therapeutically equivalent to j0690, 500 mg"
     }
   ],
   "1665088": [
     {
-      "code": "J0692"
+      "code": "J0692",
+      "weight": "1.0",
+      "description": "Injection, cefepime hydrochloride, 500 mg"
     },
     {
-      "code": "J0703"
+      "code": "J0703",
+      "weight": "0.0",
+      "description": "Injection, cefepime hydrochloride (b braun), not therapeutically equivalent to maxipime, 500 mg"
     },
     {
-      "code": "J0701"
+      "code": "J0701",
+      "weight": "0.0",
+      "description": "Injection, cefepime hydrochloride (baxter), not therapeutically equivalent to maxipime, 500 mg"
     }
   ],
   "1665091": [
@@ -4258,13 +4320,19 @@
   ],
   "1665093": [
     {
-      "code": "J0692"
+      "code": "J0692",
+      "weight": "1.0",
+      "description": "Injection, cefepime hydrochloride, 500 mg"
     },
     {
-      "code": "J0701"
+      "code": "J0701",
+      "weight": "0.0",
+      "description": "Injection, cefepime hydrochloride (baxter), not therapeutically equivalent to maxipime, 500 mg"
     },
     {
-      "code": "J0703"
+      "code": "J0703",
+      "weight": "0.0",
+      "description": "Injection, cefepime hydrochloride (b braun), not therapeutically equivalent to maxipime, 500 mg"
     }
   ],
   "1665095": [
@@ -4460,10 +4528,14 @@
   ],
   "1666311": [
     {
-      "code": "J7200"
+      "code": "J7200",
+      "weight": "0.0",
+      "description": "Injection, factor ix, (antihemophilic factor, recombinant), rixubis, per iu"
     },
     {
-      "code": "J7195"
+      "code": "J7195",
+      "weight": "1.0",
+      "description": "Injection, factor ix (antihemophilic factor, recombinant) per iu, not otherwise specified"
     }
   ],
   "1666314": [
@@ -4473,10 +4545,14 @@
   ],
   "1666317": [
     {
-      "code": "J7200"
+      "code": "J7200",
+      "weight": "0.0",
+      "description": "Injection, factor ix, (antihemophilic factor, recombinant), rixubis, per iu"
     },
     {
-      "code": "J7195"
+      "code": "J7195",
+      "weight": "1.0",
+      "description": "Injection, factor ix (antihemophilic factor, recombinant) per iu, not otherwise specified"
     }
   ],
   "1666320": [
@@ -4636,13 +4712,19 @@
   ],
   "1670387": [
     {
-      "code": "J7194"
+      "code": "J7194",
+      "weight": "1.0",
+      "description": "Factor ix, complex, per i.u."
     },
     {
-      "code": "J7193"
+      "code": "J7193",
+      "weight": "0.0",
+      "description": "Factor ix (antihemophilic factor, purified, non-recombinant) per i.u."
     },
     {
-      "code": "J7195"
+      "code": "J7195",
+      "weight": "0.0",
+      "description": "Injection, factor ix (antihemophilic factor, recombinant) per iu, not otherwise specified"
     }
   ],
   "1670392": [
@@ -5002,18 +5084,26 @@
   ],
   "1721458": [
     {
-      "code": "J2290"
+      "code": "J2290",
+      "weight": "1.0",
+      "description": "Injection, nafcillin sodium, 20 mg"
     },
     {
-      "code": "J2291"
+      "code": "J2291",
+      "weight": "0.0",
+      "description": "Injection, nafcillin sodium (baxter), 20 mg"
     }
   ],
   "1721460": [
     {
-      "code": "J2290"
+      "code": "J2290",
+      "weight": "1.0",
+      "description": "Injection, nafcillin sodium, 20 mg"
     },
     {
-      "code": "J2291"
+      "code": "J2291",
+      "weight": "0.0",
+      "description": "Injection, nafcillin sodium (baxter), 20 mg"
     }
   ],
   "1721473": [
@@ -5093,10 +5183,14 @@
   ],
   "1722939": [
     {
-      "code": "J2185"
+      "code": "J2185",
+      "weight": "1.0",
+      "description": "Injection, meropenem, 100 mg"
     },
     {
-      "code": "J2184"
+      "code": "J2184",
+      "weight": "0.0",
+      "description": "Injection, meropenem (b. braun), not therapeutically equivalent to j2185, 100 mg"
     }
   ],
   "1722941": [
@@ -5707,10 +5801,14 @@
   ],
   "1728785": [
     {
-      "code": "J2270"
+      "code": "J2270",
+      "weight": "1.0",
+      "description": "Injection, morphine sulfate, up to 10 mg"
     },
     {
-      "code": "J2274"
+      "code": "J2274",
+      "weight": "0.0",
+      "description": "Injection, morphine sulfate, preservative-free for epidural or intrathecal use, 10 mg"
     }
   ],
   "1728786": [
@@ -5725,10 +5823,14 @@
   ],
   "1728802": [
     {
-      "code": "J2270"
+      "code": "J2270",
+      "weight": "1.0",
+      "description": "Injection, morphine sulfate, up to 10 mg"
     },
     {
-      "code": "J2274"
+      "code": "J2274",
+      "weight": "0.0",
+      "description": "Injection, morphine sulfate, preservative-free for epidural or intrathecal use, 10 mg"
     }
   ],
   "1728803": [
@@ -5738,10 +5840,14 @@
   ],
   "1728999": [
     {
-      "code": "J2270"
+      "code": "J2270",
+      "weight": "1.0",
+      "description": "Injection, morphine sulfate, up to 10 mg"
     },
     {
-      "code": "J2274"
+      "code": "J2274",
+      "weight": "0.0",
+      "description": "Injection, morphine sulfate, preservative-free for epidural or intrathecal use, 10 mg"
     }
   ],
   "1729091": [
@@ -5766,10 +5872,14 @@
   ],
   "1729336": [
     {
-      "code": "J0597"
+      "code": "J0597",
+      "weight": "0.5",
+      "description": "Injection, c-1 esterase inhibitor (human), berinert, 10 units"
     },
     {
-      "code": "J0598"
+      "code": "J0598",
+      "weight": "0.5",
+      "description": "Injection, c-1 esterase inhibitor (human), cinryze, 10 units"
     }
   ],
   "1729418": [
@@ -5889,18 +5999,26 @@
   ],
   "1731518": [
     {
-      "code": "J2270"
+      "code": "J2270",
+      "weight": "1.0",
+      "description": "Injection, morphine sulfate, up to 10 mg"
     },
     {
-      "code": "J2274"
+      "code": "J2274",
+      "weight": "0.0",
+      "description": "Injection, morphine sulfate, preservative-free for epidural or intrathecal use, 10 mg"
     }
   ],
   "1731531": [
     {
-      "code": "J2270"
+      "code": "J2270",
+      "weight": "1.0",
+      "description": "Injection, morphine sulfate, up to 10 mg"
     },
     {
-      "code": "J2274"
+      "code": "J2274",
+      "weight": "0.0",
+      "description": "Injection, morphine sulfate, preservative-free for epidural or intrathecal use, 10 mg"
     }
   ],
   "1731537": [
@@ -5910,10 +6028,14 @@
   ],
   "1731538": [
     {
-      "code": "J2270"
+      "code": "J2270",
+      "weight": "1.0",
+      "description": "Injection, morphine sulfate, up to 10 mg"
     },
     {
-      "code": "J2275"
+      "code": "J2275",
+      "weight": "0.0",
+      "description": "Injection, morphine sulfate (preservative-free sterile solution), per 10 mg"
     }
   ],
   "1731542": [
@@ -5963,10 +6085,14 @@
   ],
   "1732007": [
     {
-      "code": "J2270"
+      "code": "J2270",
+      "weight": "1.0",
+      "description": "Injection, morphine sulfate, up to 10 mg"
     },
     {
-      "code": "J2274"
+      "code": "J2274",
+      "weight": "0.0",
+      "description": "Injection, morphine sulfate, preservative-free for epidural or intrathecal use, 10 mg"
     }
   ],
   "1732011": [
@@ -5981,10 +6107,14 @@
   ],
   "1732136": [
     {
-      "code": "J2270"
+      "code": "J2270",
+      "weight": "1.0",
+      "description": "Injection, morphine sulfate, up to 10 mg"
     },
     {
-      "code": "J2274"
+      "code": "J2274",
+      "weight": "0.0",
+      "description": "Injection, morphine sulfate, preservative-free for epidural or intrathecal use, 10 mg"
     }
   ],
   "1732138": [
@@ -6314,10 +6444,14 @@
   ],
   "1736541": [
     {
-      "code": "J1805"
+      "code": "J1805",
+      "weight": "1.0",
+      "description": "Injection, esmolol hydrochloride, 10 mg"
     },
     {
-      "code": "J1806"
+      "code": "J1806",
+      "weight": "0.0",
+      "description": "Injection, esmolol hydrochloride (wg critical care), not therapeutically equivalent to j1805, 10 mg"
     }
   ],
   "1736543": [
@@ -7027,10 +7161,14 @@
   ],
   "1743999": [
     {
-      "code": "J7195"
+      "code": "J7195",
+      "weight": "0.0",
+      "description": "Injection, factor ix (antihemophilic factor, recombinant) per iu, not otherwise specified"
     },
     {
-      "code": "J7202"
+      "code": "J7202",
+      "weight": "1.0",
+      "description": "Injection, factor ix, albumin fusion protein, (recombinant), idelvion, 1 i.u."
     }
   ],
   "1744001": [
@@ -7270,10 +7408,14 @@
   ],
   "1790508": [
     {
-      "code": "J2790"
+      "code": "J2790",
+      "weight": "0.0",
+      "description": "Injection, rho d immune globulin, human, full dose, 300 micrograms (1500 i.u.)"
     },
     {
-      "code": "J2792"
+      "code": "J2792",
+      "weight": "1.0",
+      "description": "Injection, rho d immune globulin, intravenous, human, solvent detergent, 100 iu"
     }
   ],
   "1790512": [
@@ -7488,13 +7630,19 @@
   ],
   "1792144": [
     {
-      "code": "J3299"
+      "code": "J3299",
+      "weight": "0.0",
+      "description": "Injection, triamcinolone acetonide (xipere), 1 mg"
     },
     {
-      "code": "J3301"
+      "code": "J3301",
+      "weight": "1.0",
+      "description": "Injection, triamcinolone acetonide, not otherwise specified, 10 mg"
     },
     {
-      "code": "J3300"
+      "code": "J3300",
+      "weight": "0.0",
+      "description": "Injection, triamcinolone acetonide, preservative free, 1 mg"
     }
   ],
   "1792483": [
@@ -8110,10 +8258,14 @@
   ],
   "1809417": [
     {
-      "code": "J1599"
+      "code": "J1599",
+      "weight": "1.0",
+      "description": "Injection, immune globulin, intravenous, non-lyophilized (e.g., liquid), not otherwise specified, 500 mg"
     },
     {
-      "code": "J1561"
+      "code": "J1561",
+      "weight": "0.0",
+      "description": "Injection, immune globulin, (gamunex-c/gammaked), non-lyophilized (e.g., liquid), 500 mg"
     }
   ],
   "1809427": [
@@ -8283,10 +8435,14 @@
   ],
   "1809579": [
     {
-      "code": "J1599"
+      "code": "J1599",
+      "weight": "0.0",
+      "description": "Injection, immune globulin, intravenous, non-lyophilized (e.g., liquid), not otherwise specified, 500 mg"
     },
     {
-      "code": "J1561"
+      "code": "J1561",
+      "weight": "1.0",
+      "description": "Injection, immune globulin, (gamunex-c/gammaked), non-lyophilized (e.g., liquid), 500 mg"
     }
   ],
   "1809580": [
@@ -13240,10 +13396,14 @@
   ],
   "242120": [
     {
-      "code": "J1817"
+      "code": "J1817",
+      "weight": "0.0",
+      "description": "Insulin for administration through dme (i.e., insulin pump) per 50 units"
     },
     {
-      "code": "J1815"
+      "code": "J1815",
+      "weight": "1.0",
+      "description": "Injection, insulin, per 5 units"
     }
   ],
   "242166": [
@@ -13618,10 +13778,14 @@
   ],
   "2541171": [
     {
-      "code": "J2250"
+      "code": "J2250",
+      "weight": "1.0",
+      "description": "Injection, midazolam hydrochloride, per 1 mg"
     },
     {
-      "code": "J2252"
+      "code": "J2252",
+      "weight": "0.0",
+      "description": "Injection, midazolam in 0.8% sodium chloride, intravenous, not therapeutically equivalent to j2250, 1 mg"
     }
   ],
   "25463": [
@@ -14333,18 +14497,26 @@
   ],
   "2608948": [
     {
-      "code": "J9044"
+      "code": "J9044",
+      "weight": "1.0",
+      "description": "Injection, bortezomib, not otherwise specified, 0.1 mg"
     },
     {
-      "code": "J9041"
+      "code": "J9041",
+      "weight": "0.0",
+      "description": "Injection, bortezomib, 0.1 mg"
     }
   ],
   "2608949": [
     {
-      "code": "J9044"
+      "code": "J9044",
+      "weight": "1.0",
+      "description": "Injection, bortezomib, not otherwise specified, 0.1 mg"
     },
     {
-      "code": "J9049"
+      "code": "J9049",
+      "weight": "0.0",
+      "description": "Injection, bortezomib (hospira), not therapeutically equivalent to j9041, 0.1 mg"
     }
   ],
   "2608952": [
@@ -17643,26 +17815,38 @@
   ],
   "309335": [
     {
-      "code": "J0736"
+      "code": "J0736",
+      "weight": "1.0",
+      "description": "Injection, clindamycin phosphate, 300 mg"
     },
     {
-      "code": "J0737"
+      "code": "J0737",
+      "weight": "0.0",
+      "description": "Injection, clindamycin phosphate (baxter), not therapeutically equivalent to j0736, 300 mg"
     }
   ],
   "309336": [
     {
-      "code": "J0736"
+      "code": "J0736",
+      "weight": "1.0",
+      "description": "Injection, clindamycin phosphate, 300 mg"
     },
     {
-      "code": "J0737"
+      "code": "J0737",
+      "weight": "0.0",
+      "description": "Injection, clindamycin phosphate (baxter), not therapeutically equivalent to j0736, 300 mg"
     }
   ],
   "309339": [
     {
-      "code": "J0736"
+      "code": "J0736",
+      "weight": "1.0",
+      "description": "Injection, clindamycin phosphate, 300 mg"
     },
     {
-      "code": "J0737"
+      "code": "J0737",
+      "weight": "0.0",
+      "description": "Injection, clindamycin phosphate (baxter), not therapeutically equivalent to j0736, 300 mg"
     }
   ],
   "309538": [
@@ -18032,10 +18216,14 @@
   ],
   "311487": [
     {
-      "code": "J9245"
+      "code": "J9245",
+      "weight": "1.0",
+      "description": "Injection, melphalan hydrochloride, not otherwise specified, 50 mg"
     },
     {
-      "code": "J9248"
+      "code": "J9248",
+      "weight": "0.0",
+      "description": "Injection, melphalan (hepzato), 1 mg"
     }
   ],
   "311625": [
@@ -18245,10 +18433,14 @@
   ],
   "312814": [
     {
-      "code": "J2790"
+      "code": "J2790",
+      "weight": "1.0",
+      "description": "Injection, rho d immune globulin, human, full dose, 300 micrograms (1500 i.u.)"
     },
     {
-      "code": "J2792"
+      "code": "J2792",
+      "weight": "0.0",
+      "description": "Injection, rho d immune globulin, intravenous, human, solvent detergent, 100 iu"
     }
   ],
   "312821": [
@@ -18954,10 +19146,14 @@
   ],
   "402243": [
     {
-      "code": "J9041"
+      "code": "J9041",
+      "weight": "1.0",
+      "description": "Injection, bortezomib, 0.1 mg"
     },
     {
-      "code": "J9046"
+      "code": "J9046",
+      "weight": "0.0",
+      "description": "Injection, bortezomib (dr. reddy's), not therapeutically equivalent to j9041, 0.1 mg"
     }
   ],
   "402244": [
@@ -19617,10 +19813,14 @@
   ],
   "630939": [
     {
-      "code": "J3470"
+      "code": "J3470",
+      "weight": "0.0",
+      "description": "Injection, hyaluronidase, up to 150 units"
     },
     {
-      "code": "J3473"
+      "code": "J3473",
+      "weight": "1.0",
+      "description": "Injection, hyaluronidase, recombinant, 1 usp unit"
     }
   ],
   "632": [
@@ -20922,10 +21122,14 @@
   ],
   "833532": [
     {
-      "code": "J0282"
+      "code": "J0282",
+      "weight": "1.0",
+      "description": "Injection, amiodarone hydrochloride, 30 mg"
     },
     {
-      "code": "J0283"
+      "code": "J0283",
+      "weight": "0.0",
+      "description": "Injection, amiodarone hydrochloride (nexterone), 30 mg"
     }
   ],
   "833535": [
@@ -21445,10 +21649,14 @@
   ],
   "857224": [
     {
-      "code": "J0603"
+      "code": "J0603",
+      "weight": "1.0",
+      "description": "Sevelamer hydrochloride (renagel or therapeutically equivalent), oral, 20 mg (for esrd on dialysis)"
     },
     {
-      "code": "J0601"
+      "code": "J0601",
+      "weight": "0.0",
+      "description": "Sevelamer carbonate (renvela or therapeutically equivalent), oral, 20 mg (for esrd on dialysis)"
     }
   ],
   "857226": [
@@ -21889,10 +22097,14 @@
   ],
   "865098": [
     {
-      "code": "J1817"
+      "code": "J1817",
+      "weight": "0.0",
+      "description": "Insulin for administration through dme (i.e., insulin pump) per 50 units"
     },
     {
-      "code": "J1815"
+      "code": "J1815",
+      "weight": "1.0",
+      "description": "Injection, insulin, per 5 units"
     }
   ],
   "865129": [
@@ -22072,10 +22284,14 @@
   ],
   "894912": [
     {
-      "code": "J2270"
+      "code": "J2270",
+      "weight": "1.0",
+      "description": "Injection, morphine sulfate, up to 10 mg"
     },
     {
-      "code": "J2274"
+      "code": "J2274",
+      "weight": "0.0",
+      "description": "Injection, morphine sulfate, preservative-free for epidural or intrathecal use, 10 mg"
     }
   ],
   "894914": [
@@ -22195,10 +22411,14 @@
   ],
   "897753": [
     {
-      "code": "J1171"
+      "code": "J1171",
+      "weight": "0.0",
+      "description": "Injection, hydromorphone, 0.1 mg"
     },
     {
-      "code": "J1170"
+      "code": "J1170",
+      "weight": "1.0",
+      "description": "Injection, hydromorphone, up to 4 mg"
     }
   ],
   "897755": [
@@ -22618,10 +22838,14 @@
   ],
   "979432": [
     {
-      "code": "J1805"
+      "code": "J1805",
+      "weight": "1.0",
+      "description": "Injection, esmolol hydrochloride, 10 mg"
     },
     {
-      "code": "J1806"
+      "code": "J1806",
+      "weight": "0.0",
+      "description": "Injection, esmolol hydrochloride (wg critical care), not therapeutically equivalent to j1805, 10 mg"
     }
   ],
   "979434": [
@@ -22856,18 +23080,26 @@
   ],
   "998212": [
     {
-      "code": "J2270"
+      "code": "J2270",
+      "weight": "1.0",
+      "description": "Injection, morphine sulfate, up to 10 mg"
     },
     {
-      "code": "J2274"
+      "code": "J2274",
+      "weight": "0.0",
+      "description": "Injection, morphine sulfate, preservative-free for epidural or intrathecal use, 10 mg"
     }
   ],
   "998213": [
     {
-      "code": "J2270"
+      "code": "J2270",
+      "weight": "1.0",
+      "description": "Injection, morphine sulfate, up to 10 mg"
     },
     {
-      "code": "J2274"
+      "code": "J2274",
+      "weight": "0.0",
+      "description": "Injection, morphine sulfate, preservative-free for epidural or intrathecal use, 10 mg"
     }
   ],
   "466523": [
@@ -22886,6 +23118,24 @@
     {
       "code": "J2778",
       "description": "Injection, ranibizumab, 0.1 mg"
+    }
+  ],
+  "2105": [
+    {
+      "code": "J9050",
+      "description": "Injection, carmustine, 100 mg"
+    }
+  ],
+  "24698": [
+    {
+      "code": "J9185",
+      "description": "Injection, fludarabine phosphate, 50 mg"
+    }
+  ],
+  "6718": [
+    {
+      "code": "J9245",
+      "description": "Injection, melphalan hydrochloride, not otherwise specified, 50 mg"
     }
   ]
 }

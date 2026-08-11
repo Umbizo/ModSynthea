@@ -682,6 +682,7 @@
     },
     "Prescribe_Aspirin": {
       "type": "MedicationOrder",
+      "chronic": true,
       "reason": "PV_Condition_Onset",
       "remarks": [
         "FIX 1: Aspirin is LIFELONG therapy - duration set to 50 years.",
@@ -855,6 +856,7 @@
     },
     "Prescribe_Hydroxyurea": {
       "type": "MedicationOrder",
+      "chronic": true,
       "reason": "PV_Condition_Onset",
       "remarks": [
         "RxNorm: 202591 - Hydroxyurea 500 MG Oral Capsule.",
@@ -1306,6 +1308,7 @@
     "Prescribe_Hydroxyurea_Post_Event": {
       "type": "MedicationOrder",
       "reason": "PV_Condition_Onset",
+      "chronic": true,
       "remarks": [
         "Initiating HU post-thrombotic event in previously untreated patient."
       ],
@@ -1365,6 +1368,7 @@
     "Prescribe_Ruxolitinib": {
       "type": "MedicationOrder",
       "reason": "PV_Condition_Onset",
+      "chronic": true,
       "remarks": [
         "RxNorm: 1373464 - Ruxolitinib 5 MG Oral Tablet.",
         "FDA-approved for HU-resistant/intolerant PV (December 2014).",
@@ -1419,6 +1423,7 @@
     },
     "Switch_To_Busulfan": {
       "type": "MedicationOrder",
+      "chronic": true,
       "reason": "PV_Condition_Onset",
       "remarks": [
         "RxNorm: 1860384 - Busulfan 2 MG Oral Tablet.",

@@ -452,6 +452,7 @@
     },
     "AdjuvantChemotherapy": {
       "type": "MedicationOrder",
+      "administration": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -502,6 +503,7 @@
     },
     "ChemotherapyAdvanced": {
       "type": "MedicationOrder",
+      "administration": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -529,6 +531,7 @@
     },
     "TargetedTherapy": {
       "type": "MedicationOrder",
+      "administration": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -645,6 +648,7 @@
     },
     "SecondLineChemotherapy": {
       "type": "MedicationOrder",
+      "administration": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -656,6 +660,7 @@
     },
     "Immunotherapy": {
       "type": "MedicationOrder",
+      "administration": true,
       "codes": [
         {
           "system": "RxNorm",

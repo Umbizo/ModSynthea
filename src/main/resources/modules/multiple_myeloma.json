@@ -286,12 +286,26 @@
     },
     "Active_MM": {
       "type": "ConditionOnset",
+      "assign_to_attribute": "multiple_myeloma",
       "codes": [
         {
           "system": "SNOMED-CT",
           "code": "109989006",
           "display": "Multiple myeloma"
         }
+      ],
+      "remarks": [
+        "Task 2.11 (sweep): assign_to_attribute added so Death_From_MM can",
+        "resolve its cause of death safely. 109989006 is also",
+        "ConditionOnset'd by trigger_bone_marrow_transplant.json's own",
+        "'Multiple Myeloma' state (a different state name) -- since",
+        "HealthRecord.conditionStart is idempotent per code and",
+        "ConditionOnset.diagnose renames the shared entry to whichever",
+        "state fired it, a condition_onset:\"Active_MM\" reference on",
+        "Death_From_MM would be at risk of the renamed-entry null-cause bug",
+        "(same class fixed in dementia/polycythemia_vera/acute_myeloid_",
+        "leukemia below). referenced_by_attribute holds the Entry object",
+        "directly and is immune to the rename."
       ],
       "direct_transition": "Init_MM_Attributes"
     },
@@ -1149,6 +1163,15 @@
     },
     "Death_From_MM": {
       "type": "Death",
+      "referenced_by_attribute": "multiple_myeloma",
+      "remarks": [
+        "Task 2.11 (sweep): had none of codes/condition_onset/",
+        "referenced_by_attribute -- null cause of death for every MM death.",
+        "`multiple_myeloma` is assign_to_attribute'd by Active_MM, which",
+        "dominates this state (Terminal_MM is its sole predecessor, itself",
+        "only reachable downstream of Active_MM -- verified by dominator",
+        "analysis), so the attribute is guaranteed set here."
+      ],
       "direct_transition": "No_MM"
     },
     "Acyclovir": {

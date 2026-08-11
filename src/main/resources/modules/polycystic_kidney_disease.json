@@ -102,6 +102,7 @@
     },
     "ACEi_Therapy": {
       "type": "MedicationOrder",
+      "chronic": true,
       "direct_transition": "PKD_Screening_Labs",
       "codes": [
         {

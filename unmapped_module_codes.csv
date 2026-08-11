@@ -1,86 +1,10 @@
 gap,state,code,module
-condition->ICD,Adolescent_Idiopathic_Scoliosis,203646004 Adolescent idiopathic scoliosis (disorder),AIS_From_School_Screening_to_SOSORT_Recommendations.json
-procedure->HCPCS,Scoliosis_School_Screening,170245002 Child examination: school screening (procedure),AIS_From_School_Screening_to_SOSORT_Recommendations.json
-procedure->HCPCS,Referral_to_Orthopaedic_Surgeon,308481009 Referral to orthopedic surgeon (procedure),AIS_From_School_Screening_to_SOSORT_Recommendations.json
-procedure->HCPCS,History_Taking,84100007 History taking (procedure),AIS_From_School_Screening_to_SOSORT_Recommendations.json
-procedure->HCPCS,Postural_Examination,417656005 Osteopathic postural examination (procedure),AIS_From_School_Screening_to_SOSORT_Recommendations.json
-procedure->HCPCS,Referral_for_X-ray,183830008 Referral for X-ray (procedure),AIS_From_School_Screening_to_SOSORT_Recommendations.json
-procedure->HCPCS,Plain_X-Ray_Spine_and_Pelvis,1290953004 Plain X-ray of spine and pelvis (procedure),AIS_From_School_Screening_to_SOSORT_Recommendations.json
-procedure->HCPCS,XRay_Measurements,122869004 Measurement procedure (procedure),AIS_From_School_Screening_to_SOSORT_Recommendations.json
-condition->ICD,Confirm_AIS_No_Red_Flags,203646004 Adolescent idiopathic scoliosis (disorder),AIS_From_School_Screening_to_SOSORT_Recommendations.json
-procedure->HCPCS,Refer_To_PTRB,737617004 Referral to prosthetic service (procedure) ,AIS_From_School_Screening_to_SOSORT_Recommendations.json
-procedure->HCPCS,Refer_To_FTRB,737617004 Referral to prosthetic service (procedure) ,AIS_From_School_Screening_to_SOSORT_Recommendations.json
-procedure->HCPCS,Refer_To_PSSE,78429003 Referral to physical rehabilitation service (procedure),AIS_From_School_Screening_to_SOSORT_Recommendations.json
-procedure->HCPCS,Refer_For_Monitoring_6_Months,183444007 Referral for further care (procedure),AIS_From_School_Screening_to_SOSORT_Recommendations.json
-procedure->HCPCS,Refer_For_Monitoring_3_Months,183444007 Referral for further care (procedure),AIS_From_School_Screening_to_SOSORT_Recommendations.json
-procedure->HCPCS,Refer_To_SSB,737617004 Referral to prosthetic service (procedure),AIS_From_School_Screening_to_SOSORT_Recommendations.json
-procedure->HCPCS,Refer_to_Spinal_Surgery,770695002 Referral to spinal surgery service (procedure),AIS_From_School_Screening_to_SOSORT_Recommendations.json
-condition->ICD,CIDP_Onset,128209004 Chronic inflammatory demyelinating polyradiculoneuropathy,CIDP.json
-procedure->HCPCS,Diagnostic_Workup,164721007 Nerve conduction study,CIDP.json
-med->NDC,IVIG_Therapy,"42386 immunoglobulins, intravenous",CIDP.json
-procedure->HCPCS,Plasma_Exchange_Therapy,20720000 Plasmapheresis,CIDP.json
-med->NDC,Second_Line_Treatment,1256 azathioprine,CIDP.json
-bad-verhoeff,B_Cell_ALL_Onset,277572005 Precursor B-cell lymphoblastic leukemia (disorder),acute_lymphoblastic_leukemia.json
-procedure->HCPCS,Bone_Marrow_Biopsy,86273004 Bone marrow biopsy,acute_lymphoblastic_leukemia.json
-bad-verhoeff,CNS_Leukemia,277534002 Central nervous system leukemia (disorder),acute_lymphoblastic_leukemia.json
-procedure->HCPCS,Supportive_Care,133918004 Supportive care,acute_myeloid_leukemia.json
-procedure->HCPCS,Bone_Marrow_Biopsy,86273004 Bone marrow biopsy,acute_myeloid_leukemia.json
-admin-med->HCPCS,Levofloxacin,199885 levofloxacin 500 MG Oral Tablet,acute_myeloid_leukemia_pediatric_prophylaxis.json
-procedure->HCPCS,Transfer_to_ICU,305351004 Admission to intensive care unit (procedure),acute_myeloid_leukemia_pediatric_prophylaxis.json
-procedure->HCPCS,Death_Event,16983000 Death in hospital (event),acute_myeloid_leukemia_pediatric_prophylaxis.json
-procedure->HCPCS,Transfer_to_Stepdown,449214001 Transfer to stepdown unit (procedure),acute_myeloid_leukemia_pediatric_prophylaxis.json
 procedure->HCPCS,Administer_Allergy_Test,395142003 Allergy screening test (procedure),allergies.json
 procedure->HCPCS,Benchmark_Allergy_Test,395142003 Allergy screening test (procedure),allergies/immunotherapy.json
 procedure->HCPCS,Immunotherapy_Procedure,180256009 Subcutaneous immunotherapy (procedure),allergies/immunotherapy.json
 procedure->HCPCS,Followup_Test,395142003 Allergy screening test (procedure),allergies/immunotherapy.json
 procedure->HCPCS,Administer_Epinephrine,313191000 Injection of epinephrine (procedure),allergies/severe_allergic_reaction.json
-bad-gmf,MCI_MoCA,Observation raw value block,alzheimers.json
-bad-system,MCI_Cognitive_Assessment,CPT:99483 Cognitive assessment and care plan services,alzheimers.json
-bad-gmf,AdvancedDiseaseAssessment,Observation raw value block,alzheimers.json
-med->NDC,StartGalantamine,384641 galantamine Oral Tablet,alzheimers.json
-med->NDC,StartRivastigmine,373797 rivastigmine Oral Capsule,alzheimers.json
-bad-system,AnnualCognitiveAssessment,CPT:96116 Neurobehavioral status examination,alzheimers.json
-bad-gmf,AnnualMoCA,Observation raw value block,alzheimers.json
-procedure->HCPCS,ACPProcedure,310303002 Advance directive discussion,alzheimers.json
-procedure->HCPCS,HospiceAssessment,305336008 Hospice care assessment,alzheimers.json
-procedure->HCPCS,AdvancedCarePlanning_Action_1,310303002 Advance directive discussion (procedure),alzheimers.json
-procedure->HCPCS,Asthma_Screening,171231001 Asthma screening (procedure),asthma.json
 procedure->HCPCS,Catheter Ablation,18286008 Catheter ablation of tissue of heart (procedure),atrial_fibrillation.json
-procedure->HCPCS,CBC_Order,58410-2 Complete blood count (CBC) panel,b_cell_lymphomas.json
-procedure->HCPCS,LDH_Order,14804-9 Lactate dehydrogenase,b_cell_lymphomas.json
-bad-verhoeff,DLBCL_Stage_I,703969005 Stage I diffuse large B-cell lymphoma,b_cell_lymphomas.json
-bad-verhoeff,DLBCL_Stage_II,703970006 Stage II diffuse large B-cell lymphoma,b_cell_lymphomas.json
-bad-verhoeff,DLBCL_Stage_III,703971005 Stage III diffuse large B-cell lymphoma,b_cell_lymphomas.json
-bad-verhoeff,DLBCL_Stage_IV,703972003 Stage IV diffuse large B-cell lymphoma,b_cell_lymphomas.json
-bad-verhoeff,MCL_Stage_I,703973008 Stage I mantle cell lymphoma,b_cell_lymphomas.json
-bad-verhoeff,MCL_Stage_II,703974002 Stage II mantle cell lymphoma,b_cell_lymphomas.json
-bad-verhoeff,MCL_Stage_III,703975001 Stage III mantle cell lymphoma,b_cell_lymphomas.json
-bad-verhoeff,MCL_Stage_IV,703976000 Stage IV mantle cell lymphoma,b_cell_lymphomas.json
-procedure->HCPCS,DLBCL_Palliative_Care,103735009 Palliative care,b_cell_lymphomas.json
-procedure->HCPCS,DLBCL_Salvage_Therapy,257950002 Salvage therapy,b_cell_lymphomas.json
-procedure->HCPCS,MCL_Targeted_Therapy,410942007 Targeted anticancer therapy,b_cell_lymphomas.json
-procedure->HCPCS,MCL_Palliative_Care,103735009 Palliative care,b_cell_lymphomas.json
-procedure->HCPCS,Cystoscopy_Order,142505009 Cystoscopy,bladder_cancer.json
-procedure->HCPCS,CT_Urography_Order,419775003 CT urography,bladder_cancer.json
-procedure->HCPCS,TURBT_Procedure,176258007 Transurethral resection of bladder tumor,bladder_cancer.json
-bad-verhoeff,T3_T4_Advanced,122985900 Stage T3-T4 bladder cancer,bladder_cancer.json
-procedure->HCPCS,BCG_Response_Assessment,142505009 Cystoscopy,bladder_cancer.json
-procedure->HCPCS,Surveillance_Cystoscopy_Procedure,142505009 Cystoscopy,bladder_cancer.json
-bad-verhoeff,Progression_To_MIBC,369974005 Muscle invasive bladder cancer,bladder_cancer.json
-procedure->HCPCS,Recurrence_TURBT,176258007 Repeat TURBT,bladder_cancer.json
-procedure->HCPCS,Bone_Scan,32750006 Bone scan,bladder_cancer.json
-procedure->HCPCS,Radical_Cystectomy,64063003 Radical cystectomy,bladder_cancer.json
-procedure->HCPCS,Ileal_Conduit,118508005 Ileal conduit,bladder_cancer.json
-procedure->HCPCS,Neobladder,236334001 Orthotopic neobladder,bladder_cancer.json
-procedure->HCPCS,Continent_Cutaneous,119560006 Urinary diversion procedure,bladder_cancer.json
-procedure->HCPCS,Trimodal_Response_Assessment,142505009 Cystoscopy,bladder_cancer.json
-procedure->HCPCS,Salvage_Cystectomy,64063003 Radical cystectomy,bladder_cancer.json
-procedure->HCPCS,Salvage_Urinary_Diversion,118508005 Ileal conduit,bladder_cancer.json
-procedure->HCPCS,Bladder_Surveillance_Cystoscopy,142505009 Cystoscopy,bladder_cancer.json
-procedure->HCPCS,Repeat_TURBT,176258007 Repeat TURBT for recurrence,bladder_cancer.json
-procedure->HCPCS,Palliative_Care_Referral,103735009 Palliative care,bladder_cancer.json
-med->NDC,Ondansetron_Order,26225 Ondansetron 8 MG Oral Tablet,bladder_cancer.json
-procedure->HCPCS,from own body (autologous transplant),58776007 Autologous bone marrow transplant (procedure),bone_marrow_transplant.json
 condition->ICD,History of allotransplantation of bone marrow,152621000119105 History of allotransplantation of bone marrow (situation),bone_marrow_transplant.json
 condition->ICD,History of autologous bone marrow transplant,108631000119101 History of autologous bone marrow transplant (situation),bone_marrow_transplant.json
 procedure->HCPCS,Hematologic disorder medication review,473220001 Hematologic disorder medication review (procedure),bone_marrow_transplant.json
@@ -91,7 +15,6 @@ procedure->HCPCS,Treatment side effects education,304531008 Treatment side effec
 procedure->HCPCS,Pre-operative chemotherapy,394894008 Pre-operative chemotherapy (procedure),bone_marrow_transplant.json
 condition->ICD,History of peripheral stem cell transplant,153351000119102 History of peripheral stem cell transplant (situation),bone_marrow_transplant.json
 procedure->HCPCS,from a donor (allogeneic stem cells),234336002 Hemopoietic stem cell transplant (procedure),bone_marrow_transplant.json
-procedure->HCPCS,from a donor (allogeneic marrow),58390007 Allogeneic bone marrow transplantation (procedure),bone_marrow_transplant.json
 procedure->HCPCS,Discussion,223487003 Discussion about options (procedure),breast_cancer.json
 admin-med->HCPCS,Letrozole,200064 letrozole 2.5 MG Oral Tablet,breast_cancer/hormonetherapy_breast.json
 admin-med->HCPCS,Anastrozole,199224 anastrozole 1 MG Oral Tablet,breast_cancer/hormonetherapy_breast.json
@@ -103,7 +26,6 @@ admin-med->HCPCS,Palbociclib,1601380 palbociclib 100 MG Oral Capsule,breast_canc
 admin-med->HCPCS,Ribociclib,1873983 ribociclib 200 MG Oral Tablet,breast_cancer/hormonetherapy_breast.json
 admin-med->HCPCS,Tamoxifen,198240 Tamoxifen 10 MG Oral Tablet,breast_cancer/hormonetherapy_breast.json
 procedure->HCPCS,Mastectomy,392023007 Excision of lesion of breast (procedure),breast_cancer/surgery_therapy_breast.json
-procedure->HCPCS,Intraoperative radiation therapy (IORT),1287742003 Radiotherapy (procedure),breast_cancer/surgery_therapy_breast.json
 procedure->HCPCS,Brachytherapy,447759004 Brachytherapy of breast (procedure),breast_cancer/surgery_therapy_breast.json
 procedure->HCPCS,Interstitial Brachytherapy,113120007 Interstitial brachytherapy (procedure),breast_cancer/surgery_therapy_breast.json
 procedure->HCPCS,Sentinel_Lymph_Node_Biopsy__SLNB_,396487001 Sentinel lymph node biopsy (procedure),breast_cancer/surgery_therapy_breast.json
@@ -127,11 +49,6 @@ procedure->HCPCS,Videofluoroscopic_Swallowing_Study_VFSS,241149003 Videofluorosc
 procedure->HCPCS,Monitoring,182777000 Monitoring of patient (regime/therapy),cerebral_palsy.json
 med->NDC,Rx_Atropine,1190766 atropine sulfate 0.31 MG/ML Ophthalmic Solution,cerebral_palsy.json
 procedure->HCPCS,Monitoring2,182777000 Monitoring of patient (regime/therapy),cerebral_palsy.json
-procedure->HCPCS,Diverting_Colostomy_Procedure,9905009 Loop colostomy (procedure),colorectal_cancer.json
-procedure->HCPCS,Move_to_Prone_Position,431182000 Placing subject in prone position (procedure),congestive_heart_failure.json
-procedure->HCPCS,Move_to_Prone_Position_Admission,431182000 Placing subject in prone position (procedure),congestive_heart_failure.json
-procedure->HCPCS,Heart Failure Education,423475008 Heart failure education (procedure),congestive_heart_failure.json
-procedure->HCPCS,Assessment Procedure,762998009 Assessment using New York Heart Association Classification (procedure),congestive_heart_failure.json
 procedure->HCPCS,IUD_Removal,1263416007 Removal of intrauterine contraceptive device (procedure),contraceptive_maintenance.json
 procedure->HCPCS,Remove_Implant,301807007 Removal of subcutaneous contraceptive (procedure),contraceptive_maintenance.json
 procedure->HCPCS,Regular_Contraceptive_Injection,76601001 Intramuscular injection (procedure),contraceptive_maintenance.json
@@ -173,18 +90,6 @@ admin-med->HCPCS,Aviptadil,999970 amlodipine / hydrochlorothiazide / olmesartan 
 admin-med->HCPCS,CD24Fc,999970 amlodipine / hydrochlorothiazide / olmesartan Oral Tablet [Tribenzor],covid19/medications.json
 condition->ICD,Sputum Production Onset,248595008 Sputum finding (finding),covid19/symptoms.json
 procedure->HCPCS,Heparin Infusion,103746007 Heparin therapy (procedure),covid19/treat_blood_clot.json
-procedure->HCPCS,Sweat_Test,86964003 Cystic fibrosis sweat test (procedure),cystic_fibrosis.json
-procedure->HCPCS,Gene_mutation_test,444260001 Screen for 20 common genetic mutations of cystic fibrosis using amplification refractory mutation system polymerase chain reaction assay technique (procedure),cystic_fibrosis.json
-procedure->HCPCS,Enema,61919008 Giving patient an enema (procedure),cystic_fibrosis.json
-procedure->HCPCS,Neonatal_screening,60151004 Neonatal screening (procedure),cystic_fibrosis.json
-procedure->HCPCS,Oropharyngeal_Culture,104173009 Microbial culture of sputum (procedure),cystic_fibrosis.json
-procedure->HCPCS,GlucoseTest,113076002 Glucose tolerance test (procedure),cystic_fibrosis.json
-procedure->HCPCS,Lung_Transplant,232657004 Single lung transplant (procedure),cystic_fibrosis.json
-procedure->HCPCS,Take_Blood_Sample,82078001 Collection of blood specimen for laboratory (procedure),cystic_fibrosis.json
-procedure->HCPCS,Antibiotic_Therapy,281790008 Intravenous antibiotic therapy (procedure),cystic_fibrosis.json
-procedure->HCPCS,Tracheostomy,48387007 Incision of trachea (procedure),cystic_fibrosis.json
-procedure->HCPCS,Oxygen_Therapy,65710008 Acute respiratory failure (disorder),cystic_fibrosis.json
-condition->ICD,EarlyOnsetAlzheimersOnset,230265002 Familial Alzheimer's disease of early onset (disorder),dementia.json
 procedure->HCPCS,Dental surgical procedure,81733005 Dental surgical procedure (procedure),dental_and_oral_examination.json
 condition->ICD,Infection of tooth,427898007 Infection of tooth (disorder),dental_and_oral_examination.json
 admin-med->HCPCS,Fluoride,1535362 sodium fluoride 0.0272 MG/MG Oral Gel,dental_and_oral_examination.json
@@ -233,7 +138,6 @@ procedure->HCPCS,Dental_surgical_procedure,81733005 Dental surgical procedure (p
 procedure->HCPCS,Excision of lingual frenum,23933004 Excision of lingual frenum (procedure),dentures.json
 procedure->HCPCS,Grafting of periodontal bone defect,234687006 Grafting of periodontal bone defect (procedure),dentures.json
 procedure->HCPCS,Slit-lamp biomicroscopy,55468007 Ocular slit lamp examination (procedure),diabetic_retinopathy_treatment.json
-procedure->HCPCS,Patient history,84100007 History taking (procedure),diabetic_retinopathy_treatment.json
 procedure->HCPCS,Gonioscopy,389153003 Indirect gonioscopy (procedure),diabetic_retinopathy_treatment.json
 procedure->HCPCS,Panretinal Laser,413180006 Pan retinal photocoagulation for diabetes (procedure),diabetic_retinopathy_treatment.json
 procedure->HCPCS,Grid_Laser,397539000 Grid retinal photocoagulation (procedure),diabetic_retinopathy_treatment.json
@@ -242,10 +146,6 @@ admin-med->HCPCS,Numbing_Drops_Panretinal_Laser,1191013 proparacaine hydrochlori
 admin-med->HCPCS,Numbing_Drops_Grid_Laser,1191013 proparacaine hydrochloride 5 MG/ML Ophthalmic Solution,diabetic_retinopathy_treatment.json
 admin-med->HCPCS,Numbing_Drops_AntiVEGF_Injection,1191013 proparacaine hydrochloride 5 MG/ML Ophthalmic Solution,diabetic_retinopathy_treatment.json
 admin-med->HCPCS,Dilation,313521 tropicamide 5 MG/ML Ophthalmic Solution,diabetic_retinopathy_treatment.json
-procedure->HCPCS,Excisional_Biopsy,86273004 Excision biopsy of lymph node,dlbcl.json
-procedure->HCPCS,Autologous_Stem_Cell_Transplant,58776007 Autologous bone marrow transplant,dlbcl.json
-procedure->HCPCS,CAR_T_Therapy,1156961008 Chimeric antigen receptor T-cell immunotherapy,dlbcl.json
-med->NDC,Ondansetron,26225 Ondansetron,dlbcl.json
 condition->ICD,Veteran,1187604002 Serving in military service (finding),encounter/sdoh_hrsn.json
 condition->ICD,Education_Onset,473461003 Educated to high school level (finding),encounter/sdoh_hrsn.json
 condition->ICD,Education_Onset_2,224299000 Received higher education (finding),encounter/sdoh_hrsn.json
@@ -256,27 +156,7 @@ condition->ICD,Refugee,446654005 Refugee (person),encounter/sdoh_hrsn.json
 procedure->HCPCS,CRAFFT,"868187001 Assessment using Car, Relax, Alone, Forget, Friends, Trouble Screening Test (procedure)",encounter/substance_use_screening.json
 procedure->HCPCS,Lecture,370995009 Health risks education (procedure),encounter/substance_use_screening.json
 procedure->HCPCS,Guidance,386516004 Anticipatory guidance (procedure),encounter/substance_use_screening.json
-bad-system,EndometrialSampling,"CPT:58100 Endometrial sampling (biopsy) with or without endocervical sampling (biopsy), without cervical dilation, any method",endometrial_cancer.json
-bad-system,Hysterectomy_Hyperplasia,"CPT:58571 Laparoscopy, surgical, with total hysterectomy, for uterus 250 g or less",endometrial_cancer.json
-bad-system,EndometrialCancerDiagnosis,ICD-10-CM:C54.1 Malignant neoplasm of endometrium,endometrial_cancer.json
-bad-system,SurgicalStaging,"CPT:58570 Laparoscopy, surgical, with total hysterectomy, for uterus 250 g or less; with bilateral salpingo-oophorectomy",endometrial_cancer.json
-bad-system,VaginalBrachytherapy,CPT:77776 Interstitial radiation source application; complex,endometrial_cancer.json
-bad-system,EBRT_Therapy,"CPT:77427 Radiation treatment management, 5 treatments",endometrial_cancer.json
-bad-system,AdjuvantRadiationTherapy,"CPT:77427 Radiation treatment management, 5 treatments",endometrial_cancer.json
-med->NDC,AdjuvantChemotherapy,378363 carboplatin Injectable Solution,endometrial_cancer.json
-med->NDC,ChemotherapyAdvanced,378363 carboplatin Injectable Solution,endometrial_cancer.json
-med->NDC,TargetedTherapy,1657750 4 ML pembrolizumab 25 MG/ML Injection,endometrial_cancer.json
-med->NDC,SecondLineChemotherapy,374376 doxorubicin Injectable Solution,endometrial_cancer.json
-med->NDC,Immunotherapy,1657750 4 ML pembrolizumab 25 MG/ML Injection,endometrial_cancer.json
-procedure->HCPCS,ClinicalTrial,446096008 Clinical trial participation (procedure),endometrial_cancer.json
-bad-system,RadiationSalvage,"CPT:77427 Radiation treatment management, 5 treatments",endometrial_cancer.json
-bad-system,SurgicalSalvage,"CPT:58960 Resection (tumor debulking) of ovarian, peritoneal, or omental tumor",endometrial_cancer.json
-procedure->HCPCS,SurgeryOnly_Action_1,116144002 Total abdominal hysterectomy with bilateral salpingo-oophorectomy,endometrial_cancer.json
 condition->ICD,History_of_Seizure,1290882004 History of seizure (situation),epilepsy.json
-procedure->HCPCS,IOP_Test,252832004 Intraocular pressure test,eye/intraocular_pressure.json
-med->NDC,Beta_Blockers,10600 timolol 5 MG/ML Ophthalmic Solution,eye/intraocular_pressure.json
-med->NDC,Alpha_Agonists,1999015 brimonidine tartrate 1 MG/ML Ophthalmic Solution,eye/intraocular_pressure.json
-procedure->HCPCS,VA_Test,16830007 Visual acuity testing (procedure),eye/visual_acuity.json
 admin-med->HCPCS,Prasugrel,855812 prasugrel 10 MG Oral Tablet,heart/acs_antiplatelet.json
 admin-med->HCPCS,Clopidogrel,749196 clopidogrel 300 MG Oral Tablet,heart/acs_antiplatelet.json
 admin-med->HCPCS,Ticagrelor,1116635 ticagrelor 90 MG Oral Tablet,heart/acs_antiplatelet.json
@@ -294,7 +174,6 @@ procedure->HCPCS,Patient referral,3457005 Patient referral (procedure),heart/avr
 procedure->HCPCS,Palliative Referral,306237005 Referral to palliative care service (procedure),heart/avrr/avrr_referral.json
 procedure->HCPCS,Reexploration procedure,232816009 Aortic valve and adjacent structure operations (procedure),heart/avrr/outcomes.json
 procedure->HCPCS,Reexploration procedure,261554009 Reoperation (qualifier value),heart/avrr/outcomes.json
-procedure->HCPCS,RBC Transfusion,116863004 Transfusion of red blood cells (procedure),heart/avrr/outcomes.json
 procedure->HCPCS,Postop Pacemaker,233174007 Cardiac pacemaker procedure (procedure),heart/avrr/outcomes.json
 procedure->HCPCS,Preoperative Testing,110467000 Pre-surgery testing (procedure),heart/avrr/preoperative.json
 procedure->HCPCS,Blood Type and Cross,44608003 Blood group typing (procedure),heart/avrr/preoperative.json
@@ -314,7 +193,6 @@ procedure->HCPCS,Induced_cardioplegia,8290005 Induced cardioplegia (procedure),h
 procedure->HCPCS,Removal_of_Aortic_Cross_Clamp,301884003 Removal of aortic cross clamp (procedure),heart/avrr/savrr_operation.json
 procedure->HCPCS,Vascular_Cannula_Removal,233553003 Vascular cannula removal (procedure),heart/avrr/savrr_operation.json
 procedure->HCPCS,Arterial_Line_Insertion,392247006 Insertion of catheter into artery (procedure),heart/avrr/savrr_operation.json
-procedure->HCPCS,AV Replacement Procedure,26212005 Replacement of aortic valve (procedure),heart/avrr/savrr_operation.json
 procedure->HCPCS,AV Repair Procedure,1155885007 Repair of aortic valve (procedure),heart/avrr/savrr_operation.json
 procedure->HCPCS,Dressing,"58828004 Application of dressing, sterile (procedure)",heart/avrr/savrr_operation.json
 procedure->HCPCS,OR_Exit,"37729005 Patient transfer, in-hospital (procedure)",heart/avrr/savrr_operation.json
@@ -366,11 +244,6 @@ procedure->HCPCS,Preoperative Testing,110467000 Pre-surgery testing (procedure),
 procedure->HCPCS,Blood Type and Cross,44608003 Blood group typing (procedure),heart/cabg/preoperative.json
 procedure->HCPCS,Referral_Procedure,183519002 Referral to cardiology service (procedure),heart/cabg_sequence.json
 procedure->HCPCS,LVAD Insertion,232967006 Implantation of left cardiac ventricular assist device (procedure),heart/chf_lvad.json
-procedure->HCPCS,Heart Failure Education,423475008 Heart failure education (procedure),heart/chf_lvad.json
-med->NDC,Empagliflozin,1545653 Empagliflozin 10 MG Oral Tablet,heart/chf_meds.json
-med->NDC,Empagliflozin,1545653 Empagliflozin 10 MG Oral Tablet,heart/chf_meds_hfref_nyha2.json
-med->NDC,Empagliflozin,1545653 Empagliflozin 10 MG Oral Tablet,heart/chf_meds_hfref_nyha3.json
-med->NDC,Empagliflozin,1545653 Empagliflozin 10 MG Oral Tablet,heart/chf_meds_hfref_nyha4.json
 procedure->HCPCS,Transplant Procedure,32413006 Transplantation of heart (procedure),heart/chf_transplant.json
 procedure->HCPCS,Education,243063003 Postoperative procedure education (procedure),heart/chf_transplant.json
 procedure->HCPCS,Risk_Assessment,225338004 Risk assessment (procedure),heart/nsteacs_pathway.json
@@ -392,15 +265,10 @@ procedure->HCPCS,Transfemoral TAVR,773996000 Transcatheter aortic valve implanta
 procedure->HCPCS,TAVR,773996000 Transcatheter aortic valve implantation (procedure),heart/tavr/operation.json
 procedure->HCPCS,Reexploration procedure,232816009 Aortic valve and adjacent structure operations (procedure),heart/tavr/outcomes.json
 procedure->HCPCS,Reexploration procedure,261554009 Reoperation (qualifier value),heart/tavr/outcomes.json
-procedure->HCPCS,RBC Transfusion,116863004 Transfusion of red blood cells (procedure),heart/tavr/outcomes.json
 procedure->HCPCS,Postop Pacemaker,233174007 Cardiac pacemaker procedure (procedure),heart/tavr/outcomes.json
 procedure->HCPCS,Discharge to Ward,306706006 Discharge to ward (procedure),heart/tavr/postop.json
 procedure->HCPCS,Admission to Ward,305342007 Admission to ward (procedure),heart/tavr/postop.json
 procedure->HCPCS,Discharge from Hospital,308283009 Discharge from hospital (procedure),heart/tavr/postop.json
-procedure->HCPCS,Admission,305351004 Admission to intensive care unit (procedure),heart/tavr/postop.json
-bad-system,OnsetHighOutputHF_Action_2,"ICD-10-CM:I50.9 Heart failure, unspecified",high_output_heart_failure.json
-bad-system,OnsetHighOutputHF_Action_2,ICD-10-CM:I50.89 Other heart failure,high_output_heart_failure.json
-bad-system,HighOutputHF_Maintenance_Actions_Action_7,CPT:93306 Transthoracic echocardiography,high_output_heart_failure.json
 med->NDC,ddC,313760 zalcitabine 0.75 MG Oral Tablet,hiv/art_sequence_1987_1994.json
 med->NDC,ddC,313760 zalcitabine 0.75 MG Oral Tablet,hiv/art_sequence_1995_1996.json
 med->NDC,ddC,313760 zalcitabine 0.75 MG Oral Tablet,hiv/art_sequence_1997_2002.json
@@ -434,9 +302,6 @@ procedure->HCPCS,HIV Care Referral,3457005 Patient referral (procedure),hiv/hiv_
 procedure->HCPCS,Record Over Thirty Day Linkage,373786007 Reasons for treatment delay (finding),hiv_care.json
 procedure->HCPCS,Referral_Home_Health_Care,417511005 Referral to home health care service (procedure),home_health_treatment.json
 procedure->HCPCS,Information_Gathering,311791003 Information gathering (procedure),homelessness.json
-procedure->HCPCS,Certification_Procedure,310417005 Certification procedure (procedure),hospice_treatment.json
-procedure->HCPCS,Notifications,185087000 Notifications (procedure),hospice_treatment.json
-procedure->HCPCS,Referral To Hypertension Clinic,183856001 Referral to hypertension clinic (procedure),hypertension.json
 procedure->HCPCS,Spinal_Surgery,305425002 Admission to neurosurgical department (procedure),injuries.json
 procedure->HCPCS,Gunshot_Wound_Surgery,305433001 Admission to trauma surgery department (procedure),injuries.json
 condition->ICD,Permanent_Brain_Damage,127294003 Traumatic or nontraumatic brain injury (disorder),injuries.json
@@ -450,134 +315,14 @@ procedure->HCPCS,Closed Reduction of Dislocation,179632003 Closed reduction of d
 procedure->HCPCS,Closed Reduction of Fracture,24832002 Closed reduction of mandibular fracture (procedure),injuries/broken_jaw.json
 procedure->HCPCS,Range_of_motion_testing,69212005 Range of motion testing (procedure),injuries/broken_jaw.json
 procedure->HCPCS,Oral examination,122856003 Oral examination (procedure),injuries/broken_jaw.json
-condition->ICD,Suspected Lung Cancer,162573006 Suspected lung cancer (situation),lung_cancer.json
-procedure->HCPCS,Chest CT Scan,418891003 Computed tomography of chest and abdomen (procedure),lung_cancer.json
-procedure->HCPCS,Sputum Cytology (Phelgm),167995008 Sputum microscopy (procedure),lung_cancer.json
-procedure->HCPCS,Thoracentesis (Fluid),91602002 Thoracentesis (procedure),lung_cancer.json
-procedure->HCPCS,Needle Biopsy (Cells),432231006 Fine needle aspiration biopsy of lung (procedure),lung_cancer.json
-procedure->HCPCS,Bronchoscopy (Tube),85765000 Fiberoptic bronchoscopy (procedure),lung_cancer.json
-procedure->HCPCS,MRI Brain,698354004 Magnetic resonance imaging for measurement of brain volume (procedure),lung_cancer.json
-procedure->HCPCS,Initial_CBC,57021-8 CBC W Auto Differential panel - Blood,mantle_cell_lymphoma.json
-procedure->HCPCS,Flow_Cytometry_Referral,708058007 Flow cytometry,mantle_cell_lymphoma.json
-procedure->HCPCS,Lymph_Node_Biopsy,21911005 Biopsy of lymph node,mantle_cell_lymphoma.json
-procedure->HCPCS,Pathology_Analysis,117617002 Immunohistochemistry [procedure],mantle_cell_lymphoma.json
-procedure->HCPCS,FISH_Analysis,426329006 Fluorescence in situ hybridization,mantle_cell_lymphoma.json
-procedure->HCPCS,CT_Chest_Abdomen_Pelvis,418891003 CT of chest and abdomen and pelvis,mantle_cell_lymphoma.json
-procedure->HCPCS,Bone_Marrow_Biopsy,396487001 Bone marrow biopsy,mantle_cell_lymphoma.json
-procedure->HCPCS,LDH_Test,2532-0 Lactate dehydrogenase [Enzymatic activity/volume] in Serum or Plasma,mantle_cell_lymphoma.json
-procedure->HCPCS,Beta2_Microglobulin,1952-1 Beta 2 microglobulin [Mass/volume] in Serum or Plasma,mantle_cell_lymphoma.json
-med->NDC,Vincristine_Admin,11202 vincristine,mantle_cell_lymphoma.json
-med->NDC,Doxorubicin_Admin,3639 Doxorubicin,mantle_cell_lymphoma.json
-med->NDC,Rituximab_Admin,121191 Rituximab,mantle_cell_lymphoma.json
-med->NDC,Bendamustine_Admin,134547 bendamustine,mantle_cell_lymphoma.json
-med->NDC,BR_Rituximab_Admin,121191 Rituximab,mantle_cell_lymphoma.json
-med->NDC,RCHOP_Rituximab_Admin,121191 Rituximab,mantle_cell_lymphoma.json
-med->NDC,RCHOP_Doxorubicin_Admin,3639 Doxorubicin,mantle_cell_lymphoma.json
-med->NDC,RCHOP_Vincristine_Admin,11202 vincristine,mantle_cell_lymphoma.json
-med->NDC,Start_Ibrutinib,1442981 Ibrutinib,mantle_cell_lymphoma.json
-procedure->HCPCS,Autologous_SCT,23719005 Autologous bone marrow transplantation,mantle_cell_lymphoma.json
-med->NDC,Maintenance_Therapy,121191 Rituximab,mantle_cell_lymphoma.json
-procedure->HCPCS,Response_Imaging,418891003 CT of chest and abdomen and pelvis,mantle_cell_lymphoma.json
-procedure->HCPCS,Response_Labs,57021-8 CBC W Auto Differential panel - Blood,mantle_cell_lymphoma.json
-procedure->HCPCS,Surveillance_CBC,57021-8 CBC W Auto Differential panel - Blood,mantle_cell_lymphoma.json
-procedure->HCPCS,CAR_T_Therapy,1156961008 Chimeric antigen receptor T-cell immunotherapy (procedure),mantle_cell_lymphoma.json
-med->NDC,BTK_Inhibitor_Therapy,1986808 acalabrutinib,mantle_cell_lymphoma.json
-med->NDC,Venetoclax_Treatment,1747556 venetoclax,mantle_cell_lymphoma.json
-procedure->HCPCS,Allogeneic_SCT,58390007 Allogeneic bone marrow transplantation,mantle_cell_lymphoma.json
 med->NDC,Prescribe_Penicillin,105078 Penicillin G 375 MG/ML Injectable Solution,medications/ear_infection_antibiotic.json
 med->NDC,Adult_Azithromycin,141962 Azithromycin 250 MG Oral Capsule,medications/ear_infection_antibiotic.json
 procedure->HCPCS,Amputation_of_Left_Hand,46028000 Amputation of hand (procedure),metabolic_syndrome/amputations.json
 procedure->HCPCS,Amputation_of_Right_Hand,46028000 Amputation of hand (procedure),metabolic_syndrome/amputations.json
 med->NDC,Prescribe_Liraglutide,897122 3 ML liraglutide 6 MG/ML Pen Injector,metabolic_syndrome/medications.json
 med->NDC,Prescribe_Canagliflozin,1373463 canagliflozin 100 MG Oral Tablet,metabolic_syndrome/medications.json
-bad-system,Stem_Cell_Collection,CPT:38206 Stem cell harvesting,multiple_myeloma.json
-procedure->HCPCS,Autologous_Transplant,58776007 Autologous bone marrow transplant,multiple_myeloma.json
-bad-system,Blood_Transfusion,CPT:36430 Blood transfusion,multiple_myeloma.json
-bad-system,Bone_Marrow_Biopsy,CPT:38221 Bone marrow biopsy,multiple_myeloma.json
-bad-system,PET_CT,CPT:78816 PET or CT whole body,multiple_myeloma.json
-bad-system,Chemotherapy_Administration,CPT:96413 Chemotherapy administration,multiple_myeloma.json
-bad-system,Dialysis,CPT:90935 Hemodialysis,multiple_myeloma.json
-bad-system,MRI_Spine,CPT:72158 MRI spine with contrast,multiple_myeloma.json
-bad-system,Salvage_Infusion,CPT:96413 Chemotherapy infusion,multiple_myeloma.json
-procedure->HCPCS,Hospice_Visit,305911006 Seen in Hospice,multiple_myeloma.json
-med->NDC,Start_Pyridostigmine,9000 pyridostigmine,myasthenia_gravis.json
-med->NDC,Start_Azathioprine,1256 azathioprine,myasthenia_gravis.json
-med->NDC,Start_Mycophenolate,68149 mycophenolate mofetil,myasthenia_gravis.json
-procedure->HCPCS,Thymectomy_Procedure,399750009 Excision of thymus (procedure),myasthenia_gravis.json
-med->NDC,Advanced_Treatment,121191 Rituximab,myasthenia_gravis.json
-procedure->HCPCS,Cytogenetics_Procedure,405825005 Cytogenetic analysis (procedure),myelodysplastic_syndromes.json
-med->NDC,ESA_Medication,242706 1 ML epoetin alfa 40000 UNT/ML Injection,myelodysplastic_syndromes.json
-med->NDC,Luspatercept_Medication,2262543 luspatercept-aamt,myelodysplastic_syndromes.json
-med->NDC,Imetelstat_Medication,2685241 imetelstat 47 MG Injection,myelodysplastic_syndromes.json
-med->NDC,ATG_Medication,"197906 5 ML lymphocyte immune globulin, anti-thymocyte globulin, equine 50 MG/ML Injection",myelodysplastic_syndromes.json
-med->NDC,Cyclosporine_Medication,3008 cyclosporine,myelodysplastic_syndromes.json
-procedure->HCPCS,RBC_Transfusion_Procedure,116863004 Red blood cell transfusion (procedure),myelodysplastic_syndromes.json
-med->NDC,Deferasirox_Medication,1869544 deferasirox 500 MG,myelodysplastic_syndromes.json
-med->NDC,Venetoclax_Medication,1747561 venetoclax 100 MG Oral Tablet,myelodysplastic_syndromes.json
-procedure->HCPCS,Allo_SCT_Procedure,58776007 Bone marrow transplant (procedure),myelodysplastic_syndromes.json
 procedure->HCPCS,Cardiac_Assessment,710839006 Assessment of cardiac status using monitoring device (procedure),myocardial_infarction.json
 procedure->HCPCS,Diagnostic_Assessment,165197003 Diagnostic assessment (procedure),myocardial_infarction.json
-procedure->HCPCS,CT Guided Biopsy,274319000 Percutaneous needle biopsy of lung,non_small_cell_lung_cancer.json
-procedure->HCPCS,Bronchoscopy,10847001 Bronchoscopy,non_small_cell_lung_cancer.json
-bad-gmf,Staging,SetAttribute non-scalar value,non_small_cell_lung_cancer.json
-procedure->HCPCS,Surgical Resection,119000 Thoracoscopic partial lobectomy of lung,non_small_cell_lung_cancer.json
-med->NDC,Adjuvant Chemotherapy,56946 paclitaxel,non_small_cell_lung_cancer.json
-med->NDC,Adjuvant Chemotherapy,40048 carboplatin,non_small_cell_lung_cancer.json
-med->NDC,Targeted Therapy,1721560 osimertinib,non_small_cell_lung_cancer.json
-med->NDC,Immunotherapy,1547545 pembrolizumab,non_small_cell_lung_cancer.json
-procedure->HCPCS,Genetic_Testing,405824009 Genetic testing,ovarian_cancer.json
-procedure->HCPCS,Enhanced_Screening,426491001 Transvaginal ultrasound of female genital tract,ovarian_cancer.json
-bad-gmf,Set_Cancer_Stage,SetAttribute non-scalar value,ovarian_cancer.json
-bad-gmf,Set_ECOG_Status,SetAttribute non-scalar value,ovarian_cancer.json
-procedure->HCPCS,Primary_Surgery,116028008 Salpingo-oophorectomy,ovarian_cancer.json
-med->NDC,Neoadjuvant_Chemotherapy,40048 Carboplatin,ovarian_cancer.json
-med->NDC,Neoadjuvant_Chemotherapy,56946 Paclitaxel,ovarian_cancer.json
-procedure->HCPCS,Interval_Surgery,116028008 Salpingo-oophorectomy,ovarian_cancer.json
-med->NDC,Adjuvant_Chemotherapy,40048 Carboplatin,ovarian_cancer.json
-med->NDC,Adjuvant_Chemotherapy,56946 Paclitaxel,ovarian_cancer.json
-med->NDC,PARP_Inhibitor_Maintenance,1597582 olaparib,ovarian_cancer.json
-med->NDC,Second_Line_Treatment,466523 doxorubicin hydrochloride liposome,ovarian_cancer.json
-procedure->HCPCS,Incidental_Imaging_Finding,169070004 CT of abdomen,pancreatic_cancer.json
-procedure->HCPCS,Abdominal_Ultrasound,16310003 Ultrasound of abdomen,pancreatic_cancer.json
-procedure->HCPCS,Initial_Imaging,169070004 CT of abdomen,pancreatic_cancer.json
-procedure->HCPCS,CT_Pancreas_Protocol,169070004 CT of abdomen,pancreatic_cancer.json
-procedure->HCPCS,Surgical_Resection,116241004 Pancreaticoduodenectomy,pancreatic_cancer.json
-bad-system,ParkinsonsDiagnosis,ICD-10-CM:G20 Parkinson's disease,parkinsons.json
-procedure->HCPCS,DBS_Surgery,230861003 Deep brain stimulation (procedure),parkinsons.json
-bad-system,DBS_Surgery,CPT:61867 Placement of neurostimulator electrode arrays,parkinsons.json
-med->NDC,LCIG_Therapy,1599846 carbidopa 4.63 MG/ML / levodopa 20 MG/ML Oral Suspension,parkinsons.json
-med->NDC,ApomorphinePump,199929 apomorphine 10 MG/ML Injectable Solution,parkinsons.json
-bad-system,DementiaOnset,ICD-10-CM:G31.83 Dementia with Lewy bodies,parkinsons.json
-bad-system,DiagnosticWorkup_Action_1,CPT:78607 DaTscan imaging,parkinsons.json
-procedure->HCPCS,DiagnosticWorkup_Action_2,445794007 Assessment using repeatable battery for the assessment of neuropsychological status (procedure),parkinsons.json
-admin-med->HCPCS,LevodopaChallengeTest_Action_1,724598 carbidopa 25 MG / levodopa 100 MG Oral Tablet [Sinemet],parkinsons.json
-bad-system,PneumoniaOnset,"ICD-10-CM:J18.9 Pneumonia, unspecified",pneumonia.json
-bad-system,ED_Chest_Xray,"CPT:71046 Chest radiologic examination, 2 views",pneumonia.json
-bad-system,OutpatientManagement,CPT:99213 Office or other outpatient visit for the evaluation and management of an established patient,pneumonia.json
-bad-system,FollowUpCare,CPT:99212 Office or other outpatient visit for the evaluation and management of an established patient,pneumonia.json
-bad-gmf,OxygenSaturationInpatient,Observation raw value block,pneumonia.json
-bad-system,CT_Chest,CPT:71260 CT thorax with contrast,pneumonia.json
-bad-gmf,ABG,Observation raw value block,pneumonia.json
-med->NDC,Doxycycline_Order,1650144 doxycycline hyclate 100 MG Oral Capsule,pneumonia.json
-procedure->HCPCS,VentilatorSupport,40617009 Artificial respiration (procedure),pneumonia.json
-bad-system,PediatricComplications,ICD-10-CM:J13 Pneumonia due to Streptococcus pneumoniae,pneumonia.json
-bad-system,GeriatricComplications,ICD-10-CM:J15.7 Pneumonia due to Mycoplasma pneumoniae,pneumonia.json
-bad-gmf,CBC_Inpatient,Observation raw value block,pneumonia.json
-bad-gmf,CRP_Inpatient,Observation raw value block,pneumonia.json
-med->NDC,ACEi_Therapy,29046 Lisinopril,polycystic_kidney_disease.json
-bad-gmf,Advance_CKD_Stage,SetAttribute non-scalar value,polycystic_kidney_disease.json
-procedure->HCPCS,Peritoneal_Dialysis_Start,14684005 Peritoneal dialysis,polycystic_kidney_disease.json
-procedure->HCPCS,JAK2_Mutation_Test,405824009 Genetic testing (procedure),polycythemia_vera.json
-procedure->HCPCS,Initial_Phlebotomy,396540005 Phlebotomy,polycythemia_vera.json
-admin-med->HCPCS,Prescribe_Peg_Interferon,351270 1 ML peginterferon alfa-2a 0.18 MG/ML Injection,polycythemia_vera.json
-procedure->HCPCS,Phlebotomy_If_Needed,396540005 Phlebotomy,polycythemia_vera.json
-med->NDC,Prescribe_Ruxolitinib,1193339 ruxolitinib 5 MG Oral Tablet,polycythemia_vera.json
-med->NDC,Switch_To_Busulfan,197422 busulfan 2 MG Oral Tablet,polycythemia_vera.json
-med->NDC,Prescribe_Paroxetine,32937 Paroxetine 20 MG Oral Tablet,polycythemia_vera.json
-admin-med->HCPCS,Repeat_PegInterferon,120608 peginterferon alfa-2a,polycythemia_vera.json
-med->NDC,Prescribe_Hydroxyzine,5553 Hydroxyzine HCl 25 MG Oral Tablet,polycythemia_vera.json
-med->NDC,Post_PV_MF_Ruxolitinib,1193339 ruxolitinib 5 MG Oral Tablet,polycythemia_vera.json
-procedure->HCPCS,Stem_Cell_Transplant_Procedure,58390007 Allogeneic bone marrow transplantation (procedure),polycythemia_vera.json
 procedure->HCPCS,Pregnancy_Test,252160004 Standard pregnancy test (procedure),pregnancy.json
 procedure->HCPCS,Fetal_Viability_Ultrasound,169230002 Ultrasound scan for fetal viability (procedure),pregnancy.json
 procedure->HCPCS,Inital_Visit_Fundal_Height,274804006 Evaluation of uterine fundal height (procedure),pregnancy.json
@@ -638,46 +383,12 @@ procedure->HCPCS,Induced_Abortion_Procedure,714812005 Induced termination of pre
 procedure->HCPCS,RhoD_Immune_Globulin_Post_Abortion,51116004 Passive immunization (procedure),pregnancy.json
 procedure->HCPCS,Pregnancy_Termination_Care,386394001 Pregnancy termination care (regime/therapy),pregnancy.json
 procedure->HCPCS,RhoD_Immune_Globulin_Post_Birth,51116004 Passive immunization (procedure),pregnancy.json
-procedure->HCPCS,Hematopoietic_Stem_Cell_Transplant,58390007 Allogeneic bone marrow transplantation,primary_immunodeficiency.json
-procedure->HCPCS,Prostate_MRI,2690005 Magnetic resonance imaging of pelvis,prostate_cancer.json
-procedure->HCPCS,MRI_Fusion_Biopsy,447395005 MRI guided biopsy of prostate,prostate_cancer.json
-procedure->HCPCS,Prostate_Biopsy,65575008 Biopsy of prostate,prostate_cancer.json
-bad-gmf,Risk_Stratification,SetAttribute non-scalar value,prostate_cancer.json
-bad-gmf,Staging_Workup,SetAttribute non-scalar value,prostate_cancer.json
-procedure->HCPCS,Radical_Prostatectomy,26294005 Radical prostatectomy,prostate_cancer.json
-procedure->HCPCS,Radiation_Therapy,785706005 Hypofractionated radiation therapy of prostate (procedure),prostate_cancer.json
-med->NDC,Combined_Modality,42375 leuprolide,prostate_cancer.json
-med->NDC,Systemic_Therapy,42375 leuprolide,prostate_cancer.json
-med->NDC,Salvage_Therapy,42375 leuprolide,prostate_cancer.json
-med->NDC,Metastatic_Castration_Resistant,72962 docetaxel,prostate_cancer.json
-procedure->HCPCS,Initial_Labs,2571-8 Rheumatoid factor,rheumatoid_arthritis.json
-procedure->HCPCS,Initial_Labs,33935-8 Cyclic citrullinated peptide IgG Ab [Units/volume] in Serum or Plasma,rheumatoid_arthritis.json
-procedure->HCPCS,Initial_Labs,1988-5 C-reactive protein,rheumatoid_arthritis.json
-bad-system,HeartFailure_Onset,"ICD-10-CM:I50.810 Right heart failure, unspecified",right_sided_heart_failure.json
-bad-gmf,JVD_Observation,Observation raw value block,right_sided_heart_failure.json
-bad-system,Echo_Procedure,CPT:93306 Transthoracic echocardiography,right_sided_heart_failure.json
-bad-system,Chest_Xray,CPT:71046 Chest x-ray 2 views,right_sided_heart_failure.json
-bad-gmf,BNP_Observation,Observation raw value block,right_sided_heart_failure.json
-bad-system,Routine_Echo,CPT:93306 Transthoracic echocardiography,right_sided_heart_failure.json
-bad-gmf,Routine_BNP,Observation raw value block,right_sided_heart_failure.json
-bad-gmf,ER_BNP,Observation raw value block,right_sided_heart_failure.json
-bad-system,ER_CXR,CPT:71045 Portable chest x-ray,right_sided_heart_failure.json
-bad-system,Inpatient_Echo,CPT:93306 Transthoracic echocardiography,right_sided_heart_failure.json
-bad-system,Critical_Care_Billing,CPT:99291 Critical care first hour,right_sided_heart_failure.json
-bad-system,ICU_RightHeartCath,CPT:93503 Right heart catheterization,right_sided_heart_failure.json
-bad-gmf,ICU_BNP,Observation raw value block,right_sided_heart_failure.json
-bad-system,Ward_Monitoring,CPT:71045 Portable chest x-ray,right_sided_heart_failure.json
-bad-gmf,PostDischarge_BNP,Observation raw value block,right_sided_heart_failure.json
-bad-system,Ward_Echo,CPT:93306 Transthoracic echocardiography,right_sided_heart_failure.json
-bad-gmf,Ward_BNP,Observation raw value block,right_sided_heart_failure.json
 procedure->HCPCS,Psychiatric_Evaluation,90407005 Evaluation of psychiatric state of patient (procedure),self_harm.json
 procedure->HCPCS,Short_Hospital_Stay,"74857009 Hospital admission, short-term, 24 hours (procedure)",self_harm.json
 procedure->HCPCS,Followup_Psychiatric_Evaluation,88848003 Psychiatric follow-up (procedure),self_harm.json
 procedure->HCPCS,Autopsy_Examination,29240004 Autopsy examination (procedure),self_harm.json
 procedure->HCPCS,Fluid_Resuscitation,430701006 Resuscitation using intravenous fluid (procedure),sepsis.json
-procedure->HCPCS,Ventilator,40617009 Artificial ventilation (regime/therapy),sepsis.json
 admin-med->HCPCS,Norepinephrine,242969 4 ML norepinephrine 1 MG/ML Injection,sepsis.json
-procedure->HCPCS,Admit_to_ICU,305351004 Admission to intensive care unit (procedure),sepsis.json
 procedure->HCPCS,Admit_to_Inpatient,449214001 Transfer to stepdown unit (procedure),sepsis.json
 procedure->HCPCS,Ventilator_Weaning,243174005 Weaning from mechanically assisted ventilation (regime/therapy),sepsis.json
 procedure->HCPCS,Fluid_Resuscitation2,430701006 Resuscitation using intravenous fluid (procedure),sepsis.json
@@ -686,12 +397,6 @@ procedure->HCPCS,Sleep Study,82808001 Sleep apnea monitoring with alarm (regime/
 procedure->HCPCS,Sleep Study,10563004 Sleep disorder function test (procedure),sleep_apnea.json
 procedure->HCPCS,Referral to Sleep Specialist,698560000 Referral to sleep apnea clinic (procedure),sleep_apnea.json
 procedure->HCPCS,Referral to Overnight,698560000 Referral to sleep apnea clinic (procedure),sleep_apnea.json
-procedure->HCPCS,Initial_Imaging,430448007 CT of neck and thorax,small_cell_lung_cancer.json
-procedure->HCPCS,CT_Guided_Biopsy,35295005 Percutaneous needle biopsy of lung,small_cell_lung_cancer.json
-procedure->HCPCS,Bronchoscopy,10847001 Bronchoscopy,small_cell_lung_cancer.json
-procedure->HCPCS,Staging_Workup,82918005 PET scan,small_cell_lung_cancer.json
-procedure->HCPCS,Brain_Imaging,16327691000119101 Magnetic resonance imaging of brain with contrast,small_cell_lung_cancer.json
-procedure->HCPCS,Prophylactic_Cranial_Irradiation,428412000 Radiotherapy to head,small_cell_lung_cancer.json
 procedure->HCPCS,Professional_Services_Care,409023009 Professional / ancillary services care (regime/therapy),snf/skilled_nursing_facility.json
 procedure->HCPCS,Discharge_From_SNF,308283009 Discharge from hospital (procedure),snf/skilled_nursing_facility.json
 procedure->HCPCS,Ventriculoperitoneal_Shunt,47020004 Ventriculoperitoneal shunt (procedure),spina_bifida.json
@@ -725,7 +430,6 @@ med->NDC,"AmxClav 875, 10 day",562508 amoxicillin 875 MG / clavulanate 125 MG Or
 med->NDC,"Cipro 250, 3 day",197511 ciprofloxacin 250 MG Oral Tablet,uti/abx_tx.json
 med->NDC,Cefpo 100,309076 cefpodoxime 100 MG Oral Tablet,uti/abx_tx.json
 med->NDC,Cefpo 200,309078 cefpodoxime 200 MG Oral Tablet,uti/abx_tx.json
-procedure->HCPCS,Evaluation,183444007 Referral for further care (procedure),uti/ambulatory_path.json
 procedure->HCPCS,Triage,386478007 Triage: emergency center (procedure),uti/ed_bundle.json
 procedure->HCPCS,Vitals,61746007 Taking patient vital signs (procedure),uti/ed_bundle.json
 procedure->HCPCS,History and Physical Exam,14736009 History and physical examination with evaluation and management of patient (procedure),uti/ed_bundle.json
@@ -736,7 +440,6 @@ procedure->HCPCS,BMP,866146005 Serum metabolic panel (procedure),uti/ed_bundle.j
 procedure->HCPCS,Blood Culture,30088009 Blood culture (procedure),uti/ed_bundle.json
 procedure->HCPCS,Pregnancy Test,252160004 Standard pregnancy test (procedure),uti/gu_pregnancy_check.json
 procedure->HCPCS,Discuss Pregnancy,440546007 Discussion about pregnancy (procedure),uti/gu_pregnancy_check.json
-procedure->HCPCS,History Taking,84100007 History taking (procedure),uti/hpi.json
 procedure->HCPCS,Discussion about signs and symptoms,223470000 Discussion about signs and symptoms (procedure),uti/hpi.json
 procedure->HCPCS,Inform Patient,165355002 Patient informed - test result (situation),uti/lab_follow_up.json
 procedure->HCPCS,Lab Finding Education,"410299006 Lab findings education, guidance, and counseling (procedure)",uti/lab_follow_up.json
@@ -747,38 +450,11 @@ procedure->HCPCS,Change Treatment,445528004 Treatment changed (situation),uti/la
 procedure->HCPCS,Collection,57617002 Urine specimen collection (procedure),uti/labs.json
 procedure->HCPCS,Dipstick,167226008 Urine dipstick test (procedure),uti/labs.json
 procedure->HCPCS,Urinalysis Micro,441550005 Urinalysis with reflex to microscopy and culture (procedure),uti/labs.json
-procedure->HCPCS,Referral_to_Ambulatory,183444007 Referral for further care (procedure),uti/telemed_path.json
 procedure->HCPCS,Referral_to_Labs,266753000 Referral for laboratory tests (procedure),uti/telemed_path.json
-bad-system,HeartFailure_Onset,"ICD-10-CM:I50.9 Heart failure, unspecified",valvular_heart_failure.json
-bad-gmf,Heart_Murmur,Observation raw value block,valvular_heart_failure.json
-bad-system,Echo_Procedure,CPT:93306 Transthoracic echocardiography,valvular_heart_failure.json
-bad-system,Chest_Xray_Procedure,CPT:71046 Chest x-ray 2 views,valvular_heart_failure.json
-bad-gmf,BNP_Observation,Observation raw value block,valvular_heart_failure.json
-bad-system,Routine_Echo,CPT:93306 Transthoracic echocardiography,valvular_heart_failure.json
-bad-gmf,Routine_BNP,Observation raw value block,valvular_heart_failure.json
-bad-system,Routine_CXR,CPT:71046 Chest x-ray 2 views,valvular_heart_failure.json
-bad-gmf,ER_BNP,Observation raw value block,valvular_heart_failure.json
-bad-system,ER_CXR,CPT:71045 Portable chest x-ray,valvular_heart_failure.json
-bad-system,Inpatient_Echo,CPT:93306 Transthoracic echocardiography,valvular_heart_failure.json
-bad-system,Valve_Replacement,CPT:33405 Aortic valve replacement,valvular_heart_failure.json
-bad-system,PostValve_Echo,CPT:93306 Transthoracic echocardiography,valvular_heart_failure.json
-bad-system,Critical_Care_Billing,CPT:99291 Critical care first hour,valvular_heart_failure.json
-bad-gmf,Repeat_Inpatient_BNP,Observation raw value block,valvular_heart_failure.json
-bad-gmf,PostDischarge_BNP,Observation raw value block,valvular_heart_failure.json
-condition->ICD,Suspected Lung Cancer,162573006 Suspected lung cancer (situation),veteran_lung_cancer.json
-procedure->HCPCS,Chest CT Scan,418891003 Computed tomography of chest and abdomen (procedure),veteran_lung_cancer.json
-procedure->HCPCS,Sputum Cytology (Phelgm),167995008 Sputum microscopy (procedure),veteran_lung_cancer.json
-procedure->HCPCS,Thoracentesis (Fluid),91602002 Thoracentesis (procedure),veteran_lung_cancer.json
-procedure->HCPCS,Needle Biopsy (Cells),432231006 Fine needle aspiration biopsy of lung (procedure),veteran_lung_cancer.json
-procedure->HCPCS,Bronchoscopy (Tube),85765000 Fiberoptic bronchoscopy (procedure),veteran_lung_cancer.json
-procedure->HCPCS,MRI Brain,698354004 Magnetic resonance imaging for measurement of brain volume (procedure),veteran_lung_cancer.json
 procedure->HCPCS,Positive_PHQ9,112001000119100 Positive screening for depression on Patient Health Questionnaire 9 (finding),veteran_mdd.json
 procedure->HCPCS,Negative_PHQ9,112011000119102 Negative screening for depression on Patient Health Questionnaire 9 (finding),veteran_mdd.json
 procedure->HCPCS,positive_re_eval_phq9,112001000119100 Positive screening for depression on Patient Health Questionnaire 9 (finding),veteran_mdd.json
 procedure->HCPCS,negative_re_eval_phq9,112011000119102 Negative screening for depression on Patient Health Questionnaire 9 (finding),veteran_mdd.json
-procedure->HCPCS,biopsy procedure,65575008 Biopsy of prostate (procedure),veteran_prostate_cancer.json
-procedure->HCPCS,Prostatectomy,90470006 Prostatectomy (procedure),veteran_prostate_cancer.json
-condition->ICD,Stage 4 Prostate Cancer,94503003 Metastatic malignant neoplasm to prostate (disorder),veteran_prostate_cancer.json
 procedure->HCPCS,Columbia Suicide Risk Assessment,225337009 Suicide risk assessment (procedure),veteran_ptsd.json
 procedure->HCPCS,Inpatient Suicide Risk Assessment,225337009 Suicide risk assessment (procedure),veteran_ptsd.json
 procedure->HCPCS,Columbia_Suicide_Risk_Assessment,225337009 Suicide risk assessment (procedure),veteran_ptsd.json
@@ -791,13 +467,3 @@ procedure->HCPCS,Referral to Echocardiography,390791001 Referral for echocardiog
 procedure->HCPCS,Nutrition_Intervention_Procedure,290045001 Kitchen practice (regime/therapy),weight_loss/mend_week.json
 procedure->HCPCS,Patient referral for dental care,103697008 Patient referral for dental care (procedure),wellness_encounters.json
 procedure->HCPCS,Go see a Dentist,103697008 Patient referral for dental care (procedure),wellness_encounters.json
-procedure->HCPCS,Visual_Acuity_Test,16830007 Visual acuity testing,wet_amd.json
-procedure->HCPCS,Amsler_Grid_Test,410451008 Amsler grid test,wet_amd.json
-procedure->HCPCS,Dilated_Fundus_Examination,410453006 Dilated fundus examination,wet_amd.json
-procedure->HCPCS,OCT_Imaging,700070005 Optical coherence tomography of retina [procedure],wet_amd.json
-procedure->HCPCS,Fluorescein_Angiography,172581008 Fluorescein angiography of eye,wet_amd.json
-procedure->HCPCS,First_Anti_VEGF_Injection,418551006 Intravitreal injection of anti-VEGF agent,wet_amd.json
-procedure->HCPCS,Follow_Up_OCT,700070005 Optical coherence tomography of retina [procedure],wet_amd.json
-procedure->HCPCS,Subsequent_Injection,418551006 Intravitreal injection of anti-VEGF agent,wet_amd.json
-procedure->HCPCS,Response_Assessment_OCT,700070005 Optical coherence tomography of retina [procedure],wet_amd.json
-procedure->HCPCS,Low_Vision_Services,410007005 Low vision rehabilitation,wet_amd.json

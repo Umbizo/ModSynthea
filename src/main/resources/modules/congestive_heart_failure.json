@@ -1601,13 +1601,16 @@
       "direct_transition": "Move_to_Prone_Position"
     },
     "Move_to_Prone_Position": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "431182000",
-          "display": "Placing subject in prone position (procedure)"
-        }
+      "type": "Simple",
+      "remarks": [
+        "Task 6.1: was a Procedure coded SNOMED 431182000 \"Placing subject in prone",
+        "position\". An unmapped Procedure is not inert:",
+        "Carrier/Outpatient/InpatientExporter still emit a claim line for it with",
+        "real dollar amounts and a blank HCPCS_CD (the skip-unmapped branch is",
+        "commented out in CarrierExporter.java). Patient positioning is nursing",
+        "care bundled into the room-and-board / E-M payment; no HCPCS exists for",
+        "it. Now a Simple pass-through (the state had no duration, so timing is",
+        "byte-identical)."
       ],
       "direct_transition": "Repeat Lab Work"
     },
@@ -1669,13 +1672,11 @@
       "direct_transition": "Move_to_Prone_Position_Admission"
     },
     "Move_to_Prone_Position_Admission": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "431182000",
-          "display": "Placing subject in prone position (procedure)"
-        }
+      "type": "Simple",
+      "remarks": [
+        "Task 6.1: was a Procedure coded SNOMED 431182000 \"Placing subject in prone",
+        "position\" -- see Move_to_Prone_Position. Now a Simple pass-through (no",
+        "duration, so timing is unchanged)."
       ],
       "direct_transition": "Wait 12 hours"
     },
@@ -1902,21 +1903,19 @@
       "reason": "CHF Condition Start"
     },
     "Assessment Procedure": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "762998009",
-          "display": "Assessment using New York Heart Association Classification (procedure)"
-        }
+      "type": "Simple",
+      "remarks": [
+        "Task 6.1: was a Procedure coded SNOMED 762998009 \"Assessment using New",
+        "York Heart Association Classification\" with a 15-30 minute duration. An",
+        "unmapped Procedure is not inert: Carrier/Outpatient/InpatientExporter",
+        "still emit a claim line for it with real dollar amounts and a blank",
+        "HCPCS_CD (the skip-unmapped branch is commented out in",
+        "CarrierExporter.java). Functional-class assessment is a component of the",
+        "E/M service, not a separately reportable procedure. No clinical content is",
+        "lost: the very next state, Assessment Result, calls heart/chf_nyha_panel,",
+        "which is what actually records the NYHA class."
       ],
-      "duration": {
-        "low": 15,
-        "high": 30,
-        "unit": "minutes"
-      },
-      "direct_transition": "Assessment Result",
-      "reason": "chf"
+      "direct_transition": "Assessment Result"
     },
     "Assessment Result": {
       "type": "CallSubmodule",

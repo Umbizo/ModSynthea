@@ -63,24 +63,29 @@
       ]
     },
     "Certification_Procedure": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "310417005",
-          "display": "Certification procedure (procedure)"
-        }
+      "type": "Simple",
+      "remarks": [
+        "Task 6.1: was a Procedure coded SNOMED 310417005 \"Certification",
+        "procedure\". An unmapped Procedure is not inert:",
+        "Carrier/Outpatient/InpatientExporter still emit a claim line for it with",
+        "real dollar amounts and a blank HCPCS_CD (the skip-unmapped branch is",
+        "commented out in CarrierExporter.java). Physician certification of",
+        "terminal illness is a condition of the hospice benefit, not a separately",
+        "payable HCPCS service (unlike home health, which has G0180/G0179). Now a",
+        "Simple pass-through; no duration, so timing is unchanged."
       ],
       "direct_transition": "Notifications"
     },
     "Notifications": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "185087000",
-          "display": "Notifications (procedure)"
-        }
+      "type": "Simple",
+      "remarks": [
+        "Task 6.1: was a Procedure coded SNOMED 185087000 \"Notifications\". An",
+        "unmapped Procedure is not inert: Carrier/Outpatient/InpatientExporter",
+        "still emit a claim line for it with real dollar amounts and a blank",
+        "HCPCS_CD (the skip-unmapped branch is commented out in",
+        "CarrierExporter.java). Notifying family/providers is an administrative act",
+        "with no HCPCS. Now a Simple pass-through; no duration, so timing is",
+        "unchanged."
       ],
       "direct_transition": "Initial_Patient_Assessment"
     },

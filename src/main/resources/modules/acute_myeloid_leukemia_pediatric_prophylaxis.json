@@ -403,21 +403,19 @@
       "direct_transition": "Wait for Treatment"
     },
     "Death_Event": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "16983000",
-          "display": "Death in hospital (event)"
-        }
+      "type": "Simple",
+      "remarks": [
+        "Task 6.1: was a Procedure coded SNOMED 16983000 \"Death in hospital",
+        "(event)\" with a 30-60 minute duration. An unmapped Procedure is not inert:",
+        "Carrier/Outpatient/InpatientExporter still emit a claim line for it with",
+        "real dollar amounts and a blank HCPCS_CD (the skip-unmapped branch is",
+        "commented out in CarrierExporter.java). A death is an event, not a",
+        "billable service -- there is no HCPCS for it -- so this is now a Simple",
+        "pass-through straight into Death. Transition graph unchanged; the only",
+        "behavioural difference is that the 30-60 minutes no longer elapse before",
+        "death."
       ],
-      "duration": {
-        "low": 30,
-        "high": 60,
-        "unit": "minutes"
-      },
-      "direct_transition": "Death",
-      "reason": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "Death"
     },
     "Determine_Levofloxacin_Prophylaxis": {
       "type": "Delay",
@@ -452,21 +450,20 @@
       }
     },
     "Transfer_to_Stepdown": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "449214001",
-          "display": "Transfer to stepdown unit (procedure)"
-        }
+      "type": "Simple",
+      "remarks": [
+        "Task 6.1: was a Procedure coded SNOMED 449214001 \"Transfer to stepdown",
+        "unit\" with a 60-120 minute duration. An unmapped Procedure is not inert:",
+        "Carrier/Outpatient/InpatientExporter still emit a claim line for it with",
+        "real dollar amounts and a blank HCPCS_CD (the skip-unmapped branch is",
+        "commented out in CarrierExporter.java). An intra-hospital transfer is not",
+        "separately billable -- level of care is reported through revenue centers",
+        "on the inpatient claim, not a HCPCS line -- so this is now a Simple pass-",
+        "through. Transfer_to_ICU keeps its Procedure form: ICU admission of a",
+        "neutropenic patient does carry a billable service (critical care, CPT",
+        "99291), and that code was added to hcpcs_code_map.json."
       ],
-      "duration": {
-        "low": 60,
-        "high": 120,
-        "unit": "minutes"
-      },
-      "direct_transition": "Wait for Discharge",
-      "reason": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "Wait for Discharge"
     },
     "Delay_1": {
       "type": "Delay",

@@ -616,6 +616,15 @@
     },
     "Death_From_DLBCL": {
       "type": "Death",
+      "referenced_by_attribute": "Diffuse Large B Cell Lymphoma",
+      "remarks": [
+        "Task 2.11 (sweep): had none of codes/condition_onset/",
+        "referenced_by_attribute -- null cause of death for every DLBCL",
+        "death (reached from the Hospice CarePlanStart above). `Diffuse",
+        "Large B Cell Lymphoma` is assign_to_attribute'd by DLBCL_Diagnosis,",
+        "which dominates this state (verified by dominator analysis), so",
+        "the attribute is guaranteed set."
+      ],
       "direct_transition": "Terminal"
     },
     "Complete_Response": {

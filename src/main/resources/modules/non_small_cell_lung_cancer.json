@@ -3037,10 +3037,34 @@
     "Death_From_NSCLC": {
       "type": "Death",
       "remarks": [
-        "condition_onset, not bare codes, so this state can never take",
-        "the null-codes path that produces the tree's NPE family."
+        "Resolved by attribute, not by `condition_onset` and not by bare codes.",
+        "Task 5.2 fix round 1 (reviewer): the previous remark here claimed that",
+        "`condition_onset: Diagnose_NSCLC` made this state immune to the tree's",
+        "null-cause family. That was FALSE, for exactly the reason task 5.2's",
+        "group-2 analysis established for alzheimers.json's Death_From_Alzheimers.",
+        "State.Death.process resolves `condition_onset` by scanning",
+        "person.record.present for an entry whose `name` equals the state name;",
+        "HealthRecord.conditionStart is idempotent per primary code, and",
+        "State.ConditionOnset.diagnose then does `entry.name = this.name` on the",
+        "entry it gets back. So if stock lung_cancer.json or",
+        "veteran_lung_cancer.json diagnoses its own deferred 254637007 onset onto",
+        "this module's already-present entry -- which its target_encounter",
+        "'Diagnosis Encounter III' does via diagnosePastConditions when that",
+        "encounter opens, in the residual lock-contention window documented at",
+        "Rival_Lung_Cancer_Dx_Recheck -- our entry is renamed to 'NSCLC' and the",
+        "by-name scan finds nothing. `reason` stays null and the death is recorded",
+        "with no cause. The attribute holds the Entry object itself, so it survives",
+        "the rename and still yields 254637007.",
+        "NPE safety, verified rather than asserted: Death.process throws a",
+        "RuntimeException when a `referenced_by_attribute` is unset, so the",
+        "attribute must always be present here. `Non-Small Cell Lung Cancer` is",
+        "assigned by Diagnose_NSCLC (a ConditionOnset with no target_encounter, so",
+        "it assigns at once), Diagnose_NSCLC is the only writer of that attribute",
+        "anywhere in the tree, and Diagnose_NSCLC dominates every path to this",
+        "state -- BFS from Initial with Diagnose_NSCLC removed leaves",
+        "Death_From_NSCLC unreachable."
       ],
-      "condition_onset": "Diagnose_NSCLC",
+      "referenced_by_attribute": "Non-Small Cell Lung Cancer",
       "direct_transition": "Terminal"
     },
     "Terminal": {

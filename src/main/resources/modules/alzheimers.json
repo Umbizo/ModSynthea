@@ -839,8 +839,14 @@
         }
       ],
       "remarks": [
-        "State name kept from the pre-4.2 module because Death_From_Alzheimers'",
-        "`condition_onset` references it by name; it is the single AD diagnosis",
+        "State name kept from the pre-4.2 module. NOTE (5.2 fix round 1): the",
+        "reason given here used to be that Death_From_Alzheimers referenced this",
+        "state by name via `condition_onset` -- that dependency no longer exists,",
+        "because task 5.2 re-pointed that state at `referenced_by_attribute:",
+        "alzheimers_disease` precisely so a rename of the shared 26929004 entry by",
+        "stock dementia.json cannot null the recorded cause of death. The name is",
+        "now kept only for continuity with the 1.6/4.2 reports and remarks.",
+        "This is the single AD diagnosis",
         "for the whole disease course, not a mild-stage-specific code. Stage is",
         "carried by the `ad_stage` attribute, deliberately NOT by additional",
         "ConditionOnset states -- adding stage-specific dementia codes would widen",

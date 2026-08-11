@@ -294,6 +294,7 @@
     },
     "IVAntibiotics": {
       "type": "MedicationOrder",
+      "administration": true,
       "codes": [
         {
           "system": "RxNorm",

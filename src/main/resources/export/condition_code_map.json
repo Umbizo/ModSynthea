@@ -237,8 +237,8 @@
   ],
   "118601006": [
     {
-      "code": "C83.30",
-      "description": "Diffuse large B-cell lymphoma, unspecified site"
+      "code": "C85.90",
+      "description": "Non-Hodgkin lymphoma, unspecified, unspecified site"
     }
   ],
   "11934000": [
@@ -375,8 +375,8 @@
   ],
   "1259237005": [
     {
-      "code": "C83.30",
-      "description": "Diffuse large B-cell lymphoma, refractory or relapsed"
+      "code": "C80.1",
+      "description": "Malignant (primary) neoplasm, unspecified"
     }
   ],
   "1268348008": [
@@ -4723,8 +4723,8 @@
   ],
   "363346000": [
     {
-      "code": "C79.9",
-      "description": "Secondary malignant neoplasm, unspecified site"
+      "code": "C80.1",
+      "description": "Malignant (primary) neoplasm, unspecified"
     }
   ],
   "363406005": [
@@ -8857,8 +8857,62 @@
   ],
   "25173007": [
     {
-      "code": "C54.1",
-      "description": "Malignant neoplasm of endometrium"
+      "code": "C80.1",
+      "description": "Malignant (primary) neoplasm, unspecified"
+    }
+  ],
+  "1172695008": [
+    {
+      "code": "C83.30",
+      "description": "Diffuse large B-cell lymphoma, unspecified site"
+    }
+  ],
+  "314954002": [
+    {
+      "code": "C34.90",
+      "description": "Malignant neoplasm of unspecified part of unspecified bronchus or lung"
+    }
+  ],
+  "1098981000119101": [
+    {
+      "code": "C61",
+      "description": "Malignant neoplasm of prostate"
+    }
+  ],
+  "234522008": [
+    {
+      "code": "D46.9",
+      "description": "Myelodysplastic syndrome, unspecified"
+    }
+  ],
+  "254849005": [
+    {
+      "code": "C56.9",
+      "description": "Malignant neoplasm of unspecified ovary"
+    }
+  ],
+  "446022000": [
+    {
+      "code": "C54.9",
+      "description": "Malignant neoplasm of corpus uteri, unspecified"
+    }
+  ],
+  "230265002": [
+    {
+      "code": "G30.0",
+      "description": "Alzheimer's disease with early onset"
+    }
+  ],
+  "162573006": [
+    {
+      "code": "R91.8",
+      "description": "Other nonspecific abnormal finding of lung field"
+    }
+  ],
+  "94503003": [
+    {
+      "code": "C79.82",
+      "description": "Secondary malignant neoplasm of genital organs"
     }
   ]
 }

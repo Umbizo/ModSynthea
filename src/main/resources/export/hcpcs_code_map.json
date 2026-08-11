@@ -257,8 +257,14 @@
   ],
   "33195004": [
     {
-      "code": "77306",
-      "description": "Teleradiotherapy procedure (procedure)"
+      "code": "77412",
+      "weight": "0.70",
+      "description": "Radiation treatment delivery, >=1 MeV; complex"
+    },
+    {
+      "code": "77407",
+      "weight": "0.30",
+      "description": "Radiation treatment delivery, >=1 MeV; intermediate"
     }
   ],
   "315124004": [
@@ -875,28 +881,34 @@
   ],
   "433236007": [
     {
+      "code": "93306",
+      "weight": "1.0",
+      "description": "Echocardiography, transthoracic, real-time with image documentation (2D), includes M-mode recording, complete, with spectral and color flow Doppler"
+    },
+    {
       "code": "C8923",
+      "weight": "0.0",
       "description": "Transthoracic echocardiography with contrast, or without contrast followed by with contrast, real-time with image documentation (2d), includes m-mode recording, when performed, complete, without spectral or color doppler echocardiography"
     },
     {
       "code": "C8924",
+      "weight": "0.0",
       "description": "Transthoracic echocardiography with contrast, or without contrast followed by with contrast, real-time with image documentation (2d), includes m-mode recording, when performed, follow-up or limited study"
     },
     {
       "code": "C8928",
+      "weight": "0.0",
       "description": "Transthoracic echocardiography with contrast, or without contrast followed by with contrast, real-time with image documentation (2d), includes m-mode recording, when performed, during rest and cardiovascular stress test using treadmill, bicycle exercis..."
     },
     {
       "code": "C8929",
+      "weight": "0.0",
       "description": "Transthoracic echocardiography with contrast, or without contrast followed by with contrast, real-time with image documentation (2d), includes m-mode recording, when performed, complete, with spectral doppler echocardiography, and with color flow doppl..."
     },
     {
       "code": "C8930",
+      "weight": "0.0",
       "description": "Transthoracic echocardiography, with contrast, or without contrast followed by with contrast, real-time with image documentation (2d), includes m-mode recording, when performed, during rest and cardiovascular stress test using treadmill, bicycle exerci..."
-    },
-    {
-      "code": "93306",
-      "description": "Echocardiography, transthoracic, real-time with image documentation (2D), includes M-mode recording, complete, with spectral and color flow Doppler"
     }
   ],
   "442921007": [
@@ -5887,12 +5899,8 @@
   ],
   "113091000": [
     {
-      "code": "S8035",
-      "description": "Magnetic source imaging"
-    },
-    {
-      "code": "S8042",
-      "description": "Magnetic resonance imaging (mri), low-field"
+      "code": "76498",
+      "description": "Other mri scan"
     }
   ],
   "252792007": [
@@ -7408,14 +7416,14 @@
   ],
   "16327691000119101": [
     {
-      "code": "70553",
-      "description": "Magnetic resonance imaging, brain (including brain stem); without contrast material, followed by contrast material(s) and further sequences"
+      "code": "70552",
+      "description": "Mri scan of brain with contrast"
     }
   ],
   "428412000": [
     {
-      "code": "77427",
-      "description": "Radiation treatment management, 5 treatments"
+      "code": "77402",
+      "description": "Radiation treatment delivery, >=1 MeV; simple"
     }
   ],
   "10847001": [
@@ -7546,6 +7554,144 @@
     {
       "code": "38510",
       "description": "Biopsy or excision of lymph node(s); open, deep cervical node(s)"
+    }
+  ],
+  "816077007": [
+    {
+      "code": "70551",
+      "description": "Mri scan of brain without contrast"
+    }
+  ],
+  "168524008": [
+    {
+      "code": "77424",
+      "description": "Intraoperative radiation treatment delivery, x-ray, single treatment session"
+    }
+  ],
+  "75385009": [
+    {
+      "code": "71260",
+      "description": "Ct scan of chest with contrast"
+    }
+  ],
+  "305351004": [
+    {
+      "code": "99291",
+      "description": "Critical care, first 30-74 minutes"
+    }
+  ],
+  "9905009": [
+    {
+      "code": "44320",
+      "description": "Creation of opening from large bowel to skin"
+    }
+  ],
+  "423475008": [
+    {
+      "code": "98960",
+      "description": "Education and training for patient self-management by a qualified, nonphysician health care professional using a standardized curriculum, face-to-face with the patient (could include caregiver/family) each 30 minutes; individual patient"
+    }
+  ],
+  "86964003": [
+    {
+      "code": "89230",
+      "description": "Sweat collection"
+    }
+  ],
+  "444260001": [
+    {
+      "code": "81220",
+      "description": "Gene analysis (cystic fibrosis transmembrane conductance regular) common variants"
+    }
+  ],
+  "61919008": [
+    {
+      "code": "74280",
+      "description": "Double contrast x-ray of large intestine"
+    }
+  ],
+  "60151004": [
+    {
+      "code": "S3620",
+      "description": "Newborn metabolic screening panel, includes test kit, postage and the laboratory tests specified by the state for inclusion in this panel (e.g., galactose; hemoglobin, electrophoresis;  hydroxyprogesterone, 17-d; phenylalanine (pku); and thyroxine, total)"
+    }
+  ],
+  "104173009": [
+    {
+      "code": "87070",
+      "description": "Bacterial culture, any other source except urine, blood or stool, aerobic"
+    }
+  ],
+  "113076002": [
+    {
+      "code": "82951",
+      "description": "Blood glucose (sugar) tolerance test, 3 specimens"
+    }
+  ],
+  "232657004": [
+    {
+      "code": "32851",
+      "description": "Transplantation of lung"
+    }
+  ],
+  "82078001": [
+    {
+      "code": "36415",
+      "description": "Insertion of needle into vein for collection of blood sample"
+    }
+  ],
+  "281790008": [
+    {
+      "code": "96365",
+      "description": "Infusion into a vein for therapy, prevention, or diagnosis, 1 hour or less"
+    }
+  ],
+  "48387007": [
+    {
+      "code": "31600",
+      "description": "Incision of windpipe for insertion of breathing tube (older than 2 years)"
+    }
+  ],
+  "418891003": [
+    {
+      "code": "71260",
+      "description": "Ct scan of chest with contrast"
+    }
+  ],
+  "167995008": [
+    {
+      "code": "87205",
+      "description": "Special gram or giemsa stain for microorganism"
+    }
+  ],
+  "91602002": [
+    {
+      "code": "32554",
+      "description": "Aspiration of fluid from chest cavity"
+    }
+  ],
+  "432231006": [
+    {
+      "code": "32408",
+      "description": "Core needle biopsy of lung or center cavity of chest (mediastinum), accessed through skin"
+    }
+  ],
+  "85765000": [
+    {
+      "code": "31622",
+      "description": "Diagnostic exam of lung airway using an endoscope"
+    }
+  ],
+  "698354004": [
+    {
+      "code": "70551",
+      "description": "Mri scan of brain without contrast"
+    }
+  ],
+  "90470006": [
+    {
+      "code": "55840",
+      "description": "Removal of prostate"
     }
   ]
 }

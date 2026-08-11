@@ -162,7 +162,57 @@
         }
       },
       "unit": "months",
-      "direct_transition": "Present_Symptoms"
+      "direct_transition": "Rival_Lung_Cancer_Dx_Guard"
+    },
+    "Rival_Lung_Cancer_Dx_Guard": {
+      "type": "Simple",
+      "remarks": [
+        "CROSS-MODULE GATE (audit Class 7, task 5.2 group 3) -- the lung-cancer",
+        "family. Four top-level modules could put a lung cancer on one patient at",
+        "the same time: this one (254632001), non_small_cell_lung_cancer.json",
+        "(254637007), and stock lung_cancer.json and veteran_lung_cancer.json,",
+        "each of which diagnoses 254637007 OR 254632001 off its own 85/15 split.",
+        "Rule: FIRST-TO-DIAGNOSE WINS. One Active Condition test on both codes",
+        "covers all three rivals, because the stock and veteran modules use",
+        "exactly the same two SNOMEDs this family is defined by. Their stage codes",
+        "are not listed: they are only reachable downstream of 254637007/254632001,",
+        "so testing them would be redundant.",
+        "This is the EARLY gate: it sits after Symptom_Onset and before",
+        "Present_Symptoms, so a patient who already has a lung cancer from another",
+        "module never opens this module's presentation encounter and never gets",
+        "its imaging or biopsy. It is not sufficient on its own -- Present_Symptoms",
+        "is an Encounter and State.Encounter.process blocks across ticks while",
+        "another module holds the person's encounter lock, so this verdict can go",
+        "stale. Rival_Lung_Cancer_Dx_Recheck, immediately before",
+        "Pathology_Diagnosis, is the check that actually closes the race.",
+        "Terminal rather than a return to SCLC_Annual_Check: rerolling annual",
+        "incidence for a patient who is already someone else's lung-cancer patient",
+        "would just retry a permanently blocked diagnosis. No encounter is open",
+        "here (Symptom_Onset is a Delay), so Terminal leaks no encounter lock."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "254632001",
+                "display": "Small cell carcinoma of lung (disorder)"
+              },
+              {
+                "system": "SNOMED-CT",
+                "code": "254637007",
+                "display": "Non-small cell lung cancer"
+              }
+            ]
+          },
+          "transition": "Terminal"
+        },
+        {
+          "transition": "Present_Symptoms"
+        }
+      ]
     },
     "Present_Symptoms": {
       "type": "Encounter",
@@ -267,7 +317,7 @@
           "display": "Percutaneous needle biopsy of lung"
         }
       ],
-      "direct_transition": "Pathology_Diagnosis"
+      "direct_transition": "Rival_Lung_Cancer_Dx_Recheck"
     },
     "Bronchoscopy": {
       "type": "Procedure",
@@ -278,7 +328,58 @@
           "display": "Bronchoscopy"
         }
       ],
-      "direct_transition": "Pathology_Diagnosis"
+      "direct_transition": "Rival_Lung_Cancer_Dx_Recheck"
+    },
+    "Rival_Lung_Cancer_Dx_Recheck": {
+      "type": "Simple",
+      "remarks": [
+        "CROSS-MODULE GATE, second half (task 5.2 group 3). Identical test to",
+        "Rival_Lung_Cancer_Dx_Guard, re-run at the last possible instant. This is",
+        "the state that makes the exclusion airtight on this side: it is the only",
+        "predecessor of Pathology_Diagnosis (both Bronchoscopy and CT_Guided_Biopsy",
+        "route through it), there is no Delay and no blocking state between here",
+        "and that ConditionOnset, Pathology_Diagnosis has no target_encounter so it",
+        "records 254632001 the moment it processes, and module processing is",
+        "single-threaded per person per tick. No other module can diagnose in",
+        "between.",
+        "A hit here costs the patient the Present_Symptoms visit with its imaging",
+        "and biopsy and nothing further. That workup genuinely happened, so it is",
+        "kept; only the duplicate cancer is dropped."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "254632001",
+                "display": "Small cell carcinoma of lung (disorder)"
+              },
+              {
+                "system": "SNOMED-CT",
+                "code": "254637007",
+                "display": "Non-small cell lung cancer"
+              }
+            ]
+          },
+          "transition": "End_Gated_Present_Symptoms"
+        },
+        {
+          "transition": "Pathology_Diagnosis"
+        }
+      ]
+    },
+    "End_Gated_Present_Symptoms": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Closes the Present_Symptoms encounter when Rival_Lung_Cancer_Dx_Recheck",
+        "hands the patient to whichever module diagnosed first. Required, not",
+        "cosmetic: going to Terminal with the encounter still open would hold this",
+        "person's encounter lock for the rest of their life -- the Class 6 defect",
+        "the audit recorded against high_output_heart_failure.json."
+      ],
+      "direct_transition": "Terminal"
     },
     "Pathology_Diagnosis": {
       "type": "ConditionOnset",

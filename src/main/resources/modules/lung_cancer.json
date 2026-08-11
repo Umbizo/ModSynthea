@@ -283,20 +283,72 @@
         "high": 9,
         "unit": "days"
       },
-      "distributed_transition": [
+      "complex_transition": [
         {
-          "distribution": 0.85,
-          "transition": "Non-Small Cell Lung Cancer"
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "Non-Small Cell Lung Cancer",
+                "operator": "is not nil"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "Small Cell Lung Cancer",
+                "operator": "is not nil"
+              }
+            ]
+          },
+          "transition": "Terminal"
         },
         {
-          "distribution": 0.15,
-          "transition": "Small Cell Lung Cancer"
+          "distributions": [
+            {
+              "distribution": 0.85,
+              "transition": "Non-Small Cell Lung Cancer"
+            },
+            {
+              "distribution": 0.15,
+              "transition": "Small Cell Lung Cancer"
+            }
+          ]
         }
       ],
       "remarks": [
         "About 85% of lung cancers are non-small cell lung cancers.",
         "About 10%-15% of lung cancers are small cell lung cancers.",
-        "http://www.cancer.org/cancer/lungcancer/index"
+        "http://www.cancer.org/cancer/lungcancer/index",
+        "",
+        "CROSS-MODULE GATE (audit Class 7, task 5.2 group 3), added as a first",
+        "condition branch on the existing 85/15 histology split rather than as a",
+        "new state -- the brief for this task allows only a minimal guard in the",
+        "stock lung modules. This state is the single choke point: it is the only",
+        "predecessor of both `Non-Small Cell Lung Cancer` and `Small Cell Lung",
+        "Cancer`, which are the only predecessors of the NSCLC (254637007) and",
+        "SCLC (254632001) ConditionOnset states.",
+        "The gate defers to ModSynthea's two purpose-built lung-cancer modules,",
+        "non_small_cell_lung_cancer.json and small_cell_lung_cancer.json, which",
+        "carry staging, biomarkers, line-of-therapy and surveillance that this",
+        "module does not. Rule: FIRST-TO-DIAGNOSE WINS; those two modules carry",
+        "the reciprocal gates (Rival_Lung_Cancer_Dx_Guard /",
+        "Rival_Lung_Cancer_Dx_Recheck) and stand down when this module wins.",
+        "The test is on the two custom modules' OWN attributes, deliberately NOT",
+        "on Active Condition 254637007/254632001. A code test would also make this",
+        "module and veteran_lung_cancer.json mutually exclusive, and the brief puts",
+        "the stock/veteran pair's own overlap out of scope for 5.2 (it changes",
+        "lung-cancer prevalence and treatment volume, which is a calibration",
+        "decision, not a coordination fix). Those attributes are exact: the custom",
+        "NSCLC module assigns `Non-Small Cell Lung Cancer` at Diagnose_NSCLC and",
+        "the custom SCLC module assigns `Small Cell Lung Cancer` at",
+        "Pathology_Diagnosis, both on ConditionOnset states with no",
+        "target_encounter, so attribute and recorded code appear in the same tick.",
+        "Terminal is safe here: `Schedule Follow Up II` is reached from",
+        "End_Diagnosis_Encounter_II, so no encounter is open and no lock leaks.",
+        "The patient keeps the already-diagnosed `Suspected Lung Cancer`",
+        "(162573006) -- correct, they do have lung cancer; this module simply is",
+        "not the one recording which kind. This module never ends that condition",
+        "for its own patients either, so the behaviour is unchanged."
       ]
     },
     "Non-Small Cell Lung Cancer": {

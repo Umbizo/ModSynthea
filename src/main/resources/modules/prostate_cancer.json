@@ -480,6 +480,7 @@
     },
     "Systemic_Therapy": {
       "type": "MedicationOrder",
+      "chronic": true,
       "direct_transition": "Advanced_Disease_Monitoring",
       "codes": [
         {
@@ -565,6 +566,7 @@
     },
     "Salvage_Therapy": {
       "type": "MedicationOrder",
+      "chronic": true,
       "direct_transition": "Advanced_Disease_Monitoring",
       "codes": [
         {
@@ -601,6 +603,7 @@
     },
     "Metastatic_Castration_Resistant": {
       "type": "MedicationOrder",
+      "administration": true,
       "direct_transition": "Palliative_Care_Integration",
       "codes": [
         {

@@ -1242,6 +1242,7 @@
     },
     "Lenalidomide_Medication": {
       "type": "MedicationOrder",
+      "chronic": true,
       "remarks": [
         "Lenalidomide (Revlimid) — immunomodulatory drug.",
         "RxNorm 602725 = lenalidomide 10 MG Oral Capsule.",
@@ -1438,6 +1439,7 @@
     },
     "Cyclosporine_Medication": {
       "type": "MedicationOrder",
+      "chronic": true,
       "remarks": [
         "Cyclosporine — combined with ATG for hypocellular / immune-mediated MDS.",
         "RxNorm 3002 = cyclosporine.",
@@ -1582,6 +1584,7 @@
     },
     "Deferasirox_Medication": {
       "type": "MedicationOrder",
+      "chronic": true,
       "remarks": [
         "Deferasirox (Exjade / Jadenu) — oral iron chelator.",
         "RxNorm 387414 = deferasirox 500 MG Oral Tablet.",

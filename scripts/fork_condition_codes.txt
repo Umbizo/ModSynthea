@@ -1,5 +1,5 @@
-# Fork-module disease-monoculture universe for tools_smoke_check.py --top-share-universe
-# Regenerated 2026-08-11 for the Phase 7 final gate (docs/superpowers/plans/2026-08-11-final-gate.txt)
+# Fork-module disease-monoculture universe for scripts/tools_smoke_check.py --top-share-universe
+# Regenerated 2026-08-11 for the final 1000-person generation gate.
 # Supersedes the 2026-08-10 Phase 1 gate version, which predated Phases 2-6.
 # Re-verified 2026-08-11 at HEAD c7d606d3 (post-adjudication re-run, after
 # 78399db0 "fix(nsclc): value_code stage observation ends String-vs-Code collision"

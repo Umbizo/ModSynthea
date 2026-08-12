@@ -216,8 +216,8 @@ def main(dirpath, only=None):
 
 
 if __name__ == '__main__':
-    here = os.path.dirname(os.path.abspath(__file__))
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     d = sys.argv[1] if len(sys.argv) > 1 else \
-        os.path.join(here, 'src', 'main', 'resources', 'modules')
+        os.path.join(root, 'src', 'main', 'resources', 'modules')
     only = set(sys.argv[2:]) if len(sys.argv) > 2 else None
     sys.exit(main(d, only))

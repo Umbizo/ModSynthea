@@ -9,7 +9,7 @@ json.load hides it the same way. See the 113091000 (brain vs spine MRI) and
 """
 import argparse, collections, csv, glob, json, os, sys
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MOD = os.path.join(ROOT, 'src', 'main', 'resources', 'modules')
 EXP = os.path.join(ROOT, 'src', 'main', 'resources', 'export')
 OK_SYSTEMS = {'SNOMED-CT', 'RxNorm', 'LOINC', 'CVX', 'DICOM-DCM', 'DICOM-SOP'}

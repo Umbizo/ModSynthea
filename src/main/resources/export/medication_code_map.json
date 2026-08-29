@@ -1,4 +1,44 @@
 {
+  "1193339": [
+    {
+      "code": "50881000560",
+      "description": "ruxolitinib 5 MG Oral Tablet [Jakafi]"
+    }
+  ],
+  "197422": [
+    {
+      "code": "80725062025",
+      "description": "busulfan 2 MG Oral Tablet [Myleran]"
+    }
+  ],
+  "1738495": [
+    {
+      "code": "00378700210",
+      "description": "paroxetine hydrochloride 20 MG Oral Tablet"
+    }
+  ],
+  "995258": [
+    {
+      "code": "00093506101",
+      "description": "hydroxyzine hydrochloride 25 MG Oral Tablet"
+    }
+  ],
+  "351270": [
+    {
+      "code": "82154045104",
+      "description": "1 ML peginterferon alfa-2a 0.18 MG/ML Injection [Pegasys]"
+    }
+  ],
+  "197388": [
+    {
+      "code": "67877049301",
+      "description": "Azathioprine 50 MG Oral Tablet"
+    },
+    {
+      "code": "68462050201",
+      "description": "Azathioprine 50 MG Oral Tablet"
+    }
+  ],
   "1000114": [
     {
       "code": "00555077902",
@@ -196271,6 +196311,18 @@
       "description": "carbidopa 25 MG / levodopa 100 MG Oral Tablet [Sinemet]"
     }
   ],
+  "1599846": [
+    {
+      "code": "00074301207",
+      "description": "carbidopa 4.63 MG/ML / levodopa 20 MG/ML Oral Suspension [Duopa]"
+    }
+  ],
+  "199929": [
+    {
+      "code": "27505000405",
+      "description": "apomorphine 10 MG/ML Injectable Solution [Apokyn]"
+    }
+  ],
   "727711": [
     {
       "code": "55513017728",
@@ -261091,6 +261143,318 @@
     {
       "code": "43598093630",
       "description": "fexofenadine hydrochloride 60 MG Oral Tablet"
+    }
+  ],
+  "1942487": [
+    {
+      "code": "00310057860",
+      "description": "olaparib 150 MG Oral Tablet"
+    },
+    {
+      "code": "00310057812",
+      "description": "olaparib 150 MG Oral Tablet"
+    }
+  ],
+  "1649988": [
+    {
+      "code": "00143314205",
+      "description": "doxycycline hyclate 100 MG Oral Capsule"
+    },
+    {
+      "code": "00378014805",
+      "description": "doxycycline hyclate 100 MG Oral Capsule"
+    },
+    {
+      "code": "00904042804",
+      "description": "doxycycline hyclate 100 MG Oral Capsule"
+    },
+    {
+      "code": "27241014108",
+      "description": "doxycycline hyclate 100 MG Oral Capsule"
+    }
+  ],
+  "312835": [
+    {
+      "code": "00781261513",
+      "description": "rivastigmine 3 MG Oral Capsule"
+    },
+    {
+      "code": "00781261560",
+      "description": "rivastigmine 3 MG Oral Capsule"
+    },
+    {
+      "code": "33342009006",
+      "description": "rivastigmine 3 MG Oral Capsule"
+    },
+    {
+      "code": "46708006410",
+      "description": "rivastigmine 3 MG Oral Capsule"
+    }
+  ],
+  "1545658": [
+    {
+      "code": "50090449200",
+      "description": "empagliflozin 10 MG Oral Tablet"
+    },
+    {
+      "code": "50090449201",
+      "description": "empagliflozin 10 MG Oral Tablet"
+    },
+    {
+      "code": "71610090009",
+      "description": "empagliflozin 10 MG Oral Tablet"
+    },
+    {
+      "code": "71610090097",
+      "description": "empagliflozin 10 MG Oral Tablet"
+    },
+    {
+      "code": "50090645200",
+      "description": "empagliflozin 10 MG Oral Tablet"
+    },
+    {
+      "code": "00597015207",
+      "description": "Empagliflozin 10 MG Oral Tablet [Jardiance]"
+    },
+    {
+      "code": "00597015230",
+      "description": "Empagliflozin 10 MG Oral Tablet [Jardiance]"
+    },
+    {
+      "code": "00597015237",
+      "description": "Empagliflozin 10 MG Oral Tablet [Jardiance]"
+    },
+    {
+      "code": "00597015290",
+      "description": "Empagliflozin 10 MG Oral Tablet [Jardiance]"
+    }
+  ],
+  "1442986": [
+    {
+      "code": "57962014009",
+      "description": "ibrutinib 140 MG Oral Capsule [Imbruvica]"
+    },
+    {
+      "code": "57962014012",
+      "description": "ibrutinib 140 MG Oral Capsule [Imbruvica]"
+    }
+  ],
+  "2607734": [
+    {
+      "code": "00310351260",
+      "description": "acalabrutinib 100 MG Oral Tablet [Calquence]"
+    },
+    {
+      "code": "00310351295",
+      "description": "acalabrutinib 100 MG Oral Tablet [Calquence]"
+    }
+  ],
+  "1747561": [
+    {
+      "code": "00074057611",
+      "description": "venetoclax 100 MG Oral Tablet [Venclexta]"
+    },
+    {
+      "code": "00074057622",
+      "description": "venetoclax 100 MG Oral Tablet [Venclexta]"
+    },
+    {
+      "code": "00074057630",
+      "description": "venetoclax 100 MG Oral Tablet [Venclexta]"
+    }
+  ],
+  "312086": [
+    {
+      "code": "00904655261",
+      "description": "ondansetron 8 MG Oral Tablet"
+    },
+    {
+      "code": "51407004005",
+      "description": "ondansetron 8 MG Oral Tablet"
+    },
+    {
+      "code": "51407004030",
+      "description": "ondansetron 8 MG Oral Tablet"
+    },
+    {
+      "code": "80425007401",
+      "description": "ondansetron 8 MG Oral Tablet"
+    }
+  ],
+  "903857": [
+    {
+      "code": "00115351101",
+      "description": "pyridostigmine bromide 60 MG Oral Tablet"
+    },
+    {
+      "code": "68084049401",
+      "description": "pyridostigmine bromide 60 MG Oral Tablet"
+    }
+  ],
+  "200060": [
+    {
+      "code": "00378447201",
+      "description": "mycophenolate mofetil 500 MG Oral Tablet"
+    },
+    {
+      "code": "00480357101",
+      "description": "mycophenolate mofetil 500 MG Oral Tablet"
+    }
+  ],
+  "1721581": [
+    {
+      "code": "00310135030",
+      "description": "osimertinib 80 MG Oral Tablet [Tagrisso]"
+    },
+    {
+      "code": "00310125130",
+      "description": "osimertinib 80 MG Oral Tablet [Tagrisso]"
+    }
+  ],
+  "1607792": [
+    {
+      "code": "16714099501",
+      "description": "deferasirox 360 MG Oral Tablet"
+    },
+    {
+      "code": "31722001330",
+      "description": "deferasirox 360 MG Oral Tablet"
+    },
+    {
+      "code": "43598085110",
+      "description": "deferasirox 360 MG Oral Tablet"
+    }
+  ],
+  "2702393": [
+    {
+      "code": "70069069601",
+      "description": "timolol hemihydrate 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70069069701",
+      "description": "timolol hemihydrate 5 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70069069801",
+      "description": "timolol hemihydrate 5 MG/ML Ophthalmic Solution"
+    }
+  ],
+  "861204": [
+    {
+      "code": "00781717770",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "00781717775",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "00781717785",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "42571046256",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "42571046292",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "46708074905",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "46708074910",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "46708074915",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "60505057701",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "60505057702",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "60505057703",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "62332074905",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "62332074910",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "62332074915",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "68083062605",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "68083062610",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "68083062615",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70069056601",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70069056701",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70069056801",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70756067700",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70756067730",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70756067800",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70756067830",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70756067900",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "70756067935",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "82182032105",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "82182032110",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+    },
+    {
+      "code": "82182032115",
+      "description": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
     }
   ]
 }

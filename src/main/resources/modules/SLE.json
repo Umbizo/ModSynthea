@@ -101,25 +101,52 @@
             "operator": "==",
             "value": "F"
           },
-          "transition": "Female_SLE_Incidence_Delay"
+          "transition": "Female_SLE_Age_Guard"
         },
         {
           "condition": {
             "condition_type": "True"
           },
-          "transition": "Male_SLE_Incidence_Delay"
+          "transition": "Male_SLE_Age_Guard"
         }
       ]
     },
-    "Female_SLE_Incidence_Delay": {
-      "type": "Delay",
-      "name": "Female_SLE_Incidence_Delay",
-      "range": {
-        "low": 0,
-        "high": 1,
+    "Female_SLE_Age_Guard": {
+      "type": "Guard",
+      "name": "Female_SLE_Age_Guard",
+      "remarks": [
+        "SLE is overwhelmingly a disease of the reproductive years: incidence rises",
+        "sharply after menarche and falls off after menopause. Onset is modelled as",
+        "an annual reroll from age 15, not a birth-rolled lifetime draw.",
+        "The 15-45 window itself is not from Izmirly et al. (that meta-analysis",
+        "reports pooled and race-stratified rates but no age-specific incidence",
+        "curve). Fix round 1 (reviewer): cited instead to Rees F, Doherty M,",
+        "Grainge MJ, Lanyon P, Zhang W. 'The worldwide incidence and prevalence",
+        "of systemic lupus erythematosus: a systematic review of epidemiological",
+        "studies.' Rheumatology (Oxford). 2017;56(11):1945-1961, which reports",
+        "the female:male ratio rising from 9:1 overall to 13:1 specifically in",
+        "the 15-44 age group -- direct evidence that this is where SLE",
+        "concentrates. The annual per-race-per-sex rates themselves (below)",
+        "remain from Izmirly et al., Lupus Sci Med. 2021;8(1):e000614."
+      ],
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 15,
         "unit": "years"
       },
       "direct_transition": "Female_Chance_of_SLE"
+    },
+    "Male_SLE_Age_Guard": {
+      "type": "Guard",
+      "name": "Male_SLE_Age_Guard",
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 15,
+        "unit": "years"
+      },
+      "direct_transition": "Male_Chance_of_SLE"
     },
     "Female_Chance_of_SLE": {
       "type": "Simple",
@@ -169,16 +196,6 @@
         }
       ]
     },
-    "Male_SLE_Incidence_Delay": {
-      "type": "Delay",
-      "name": "Male_SLE_Incidence_Delay",
-      "range": {
-        "low": 0,
-        "high": 1,
-        "unit": "years"
-      },
-      "direct_transition": "Male_Chance_of_SLE"
-    },
     "Male_Chance_of_SLE": {
       "type": "Simple",
       "name": "Male_Chance_of_SLE",
@@ -212,6 +229,15 @@
         },
         {
           "condition": {
+            "condition_type": "Attribute",
+            "attribute": "sle_race_group",
+            "operator": "==",
+            "value": "native"
+          },
+          "transition": "Male_SLE_Chance_Native"
+        },
+        {
+          "condition": {
             "condition_type": "True"
           },
           "transition": "Male_SLE_Chance_White"
@@ -221,138 +247,339 @@
     "Female_SLE_Chance_Black": {
       "type": "Simple",
       "name": "Female_SLE_Chance_Black",
+      "remarks": [
+        "Annual incidence 15.9/100,000 person-years, Black women.",
+        "Izmirly et al., Lupus Sci Med. 2021;8(1):e000614 (CDC National Lupus",
+        "Registry meta-analysis: Georgia, Michigan, New York, California)."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.034,
-          "transition": "Prodromal_Phase"
+          "distribution": 0.000159,
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
-          "distribution": 0.966,
-          "transition": "Terminal"
+          "distribution": 0.999841,
+          "transition": "Female_SLE_Annual_Delay"
         }
       ]
     },
     "Female_SLE_Chance_Hispanic": {
       "type": "Simple",
       "name": "Female_SLE_Chance_Hispanic",
+      "remarks": [
+        "Annual incidence 6.8/100,000 person-years, Hispanic women.",
+        "Izmirly et al., Lupus Sci Med. 2021;8(1):e000614."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.015,
-          "transition": "Prodromal_Phase"
+          "distribution": 0.000068,
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
-          "distribution": 0.985,
-          "transition": "Terminal"
+          "distribution": 0.999932,
+          "transition": "Female_SLE_Annual_Delay"
         }
       ]
     },
     "Female_SLE_Chance_Asian": {
       "type": "Simple",
       "name": "Female_SLE_Chance_Asian",
+      "remarks": [
+        "Annual incidence 7.6/100,000 person-years, Asian/Pacific Islander women.",
+        "Izmirly et al., Lupus Sci Med. 2021;8(1):e000614."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.012,
-          "transition": "Prodromal_Phase"
+          "distribution": 0.000076,
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
-          "distribution": 0.988,
-          "transition": "Terminal"
+          "distribution": 0.999924,
+          "transition": "Female_SLE_Annual_Delay"
         }
       ]
     },
     "Female_SLE_Chance_Native": {
       "type": "Simple",
       "name": "Female_SLE_Chance_Native",
+      "remarks": [
+        "Annual incidence 10.4/100,000 person-years, American Indian/Alaska",
+        "Native women -- the second-highest rate of any group in the source.",
+        "Caveat (fix round 1, reviewer): this cell rests on the smallest",
+        "underlying case counts of any race group in Izmirly et al.'s",
+        "meta-analysis (Indian Health Service catchment population) and should",
+        "be treated as the least statistically stable of these estimates -- see",
+        "Male_SLE_Chance_Black's remarks for the same caveat on the male side.",
+        "Izmirly et al., Lupus Sci Med. 2021;8(1):e000614."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.02,
-          "transition": "Prodromal_Phase"
+          "distribution": 0.000104,
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
-          "distribution": 0.98,
-          "transition": "Terminal"
+          "distribution": 0.999896,
+          "transition": "Female_SLE_Annual_Delay"
         }
       ]
     },
     "Female_SLE_Chance_White": {
       "type": "Simple",
       "name": "Female_SLE_Chance_White",
+      "remarks": [
+        "Annual incidence 5.7/100,000 person-years, White women.",
+        "Izmirly et al., Lupus Sci Med. 2021;8(1):e000614."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.01,
-          "transition": "Prodromal_Phase"
+          "distribution": 0.000057,
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
-          "distribution": 0.99,
-          "transition": "Terminal"
+          "distribution": 0.999943,
+          "transition": "Female_SLE_Annual_Delay"
         }
       ]
     },
     "Male_SLE_Chance_Black": {
       "type": "Simple",
       "name": "Male_SLE_Chance_Black",
+      "remarks": [
+        "FIX ROUND 1 (reviewer correction): round 0 scaled these male rates by",
+        "0.795 and justified it as reconciling this source's 'own pooled 8.7:1'",
+        "against a commonly cited ~9:1 -- but 8.7 is Izmirly's pooled FEMALE rate",
+        "(8.7/100,000 person-years), not a ratio; the source's true pooled ratio",
+        "is 8.7/1.2 = 7.25:1 (1.2/100,000 being the pooled male rate). The scaling",
+        "was chasing a target the source never actually reported. Removed: these",
+        "are now Izmirly et al.'s raw, unscaled race-specific male rates (Black",
+        "men 2.4/100,000/yr, etc.), exactly as reported. The population-weighted",
+        "(2020 Census race shares, approx. White .60/Hispanic .18/Black .13/",
+        "Asian .06/Native .01) female:male ratio these unscaled rates produce is",
+        "7.27e-05/1.02e-05 = 7.16:1, closely matching the source's own true",
+        "7.25:1 -- consistent rather than forced. The commonly cited ~9:1",
+        "(CDC/Lupus Foundation of America) is a real figure from a different",
+        "source (see Rees et al. 2017, cited on Female_SLE_Age_Guard, which",
+        "independently reports 9:1 overall).",
+        "Caveat: the American Indian/Alaska Native cells (both sexes) rest on the",
+        "smallest underlying case counts of any race group in Izmirly et al.'s",
+        "meta-analysis (Indian Health Service catchment population, a much",
+        "smaller registry than the other four sites) and should be treated as",
+        "the least statistically stable of these six estimates.",
+        "Izmirly et al., Lupus Sci Med. 2021;8(1):e000614."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.012,
-          "transition": "Prodromal_Phase"
+          "distribution": 0.000024,
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
-          "distribution": 0.988,
-          "transition": "Terminal"
+          "distribution": 0.999976,
+          "transition": "Male_SLE_Annual_Delay"
         }
       ]
     },
     "Male_SLE_Chance_Hispanic": {
       "type": "Simple",
       "name": "Male_SLE_Chance_Hispanic",
+      "remarks": [
+        "0.9/100,000/yr, Hispanic men -- unscaled, see Male_SLE_Chance_Black for",
+        "the round-1 correction removing the round-0 x0.795 scale.",
+        "Izmirly et al., Lupus Sci Med. 2021;8(1):e000614."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.006,
-          "transition": "Prodromal_Phase"
+          "distribution": 0.000009,
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
-          "distribution": 0.994,
-          "transition": "Terminal"
+          "distribution": 0.999991,
+          "transition": "Male_SLE_Annual_Delay"
         }
       ]
     },
     "Male_SLE_Chance_Asian": {
       "type": "Simple",
       "name": "Male_SLE_Chance_Asian",
+      "remarks": [
+        "0.4/100,000/yr, Asian/Pacific Islander men -- unscaled, see",
+        "Male_SLE_Chance_Black for the round-1 correction removing the round-0",
+        "x0.795 scale. Izmirly et al., Lupus Sci Med. 2021;8(1):e000614."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.005,
-          "transition": "Prodromal_Phase"
+          "distribution": 0.000004,
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
-          "distribution": 0.995,
-          "transition": "Terminal"
+          "distribution": 0.999996,
+          "transition": "Male_SLE_Annual_Delay"
+        }
+      ]
+    },
+    "Male_SLE_Chance_Native": {
+      "type": "Simple",
+      "name": "Male_SLE_Chance_Native",
+      "remarks": [
+        "3.8/100,000/yr, American Indian/Alaska Native men -- the highest male",
+        "rate of any group in the source; unscaled, see Male_SLE_Chance_Black for",
+        "the round-1 correction removing the round-0 x0.795 scale, and for the",
+        "AI/AN small-sample caveat. Izmirly et al., Lupus Sci Med. 2021;8(1):e000614."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.000038,
+          "transition": "Stock_Lupus_Dx_Guard"
+        },
+        {
+          "distribution": 0.999962,
+          "transition": "Male_SLE_Annual_Delay"
         }
       ]
     },
     "Male_SLE_Chance_White": {
       "type": "Simple",
       "name": "Male_SLE_Chance_White",
+      "remarks": [
+        "0.8/100,000/yr, White men -- unscaled, see Male_SLE_Chance_Black for the",
+        "round-1 correction removing the round-0 x0.795 scale.",
+        "Izmirly et al., Lupus Sci Med. 2021;8(1):e000614."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.004,
-          "transition": "Prodromal_Phase"
+          "distribution": 0.000008,
+          "transition": "Stock_Lupus_Dx_Guard"
         },
         {
-          "distribution": 0.996,
+          "distribution": 0.999992,
+          "transition": "Male_SLE_Annual_Delay"
+        }
+      ]
+    },
+    "Female_SLE_Annual_Delay": {
+      "type": "Delay",
+      "name": "Female_SLE_Annual_Delay",
+      "range": {
+        "low": 11,
+        "high": 13,
+        "unit": "months"
+      },
+      "direct_transition": "Female_SLE_Age_Window_Check"
+    },
+    "Male_SLE_Annual_Delay": {
+      "type": "Delay",
+      "name": "Male_SLE_Annual_Delay",
+      "range": {
+        "low": 11,
+        "high": 13,
+        "unit": "months"
+      },
+      "direct_transition": "Male_SLE_Age_Window_Check"
+    },
+    "Female_SLE_Age_Window_Check": {
+      "type": "Simple",
+      "name": "Female_SLE_Age_Window_Check",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": "<",
+            "quantity": 45,
+            "unit": "years"
+          },
+          "transition": "Female_Chance_of_SLE"
+        },
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 45,
+            "unit": "years"
+          },
           "transition": "Terminal"
         }
       ]
     },
-    "Prodromal_Phase": {
-      "type": "Delay",
-      "name": "Prodromal_Phase",
-      "range": {
-        "low": 6,
-        "high": 36,
-        "unit": "months"
-      },
-      "direct_transition": "Diagnose_SLE"
+    "Male_SLE_Age_Window_Check": {
+      "type": "Simple",
+      "name": "Male_SLE_Age_Window_Check",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": "<",
+            "quantity": 45,
+            "unit": "years"
+          },
+          "transition": "Male_Chance_of_SLE"
+        },
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 45,
+            "unit": "years"
+          },
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Stock_Lupus_Dx_Guard": {
+      "type": "Simple",
+      "name": "Stock_Lupus_Dx_Guard",
+      "remarks": [
+        "CROSS-MODULE GATE (audit Class 7, task 5.2) -- SLE <-> stock lupus.json.",
+        "Contract: this module (SNOMED 55464009, 'Systemic lupus erythematosus')",
+        "and the stock module lupus.json (SNOMED 200936003, 'Lupus erythematosus')",
+        "model the same disease with no coordination, so before this fix a single",
+        "patient could carry both codes. The rule is FIRST-TO-DIAGNOSE WINS, and",
+        "it is enforced symmetrically: this state blocks our onset when the stock",
+        "code is already an Active Condition, and lupus.json's SLE_Dx_Guard blocks",
+        "its onset when 55464009 is already active.",
+        "Every one of the ten per-race/per-sex incidence rolls routes through here,",
+        "so 55464009 has exactly one entry point and exactly one gate. Neither",
+        "module ever emits a ConditionEnd for its code (verified by grep), so once",
+        "either code is present the corresponding Active Condition check is true",
+        "for the remainder of the patient's life -- there is no re-open window.",
+        "RESIDUAL, disclosed rather than implied (5.2 fix round 1, reviewer): this",
+        "gate is NOT race-free, because Diagnose_SLE carries target_encounter",
+        "Diagnosis_Encounter and lupus.json's Lupus carries target_encounter",
+        "Lupus_Diagnosis -- both codes are recorded when their encounter opens, not",
+        "when the gate passes. The chains are Delay-free, so the two coincide",
+        "unless State.Encounter.process blocks because another module holds this",
+        "person's encounter lock, and a rival diagnoses inside that block. Same",
+        "residual class as dementia.json, the stock lung modules and",
+        "congestive_heart_failure.json. Exposure here is ~4e-7 (the joint",
+        "probability below) x P(lock contention) -- negligible, but real.",
+        "Losing the race sends the patient to Terminal rather than back into the",
+        "annual reroll: with the stock code already on the record the patient is a",
+        "diagnosed lupus patient and this module has nothing further to contribute.",
+        "Known, accepted asymmetry: home_hospice_snf.json's home-health eligibility",
+        "check lists 200936003 but not 55464009, so a patient gated out here loses",
+        "a home-health route they would previously have picked up from the stock",
+        "module. P(both modules firing for one patient) is about 4e-7 (P(SLE) ~1.3e-3",
+        "x P(stock lupus) ~3e-4), so the volume effect is nil. Adding 55464009 to",
+        "that stock Or-list was deliberately NOT done here: this module is roughly",
+        "5x more prevalent than stock lupus, so it would materially expand the",
+        "home-health-eligible pool -- a volume change outside this task's charter."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "200936003",
+                "display": "Lupus erythematosus (disorder)"
+              }
+            ]
+          },
+          "transition": "Terminal"
+        },
+        {
+          "transition": "Diagnose_SLE"
+        }
+      ]
     },
     "Diagnose_SLE": {
       "type": "ConditionOnset",
@@ -364,7 +591,7 @@
           "display": "Systemic lupus erythematosus"
         }
       ],
-      "target_encounter": 0,
+      "target_encounter": "Diagnosis_Encounter",
       "direct_transition": "Diagnosis_Encounter"
     },
     "Diagnosis_Encounter": {
@@ -402,6 +629,12 @@
     "Start_HCQ": {
       "type": "MedicationOrder",
       "name": "Start_HCQ",
+      "remarks": [
+        "MERGE (master): chronic:true ported. Hydroxychloroquine is the SLE",
+        "backbone -- continued indefinitely, including through remission; no",
+        "MedicationEnd exists anywhere in this module, so wellness auto-renewal",
+        "is the correct claims behaviour for genuinely lifelong therapy."
+      ],
       "chronic": true,
       "codes": [
         {

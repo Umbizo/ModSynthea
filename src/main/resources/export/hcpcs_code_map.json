@@ -1,4 +1,28 @@
 {
+  "28520004": [
+    {
+      "code": "36415",
+      "description": "Collection of venous blood by venipuncture"
+    }
+  ],
+  "396540005": [
+    {
+      "code": "99195",
+      "description": "Phlebotomy, therapeutic (separate procedure)"
+    }
+  ],
+  "164721007": [
+    {
+      "code": "95910",
+      "description": "Nerve conduction studies; 7-8 studies"
+    }
+  ],
+  "20720000": [
+    {
+      "code": "36514",
+      "description": "Therapeutic apheresis; for plasma pheresis"
+    }
+  ],
   "70536003": [
     {
       "code": "50360",
@@ -13,6 +37,18 @@
     {
       "code": "90935",
       "description": "Renal dialysis (procedure)"
+    }
+  ],
+  "14684005": [
+    {
+      "code": "90945",
+      "description": "Dialysis procedure other than hemodialysis (peritoneal dialysis, hemofiltration, or other continuous renal replacement therapies), with single physician evaluation",
+      "weight": "0.3"
+    },
+    {
+      "code": "90947",
+      "description": "Dialysis procedure other than hemodialysis requiring repeated physician evaluations, with or without substantial revision of dialysis prescription",
+      "weight": "0.7"
     }
   ],
   "710824005": [
@@ -221,8 +257,24 @@
   ],
   "33195004": [
     {
-      "code": "77306",
-      "description": "Teleradiotherapy procedure (procedure)"
+      "code": "G6011",
+      "weight": "0.007",
+      "description": "Radiation treatment delivery,3 or more separate treatment areas, custom blocking, tangential ports, wedges, rotational beam, compensators, electron beam; up to 5 mev"
+    },
+    {
+      "code": "G6012",
+      "weight": "0.667",
+      "description": "Radiation treatment delivery,3 or more separate treatment areas, custom blocking, tangential ports, wedges, rotational beam, compensators, electron beam; 6-10 mev"
+    },
+    {
+      "code": "G6013",
+      "weight": "0.310",
+      "description": "Radiation treatment delivery,3 or more separate treatment areas, custom blocking, tangential ports, wedges, rotational beam, compensators, electron beam; 11-19 mev"
+    },
+    {
+      "code": "G6014",
+      "weight": "0.016",
+      "description": "Radiation treatment delivery,3 or more separate treatment areas, custom blocking, tangential ports, wedges, rotational beam, compensators, electron beam; 20 mev or greater"
     }
   ],
   "315124004": [
@@ -365,8 +417,8 @@
   ],
   "392021009": [
     {
-      "code": "19120",
-      "description": "Lumpectomy of breast (procedure)"
+      "code": "19301",
+      "description": "Partial removal of breast"
     }
   ],
   "24623002": [
@@ -533,22 +585,8 @@
   ],
   "234262008": [
     {
-      "code": "38505",
-      "description": "Excision of axillary lymph node (procedure)"
-    }
-  ],
-  "108290001": [
-    {
-      "code": "77402",
-      "description": "Radiation treatment delivery"
-    },
-    {
-      "code": "77407",
-      "description": "Radiation treatment delivery"
-    },
-    {
-      "code": "77412",
-      "description": "Radiation treatment delivery"
+      "code": "38745",
+      "description": "Removal of lymph nodes of underarm"
     }
   ],
   "385763009": [
@@ -574,6 +612,38 @@
     },
     {
       "code": "S9126",
+      "description": "Hospice care, in the home, per diem"
+    }
+  ],
+  "385765002": [
+    {
+      "code": "G0156",
+      "weight": "1.0",
+      "description": "Services of home health/hospice aide in home health or hospice settings, each 15 minutes"
+    },
+    {
+      "code": "G0299",
+      "weight": "0.0",
+      "description": "Direct skilled nursing services of a registered nurse (rn) in the home health or hospice setting, each 15 minutes"
+    },
+    {
+      "code": "G0155",
+      "weight": "0.0",
+      "description": "Services of clinical social worker in home health or hospice settings, each 15 minutes"
+    },
+    {
+      "code": "G9857",
+      "weight": "0.0",
+      "description": "Patient admitted to hospice"
+    },
+    {
+      "code": "G9858",
+      "weight": "0.0",
+      "description": "Patient enrolled in hospice"
+    },
+    {
+      "code": "S9126",
+      "weight": "0.0",
       "description": "Hospice care, in the home, per diem"
     }
   ],
@@ -813,23 +883,33 @@
   ],
   "433236007": [
     {
+      "code": "93306",
+      "weight": "1.0",
+      "description": "Echocardiography, transthoracic, real-time with image documentation (2D), includes M-mode recording, complete, with spectral and color flow Doppler"
+    },
+    {
       "code": "C8923",
+      "weight": "0.0",
       "description": "Transthoracic echocardiography with contrast, or without contrast followed by with contrast, real-time with image documentation (2d), includes m-mode recording, when performed, complete, without spectral or color doppler echocardiography"
     },
     {
       "code": "C8924",
+      "weight": "0.0",
       "description": "Transthoracic echocardiography with contrast, or without contrast followed by with contrast, real-time with image documentation (2d), includes m-mode recording, when performed, follow-up or limited study"
     },
     {
       "code": "C8928",
+      "weight": "0.0",
       "description": "Transthoracic echocardiography with contrast, or without contrast followed by with contrast, real-time with image documentation (2d), includes m-mode recording, when performed, during rest and cardiovascular stress test using treadmill, bicycle exercis..."
     },
     {
       "code": "C8929",
+      "weight": "0.0",
       "description": "Transthoracic echocardiography with contrast, or without contrast followed by with contrast, real-time with image documentation (2d), includes m-mode recording, when performed, complete, with spectral doppler echocardiography, and with color flow doppl..."
     },
     {
       "code": "C8930",
+      "weight": "0.0",
       "description": "Transthoracic echocardiography, with contrast, or without contrast followed by with contrast, real-time with image documentation (2d), includes m-mode recording, when performed, during rest and cardiovascular stress test using treadmill, bicycle exerci..."
     }
   ],
@@ -1151,8 +1231,8 @@
   ],
   "40403005": [
     {
-      "code": "C9741",
-      "description": "Right heart catheterization with implantation of wireless pressure sensor in the pulmonary artery, including any type of measurement, angiography, imaging supervision, interpretation, and report"
+      "code": "93503",
+      "description": "Right heart catheterization"
     }
   ],
   "59180001": [
@@ -1261,10 +1341,6 @@
     {
       "code": "G0102",
       "description": "Prostate cancer screening; digital rectal examination"
-    },
-    {
-      "code": "S0605",
-      "description": "DIGITAL RECTAL EXAMINATION, MALE, ANNUAL"
     }
   ],
   "44441009": [
@@ -1397,11 +1473,13 @@
   ],
   "104435004": [
     {
-      "code": "G0107",
-      "description": "COLORECTAL CANCER SCREENING; FECAL-OCCULT BLOOD TEST DETERMINATIONS"
+      "code": "G0328",
+      "weight": "1.0",
+      "description": "Colorectal cancer screening; fecal occult blood test, immunoassay, 1-3 simultaneous"
     },
     {
       "code": "G0464",
+      "weight": "0.0",
       "description": "Colorectal cancer screening; stool-based dna and fecal occult hemoglobin (e.g., kras, ndrg4 and bmp3)"
     }
   ],
@@ -1566,23 +1644,28 @@
   "410401003": [
     {
       "code": "G0299",
+      "weight": "1.0",
       "description": "Direct skilled nursing services of a registered nurse (rn) in the home health or hospice setting, each 15 minutes"
     },
     {
       "code": "G0300",
+      "weight": "0.0",
       "description": "Direct skilled nursing services of a licensed practical nurse (lpn) in the home health or hospice setting, each 15 minutes"
     },
     {
       "code": "G0154",
+      "weight": "0.0",
       "description": "Direct skilled nursing services of a licensed nurse (lpn or rn) in the home health or hospice setting, each 15 minutes"
     },
     {
-      "code": "Q5001",
-      "description": "Hospice or home health care provided in patient's home/residence"
+      "code": "G0155",
+      "weight": "0.0",
+      "description": "Services of clinical social worker in home health or hospice settings, each 15 minutes"
     },
     {
-      "code": "G0155",
-      "description": "Services of clinical social worker in home health or hospice settings, each 15 minutes"
+      "code": "Q5001",
+      "weight": "0.0",
+      "description": "Hospice or home health care provided in patient's home/residence"
     }
   ],
   "183418007": [
@@ -2170,10 +2253,12 @@
   "385762004": [
     {
       "code": "G0337",
+      "weight": "1.0",
       "description": "Hospice evaluation and counseling services, pre-election"
     },
     {
       "code": "G9524",
+      "weight": "0.0",
       "description": "Patient was referred to hospice care"
     }
   ],
@@ -2709,8 +2794,8 @@
   ],
   "384692006": [
     {
-      "code": "G0458",
-      "description": "Low dose rate (ldr) prostate brachytherapy services, composite rate"
+      "code": "77770",
+      "description": "High dose radiation therapy, 1 channel"
     }
   ],
   "134262009": [
@@ -3031,12 +3116,14 @@
   ],
   "302497006": [
     {
-      "code": "G8714",
-      "description": "Hemodialysis treatment performed exactly three times per week for > 90 days"
+      "code": "90935",
+      "weight": "1.0",
+      "description": "Hemodialysis procedure with physician evaluation"
     },
     {
-      "code": "G8715",
-      "description": "Hemodialysis treatment performed less than three times per week or greater than three times per week"
+      "code": "90937",
+      "weight": "0.0",
+      "description": "Hemodialysis procedure requiring repeated evaluation"
     }
   ],
   "424753004": [
@@ -3813,12 +3900,14 @@
   ],
   "367336001": [
     {
-      "code": "G9829",
-      "description": "Breast adjuvant chemotherapy administered"
+      "code": "96413",
+      "weight": "1.0",
+      "description": "Administration of chemotherapy into vein, 1 hour or less"
     },
     {
-      "code": "G9833",
-      "description": "Patient transfer to practice after initiation of chemotherapy"
+      "code": "96415",
+      "weight": "0.0",
+      "description": "Administration of chemotherapy into vein, each additional hour"
     }
   ],
   "260874000": [
@@ -5821,12 +5910,8 @@
   ],
   "113091000": [
     {
-      "code": "S8035",
-      "description": "Magnetic source imaging"
-    },
-    {
-      "code": "S8042",
-      "description": "Magnetic resonance imaging (mri), low-field"
+      "code": "76498",
+      "description": "Other mri scan"
     }
   ],
   "252792007": [
@@ -6823,59 +6908,858 @@
       "description": "Syphilis infection test"
     }
   ],
-   "121191": [
+  "121191": [
     {
       "code": "J9312",
       "description": "Injection, rituximab, 10 mg"
     }
   ],
-
   "25463": [
     {
       "code": "J9211",
       "description": "Injection, idarubicin hydrochloride, 5 mg"
     }
   ],
-
   "278177": [
     {
       "code": "J9025",
       "description": "Injection, azacitidine, 1 mg"
     }
   ],
-
   "28648": [
     {
       "code": "J9100",
       "description": "Injection, cytarabine, 100 mg"
     }
   ],
-
   "351949": [
     {
       "code": "J9041",
       "description": "Injection, bortezomib, 0.1 mg"
     }
   ],
-
   "46509032": [
     {
       "code": "J9025",
       "description": "Injection, azacitidine, 1 mg"
     }
   ],
-
   "704258": [
     {
       "code": "J9034",
       "description": "Injection, bendamustine hydrochloride, 1 mg"
     }
   ],
-
   "2200671": [
     {
       "code": "J0896",
       "description": "Injection, luspatercept-aamt, 0.25 mg"
+    }
+  ],
+  "2690005": [
+    {
+      "code": "72197",
+      "description": "Magnetic resonance imaging, pelvis; without contrast material(s), followed by contrast material(s) and further sequences",
+      "weight": "0.75"
+    },
+    {
+      "code": "72195",
+      "description": "Magnetic resonance imaging, pelvis; without contrast material(s)",
+      "weight": "0.25"
+    }
+  ],
+  "447395005": [
+    {
+      "code": "55700",
+      "description": "Biopsy, prostate; needle or punch, single or multiple, any approach"
+    }
+  ],
+  "65575008": [
+    {
+      "code": "55700",
+      "description": "Biopsy, prostate; needle or punch, single or multiple, any approach"
+    }
+  ],
+  "26294005": [
+    {
+      "code": "55866",
+      "description": "Laparoscopy, surgical prostatectomy, retropubic radical, including nerve sparing, includes robotic assistance, when performed",
+      "weight": "0.85"
+    },
+    {
+      "code": "55840",
+      "description": "Prostatectomy, retropubic radical, with or without nerve sparing",
+      "weight": "0.08"
+    },
+    {
+      "code": "55845",
+      "description": "Prostatectomy, retropubic radical, with or without nerve sparing; with bilateral pelvic lymphadenectomy, including external iliac, hypogastric, and obturator nodes",
+      "weight": "0.07"
+    }
+  ],
+  "785706005": [
+    {
+      "code": "G6015",
+      "weight": "0.7",
+      "description": "Intensity modulated treatment delivery, single or multiple fields/arcs,via narrow spatially and temporally modulated beams, binary, dynamic mlc, per treatment session"
+    },
+    {
+      "code": "77373",
+      "weight": "0.3",
+      "description": "Stereotactic body radiation therapy, treatment delivery, per fraction to 1 or more lesions, including image guidance, entire course not to exceed 5 fractions"
+    }
+  ],
+  "405824009": [
+    {
+      "code": "81162",
+      "description": "BRCA1, BRCA2 (hereditary breast and ovarian cancer) gene analysis; full sequence analysis and full duplication/deletion analysis",
+      "weight": "0.8"
+    },
+    {
+      "code": "81479",
+      "description": "Unlisted molecular pathology procedure",
+      "weight": "0.2"
+    }
+  ],
+  "426491001": [
+    {
+      "code": "76830",
+      "description": "Ultrasound, transvaginal",
+      "weight": "0.8"
+    },
+    {
+      "code": "76856",
+      "description": "Ultrasound, pelvic (nonobstetric), real time with image documentation; complete",
+      "weight": "0.2"
+    }
+  ],
+  "116028008": [
+    {
+      "code": "58951",
+      "description": "Resection (initial) of ovarian, tubal or primary peritoneal malignancy with bilateral salpingo-oophorectomy and omentectomy; with total abdominal hysterectomy, pelvic and limited para-aortic lymphadenectomy",
+      "weight": "0.35"
+    },
+    {
+      "code": "58953",
+      "description": "Bilateral salpingo-oophorectomy with omentectomy, total abdominal hysterectomy and radical dissection for debulking",
+      "weight": "0.25"
+    },
+    {
+      "code": "58952",
+      "description": "Resection (initial) of ovarian, tubal or primary peritoneal malignancy with bilateral salpingo-oophorectomy and omentectomy; with radical dissection for debulking",
+      "weight": "0.2"
+    },
+    {
+      "code": "58720",
+      "description": "Salpingo-oophorectomy, complete or partial, unilateral or bilateral (separate procedure)",
+      "weight": "0.2"
+    }
+  ],
+  "169069000": [
+    {
+      "code": "71260",
+      "description": "CT thorax with contrast"
+    }
+  ],
+  "40617009": [
+    {
+      "code": "94002",
+      "description": "Ventilation assist and management, initiation of pressure or volume preset ventilators for assisted or controlled breathing; hospital inpatient/observation, initial day"
+    },
+    {
+      "code": "94003",
+      "description": "Ventilation assist and management, initiation of pressure or volume preset ventilators for assisted or controlled breathing; hospital inpatient/observation, each subsequent day"
+    }
+  ],
+  "113024001": [
+    {
+      "code": "99483",
+      "description": "Assessment of and care plan for patient with cognitive impairment, including a cognitive-focused evaluation"
+    }
+  ],
+  "273643004": [
+    {
+      "code": "96116",
+      "description": "Neurobehavioral status exam, clinical assessment (e.g., cognitive testing) with report"
+    }
+  ],
+  "310303002": [
+    {
+      "code": "99497",
+      "description": "Advance care planning including explanation and discussion of advance directives such as standard forms, first 30 minutes"
+    }
+  ],
+  "713603004": [
+    {
+      "code": "99497",
+      "description": "Advance care planning including explanation and discussion of advance directives such as standard forms, first 30 minutes"
+    }
+  ],
+  "713662007": [
+    {
+      "code": "99497",
+      "description": "Advance care planning including explanation and discussion of advance directives such as standard forms, first 30 minutes"
+    }
+  ],
+  "230861003": [
+    {
+      "code": "61867",
+      "description": "Placement of neurostimulator electrode array, cranial; first array"
+    }
+  ],
+  "430282003": [
+    {
+      "code": "78607",
+      "description": "DaTscan imaging"
+    }
+  ],
+  "445794007": [
+    {
+      "code": "96132",
+      "description": "Neuropsychological testing (e.g., Halstead-Reitan Neuropsychological Battery, Wechsler Memory Scales and Wisconsin Card Sorting Test), administered by physician or other qualified health care professional, first hour"
+    }
+  ],
+  "169070004": [
+    {
+      "code": "74177",
+      "description": "Computed tomography, abdomen and pelvis; with contrast material"
+    }
+  ],
+  "16310003": [
+    {
+      "code": "76700",
+      "description": "Ultrasound, abdominal, real time with image documentation; complete"
+    }
+  ],
+  "116241004": [
+    {
+      "code": "48150",
+      "description": "Pancreatectomy, proximal subtotal with total duodenectomy, partial gastrectomy, choledochoenterostomy and gastrojejunostomy (Whipple-type procedure); with pancreatojejunostomy"
+    }
+  ],
+  "104093004": [
+    {
+      "code": "85025",
+      "description": "Blood count; complete (CBC), automated (Hgb, Hct, RBC, WBC and platelet count) and automated differential WBC count"
+    }
+  ],
+  "708058007": [
+    {
+      "code": "88184",
+      "description": "Flow cytometry, cell surface, cytoplasmic, or nuclear marker, technical component only; first marker"
+    }
+  ],
+  "21911005": [
+    {
+      "code": "38510",
+      "description": "Biopsy or excision of lymph node(s); open, deep cervical node(s)"
+    }
+  ],
+  "117617002": [
+    {
+      "code": "88342",
+      "description": "Immunohistochemistry or immunocytochemistry, per specimen; initial single antibody stain procedure"
+    }
+  ],
+  "426329006": [
+    {
+      "code": "88365",
+      "description": "In situ hybridization (eg, FISH), per specimen; initial single probe stain procedure"
+    }
+  ],
+  "418023006": [
+    {
+      "code": "74177",
+      "description": "Computed tomography, abdomen and pelvis; with contrast material"
+    }
+  ],
+  "56241004": [
+    {
+      "code": "38221",
+      "description": "Diagnostic bone marrow; biopsy(ies)"
+    }
+  ],
+  "11274001": [
+    {
+      "code": "83615",
+      "description": "Lactate dehydrogenase (LD), (LDH)"
+    }
+  ],
+  "81410005": [
+    {
+      "code": "82232",
+      "description": "Beta-2 microglobulin"
+    }
+  ],
+  "58776007": [
+    {
+      "code": "38241",
+      "description": "Hematopoietic progenitor cell (HPC); autologous transplantation"
+    }
+  ],
+  "58390007": [
+    {
+      "code": "38240",
+      "description": "Hematopoietic progenitor cell (HPC); allogeneic transplantation per donor"
+    }
+  ],
+  "1156961008": [
+    {
+      "code": "0540T",
+      "description": "Chimeric antigen receptor T-cell (CAR-T) therapy; CAR-T cell administration, autologous"
+    }
+  ],
+  "142505009": [
+    {
+      "code": "52000",
+      "description": "Cystourethroscopy (separate procedure)"
+    }
+  ],
+  "713859006": [
+    {
+      "code": "74178",
+      "description": "Computed tomography, abdomen and pelvis; without contrast material in one or both body regions, followed by contrast material(s) and further sections in one or both body regions"
+    }
+  ],
+  "386791007": [
+    {
+      "code": "52235",
+      "description": "Cystourethroscopy, with fulguration and/or resection of MEDIUM bladder tumor(s) (2.0 to 5.0 cm)"
+    }
+  ],
+  "712753009": [
+    {
+      "code": "51720",
+      "description": "Bladder instillation of anticarcinogenic agent (including retention time)"
+    }
+  ],
+  "1285290008": [
+    {
+      "code": "51720",
+      "description": "Bladder instillation of anticarcinogenic agent (including retention time)"
+    }
+  ],
+  "432370003": [
+    {
+      "code": "74177",
+      "description": "Computed tomography, abdomen and pelvis; with contrast material(s)"
+    }
+  ],
+  "41747008": [
+    {
+      "code": "78306",
+      "description": "Bone and/or joint imaging; whole body"
+    }
+  ],
+  "64063003": [
+    {
+      "code": "51570",
+      "description": "Cystectomy, complete; (separate procedure)"
+    }
+  ],
+  "243306000": [
+    {
+      "code": "50820",
+      "description": "Ureteroileal conduit (ileal bladder), including intestine anastomosis"
+    }
+  ],
+  "699736009": [
+    {
+      "code": "51960",
+      "description": "Enterocystoplasty, including intestinal anastomosis"
+    }
+  ],
+  "176004009": [
+    {
+      "code": "50825",
+      "description": "Continent diversion, including intestine anastomosis using any segment of small and/or large intestine (Kock pouch or Camey enterocystoplasty)"
+    }
+  ],
+  "713281006": [
+    {
+      "code": "99245",
+      "description": "Office or other outpatient consultation for a new or established patient, comprehensive"
+    }
+  ],
+  "432769002": [
+    {
+      "code": "71045",
+      "description": "Portable chest x-ray"
+    }
+  ],
+  "26212005": [
+    {
+      "code": "33405",
+      "description": "Aortic valve replacement"
+    }
+  ],
+  "127788007": [
+    {
+      "code": "38206",
+      "description": "Stem cell harvesting"
+    }
+  ],
+  "82918005": [
+    {
+      "code": "78816",
+      "description": "PET or CT whole body"
+    }
+  ],
+  "241648005": [
+    {
+      "code": "72158",
+      "description": "MRI spine with contrast"
+    }
+  ],
+  "170245002": [
+    {
+      "code": "99429",
+      "description": "Unlisted preventive medicine service (school health screening exam)"
+    }
+  ],
+  "308481009": [
+    {
+      "code": "99452",
+      "description": "Interprofessional referral service(s) provided by a treating/requesting physician or other qualified health care professional, 30 minutes"
+    }
+  ],
+  "84100007": [
+    {
+      "code": "99202",
+      "description": "Office or other outpatient visit, new patient, straightforward medical decision making (history-taking component)"
+    }
+  ],
+  "417656005": [
+    {
+      "code": "99202",
+      "description": "Office or other outpatient visit, new patient, straightforward medical decision making (postural exam component, bundled into E/M)"
+    }
+  ],
+  "183830008": [
+    {
+      "code": "99452",
+      "description": "Interprofessional referral service(s) provided by a treating/requesting physician or other qualified health care professional, 30 minutes"
+    }
+  ],
+  "1290953004": [
+    {
+      "code": "72082",
+      "description": "Radiologic examination, spine, entire thoracic and lumbar, including skull, cervical and sacral spine if performed (eg, scoliosis evaluation), 2-3 views"
+    }
+  ],
+  "122869004": [
+    {
+      "code": "76140",
+      "description": "Consultation on X-ray examination made elsewhere, written report (Cobb angle measurement from prior imaging)"
+    }
+  ],
+  "737617004": [
+    {
+      "code": "99452",
+      "description": "Interprofessional referral service(s) provided by a treating/requesting physician or other qualified health care professional, 30 minutes"
+    }
+  ],
+  "78429003": [
+    {
+      "code": "99452",
+      "description": "Interprofessional referral service(s) provided by a treating/requesting physician or other qualified health care professional, 30 minutes"
+    }
+  ],
+  "183444007": [
+    {
+      "code": "99452",
+      "description": "Interprofessional referral service(s) provided by a treating/requesting physician or other qualified health care professional, 30 minutes"
+    }
+  ],
+  "770695002": [
+    {
+      "code": "99452",
+      "description": "Interprofessional referral service(s) provided by a treating/requesting physician or other qualified health care professional, 30 minutes"
+    }
+  ],
+  "171231001": [
+    {
+      "code": "94010",
+      "description": "Spirometry (procedure)"
+    }
+  ],
+  "399750009": [
+    {
+      "code": "60521",
+      "description": "Thymectomy, partial or total; sternal split or transthoracic approach, without radical mediastinal dissection"
+    }
+  ],
+  "116140006": [
+    {
+      "code": "58150",
+      "description": "Total abdominal hysterectomy (corpus and cervix), with or without removal of tube(s), with or without removal of ovary(s)"
+    }
+  ],
+  "414575003": [
+    {
+      "code": "58571",
+      "description": "Laparoscopy, surgical, with total hysterectomy, for uterus 250 g or less; with removal of tube(s) and/or ovary(s)"
+    }
+  ],
+  "709491003": [
+    {
+      "code": "G0294",
+      "description": "Noncovered procedure(s) using either no anesthesia or local anesthesia only, in a medicare qualifying clinical trial, per day"
+    }
+  ],
+  "238302003": [
+    {
+      "code": "58960",
+      "description": "Resection (tumor debulking) of ovarian, peritoneal, or omental tumor"
+    }
+  ],
+  "430448007": [
+    {
+      "code": "71260",
+      "description": "Computed tomography, thorax; with contrast material(s)"
+    }
+  ],
+  "35295005": [
+    {
+      "code": "32408",
+      "description": "Percutaneous needle biopsy, lung or mediastinum, including imaging guidance"
+    }
+  ],
+  "16327691000119101": [
+    {
+      "code": "70552",
+      "description": "Mri scan of brain with contrast"
+    }
+  ],
+  "428412000": [
+    {
+      "code": "G6003",
+      "weight": "0.426",
+      "description": "Radiation treatment delivery, single treatment area,single port or parallel opposed ports, simple blocks or no blocks: up to 5 mev"
+    },
+    {
+      "code": "G6004",
+      "weight": "0.451",
+      "description": "Radiation treatment delivery, single treatment area,single port or parallel opposed ports, simple blocks or no blocks: 6-10 mev"
+    },
+    {
+      "code": "G6005",
+      "weight": "0.123",
+      "description": "Radiation treatment delivery, single treatment area,single port or parallel opposed ports, simple blocks or no blocks: 11-19 mev"
+    }
+  ],
+  "10847001": [
+    {
+      "code": "31622",
+      "description": "Bronchoscopy, rigid or flexible, including fluoroscopic guidance, when performed; diagnostic, with cell washing, when performed (separate procedure)",
+      "weight": "0.30"
+    },
+    {
+      "code": "31625",
+      "description": "Bronchoscopy, rigid or flexible, including fluoroscopic guidance, when performed; with bronchial or endobronchial biopsy(s), single or multiple sites",
+      "weight": "0.30"
+    },
+    {
+      "code": "31629",
+      "description": "Bronchoscopy, rigid or flexible, including fluoroscopic guidance, when performed; with transbronchial needle aspiration biopsy(s), trachea, main stem and/or lobar bronchus(i)",
+      "weight": "0.20"
+    },
+    {
+      "code": "31652",
+      "description": "Bronchoscopy, rigid or flexible, including fluoroscopic guidance, when performed; with endobronchial ultrasound (EBUS) guided transtracheal and/or transbronchial sampling, one or two mediastinal and/or hilar lymph node stations or structures",
+      "weight": "0.20"
+    }
+  ],
+  "274319000": [
+    {
+      "code": "32408",
+      "description": "Core needle biopsy, lung or mediastinum, percutaneous, including imaging guidance, when performed"
+    }
+  ],
+  "75935006": [
+    {
+      "code": "32663",
+      "description": "Thoracoscopy, surgical; with lobectomy, total or segmental",
+      "weight": "0.80"
+    },
+    {
+      "code": "32480",
+      "description": "Removal of lung, other than pneumonectomy; single lobe (lobectomy)",
+      "weight": "0.20"
+    }
+  ],
+  "1287742003": [
+    {
+      "code": "G6011",
+      "weight": "0.007",
+      "description": "Radiation treatment delivery,3 or more separate treatment areas, custom blocking, tangential ports, wedges, rotational beam, compensators, electron beam; up to 5 mev"
+    },
+    {
+      "code": "G6012",
+      "weight": "0.667",
+      "description": "Radiation treatment delivery,3 or more separate treatment areas, custom blocking, tangential ports, wedges, rotational beam, compensators, electron beam; 6-10 mev"
+    },
+    {
+      "code": "G6013",
+      "weight": "0.310",
+      "description": "Radiation treatment delivery,3 or more separate treatment areas, custom blocking, tangential ports, wedges, rotational beam, compensators, electron beam; 11-19 mev"
+    },
+    {
+      "code": "G6014",
+      "weight": "0.016",
+      "description": "Radiation treatment delivery,3 or more separate treatment areas, custom blocking, tangential ports, wedges, rotational beam, compensators, electron beam; 20 mev or greater"
+    }
+  ],
+  "133918004": [
+    {
+      "code": "99215",
+      "description": "Office or other outpatient visit for the evaluation and management of an established patient, which requires a medically appropriate history and/or examination and high level of medical decision making"
+    }
+  ],
+  "116863004": [
+    {
+      "code": "36430",
+      "description": "Transfusion, blood or blood components"
+    }
+  ],
+  "405825005": [
+    {
+      "code": "88291",
+      "description": "Cytogenetics and molecular cytogenetics; interpretation and report"
+    }
+  ],
+  "252832004": [
+    {
+      "code": "92100",
+      "description": "Serial tonometry with multiple measurements of intraocular pressure over an extended time period with interpretation and report, unilateral or bilateral"
+    }
+  ],
+  "16830007": [
+    {
+      "code": "99173",
+      "description": "Screening test of visual acuity, quantitative, bilateral"
+    }
+  ],
+  "410451008": [
+    {
+      "code": "92499",
+      "description": "Unlisted ophthalmological service or procedure"
+    }
+  ],
+  "410453006": [
+    {
+      "code": "92225",
+      "description": "Ophthalmoscopy, extended, with retinal drawing (eg, for retinal detachment, melanoma), with interpretation and report; initial"
+    }
+  ],
+  "700070005": [
+    {
+      "code": "92134",
+      "description": "Scanning computerized ophthalmic diagnostic imaging, posterior segment, with interpretation and report, unilateral or bilateral"
+    }
+  ],
+  "172581008": [
+    {
+      "code": "92235",
+      "description": "Fluorescein angiography (includes multiframe imaging) with interpretation and report, unilateral or bilateral"
+    }
+  ],
+  "418551006": [
+    {
+      "code": "67028",
+      "description": "Intravitreal injection of a pharmacologic agent (separate procedure)"
+    }
+  ],
+  "410007005": [
+    {
+      "code": "G9043",
+      "description": "Rehabilitation services for low vision by certified low vision rehabilitation therapist, direct one-on-one contact, each 15 minutes"
+    }
+  ],
+  "395096001": [
+    {
+      "code": "77373",
+      "description": "Stereotactic body radiation therapy, treatment delivery, per fraction to 1 or more lesions, including image guidance, entire course not to exceed 5 fractions"
+    }
+  ],
+  "307996001": [
+    {
+      "code": "38510",
+      "description": "Biopsy or excision of lymph node(s); open, deep cervical node(s)"
+    }
+  ],
+  "816077007": [
+    {
+      "code": "70551",
+      "description": "Mri scan of brain without contrast"
+    }
+  ],
+  "168524008": [
+    {
+      "code": "77424",
+      "description": "Intraoperative radiation treatment delivery, x-ray, single treatment session"
+    }
+  ],
+  "75385009": [
+    {
+      "code": "71260",
+      "description": "Ct scan of chest with contrast"
+    }
+  ],
+  "305351004": [
+    {
+      "code": "99291",
+      "description": "Critical care, first 30-74 minutes"
+    }
+  ],
+  "9905009": [
+    {
+      "code": "44320",
+      "description": "Creation of opening from large bowel to skin"
+    }
+  ],
+  "423475008": [
+    {
+      "code": "98960",
+      "description": "Education and training for patient self-management by a qualified, nonphysician health care professional using a standardized curriculum, face-to-face with the patient (could include caregiver/family) each 30 minutes; individual patient"
+    }
+  ],
+  "86964003": [
+    {
+      "code": "89230",
+      "description": "Sweat collection"
+    }
+  ],
+  "444260001": [
+    {
+      "code": "81220",
+      "description": "Gene analysis (cystic fibrosis transmembrane conductance regular) common variants"
+    }
+  ],
+  "61919008": [
+    {
+      "code": "74280",
+      "description": "Double contrast x-ray of large intestine"
+    }
+  ],
+  "60151004": [
+    {
+      "code": "S3620",
+      "description": "Newborn metabolic screening panel, includes test kit, postage and the laboratory tests specified by the state for inclusion in this panel (e.g., galactose; hemoglobin, electrophoresis;  hydroxyprogesterone, 17-d; phenylalanine (pku); and thyroxine, total)"
+    }
+  ],
+  "104173009": [
+    {
+      "code": "87070",
+      "description": "Bacterial culture, any other source except urine, blood or stool, aerobic"
+    }
+  ],
+  "113076002": [
+    {
+      "code": "82951",
+      "description": "Blood glucose (sugar) tolerance test, 3 specimens"
+    }
+  ],
+  "232657004": [
+    {
+      "code": "32851",
+      "description": "Transplantation of lung"
+    }
+  ],
+  "82078001": [
+    {
+      "code": "36415",
+      "description": "Insertion of needle into vein for collection of blood sample"
+    }
+  ],
+  "281790008": [
+    {
+      "code": "96365",
+      "description": "Infusion into a vein for therapy, prevention, or diagnosis, 1 hour or less"
+    }
+  ],
+  "48387007": [
+    {
+      "code": "31600",
+      "description": "Incision of windpipe for insertion of breathing tube (older than 2 years)"
+    }
+  ],
+  "418891003": [
+    {
+      "code": "71260",
+      "description": "Ct scan of chest with contrast"
+    }
+  ],
+  "167995008": [
+    {
+      "code": "87205",
+      "description": "Special gram or giemsa stain for microorganism"
+    }
+  ],
+  "91602002": [
+    {
+      "code": "32554",
+      "description": "Aspiration of fluid from chest cavity"
+    }
+  ],
+  "432231006": [
+    {
+      "code": "32408",
+      "description": "Core needle biopsy of lung or center cavity of chest (mediastinum), accessed through skin"
+    }
+  ],
+  "85765000": [
+    {
+      "code": "31622",
+      "description": "Diagnostic exam of lung airway using an endoscope"
+    }
+  ],
+  "698354004": [
+    {
+      "code": "70551",
+      "description": "Mri scan of brain without contrast"
+    }
+  ],
+  "90470006": [
+    {
+      "code": "55840",
+      "description": "Removal of prostate"
+    }
+  ],
+  "172043006": [
+    {
+      "code": "19303",
+      "description": "Simple complete removal of breast"
+    }
+  ],
+  "447759004": [
+    {
+      "code": "19298",
+      "description": "Placement of tubes in breast for radiation treatment using imaging guidance during or after partial removal of breast"
+    }
+  ],
+  "113120007": [
+    {
+      "code": "77778",
+      "description": "Complex application of radiation source"
+    }
+  ],
+  "396487001": [
+    {
+      "code": "38792",
+      "description": "Injection of radioactive material for x-ray identification of lymph node"
+    }
+  ],
+  "443497002": [
+    {
+      "code": "38525",
+      "description": "Biopsy or removal of deep lymph nodes of underarm"
+    }
+  ],
+  "43060002": [
+    {
+      "code": "96365",
+      "description": "Infusion into a vein for therapy, prevention, or diagnosis, 1 hour or less"
     }
   ]
 }

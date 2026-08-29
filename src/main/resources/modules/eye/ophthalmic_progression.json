@@ -86,6 +86,16 @@
       "type": "SetAttribute",
       "attribute": "high_iop",
       "value": true,
+      "remarks": [
+        "Active Medication check for the full glaucoma-drop formulary ordered by",
+        "eye/intraocular_pressure.json, so a patient on ANY of those drops is detected as treated",
+        "here, not just the two codes this previously checked. RxCUI 861204 (brimonidine) was",
+        "already correct; eye/intraocular_pressure.json's own Alpha_Agonists state used to order the",
+        "wrong code (RxCUI 1999015, an SCDC/ingredient-component with a strength that didn't even",
+        "match its own display text) so this check could never match a brimonidine patient -- fixed",
+        "on that side (see that module's remarks) to order 861204, closing this IOP feedback loop.",
+        "All 7 codes verified as real RxNorm SCDs via RxNav rxcui/{id}/historystatus."
+      ],
       "conditional_transition": [
         {
           "transition": "Set_IOP_High_Reduced",
@@ -94,13 +104,38 @@
             "codes": [
               {
                 "system": "RxNorm",
-                "code": 1923432,
+                "code": "1923432",
                 "display": "dorzolamide 20 MG/ML / timolol 5 MG/ML Ophthalmic Solution"
               },
               {
                 "system": "RxNorm",
-                "code": 861204,
+                "code": "861204",
                 "display": "brimonidine tartrate 1 MG/ML Ophthalmic Solution"
+              },
+              {
+                "system": "RxNorm",
+                "code": "284008",
+                "display": "travoprost 0.04 MG/ML Ophthalmic Solution"
+              },
+              {
+                "system": "RxNorm",
+                "code": "2702393",
+                "display": "timolol hemihydrate 5 MG/ML Ophthalmic Solution"
+              },
+              {
+                "system": "RxNorm",
+                "code": "310015",
+                "display": "dorzolamide 20 MG/ML Ophthalmic Solution"
+              },
+              {
+                "system": "RxNorm",
+                "code": "308739",
+                "display": "bimatoprost 0.3 MG/ML Ophthalmic Solution"
+              },
+              {
+                "system": "RxNorm",
+                "code": "314072",
+                "display": "latanoprost 0.05 MG/ML Ophthalmic Solution"
               }
             ]
           }
@@ -366,6 +401,15 @@
     "",
     "OCT measurements:",
     "https://iovs.arvojournals.org/article.aspx?articleid=2165526",
-    "another source (not used) https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1941772/"
+    "another source (not used) https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1941772/",
+    "",
+    "Remediation notes (module-audit-remediation, task 3.8): Set_High_IOP_Flag's Active Medication",
+    "check previously only looked for 2 of the 7 glaucoma drops eye/intraocular_pressure.json can",
+    "order, and one of those two (brimonidine, RxCUI 861204) could never match because",
+    "eye/intraocular_pressure.json's Alpha_Agonists state ordered a different, wrong RxCUI (1999015,",
+    "an SCDC/ingredient-component whose own strength -- 0.25 MG/ML -- didn't match its \"1 MG/ML\"",
+    "display text). Fixed on that side to order 861204 (see that module's commit), and this check",
+    "expanded to all 7 real SCDs so any treated patient is detected regardless of which drop was",
+    "ordered, not just the dorzolamide/timolol combination or brimonidine."
   ]
 }

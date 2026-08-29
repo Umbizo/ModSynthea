@@ -1421,16 +1421,18 @@
       "type": "SetAttribute",
       "attribute": "cr_chemo_count",
       "value": 0,
-      "distributed_transition": [
-        {
-          "transition": "Stem Cell Treatment",
-          "distribution": 0.01
-        },
-        {
-          "transition": "Chemotherapy_Treatment_Path",
-          "distribution": 0.99
-        }
-      ]
+      "remarks": [
+        "Previously rolled a 1% chance to route into a 'Stem Cell Treatment' state that set",
+        "bone_marrow=true and then fell straight into the same Chemotherapy_Treatment_Path as",
+        "everyone else -- no transplant procedure or encounter was ever modelled, just the flag.",
+        "Removed: hematopoietic stem cell/bone marrow transplant is not standard of care for",
+        "colorectal cancer (a solid tumor), unlike the leukemias/lymphomas/multiple myeloma that",
+        "legitimately set bone_marrow elsewhere in this tree. Verified other bone_marrow setters",
+        "(lung_cancer, veteran_lung_cancer, breast_cancer, lupus, veteran_prostate_cancer,",
+        "trigger_bone_marrow_transplant) and the shared reader (bone_marrow_transplant.json,",
+        "gated on `attribute: bone_marrow, is not nil`) are untouched by this removal."
+      ],
+      "direct_transition": "Chemotherapy_Treatment_Path"
     },
     "Chemotherapy_Treatment_Path": {
       "type": "Simple",
@@ -1661,6 +1663,13 @@
         },
         {
           "category": "laboratory",
+          "vital_sign": "Creatinine",
+          "remarks": [
+            "Was hardcoded to 2.5-3.5 mg/dL, an ESRD-level reading with no renal disease modelled",
+            "on this patient. Switched to vital_sign-driven like the rest of this panel (Glucose,",
+            "Urea Nitrogen, Calcium, Sodium, Potassium, Chloride, Carbon Dioxide all already do this) --",
+            "matches congestive_heart_failure.json's Record_MetabolicPanel, the clean precedent."
+          ],
           "codes": [
             {
               "system": "LOINC",
@@ -1668,11 +1677,7 @@
               "display": "Creatinine [Mass/volume] in Blood"
             }
           ],
-          "unit": "mg/dL",
-          "range": {
-            "low": 2.5,
-            "high": 3.5
-          }
+          "unit": "mg/dL"
         },
         {
           "category": "laboratory",
@@ -1737,17 +1742,25 @@
         {
           "category": "laboratory",
           "unit": "mL/min",
+          "vital_sign": "EGFR",
+          "remarks": [
+            "Was hardcoded to 4-29 mL/min, a dialysis-range eGFR (stage 5 CKD/ESRD) with no renal",
+            "disease modelled on this patient. Correction (2026-08): VitalSign.EGFR does exist",
+            "(VitalSign.java) and is set per-person, CKD-stage-gated, in LifecycleModule.java --",
+            "defaulting to a normal creatinine-clearance range when the patient has no CKD, and to",
+            "the appropriate reduced range when they do. Switched to vital_sign-driven like",
+            "Creatinine above, matching wellness_encounters.json's Record_MetabolicPanel, which",
+            "already uses vital_sign: \"EGFR\" on this same LOINC 33914-3. This is more correct than",
+            "a static normal range: it also renders realistically low for a colorectal-cancer",
+            "patient who happens to have comorbid CKD, instead of always reporting normal."
+          ],
           "codes": [
             {
               "system": "LOINC",
               "code": "33914-3",
               "display": "Glomerular filtration rate/1.73 sq M.predicted [Volume Rate/Area] in Serum or Plasma by Creatinine-based formula (MDRD)"
             }
-          ],
-          "range": {
-            "low": 4,
-            "high": 29
-          }
+          ]
         },
         {
           "category": "laboratory",
@@ -2188,13 +2201,7 @@
         "code": "275978004",
         "display": "Screening for malignant neoplasm of colon (procedure)"
       }
-    },
-    "Stem Cell Treatment": {
-      "type": "SetAttribute",
-      "attribute": "bone_marrow",
-      "direct_transition": "Chemotherapy_Treatment_Path",
-      "value": true
     }
   },
-  "gmf_version": 1
+  "gmf_version": 2
 }

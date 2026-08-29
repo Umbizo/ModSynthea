@@ -1,12 +1,51 @@
 {
   "name": "Valvular Heart Failure - Claims Optimized",
-  "gmf_version": 1,
+  "gmf_version": 2,
   "remarks": [
     "Claims-optimized valvular heart failure module.",
     "Designed for stronger BFD/CCW claim generation.",
     "All major cost-generating actions occur within encounters.",
     "Imaging studies converted to CPT procedures for better claims generation.",
-    "Includes ambulatory, emergency, inpatient, ICU, procedural utilization, and mortality."
+    "Includes ambulatory, emergency, inpatient, ICU, procedural utilization, and mortality.",
+    "",
+    "Task 2.4 remediation (2026-08-10): valve surgery (Valve_Replacement,",
+    "an aortic valve replacement) previously happened with no valve",
+    "disease ever recorded -- HeartFailure_Onset only wrote generic",
+    "'Congestive heart failure'. Added Valve_Lesion_Type, a new branch at",
+    "the diagnosing encounter that records either aortic stenosis",
+    "(SNOMED 60573004) or mitral regurgitation (SNOMED 48724000);",
+    "Valve_Surgery_Check now gates the surgical arm on the aortic-",
+    "stenosis diagnosis (the only lesion this module's single surgical",
+    "procedure actually matches) so mitral-regurgitation patients take",
+    "medical management instead of an aortic valve replacement they",
+    "were never diagnosed to need.",
+    "Initial_Cardiology_Encounter chained four Medication_*_Supply_Delay",
+    "(30d each) + MedicationEnd states before closing -- the banned",
+    "Supply_Delay-while-open idiom (4 lint CRITICALs + open-across).",
+    "Furosemide, lisinopril, metoprolol, and spironolactone are chronic",
+    "GDMT drugs: ordered back-to-back same visit, chronic:true (engine",
+    "auto-renews annually), encounter closes right after the last",
+    "order -- same pattern as right_sided_heart_failure.json (Task 2.3)",
+    "and heart/chf_meds.json (Task 1.7).",
+    "Inpatient_Diuresis/Repeat_Diuresis had the same Supply_Delay idiom",
+    "on IV furosemide; recoded as administration:true injectable orders.",
+    "All CPT Procedure codes recoded to SNOMED-CT with hcpcs_code_map",
+    "rows preserving the original CPT billing; Critical_Care_Billing",
+    "(CPT 99291) deleted as redundant E&M billing, not recoded. Five",
+    "Observation states (Heart_Murmur + four *_BNP) carried raw",
+    "\"value\": {...} blocks that Gson silently drops -- every prior",
+    "BNP/murmur record was NULL. Fixed via top-level range (BNP) and",
+    "value_code (murmur). Added explicit EncounterEnds before both",
+    "Death branches (ICU and ward mortality checks), which previously",
+    "reached Death with the encounter still open.",
+    "",
+    "Task 5.4 remediation (2026-08-10/11): this module's 'furosemide_rx'",
+    "and 'lisinopril_rx' attribute names didn't collide with any other",
+    "module's strings, but were generic enough to risk a future collision",
+    "(chf_meds.json/right_sided_heart_failure.json use differently-named",
+    "but semantically identical furosemide/lisinopril order attributes).",
+    "Prefixed 'vhf_' for consistency with those modules' Task 5.4 fixes --",
+    "verified by grep that no other module reads the new names."
   ],
   "states": {
     "Initial": {
@@ -42,21 +81,80 @@
           "display": "Encounter for cardiovascular examination"
         }
       ],
-      "direct_transition": "HeartFailure_Onset"
+      "direct_transition": "ValvularHF_Rival_HF_Dx_Recheck"
     },
     "HeartFailure_Onset": {
       "type": "ConditionOnset",
       "assign_to_attribute": "valvular_hf",
+      "remarks": [
+        "Task 2.4: dropped the raw ICD-10-CM code entry -- GMF codes must be",
+        "SNOMED-CT (ICD-10-CM is not in the scanner's OK_SYSTEMS set and was",
+        "a bad-system finding); export layer already derives the ICD-10 from",
+        "the SNOMED code via condition_code_map.json."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
           "code": "42343007",
           "display": "Congestive heart failure"
+        }
+      ],
+      "direct_transition": "Valve_Lesion_Type"
+    },
+    "Valve_Lesion_Type": {
+      "type": "Simple",
+      "remarks": [
+        "Task 2.4: new branch. Aortic stenosis and mitral regurgitation are",
+        "the two most prevalent valve lesions progressing to heart failure",
+        "in this age group (Nkomo VT et al., 'Burden of valvular heart",
+        "diseases: a population-based study', Lancet 2006;368:1005-11) --",
+        "modeled here as a roughly even split between the two, slightly",
+        "favoring aortic stenosis since it's the more common indication for",
+        "surgical intervention in the elderly and this module's only",
+        "surgical procedure (Valve_Replacement) is an aortic valve",
+        "replacement. Split itself is a first-pass estimate, not a precise",
+        "replication of the cited study's age-stratified prevalence."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.55,
+          "transition": "Aortic_Stenosis_Onset"
         },
         {
-          "system": "ICD-10-CM",
-          "code": "I50.9",
-          "display": "Heart failure, unspecified"
+          "distribution": 0.45,
+          "transition": "Mitral_Regurgitation_Onset"
+        }
+      ]
+    },
+    "Aortic_Stenosis_Onset": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "valve_lesion",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "60573004",
+          "display": "Aortic valve stenosis (disorder)"
+        }
+      ],
+      "direct_transition": "Initial_Dyspnea"
+    },
+    "Mitral_Regurgitation_Onset": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "valve_lesion",
+      "remarks": [
+        "Task 2.4: this module's only surgical procedure (Valve_Replacement)",
+        "is coded as an aortic valve replacement, so mitral-regurgitation",
+        "patients are gated out of Valve_Surgery_Check's surgical arm (see",
+        "its remark) and always take the medical-management path -- avoids",
+        "billing an aortic valve replacement on a patient whose diagnosed",
+        "lesion is mitral, which the pre-fix module had no way to prevent",
+        "(it never recorded a lesion at all)."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "48724000",
+          "display": "Mitral valve regurgitation (disorder)"
         }
       ],
       "direct_transition": "Initial_Dyspnea"
@@ -109,6 +207,13 @@
     "Heart_Murmur": {
       "type": "Observation",
       "category": "exam",
+      "remarks": [
+        "Task 2.4: a raw `\"value\": {...}` block is not a recognized GMF",
+        "field -- Gson silently drops it and every prior record here was",
+        "NULL. Qualitative exam finding, so the fix is `value_code`, not a",
+        "numeric range (same fix as right_sided_heart_failure.json's",
+        "JVD_Observation, Task 2.3)."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -116,19 +221,26 @@
           "display": "Heart murmur"
         }
       ],
-      "value": {
-        "type": "String",
-        "value": "Present"
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": "52101004",
+        "display": "Present (qualifier value)"
       },
       "direct_transition": "Echo_Procedure"
     },
     "Echo_Procedure": {
       "type": "Procedure",
+      "remarks": [
+        "Task 2.4: recoded from CPT 93306 (bad-system) to the standard",
+        "transthoracic-echo SNOMED concept (same recode as",
+        "right_sided_heart_failure.json, Task 2.3 -- see its remark on the",
+        "hcpcs_code_map.json 93306 addition)."
+      ],
       "codes": [
         {
-          "system": "CPT",
-          "code": "93306",
-          "display": "Transthoracic echocardiography"
+          "system": "SNOMED-CT",
+          "code": "433236007",
+          "display": "Transthoracic echocardiography (procedure)"
         }
       ],
       "reason": "valvular_hf",
@@ -136,11 +248,14 @@
     },
     "Chest_Xray_Procedure": {
       "type": "Procedure",
+      "remarks": [
+        "Task 2.4: recoded from CPT 71046 to SNOMED 399208008, which already carries the correct 71046 hcpcs_code_map row."
+      ],
       "codes": [
         {
-          "system": "CPT",
-          "code": "71046",
-          "display": "Chest x-ray 2 views"
+          "system": "SNOMED-CT",
+          "code": "399208008",
+          "display": "Plain chest X-ray"
         }
       ],
       "reason": "valvular_hf",
@@ -150,6 +265,9 @@
       "type": "Observation",
       "category": "laboratory",
       "unit": "pg/mL",
+      "remarks": [
+        "Task 2.4: hoisted the raw `value` block into a top-level `range`."
+      ],
       "codes": [
         {
           "system": "LOINC",
@@ -157,11 +275,9 @@
           "display": "BNP"
         }
       ],
-      "value": {
-        "type": "Range",
+      "range": {
         "low": 200,
-        "high": 1800,
-        "unit": "pg/mL"
+        "high": 1800
       },
       "direct_transition": "CMP_Report"
     },
@@ -223,7 +339,6 @@
     },
     "Medication_Furosemide": {
       "type": "MedicationOrder",
-      "assign_to_attribute": "furosemide_rx",
       "codes": [
         {
           "system": "RxNorm",
@@ -232,11 +347,25 @@
         }
       ],
       "reason": "valvular_hf",
-      "direct_transition": "Medication_Furosemide_Supply_Delay"
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 2,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        },
+        "as_needed": true
+      },
+      "chronic": true,
+      "assign_to_attribute": "vhf_furosemide_rx",
+      "direct_transition": "Medication_Lisinopril"
     },
     "Medication_Lisinopril": {
       "type": "MedicationOrder",
-      "assign_to_attribute": "lisinopril_rx",
       "codes": [
         {
           "system": "RxNorm",
@@ -245,11 +374,25 @@
         }
       ],
       "reason": "valvular_hf",
-      "direct_transition": "Medication_Lisinopril_Supply_Delay"
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 1,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        },
+        "as_needed": true
+      },
+      "chronic": true,
+      "assign_to_attribute": "vhf_lisinopril_rx",
+      "direct_transition": "Medication_Metoprolol"
     },
     "Medication_Metoprolol": {
       "type": "MedicationOrder",
-      "assign_to_attribute": "metoprolol_rx",
       "codes": [
         {
           "system": "RxNorm",
@@ -258,7 +401,59 @@
         }
       ],
       "reason": "valvular_hf",
-      "direct_transition": "Medication_Metoprolol_Supply_Delay"
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 1,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        },
+        "as_needed": true
+      },
+      "chronic": true,
+      "assign_to_attribute": "metoprolol_rx",
+      "direct_transition": "Medication_Spironolactone"
+    },
+    "Medication_Spironolactone": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "313096",
+          "display": "Spironolactone 25 MG Oral Tablet"
+        }
+      ],
+      "reason": "valvular_hf",
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 1,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        },
+        "as_needed": true
+      },
+      "chronic": true,
+      "assign_to_attribute": "spironolactone_rx",
+      "remarks": [
+        "Task 2.4: this and the three preceding MedicationOrders used to",
+        "chain through named `Medication_*_Supply_Delay` (30d) + End states",
+        "BEFORE Initial_Encounter_End -- the banned Supply_Delay idiom (4",
+        "lint CRITICALs + open-across). All four are chronic GDMT drugs with",
+        "no clinical reason to stop at 30 days, fixed the same way as",
+        "right_sided_heart_failure.json (Task 2.3): chronic:true + same-visit",
+        "ordering + immediate close; Maintenance_Loop already provides real",
+        "next-visit cadence (60-180d) right after this close."
+      ],
+      "direct_transition": "Initial_Encounter_End"
     },
     "Initial_Encounter_End": {
       "type": "EncounterEnd",
@@ -303,9 +498,9 @@
       "type": "Procedure",
       "codes": [
         {
-          "system": "CPT",
-          "code": "93306",
-          "display": "Transthoracic echocardiography"
+          "system": "SNOMED-CT",
+          "code": "433236007",
+          "display": "Transthoracic echocardiography (procedure)"
         }
       ],
       "reason": "valvular_hf",
@@ -322,11 +517,9 @@
           "display": "BNP"
         }
       ],
-      "value": {
-        "type": "Range",
+      "range": {
         "low": 150,
-        "high": 1200,
-        "unit": "pg/mL"
+        "high": 1200
       },
       "direct_transition": "Routine_CXR"
     },
@@ -334,9 +527,9 @@
       "type": "Procedure",
       "codes": [
         {
-          "system": "CPT",
-          "code": "71046",
-          "display": "Chest x-ray 2 views"
+          "system": "SNOMED-CT",
+          "code": "399208008",
+          "display": "Plain chest X-ray"
         }
       ],
       "reason": "valvular_hf",
@@ -385,21 +578,25 @@
           "display": "BNP"
         }
       ],
-      "value": {
-        "type": "Range",
+      "range": {
         "low": 1000,
-        "high": 5000,
-        "unit": "pg/mL"
+        "high": 5000
       },
       "direct_transition": "ER_CXR"
     },
     "ER_CXR": {
       "type": "Procedure",
+      "remarks": [
+        "Task 2.4: recoded from CPT 71045 to a distinct SNOMED concept from",
+        "the standard 2-view study, same as right_sided_heart_failure.json's",
+        "ER_CXR (Task 2.3) -- reuses that module's new hcpcs_code_map row",
+        "(432769002 -> 71045)."
+      ],
       "codes": [
         {
-          "system": "CPT",
-          "code": "71045",
-          "display": "Portable chest x-ray"
+          "system": "SNOMED-CT",
+          "code": "432769002",
+          "display": "Plain X-ray of chest using mobile image intensifier"
         }
       ],
       "reason": "valvular_hf",
@@ -426,9 +623,9 @@
       "type": "Procedure",
       "codes": [
         {
-          "system": "CPT",
-          "code": "93306",
-          "display": "Transthoracic echocardiography"
+          "system": "SNOMED-CT",
+          "code": "433236007",
+          "display": "Transthoracic echocardiography (procedure)"
         }
       ],
       "reason": "valvular_hf",
@@ -436,18 +633,57 @@
     },
     "Inpatient_Diuresis": {
       "type": "MedicationOrder",
+      "remarks": [
+        "Task 2.4: IV diuresis during an admission is a hospital",
+        "administration event, not a filled outpatient prescription -- fixed",
+        "the same way as right_sided_heart_failure.json's Inpatient_Diuresis",
+        "(Task 2.3): recoded from oral 313988 to injectable RxCUI 1719286",
+        "with administration:true (no assign_to_attribute/MedicationEnd)."
+      ],
       "codes": [
         {
           "system": "RxNorm",
-          "code": "313988",
-          "display": "furosemide 40 MG Oral Tablet"
+          "code": "1719286",
+          "display": "10 ML Furosemide 10 MG/ML Injection"
         }
       ],
       "reason": "valvular_hf",
-      "direct_transition": "Inpatient_Diuresis_Supply_Delay",
-      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx"
+      "administration": true,
+      "direct_transition": "Valve_Surgery_Check"
     },
     "Valve_Surgery_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Task 2.4: gated on the Valve_Lesion_Type diagnosis (new, see that",
+        "state's remark) -- this module's only surgical procedure is coded",
+        "as an aortic valve replacement, so only patients diagnosed with",
+        "aortic stenosis are eligible for it. Mitral-regurgitation patients",
+        "always take medical management (matches real-world practice: MR is",
+        "managed medically far more often than AS, which is the classic",
+        "'surgery is not optional once severe/symptomatic' valve lesion).",
+        "Pre-fix, this ran unconditionally and could send ANY valvular-HF",
+        "patient to Valve_Replacement with no valve disease ever recorded."
+      ],
+      "conditional_transition": [
+        {
+          "transition": "Valve_Surgery_Odds",
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "60573004",
+                "display": "Aortic valve stenosis (disorder)"
+              }
+            ]
+          }
+        },
+        {
+          "transition": "Hospital_LOS"
+        }
+      ]
+    },
+    "Valve_Surgery_Odds": {
       "type": "Simple",
       "distributed_transition": [
         {
@@ -462,11 +698,15 @@
     },
     "Valve_Replacement": {
       "type": "Procedure",
+      "remarks": [
+        "Task 2.4: recoded from CPT 33405 (bad-system) to SNOMED; added the",
+        "hcpcs_code_map.json row (26212005 -> 33405)."
+      ],
       "codes": [
         {
-          "system": "CPT",
-          "code": "33405",
-          "display": "Aortic valve replacement"
+          "system": "SNOMED-CT",
+          "code": "26212005",
+          "display": "Replacement of aortic valve"
         }
       ],
       "reason": "valvular_hf",
@@ -476,9 +716,9 @@
       "type": "Procedure",
       "codes": [
         {
-          "system": "CPT",
-          "code": "93306",
-          "display": "Transthoracic echocardiography"
+          "system": "SNOMED-CT",
+          "code": "433236007",
+          "display": "Transthoracic echocardiography (procedure)"
         }
       ],
       "reason": "valvular_hf",
@@ -495,18 +735,13 @@
         }
       ],
       "reason": "valvular_hf",
-      "direct_transition": "Critical_Care_Billing"
-    },
-    "Critical_Care_Billing": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "CPT",
-          "code": "99291",
-          "display": "Critical care first hour"
-        }
+      "remarks": [
+        "Task 2.4: used to route through a separate Critical_Care_Billing",
+        "Procedure (CPT 99291, bad-system) first. Deleted rather than",
+        "recoded, same call as right_sided_heart_failure.json's ICU_Admission",
+        "(Task 2.3): a standalone 'critical care first hour' charge for time",
+        "already covered by this same ICU encounter is redundant billing."
       ],
-      "reason": "valvular_hf",
       "direct_transition": "Oxygen_Therapy"
     },
     "Oxygen_Therapy": {
@@ -563,13 +798,26 @@
       "distributed_transition": [
         {
           "distribution": 0.18,
-          "transition": "Heart_Failure_Death"
+          "transition": "ICU_Death_End"
         },
         {
           "distribution": 0.82,
           "transition": "Hospital_LOS"
         }
       ]
+    },
+    "ICU_Death_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Task 2.4: new state. ICU_Mortality_Check used to jump straight to",
+        "Heart_Failure_Death with ICU_Admission still open -- Death is a",
+        "valid closer per the lint tool's own model, but the graph walk",
+        "still flagged the death state as reachable in both open and closed",
+        "encounter contexts. Explicit close before Death, same pattern used",
+        "in right_sided_heart_failure.json (Task 2.3) and Task 1.1's CRPC",
+        "death path."
+      ],
+      "direct_transition": "Heart_Failure_Death"
     },
     "Hospital_LOS": {
       "type": "Delay",
@@ -591,39 +839,48 @@
           "display": "BNP"
         }
       ],
-      "value": {
-        "type": "Range",
+      "range": {
         "low": 800,
-        "high": 4000,
-        "unit": "pg/mL"
+        "high": 4000
       },
       "direct_transition": "Repeat_Diuresis"
     },
     "Repeat_Diuresis": {
       "type": "MedicationOrder",
+      "remarks": [
+        "Task 2.4: same IV-administration fix as Inpatient_Diuresis -- see its remark."
+      ],
       "codes": [
         {
           "system": "RxNorm",
-          "code": "313988",
-          "display": "furosemide 40 MG Oral Tablet"
+          "code": "1719286",
+          "display": "10 ML Furosemide 10 MG/ML Injection"
         }
       ],
       "reason": "valvular_hf",
-      "direct_transition": "Repeat_Diuresis_Supply_Delay",
-      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx_2"
+      "administration": true,
+      "direct_transition": "Inpatient_Mortality_Check"
     },
     "Inpatient_Mortality_Check": {
       "type": "Simple",
       "distributed_transition": [
         {
           "distribution": 0.08,
-          "transition": "Heart_Failure_Death"
+          "transition": "Inpatient_Death_End"
         },
         {
           "distribution": 0.92,
           "transition": "Hospital_Discharge"
         }
       ]
+    },
+    "Inpatient_Death_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Task 2.4: new state -- same both-context Death fix as ICU_Death_End",
+        "above, for the ward-level (non-ICU) mortality check."
+      ],
+      "direct_transition": "Heart_Failure_Death"
     },
     "Hospital_Discharge": {
       "type": "EncounterEnd",
@@ -653,11 +910,9 @@
           "display": "BNP"
         }
       ],
-      "value": {
-        "type": "Range",
+      "range": {
         "low": 150,
-        "high": 2500,
-        "unit": "pg/mL"
+        "high": 2500
       },
       "direct_transition": "PostDischarge_Encounter_End"
     },
@@ -699,112 +954,26 @@
     "Terminal": {
       "type": "Terminal"
     },
-    "Medication_Furosemide_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "Medication_Furosemide_End"
-    },
-    "Medication_Furosemide_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "furosemide_rx",
-      "direct_transition": "Medication_Lisinopril"
-    },
-    "Medication_Lisinopril_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "Medication_Lisinopril_End"
-    },
-    "Medication_Lisinopril_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "lisinopril_rx",
-      "direct_transition": "Medication_Metoprolol"
-    },
-    "Medication_Metoprolol_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "Medication_Metoprolol_End"
-    },
-    "Medication_Metoprolol_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "metoprolol_rx",
-      "direct_transition": "Medication_Spironolactone"
-    },
-    "Medication_Spironolactone": {
-      "type": "MedicationOrder",
-      "assign_to_attribute": "spironolactone_rx",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "313096",
-          "display": "Spironolactone 25 MG Oral Tablet"
-        }
-      ],
-      "reason": "valvular_hf",
-      "direct_transition": "Medication_Spironolactone_Supply_Delay"
-    },
-    "Medication_Spironolactone_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "Medication_Spironolactone_End"
-    },
-    "Medication_Spironolactone_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "spironolactone_rx",
-      "direct_transition": "Initial_Encounter_End"
-    },
-    "Inpatient_Diuresis_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "Inpatient_Diuresis_End"
-    },
-    "Inpatient_Diuresis_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "furosemide_40_mg_oral_tablet_rx",
-      "direct_transition": "Valve_Surgery_Check"
-    },
-    "Repeat_Diuresis_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "Repeat_Diuresis_End"
-    },
-    "Repeat_Diuresis_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "furosemide_40_mg_oral_tablet_rx_2",
-      "direct_transition": "Inpatient_Mortality_Check"
-    },
     "valvular_heart_failure_Incidence_Gate": {
       "type": "Simple",
       "remarks": [
-        "Moderate-to-severe valvular heart disease affects roughly 2-3% of adults (around 10% over 75). The age Guard alone admits every patient over 50, which made \"Congestive heart failure\" onset in 84% of the cohort.",
-        "Rate is a first-pass estimate and needs clinical review."
+        "Moderate-to-severe valvular heart disease affects roughly 2-3% of",
+        "adults (around 10% over 75). The age Guard alone admits every",
+        "patient over 50, which made \"Congestive heart failure\" onset in",
+        "84% of the cohort.",
+        "Task 2.4: rate sourcing note (this state's own probability is",
+        "unchanged -- out of this task's scope, which is encounter/coding",
+        "defects and the valve-diagnosis gap, not full epidemiological",
+        "recalibration). Cited to Nkomo VT et al., 'Burden of valvular heart",
+        "diseases: a population-based study', Lancet 2006;368:1005-11",
+        "(moderate-or-greater valve disease ~2.5% overall, rising sharply",
+        "with age). Rate is a first-pass estimate and needs clinical review;",
+        "no target share was specified for this module in the Phase-2 fix",
+        "spec."
       ],
       "distributed_transition": [
         {
-          "transition": "Initial_Cardiology_Encounter",
+          "transition": "ValvularHF_Rival_HF_Dx_Guard",
           "distribution": 0.03
         },
         {
@@ -812,6 +981,138 @@
           "distribution": 0.97
         }
       ]
+    },
+    "ValvularHF_Rival_HF_Dx_Guard": {
+      "type": "Simple",
+      "remarks": [
+        "CROSS-MODULE GATE (audit Class 7, task 5.2 group 4) -- the heart-failure",
+        "quartet. Four top-level modules each diagnose their own heart-failure code",
+        "with no coordination, so one patient could carry all four at once and run",
+        "four competing maintenance/decompensation loops against them:",
+        "  congestive_heart_failure.json   88805009 Chronic congestive heart failure",
+        "  high_output_heart_failure.json  10091002 High output heart failure",
+        "  right_sided_heart_failure.json  10335000 Chronic right sided heart failure",
+        "  valvular_heart_failure.json     42343007 Congestive heart failure",
+        "Rule: FIRST-TO-DIAGNOSE WINS. Each module tests the other three codes on its",
+        "own onset path; whichever module gets there first owns the patient's heart",
+        "failure and the other three stand down.",
+        "Only the primary code of each rival is tested. That is not a shortcut: the",
+        "record key is codes[0] (HealthRecord.conditionStart keys `present` by",
+        "primaryCode), so high_output_heart_failure.json's secondary ICD-10 entries",
+        "I50.9 / I50.89 never enter `present` and cannot be matched by an Active",
+        "Condition check. No module in the tree emits a ConditionEnd for any of these",
+        "four codes (verified by grep), so once one is set the other three modules'",
+        "checks stay true for life.",
+        "",
+        "This is the EARLY gate. It sits before the cardiology encounter opens, so a",
+        "patient who already has a heart-failure diagnosis from a rival module never",
+        "gets this module's workup visit, its echo/BNP/imaging or its drug orders. No",
+        "encounter is open at this point, so Terminal leaks no encounter lock.",
+        "It is not sufficient on its own: State$Encounter.process returns false --",
+        "blocks across ticks -- while another module holds this person's encounter",
+        "lock, so the verdict here can go stale. The recheck below re-tests once the",
+        "encounter has actually opened."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "88805009",
+                "display": "Chronic congestive heart failure (disorder)"
+              },
+              {
+                "system": "SNOMED-CT",
+                "code": "10091002",
+                "display": "High output heart failure"
+              },
+              {
+                "system": "SNOMED-CT",
+                "code": "10335000",
+                "display": "Chronic right sided heart failure"
+              }
+            ]
+          },
+          "transition": "Terminal"
+        },
+        {
+          "transition": "Initial_Cardiology_Encounter"
+        }
+      ]
+    },
+    "ValvularHF_Rival_HF_Dx_Recheck": {
+      "type": "Simple",
+      "remarks": [
+        "CROSS-MODULE GATE (audit Class 7, task 5.2 group 4) -- the heart-failure",
+        "quartet. Four top-level modules each diagnose their own heart-failure code",
+        "with no coordination, so one patient could carry all four at once and run",
+        "four competing maintenance/decompensation loops against them:",
+        "  congestive_heart_failure.json   88805009 Chronic congestive heart failure",
+        "  high_output_heart_failure.json  10091002 High output heart failure",
+        "  right_sided_heart_failure.json  10335000 Chronic right sided heart failure",
+        "  valvular_heart_failure.json     42343007 Congestive heart failure",
+        "Rule: FIRST-TO-DIAGNOSE WINS. Each module tests the other three codes on its",
+        "own onset path; whichever module gets there first owns the patient's heart",
+        "failure and the other three stand down.",
+        "Only the primary code of each rival is tested. That is not a shortcut: the",
+        "record key is codes[0] (HealthRecord.conditionStart keys `present` by",
+        "primaryCode), so high_output_heart_failure.json's secondary ICD-10 entries",
+        "I50.9 / I50.89 never enter `present` and cannot be matched by an Active",
+        "Condition check. No module in the tree emits a ConditionEnd for any of these",
+        "four codes (verified by grep), so once one is set the other three modules'",
+        "checks stay true for life.",
+        "",
+        "This is the LATE gate, and it is the one that makes the exclusion airtight.",
+        "It is the only predecessor of the ConditionOnset, that ConditionOnset has no",
+        "target_encounter (so it records its code the moment it processes), there is",
+        "no Delay or blocking state in between, and module processing is",
+        "single-threaded per person per tick. No rival can diagnose between this test",
+        "and this module's own diagnosis, in either ordering.",
+        "A hit here leaves the patient one cardiovascular-examination encounter with",
+        "no clinical content; it is closed explicitly rather than abandoned."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "88805009",
+                "display": "Chronic congestive heart failure (disorder)"
+              },
+              {
+                "system": "SNOMED-CT",
+                "code": "10091002",
+                "display": "High output heart failure"
+              },
+              {
+                "system": "SNOMED-CT",
+                "code": "10335000",
+                "display": "Chronic right sided heart failure"
+              }
+            ]
+          },
+          "transition": "ValvularHF_Gated_Encounter_End"
+        },
+        {
+          "transition": "HeartFailure_Onset"
+        }
+      ]
+    },
+    "ValvularHF_Gated_Encounter_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Closes the Initial_Cardiology_Encounter encounter when the cross-module heart-failure",
+        "recheck hands the patient to whichever module diagnosed first.",
+        "Required, not cosmetic: going to Terminal with the encounter still",
+        "open would hold this person's encounter lock for the rest of their",
+        "life -- the Class 6 defect the audit recorded against this very",
+        "module family (high_output_heart_failure.json)."
+      ],
+      "direct_transition": "Terminal"
     }
   }
 }

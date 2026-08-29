@@ -65,7 +65,7 @@
     "  4544-3  - Hematocrit [Volume Fraction] of Blood",
     "  777-3   - Platelets [#/volume] in Blood by Automated count",
     "  6690-2  - Leukocytes [#/volume] in Blood by Automated count",
-    "  2157-6  - Erythropoietin [Units/volume] in Serum or Plasma",
+    "  15061-5 - Erythropoietin (EPO) [Units/volume] in Serum or Plasma",
     "  55277-8 - JAK2 V617F [Presence] in Blood or Tissue by Molecular genetics method",
     "  85319-2 - Bone marrow Reticulin grade by WHO",
     "  14804-9 - Lactate dehydrogenase [Enzymatic activity/volume] in Serum or Plasma",
@@ -78,8 +78,9 @@
     "  2281945 - Ropeginterferon alfa-2b [Besremi; FDA-approved Nov 2021 for PV; preferred US]",
     "  1373464 - Ruxolitinib 5 MG Oral Tablet",
     "  1860384 - Busulfan 2 MG Oral Tablet",
-    "  41493   - Paroxetine 20 MG Oral Tablet [pruritus]",
+    "  1738495 - paroxetine hydrochloride 20 MG Oral Tablet [pruritus; corrected from ingredient CUI 41493/32937]",
     "  104849 - Fluoxetine 20 MG Oral Capsule [pruritus alternative; different from paroxetine]",
+    "  995258  - hydroxyzine hydrochloride 25 MG Oral Tablet [pruritus first-line; corrected from ingredient CUI 5553]",
     "  1049721 - Warfarin Sodium 5 MG Oral Tablet",
     "",
     "REFERENCES",
@@ -435,14 +436,15 @@
       "category": "laboratory",
       "unit": "mU/mL",
       "remarks": [
-        "LOINC: 2157-6. Subnormal Epo is the WHO 2022 minor diagnostic criterion.",
+        "CORRECTED: 2157-6 is Creatine kinase [Enzymatic activity/volume] in Serum or Plasma (verified via LOINC lookup), not erythropoietin. 15061-5 is the correct serum/plasma EPO code (Units/volume, matching this state's mU/mL unit).",
+        "Subnormal Epo is the WHO 2022 minor diagnostic criterion.",
         "Normal: 2.6-18.5 mIU/mL. PV: typically <2 mIU/mL due to autonomous erythropoiesis."
       ],
       "codes": [
         {
           "system": "LOINC",
-          "code": "2157-6",
-          "display": "Erythropoietin [Units/volume] in Serum or Plasma"
+          "code": "15061-5",
+          "display": "Erythropoietin (EPO) [Units/volume] in Serum or Plasma"
         }
       ],
       "range": {
@@ -691,7 +693,10 @@
         "Contraindications: extreme thrombocytosis >1500e9/L, active bleeding, acquired vWD.",
         "Reduces microvascular events and CVD (ECLAP trial, Landolfi 2004 NEJM).",
         "FIX 2: Aspirin is ended (MedicationEnd state) when anticoagulation is initiated.",
-        "Concurrent aspirin + anticoagulation: major bleeding HR 5.83 (ECLAP data)."
+        "Concurrent aspirin + anticoagulation: major bleeding HR 5.83 (ECLAP data).",
+        "MERGE (master): chronic:true ported -- consistent with FIX 1 (lifelong);",
+        "the FIX 2 MedicationEnd is a clinical discontinuation event, not the end",
+        "of a fixed course, and medicationEnd removes it from chronicMedications."
       ],
       "codes": [
         {
@@ -864,7 +869,9 @@
         "amount:2 frequency:1 = 1000 mg/day starting dose.",
         "Reduces thrombotic risk vs phlebotomy alone (PVSG data; ECLAP subanalysis).",
         "Resistance/intolerance: ~15-25% at 5 years (ELN 2011 criteria).",
-        "Adverse effects: cytopenias, leg ulcers, mucocutaneous toxicity, fever."
+        "Adverse effects: cytopenias, leg ulcers, mucocutaneous toxicity, fever.",
+        "MERGE (master): chronic:true ported -- HU cytoreduction in PV continues",
+        "indefinitely; the only stop is Switch_To_Ruxolitinib on resistance."
       ],
       "codes": [
         {
@@ -888,9 +895,9 @@
     },
     "Prescribe_Peg_Interferon": {
       "type": "MedicationOrder",
-      "administration": true,
       "reason": "PV_Condition_Onset",
       "remarks": [
+        "CORRECTED: not administration:true. Peginterferon alfa-2a/ropeginterferon are self-administered subcutaneous injections -- demonstrated once in clinic, then self-injected at home via specialty pharmacy (verified: Pegasys/Besremi prescribing information). That is a dispensed prescription (medication_code_map/NDC), not a clinician-administered in-office drug (rxnorm_hcpcs_map/J-code).",
         "FIX 14: Ropeginterferon alfa-2b (Besremi) is FDA-approved Nov 2021 for PV",
         "and is now the preferred interferon in current US guidelines (NCCN, ASH 2022).",
         "RxNorm: 2281945 (ropeginterferon alfa-2b) should be substituted for US simulations.",
@@ -919,8 +926,17 @@
         "quantity": 10,
         "unit": "years"
       },
-      "direct_transition": "Pruritus_Management_Check",
+      "direct_transition": "Set_PV_On_Interferon",
       "assign_to_attribute": "peginterferon_alfa_2a_180_mcg_05_rx"
+    },
+    "Set_PV_On_Interferon": {
+      "type": "SetAttribute",
+      "attribute": "pv_on_interferon",
+      "value": true,
+      "remarks": [
+        "Gates Repeat_PegInterferon below -- previously that state fired for every patient at every quarterly follow-up regardless of whether they were ever prescribed interferon (~75-90% of patients are on hydroxyurea or no cytoreduction at all). Only the arm that actually chose peg-interferon at Cytoreduction_Choice gets ongoing interferon refill records."
+      ],
+      "direct_transition": "Pruritus_Management_Check"
     },
     "Pruritus_Management_Check": {
       "type": "Simple",
@@ -937,12 +953,19 @@
             "operator": ">",
             "value": 0
           },
-          "transition": "Treat_Pruritus"
+          "transition": "Encounter_End_Before_Pruritus_Treatment"
         },
         {
           "transition": "Encounter_End_Initial"
         }
       ]
+    },
+    "Encounter_End_Before_Pruritus_Treatment": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Close Initial_Hematology_Encounter before the 30-day pruritus-treatment supply delay -- was CRITICAL encounter-lock (outpatient encounter open across Prescribe_Pruritus_Treatment_Supply_Delay). The med trial (hydroxyzine -> SSRI) proceeds ambulatory/at-home after this; downstream states in that chain transition straight to Ongoing_Monitoring_Delay instead of re-closing an already-closed encounter."
+      ],
+      "direct_transition": "Treat_Pruritus"
     },
     "Encounter_End_Initial": {
       "type": "EncounterEnd",
@@ -997,7 +1020,27 @@
         "low": 42,
         "high": 52
       },
-      "direct_transition": "Repeat_PegInterferon"
+      "direct_transition": "PegInterferon_Arm_Check"
+    },
+    "PegInterferon_Arm_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Repeat_PegInterferon previously fired unconditionally for every patient every quarter. Gate on pv_on_interferon."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "pv_on_interferon",
+            "operator": "==",
+            "value": true
+          },
+          "transition": "Repeat_PegInterferon"
+        },
+        {
+          "transition": "Phlebotomy_If_Needed"
+        }
+      ]
     },
     "Phlebotomy_If_Needed": {
       "type": "Procedure",
@@ -1030,9 +1073,40 @@
         "  AML:          ~0.4%/yr  \u2192 0.001/cycle",
         "  HU resistance: ~0.4%/yr \u2192 0.001/cycle",
         "  Haemorrhage:  ~1.2%/yr  \u2192 0.003/cycle",
-        "  Stable:        remainder \u2192 0.989/cycle"
+        "  Stable:        remainder \u2192 0.989/cycle",
+        "CORRECTED: Thrombotic_Event branch is attribute-guarded by pv_had_thrombotic_event (set at Mark_Thrombotic_History after any stroke/MI/DVT/PE). Previously this rolled unconditionally every cycle for the rest of the patient's life, restacking duplicate ConditionOnset + Stop_Aspirin/Start_Warfarin orders on every recurrence."
       ],
       "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "pv_had_thrombotic_event",
+            "operator": "==",
+            "value": true
+          },
+          "distributions": [
+            {
+              "distribution": 0.002,
+              "transition": "Post_PV_MF_Transition"
+            },
+            {
+              "distribution": 0.001,
+              "transition": "AML_Transformation"
+            },
+            {
+              "distribution": 0.001,
+              "transition": "HU_Resistance_Check"
+            },
+            {
+              "distribution": 0.003,
+              "transition": "Haemorrhagic_Event"
+            },
+            {
+              "distribution": 0.993,
+              "transition": "Follow_Up_Encounter_End"
+            }
+          ]
+        },
         {
           "distributions": [
             {
@@ -1263,6 +1337,15 @@
       "remarks": [
         "Any thrombotic event upgrades to high-risk, mandating cytoreduction."
       ],
+      "direct_transition": "Mark_Thrombotic_History"
+    },
+    "Mark_Thrombotic_History": {
+      "type": "SetAttribute",
+      "attribute": "pv_had_thrombotic_event",
+      "value": true,
+      "remarks": [
+        "Guards Check_Progression's Thrombotic_Event branch against re-firing (see remark there)."
+      ],
       "direct_transition": "Post_Thrombosis_Cytoreduction_Check"
     },
     "Post_Thrombosis_Cytoreduction_Check": {
@@ -1310,7 +1393,9 @@
       "reason": "PV_Condition_Onset",
       "chronic": true,
       "remarks": [
-        "Initiating HU post-thrombotic event in previously untreated patient."
+        "Initiating HU post-thrombotic event in previously untreated patient.",
+        "MERGE (master): chronic:true ported -- same drug and same indefinite",
+        "cytoreduction as Prescribe_Hydroxyurea."
       ],
       "codes": [
         {
@@ -1375,7 +1460,9 @@
         "Starting dose PV: 10 mg BID = 2 x 5mg tablets twice daily (amount:2 frequency:2).",
         "RESPONSE trial: hematocrit control 60% vs 20%; primary endpoint 21% vs 1%.",
         "Adverse effects: anaemia, thrombocytopenia, herpes zoster reactivation,",
-        "non-melanoma skin cancer (long-term monitoring required)."
+        "non-melanoma skin cancer (long-term monitoring required).",
+        "MERGE (master): chronic:true ported -- ruxolitinib is continued until",
+        "loss of response or death; no MedicationEnd stops it in this module."
       ],
       "codes": [
         {
@@ -1431,7 +1518,9 @@
         "Induction: 4-6 mg/day until response; maintenance 2-4 mg/day or pulsed.",
         "amount:2 frequency:1 = 4mg/day (induction range lower end).",
         "Effective and well-tolerated in elderly PV; secondary leukaemia risk lower",
-        "than historically thought at standard therapeutic doses."
+        "than historically thought at standard therapeutic doses.",
+        "MERGE (master): chronic:true ported -- this is the terminal cytoreductive",
+        "switch, modelled with an ongoing maintenance dose and no MedicationEnd."
       ],
       "codes": [
         {
@@ -1532,13 +1621,14 @@
       "type": "MedicationOrder",
       "reason": "PV_Condition_Onset",
       "remarks": [
-        "Paroxetine 20 mg/day for refractory PV-associated pruritus."
+        "Paroxetine 20 mg/day for refractory PV-associated pruritus.",
+        "CORRECTED: 32937 is the bare ingredient 'paroxetine' (TTY=IN, verified via RxNav), not a prescribable strength/form. Replaced with 1738495 'paroxetine hydrochloride 20 MG Oral Tablet' (SCD, verified via RxNav, exact strength match)."
       ],
       "codes": [
         {
           "system": "RxNorm",
-          "code": "32937",
-          "display": "Paroxetine 20 MG Oral Tablet"
+          "code": "1738495",
+          "display": "paroxetine hydrochloride 20 MG Oral Tablet"
         }
       ],
       "dosage": {
@@ -1552,20 +1642,53 @@
         "unit": "years"
       },
       "assign_to_attribute": "paroxetine_rx",
-      "direct_transition": "Encounter_End_Initial"
+      "direct_transition": "Ongoing_Monitoring_Delay"
     },
     "Repeat_PegInterferon": {
       "type": "MedicationOrder",
       "reason": "PV_Condition_Onset",
-      "administration": true,
+      "remarks": [
+        "CORRECTED: was RxNorm 120608 'peginterferon alfa-2a', a bare ingredient (TTY=IN, verified via RxNav), with administration:true. Replaced with the same prescribable SCD used at Prescribe_Peg_Interferon (351270) and dispensed (not administered) -- see remark there on self-administered route.",
+        "Quarterly refill record for the ~10-40% of patients on the interferon arm (gated by pv_on_interferon)."
+      ],
       "codes": [
         {
           "system": "RxNorm",
-          "code": "120608",
-          "display": "peginterferon alfa-2a"
+          "code": "351270",
+          "display": "1 ML peginterferon alfa-2a 0.18 MG/ML Injection"
         }
       ],
       "assign_to_attribute": "peg_interferon_rx",
+      "direct_transition": "PegInterferon_Discontinuation_Check"
+    },
+    "PegInterferon_Discontinuation_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Small per-cycle chance of interferon intolerance/discontinuation (analogous to HU_Resistance_Check's ELN-style criteria for hydroxyurea), ~2%/quarter."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.02,
+          "transition": "Discontinue_PegInterferon"
+        },
+        {
+          "distribution": 0.98,
+          "transition": "Phlebotomy_If_Needed"
+        }
+      ]
+    },
+    "Discontinue_PegInterferon": {
+      "type": "MedicationEnd",
+      "remarks": [
+        "CORRECTED: was referenced_by_attribute peginterferon_alfa_2a_180_mcg_05_rx -- the attribute set ONCE by the initial Prescribe_Peg_Interferon order and never updated again. Repeat_PegInterferon reassigns peg_interferon_rx to the live/latest quarterly order every cycle, so ending the wrong attribute left every quarterly order permanently open: the initial (already stale) order got closed instead of the current one, and Post_Thrombosis_Cytoreduction_Check's Active-Medication check for RxNorm 351270 could never go false again after the first refill."
+      ],
+      "referenced_by_attribute": "peg_interferon_rx",
+      "direct_transition": "Clear_PV_On_Interferon"
+    },
+    "Clear_PV_On_Interferon": {
+      "type": "SetAttribute",
+      "attribute": "pv_on_interferon",
+      "value": false,
       "direct_transition": "Phlebotomy_If_Needed"
     },
     "Prescribe_Fluoxetine": {
@@ -1589,16 +1712,19 @@
         "unit": "months"
       },
       "assign_to_attribute": "fluoxetine_rx",
-      "direct_transition": "Encounter_End_Initial"
+      "direct_transition": "Ongoing_Monitoring_Delay"
     },
     "Prescribe_Hydroxyzine": {
       "type": "MedicationOrder",
       "reason": "PV_Condition_Onset",
+      "remarks": [
+        "CORRECTED: 5553 is the bare ingredient 'hydroxyzine' (TTY=IN, verified via RxNav), not a prescribable strength/form. Replaced with 995258 'hydroxyzine hydrochloride 25 MG Oral Tablet' (SCD, verified via RxNav, exact strength match)."
+      ],
       "codes": [
         {
           "system": "RxNorm",
-          "code": "5553",
-          "display": "Hydroxyzine HCl 25 MG Oral Tablet"
+          "code": "995258",
+          "display": "hydroxyzine hydrochloride 25 MG Oral Tablet"
         }
       ],
       "dosage": {
@@ -1706,12 +1832,15 @@
     },
     "AML_Transformation": {
       "type": "ConditionOnset",
+      "assign_to_attribute": "pv_aml_transformation",
       "remarks": [
         "SNOMED: 91861009 - Acute myeloid leukemia, disease.",
         "AML transformation in PV: ~4-5% at 20 years.",
         "Risk factors: prior alkylating agents, leukocytosis, SRSF2/IDH2/TP53 mutations.",
         "Median OS post-transformation: 2-5 months.",
-        "HU-associated AML risk is low at standard therapeutic doses."
+        "HU-associated AML risk is low at standard therapeutic doses.",
+        "Task 2.11 (sweep): assign_to_attribute added so AML_Death can",
+        "resolve its cause of death safely -- see AML_Death's remark."
       ],
       "codes": [
         {
@@ -1744,9 +1873,21 @@
     "AML_Death": {
       "type": "Death",
       "remarks": [
-        "Death from AML transformation. Median OS post-transformation ~2-5 months."
+        "Death from AML transformation. Median OS post-transformation ~2-5 months.",
+        "Task 2.11 (sweep): was condition_onset: \"AML_Transformation\", at",
+        "risk of the renamed-entry null-cause bug -- 91861009 is also",
+        "ConditionOnset'd by acute_myeloid_leukemia.json, acute_myeloid_",
+        "leukemia_pediatric_prophylaxis.json, and myelodysplastic_",
+        "syndromes.json, each under a different state name, and",
+        "HealthRecord.conditionStart is idempotent per code, so whichever",
+        "fires last on a comorbid patient renames the shared present-map",
+        "entry away from 'AML_Transformation' and this state's",
+        "condition_onset scan silently records a null cause. Converted to",
+        "referenced_by_attribute (immune to the rename); pv_aml_",
+        "transformation is assign_to_attribute'd by AML_Transformation,",
+        "which dominates this state (verified by dominator analysis)."
       ],
-      "condition_onset": "AML_Transformation",
+      "referenced_by_attribute": "pv_aml_transformation",
       "direct_transition": "Terminal"
     },
     "Follow_Up_Encounter_End": {
@@ -1776,7 +1917,7 @@
     "Prescribe_Pruritus_Treatment_End": {
       "type": "MedicationEnd",
       "referenced_by_attribute": "hydroxyzine_rx",
-      "direct_transition": "Encounter_End_Initial"
+      "direct_transition": "Ongoing_Monitoring_Delay"
     }
   }
 }

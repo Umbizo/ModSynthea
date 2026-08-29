@@ -19,6 +19,7 @@
     },
     "Adolescent_Idiopathic_Scoliosis": {
       "type": "ConditionOnset",
+      "assign_to_attribute": "ais_diagnosed",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -285,8 +286,17 @@
     },
     "End_Orthopaedic_Encounter": {
       "type": "EncounterEnd",
-      "direct_transition": "XRay_Encounter",
-      "name": "End_Orthopaedic_Encounter"
+      "direct_transition": "XRay_Delay",
+      "name": "End_Orthopaedic_Encounter",
+      "remarks": [
+        "Task 2.10 (audit 2026-08-10): the wait-to-get-scheduled delay",
+        "(3-7 days) previously ran INSIDE XRay_Encounter, holding that",
+        "ambulatory/outpatient encounter's reservation open across a",
+        "multi-day Delay. Move the delay here, before the encounter opens",
+        "-- the patient waits for their appointment, then the X-ray visit",
+        "itself (XRay_Encounter -> Plain_X-Ray_Spine_and_Pelvis ->",
+        "End_XRay_Encounter) is same-day and closes cleanly."
+      ]
     },
     "XRay_Encounter": {
       "type": "Encounter",
@@ -300,7 +310,7 @@
           "value_set": ""
         }
       ],
-      "direct_transition": "XRay_Delay",
+      "direct_transition": "Plain_X-Ray_Spine_and_Pelvis",
       "name": "XRay_Encounter"
     },
     "XRay_Delay": {
@@ -313,7 +323,7 @@
         }
       },
       "unit": "days",
-      "direct_transition": "Plain_X-Ray_Spine_and_Pelvis",
+      "direct_transition": "XRay_Encounter",
       "name": "XRay_Delay"
     },
     "End_XRay_Encounter": {
@@ -368,12 +378,39 @@
         }
       },
       "unit": "minutes",
-      "direct_transition": "Confirm_AIS_No_Red_Flags",
+      "direct_transition": "Confirm_AIS_Diagnosis_Check",
       "name": "XRay_Measurements",
       "reason": "Adolescent_Idiopathic_Scoliosis"
     },
+    "Confirm_AIS_Diagnosis_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Task 2.10 (audit 2026-08-10): AIS was previously diagnosed twice --",
+        "once here (was Confirm_AIS_No_Red_Flags's own ConditionOnset) and",
+        "once earlier at Adolescent_Idiopathic_Scoliosis (pre-detection",
+        "onset, billed retroactively against Followup_Orthopaedic_Encounter",
+        "via target_encounter). Every path through this module hits the",
+        "earlier ConditionOnset first, so it always sets ais_diagnosed --",
+        "attribute-guard here so the diagnosis is not recorded a second",
+        "time for the same encounter."
+      ],
+      "conditional_transition": [
+        {
+          "transition": "AIS_Severity_Classification",
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "ais_diagnosed",
+            "operator": "is not nil"
+          }
+        },
+        {
+          "transition": "Confirm_AIS_No_Red_Flags"
+        }
+      ]
+    },
     "Confirm_AIS_No_Red_Flags": {
       "type": "ConditionOnset",
+      "assign_to_attribute": "ais_diagnosed",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -386,58 +423,76 @@
         "AIS diagnosis is confirmed after excluding red flags"
       ],
       "name": "Confirm_AIS_No_Red_Flags",
+      "direct_transition": "AIS_Severity_Classification"
+    },
+    "AIS_Severity_Classification": {
+      "type": "Simple",
+      "remarks": [
+        "Task 2.10: replaces a flat 13-way uniform distribution (~7.69%",
+        "each) over Cobb-angle/Risser-stage combinations with a mild/",
+        "moderate/severe split matching typical school-screening referral",
+        "populations (most referrals are mild curves that never progress",
+        "to bracing or surgery): mild 0.80, moderate 0.15, severe 0.05.",
+        "Cobb-angle bucketing: mild = <=25deg (Cobb_11_15, both Cobb_16_20,",
+        "both Cobb_21_25 -- 5 states, 0.16 each); moderate = 26-45deg",
+        "(Cobb_26_30, Cobb_26_45_R_4_5, Cobb_31_35, both Cobb_36_45 -- 5",
+        "states, 0.03 each); severe = >45deg (both Cobb_46_50, Cobb_51_65",
+        "-- 3 states, 0.05/3 each). Each bucket's total is split evenly",
+        "across its member states pending more granular epidemiological",
+        "data by Risser stage."
+      ],
       "distributed_transition": [
         {
           "transition": "Cobb_11_15_R_0_5",
-          "distribution": 0.0769230769230769
+          "distribution": 0.16
         },
         {
           "transition": "Cobb_16_20_R_0_2",
-          "distribution": 0.0769230769230769
+          "distribution": 0.16
         },
         {
           "transition": "Cobb_16_20_R_3_5",
-          "distribution": 0.0769230769230769
+          "distribution": 0.16
         },
         {
           "transition": "Cobb_21_25_R_0_2",
-          "distribution": 0.0769230769230769
+          "distribution": 0.16
         },
         {
           "transition": "Cobb_21_25_R_3_5",
-          "distribution": 0.0769230769230769
+          "distribution": 0.16
         },
         {
           "transition": "Cobb_26_30_R_0_3",
-          "distribution": 0.0769230769230769
+          "distribution": 0.03
         },
         {
           "transition": "Cobb_26_45_R_4_5",
-          "distribution": 0.0769230769230769
+          "distribution": 0.03
         },
         {
           "transition": "Cobb_31_35_R_0_3",
-          "distribution": 0.0769230769230769
+          "distribution": 0.03
         },
         {
           "transition": "Cobb_36_45_R_2_3",
-          "distribution": 0.0769230769230769
+          "distribution": 0.03
         },
         {
           "transition": "Cobb_36_45_R_0_1",
-          "distribution": 0.0769230769230769
+          "distribution": 0.03
         },
         {
           "transition": "Cobb_46_50_R_0_1",
-          "distribution": 0.0769230769230769
+          "distribution": 0.016666666666666666
         },
         {
           "transition": "Cobb_46_50_R_2_5",
-          "distribution": 0.0769230769230769
+          "distribution": 0.016666666666666666
         },
         {
           "transition": "Cobb_51_65_R_0_5",
-          "distribution": 0.07692307692307743
+          "distribution": 0.016666666666666666
         }
       ]
     },

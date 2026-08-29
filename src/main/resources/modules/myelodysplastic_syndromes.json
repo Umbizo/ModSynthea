@@ -69,38 +69,211 @@
         "quantity": 50,
         "unit": "years"
       },
-      "direct_transition": "Risk_Of_MDS"
+      "direct_transition": "MDS_Annual_Incidence_Check"
     },
-    "Risk_Of_MDS": {
-      "type": "Simple",
-      "remarks": [
-        "Annual incidence ~26/100,000 in age ≥65.",
-        "Modelled as ~4% cumulative probability in the age ≥50 simulation cohort.",
-        "Males have ~1.5–2× higher incidence than females."
-      ],
-      "distributed_transition": [
-        {
-          "distribution": 0.04,
-          "transition": "Onset_Delay"
-        },
-        {
-          "distribution": 0.96,
-          "transition": "Terminal"
-        }
-      ]
-    },
-    "Onset_Delay": {
+    "MDS_Annual_Incidence_Check": {
       "type": "Delay",
       "remarks": [
-        "Variable delay from age 50 to MDS onset.",
-        "Uniform over 0–30 years; most cases cluster at ages 65–80."
+        "Replaces the old Risk_Of_MDS + Onset_Delay pair: a one-shot 4% cumulative",
+        "roll at whatever birth-rolled age (0-30 years after the age-50 Guard)",
+        "Onset_Delay happened to land on, i.e. all onset ages 50-80 equally",
+        "likely and ~8x the real cumulative incidence for this cohort. This is",
+        "now an annual reroll (340-390 day jitter, matching the pattern already",
+        "used by mantle_cell_lymphoma.json's Annual_Incidence_Check), age-banded",
+        "and sex-stratified, so onset age and sex distribution both follow the",
+        "hazard shape instead of a flat draw.",
+        "",
+        "Female annual incidence: 1e-05/yr (50-59), 3e-05/yr (60-69),",
+        "1e-04/yr (70-79), 2e-04/yr (80+) -- the 60 and 80+ anchors are the",
+        "controller-specified calibration for this task. Directionally these",
+        "track the steep age-related rise reported in Rollison DE, Howlader N,",
+        "Smith MT, et al. 'Epidemiology of myelodysplastic syndromes and chronic",
+        "myeloproliferative disorders in the United States, 2001-2004.' Blood.",
+        "2008;112(1):45-52 (age-adjusted incidence rising from a low baseline",
+        "under 60 to the module's own already-cited ~26.1/100,000 at 65+), while",
+        "landing lower in absolute terms than that source by design.",
+        "",
+        "Male rates are these female rates x1.8, approximating the published",
+        "male-excess range: Rollison et al. above reports 4.5/100,000 (male) vs",
+        "2.7/100,000 (female) for 2001-2003 (ratio 1.67); Aul C, Gattermann N,",
+        "Schneider W. 'Epidemiological characteristics of myelodysplastic",
+        "syndrome in a well-defined French population.' Br J Cancer.",
+        "1995;71(4):826-833 reports a sex ratio of 1.9 in all age groups. 1.8 is",
+        "the midpoint of these two real cited ratios.",
+        "",
+        "ComplexTransition.follow takes the first true branch, so male bands are",
+        "checked age-descending before falling through to the female bands."
       ],
       "range": {
-        "low": 0,
-        "high": 30,
-        "unit": "years"
+        "low": 340,
+        "high": 390,
+        "unit": "days"
       },
-      "direct_transition": "MDS_Subtype_Determination"
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Gender",
+                "gender": "M"
+              },
+              {
+                "condition_type": "Age",
+                "operator": ">=",
+                "quantity": 80,
+                "unit": "years"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "distribution": 0.00036,
+              "transition": "MDS_Subtype_Determination"
+            },
+            {
+              "distribution": 0.99964,
+              "transition": "MDS_Annual_Incidence_Check"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Gender",
+                "gender": "M"
+              },
+              {
+                "condition_type": "Age",
+                "operator": ">=",
+                "quantity": 70,
+                "unit": "years"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "distribution": 0.00018,
+              "transition": "MDS_Subtype_Determination"
+            },
+            {
+              "distribution": 0.99982,
+              "transition": "MDS_Annual_Incidence_Check"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Gender",
+                "gender": "M"
+              },
+              {
+                "condition_type": "Age",
+                "operator": ">=",
+                "quantity": 60,
+                "unit": "years"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "distribution": 0.000054,
+              "transition": "MDS_Subtype_Determination"
+            },
+            {
+              "distribution": 0.999946,
+              "transition": "MDS_Annual_Incidence_Check"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Gender",
+            "gender": "M"
+          },
+          "distributions": [
+            {
+              "distribution": 0.000018,
+              "transition": "MDS_Subtype_Determination"
+            },
+            {
+              "distribution": 0.999982,
+              "transition": "MDS_Annual_Incidence_Check"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 80,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "distribution": 0.0002,
+              "transition": "MDS_Subtype_Determination"
+            },
+            {
+              "distribution": 0.9998,
+              "transition": "MDS_Annual_Incidence_Check"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 70,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "distribution": 0.0001,
+              "transition": "MDS_Subtype_Determination"
+            },
+            {
+              "distribution": 0.9999,
+              "transition": "MDS_Annual_Incidence_Check"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 60,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "distribution": 0.00003,
+              "transition": "MDS_Subtype_Determination"
+            },
+            {
+              "distribution": 0.99997,
+              "transition": "MDS_Annual_Incidence_Check"
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "distribution": 0.00001,
+              "transition": "MDS_Subtype_Determination"
+            },
+            {
+              "distribution": 0.99999,
+              "transition": "MDS_Annual_Incidence_Check"
+            }
+          ]
+        }
+      ]
     },
     "MDS_Subtype_Determination": {
       "type": "Simple",
@@ -917,23 +1090,58 @@
         "This state represents the watchful-waiting cohort (mostly SLD/MLD).",
         "Annual AML transformation in watchful-waiting lower-risk MDS: ~2–5%/year.",
         "Disease worsening requiring treatment escalation: ~10–15%/year.",
-        "Stable disease: ~70–80% per monitoring cycle."
+        "Stable disease: ~70–80% per monitoring cycle.",
+        "",
+        "FIX ROUND 1 (reviewer, partially superseded by round 2 below): the 0.03",
+        "AML-transform figure was being applied per pass on this state's own",
+        "Monitoring_Delay_Lower loop, which compounds well above this exact",
+        "state's own cited 2-5%/yr. Re-derived at the 3.5%/yr midpoint, freed",
+        "mass redistributed across the other three branches.",
+        "",
+        "FIX ROUND 2 (reviewer): round 1 fixed only the AML branch and left",
+        "Escalate_To_Higher_Risk essentially untouched (0.1 -> 0.10172 from the",
+        "proportional redistribution) -- but 0.1 (10%) was ITSELF already",
+        "authored as an annual rate (this state's own cited 10-15%/yr) being",
+        "applied per pass, the identical defect class as the AML branch, one",
+        "state over from Transfusion_Progression_Check's same bug. At",
+        "0.10172/pass on a ~135-day pass that compounds to",
+        "1-(1-0.10172)^(365/135) = 25.2%/yr -- roughly double the cited range.",
+        "",
+        "Also corrected the pass length itself: the engine defines 1 month as",
+        "exactly 30 days (Utilities.convertTime, both long- and double-valued",
+        "overloads: 'case \"months\": ... 30 * value'), not the calendar-average",
+        "30.44 days round 1's 136.97-day figure assumed. Monitoring_Delay_Lower's",
+        "3-6 month range is therefore a 90-180 day range with a 135-day mean",
+        "((3+6)/2 * 30), giving 365/135 = 2.7037 passes/year.",
+        "",
+        "Both AML transform and escalation are now independently converted from",
+        "their intended annual rates at this corrected 135-day pass length",
+        "(p_pass = 1-(1-p_annual)^(135/365), the same competing-hazards technique",
+        "used on Transfusion_Progression_Check below):",
+        "  AML transform (3.5%/yr midpoint): 0.01309/pass",
+        "    (annualized back: 1-(1-0.01309)^2.7037 = 0.0350, confirms)",
+        "  Escalate (12.5%/yr midpoint of the cited 10-15%/yr): 0.04819/pass",
+        "    (annualized back: 1-(1-0.04819)^2.7037 = 0.1250, confirms)",
+        "ESA start and Loop (continue watchful waiting) were not flagged as",
+        "independently mis-authored, so they share whatever probability mass",
+        "remains (1 - 0.01309 - 0.04819 = 0.93872) in their original 0.17:0.7",
+        "ratio: ESA 0.18343, Loop 0.75529."
       ],
       "distributed_transition": [
         {
-          "distribution": 0.03,
+          "distribution": 0.01309,
           "transition": "AML_Transformation"
         },
         {
-          "distribution": 0.1,
+          "distribution": 0.04819,
           "transition": "Escalate_To_Higher_Risk"
         },
         {
-          "distribution": 0.17,
+          "distribution": 0.18343,
           "transition": "Lower_Risk_ESA_Start"
         },
         {
-          "distribution": 0.7,
+          "distribution": 0.75529,
           "transition": "Monitoring_Delay_Lower"
         }
       ]
@@ -953,7 +1161,6 @@
     },
     "ESA_Medication": {
       "type": "MedicationOrder",
-      "administration": true,
       "remarks": [
         "Epoetin alfa (Procrit / Epogen) — ESA first-line for lower-risk MDS with anaemia.",
         "RxNorm 1237808 = epoetin alfa 40000 UNT/ML Injectable Solution.",
@@ -961,7 +1168,10 @@
         "Dosing: 40,000–60,000 IU SC weekly; assess at 8–12 weeks.",
         "Discontinue if no HI-E by 16 weeks (IWG 2023 criteria).",
         "Response rate: ~40–60% if EPO ≤500 mU/mL (Nordic Score).",
-        "Darbepoetin alfa (300 mcg SC q3w) is an equivalent alternative."
+        "Darbepoetin alfa (300 mcg SC q3w) is an equivalent alternative.",
+        "FIX 17: administration:true added -- a clinic-administered SC injection.",
+        "RxNorm 242706 (RxNav-verified SCD) already has a verified J0885 row in",
+        "rxnorm_hcpcs_map.json."
       ],
       "codes": [
         {
@@ -971,6 +1181,7 @@
         }
       ],
       "reason": "MDS_Onset",
+      "administration": true,
       "direct_transition": "ESA_Encounter_End"
     },
     "ESA_Encounter_End": {
@@ -1155,10 +1366,16 @@
     },
     "Luspatercept_Medication": {
       "type": "MedicationOrder",
-      "administration": true,
       "remarks": [
         "Luspatercept-aamt (Reblozyl) — TGF-β superfamily ligand trap.",
-        "RxNorm 2200671 = luspatercept-aamt 25 MG/ML Injectable Solution.",
+        "RxNorm 2262906 = luspatercept-aamt 25 MG Injection.",
+        "FIX 18: code corrected from 2262543, which RxNav lists as tty=PIN",
+        "(Precise Ingredient -- the substance, no dose form) rather than a",
+        "dispensable SCD, and had no medication_code_map NDC row -- and the",
+        "remarks' claimed alternative (RxCUI 2200671) does not resolve in RxNav at",
+        "all. 2262906 is the real 25 mg vial strength (RxNav-verified SCD) and",
+        "already has a verified J0896 row in rxnorm_hcpcs_map.json.",
+        "administration:true added -- SC injection administered in clinic.",
         "FDA approved August 2020: ESA-refractory/ineligible MDS-RS (MEDALIST trial).",
         "FDA expanded Feb 2023 (COMMANDS trial): first-line in ESA-naive lower-risk MDS.",
         "Dosing: 1.0 mg/kg SC q3 weeks; titrate to 1.33 or 1.75 mg/kg if needed.",
@@ -1169,10 +1386,11 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": "2262543",
-          "display": "luspatercept-aamt"
+          "code": "2262906",
+          "display": "luspatercept-aamt 25 MG Injection"
         }
       ],
+      "administration": true,
       "reason": "MDS_Onset",
       "direct_transition": "Luspatercept_Encounter_End"
     },
@@ -1242,7 +1460,6 @@
     },
     "Lenalidomide_Medication": {
       "type": "MedicationOrder",
-      "chronic": true,
       "remarks": [
         "Lenalidomide (Revlimid) — immunomodulatory drug.",
         "RxNorm 602725 = lenalidomide 10 MG Oral Capsule.",
@@ -1251,8 +1468,14 @@
         "MDS-003 trial: ~67% TI; ~45% cytogenetic response.",
         "Screen for TP53 mutation before starting: co-mutation → AML risk with lenalidomide.",
         "Requires REMS enrolment (RevAssist programme — teratogenicity).",
-        "AML transformation on lenalidomide (TP53 co-mutated del5q): up to 25–30%."
+        "AML transformation on lenalidomide (TP53 co-mutated del5q): up to 25–30%.",
+        "MERGE (master): chronic:true ported. Revlimid is an oral specialty-pharmacy",
+        "(Part D) drug taken 21-of-28 days continuously until progression, and no",
+        "MedicationEnd in this module stops it -- so it is genuinely ongoing therapy",
+        "and wellness auto-renewal is the correct claims behaviour. Contrast the",
+        "azacitidine note below, where the drug is administered, not dispensed."
       ],
+      "chronic": true,
       "codes": [
         {
           "system": "RxNorm",
@@ -1329,7 +1552,6 @@
     },
     "Imetelstat_Medication": {
       "type": "MedicationOrder",
-      "administration": true,
       "remarks": [
         "Imetelstat (Rytelo) — first-in-class oligonucleotide telomerase inhibitor.",
         "RxNorm 2638073 = imetelstat 47 MG/ML Injectable Solution.",
@@ -1339,7 +1561,10 @@
         "Dosing: 7.1 mg/kg IV over 2 hours every 4 weeks.",
         "Key toxicities: grade 3/4 cytopaenias (neutropaenia 68%, thrombocytopaenia 65%).",
         "Requires CBC monitoring; dose delays common.",
-        "Not approved in higher-risk MDS (IMerge studied lower-risk ESA-refractory patients)."
+        "Not approved in higher-risk MDS (IMerge studied lower-risk ESA-refractory patients).",
+        "FIX 19: administration:true added -- IV infusion. RxNorm 2685241 (RxNav-",
+        "verified SCD, matches the codes[] display) already has a verified J0870 row",
+        "in rxnorm_hcpcs_map.json (permanent code effective 2025-01-01)."
       ],
       "codes": [
         {
@@ -1349,6 +1574,7 @@
         }
       ],
       "reason": "MDS_Onset",
+      "administration": true,
       "direct_transition": "Imetelstat_Encounter_End"
     },
     "Imetelstat_Encounter_End": {
@@ -1415,17 +1641,21 @@
     },
     "ATG_Medication": {
       "type": "MedicationOrder",
-      "administration": true,
       "remarks": [
         "Anti-thymocyte globulin (horse ATG, Atgam) — immunosuppressive therapy (IST).",
-        "RxNorm 205460 = antithymocyte globulin (equine) 50 MG/ML Injectable Solution.",
+        "RxNorm 197906 = 5 ML lymphocyte immune globulin, anti-thymocyte globulin,",
+        "equine 50 MG/ML Injection (RxNav-verified SCD; matches the codes[] display",
+        "the pre-fix remarks cited a different, non-matching RxCUI 205460).",
         "Indications (NCCN): EPO >500 mU/mL, or MDS-h regardless of EPO level,",
         "  younger patients (<60), HLA-DR15+, PNH clone positivity, STAT3-mutant T-cells,",
         "  BM blasts ≤5%, short disease duration.",
         "Dosing: 40 mg/kg/day IV × 4 days (horse ATG) with supportive care.",
         "Combined with cyclosporine (see below).",
         "Response rate: ~30–35% HI. Relapse rate ~30% at 3 years.",
-        "Rabbit ATG (thymoglobulin) is less effective in MDS than horse ATG."
+        "Rabbit ATG (thymoglobulin) is less effective in MDS than horse ATG.",
+        "FIX 15: administration:true added (IV infusion; RxNorm 197906 already has a",
+        "verified J7504 row in rxnorm_hcpcs_map.json) and a real 4-day course + explicit",
+        "MedicationEnd added below -- this was a fixed course with no end at all before."
       ],
       "codes": [
         {
@@ -1435,23 +1665,52 @@
         }
       ],
       "reason": "MDS_Onset",
+      "administration": true,
+      "direct_transition": "ATG_Course_Delay"
+    },
+    "ATG_Course_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "40 mg/kg/day IV x 4 days -- a legitimate bounded length-of-stay carve-out",
+        "under the inpatient encounter-lock rule (this state sits inside",
+        "Lower_Risk_Immunosuppression, encounter_class: inpatient)."
+      ],
+      "range": {
+        "low": 3,
+        "high": 4,
+        "unit": "days"
+      },
+      "direct_transition": "ATG_End"
+    },
+    "ATG_End": {
+      "type": "MedicationEnd",
+      "medication_order": "ATG_Medication",
       "direct_transition": "Cyclosporine_Medication"
     },
     "Cyclosporine_Medication": {
       "type": "MedicationOrder",
-      "chronic": true,
       "remarks": [
         "Cyclosporine — combined with ATG for hypocellular / immune-mediated MDS.",
-        "RxNorm 3002 = cyclosporine.",
+        "RxNorm 241834 = cyclosporine, modified 100 MG Oral Capsule.",
+        "Code corrected from 3008, which is a bare ingredient concept (RxNav tty=IN,",
+        "no dose form, no medication_code_map NDC row) rather than a dispensable SCD",
+        "-- and the pre-fix remarks' claimed alternative (RxNorm 3002) is actually",
+        "cyclophosphamide, a different drug entirely (RxNav-verified). 241834 is the",
+        "modified/microemulsion (Neoral-equivalent) formulation used in IST protocols",
+        "for better, more predictable oral bioavailability, with an existing",
+        "medication_code_map NDC row.",
         "Dosing: 5 mg/kg/day PO in 2 divided doses; adjust to trough 150–250 ng/mL.",
         "Continued for 12–18 months in responders; taper gradually.",
-        "Monitor: renal function, blood pressure, drug levels monthly."
+        "Monitor: renal function, blood pressure, drug levels monthly.",
+        "MERGE (master): chronic:true REJECTED. The dosing note above models a",
+        "12-18-month tapered IST course, not lifelong therapy; chronic would",
+        "auto-renew it at every wellness visit for the rest of the patient's life."
       ],
       "codes": [
         {
           "system": "RxNorm",
-          "code": "3008",
-          "display": "cyclosporine"
+          "code": "241834",
+          "display": "cyclosporine, modified 100 MG Oral Capsule"
         }
       ],
       "reason": "MDS_Onset",
@@ -1580,28 +1839,69 @@
           "display": "Referral to haematology service (procedure)"
         }
       ],
-      "direct_transition": "Deferasirox_Medication"
+      "direct_transition": "Deferasirox_Order_Guard"
+    },
+    "Deferasirox_Order_Guard": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 12: Iron_Chelation_Check re-fires every ~4.5-week Transfusion_Cycle_Delay",
+        "pass, so a still-transfusion-dependent patient already on deferasirox could",
+        "re-roll into this encounter and re-issue a fresh MedicationOrder on every",
+        "cycle. HealthRecord.medicationStart is idempotent for an unended medication",
+        "(same RxNorm code -> same underlying Medication object, State.java:1534), so",
+        "this was never a data-corruption risk, but MedicationOrder.process",
+        "unconditionally increments the ordering provider's yearly prescription count",
+        "(State.java ~1543) every time the state fires, inflating that statistic once",
+        "per cycle for the whole duration of transfusion dependence. Guarded here on",
+        "the assign_to_attribute set below."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "deferasirox_active",
+            "operator": "is not nil"
+          },
+          "transition": "Iron_Chelation_Encounter_End"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "deferasirox_active",
+            "operator": "is nil"
+          },
+          "transition": "Deferasirox_Medication"
+        }
+      ]
     },
     "Deferasirox_Medication": {
       "type": "MedicationOrder",
-      "chronic": true,
       "remarks": [
         "Deferasirox (Exjade / Jadenu) — oral iron chelator.",
-        "RxNorm 387414 = deferasirox 500 MG Oral Tablet.",
+        "RxNorm 1607792 = deferasirox 360 MG Oral Tablet (Jadenu film-coated form).",
+        "Code corrected from 1869544, which is an SCDC (ingredient + strength only,",
+        "no dose form -- RxNav tty=SCDC) rather than a dispensable SCD, and had no",
+        "medication_code_map NDC row. 1607792 is a real dispensable SCD (RxNav",
+        "verified) with a new NDC row added to medication_code_map.json.",
         "FDA/EMA approved for transfusional iron overload in MDS.",
         "Dosing: 20 mg/kg/day PO dispersible (Exjade) or 14 mg/kg/day film-coated (Jadenu).",
         "Monitor: renal function (SCr, eGFR), LFTs, CBC monthly.",
         "Target: ferritin <1000 ng/mL; discontinue at ferritin <500 ng/mL.",
-        "Alternative if oral chelation not tolerated: deferoxamine (IV/SC infusion)."
+        "Alternative if oral chelation not tolerated: deferoxamine (IV/SC infusion).",
+        "Ongoing/chronic therapy (chronic: true) -- guarded by Deferasirox_Order_Guard",
+        "above rather than given an artificial short MedicationEnd; real discontinuation",
+        "is ferritin-driven, which this module does not track post-baseline."
       ],
       "codes": [
         {
           "system": "RxNorm",
-          "code": "1869544",
-          "display": "deferasirox 500 MG"
+          "code": "1607792",
+          "display": "deferasirox 360 MG Oral Tablet"
         }
       ],
       "reason": "MDS_Onset",
+      "chronic": true,
+      "assign_to_attribute": "deferasirox_active",
       "direct_transition": "Iron_Chelation_Encounter_End"
     },
     "Iron_Chelation_Encounter_End": {
@@ -1623,21 +1923,67 @@
     },
     "Transfusion_Progression_Check": {
       "type": "Simple",
+      "remarks": [
+        "FIX 11: AML transformation was 0.12 (12%) per pass on a 3-6 week",
+        "Transfusion_Cycle_Delay (~4.5 week average interval) -- compounded over",
+        "a year of continuous transfusion dependence (~11.6 passes/year at that",
+        "cadence) that is a ~74% annual transformation probability",
+        "(1-(1-0.12)^11.6), against this module's own cited 2-5%/year for",
+        "watchful-waiting lower-risk MDS (Lower_Risk_Progression_Check remarks)",
+        "and the per-subtype rates cited on AML_Transformation itself.",
+        "",
+        "FIX ROUND 1 (reviewer correction): round 0 re-derived only the AML rate",
+        "(2.5%/yr midpoint -> 0.00218/pass) and redistributed the freed mass",
+        "proportionally across the other three branches -- but Escalate_To_",
+        "Higher_Risk (0.2) and Lower_Risk_Palliative_Support (0.08) were",
+        "THEMSELVES already authored as annual rates being applied per (~4.5-week)",
+        "pass, exactly the same defect class as the AML branch, and the",
+        "proportional redistribution RAISED them further (0.2 -> 0.2268/pass =",
+        "1-(1-0.2268)^11.6 = 94.9%/yr; 0.08 -> 0.0906/pass = 66.7%/yr). At those",
+        "rates the expected loop residence was only 1/(0.0022+0.2268+0.0906) =",
+        "3.1 passes (~3.5 months) -- patients were swept out of the loop almost",
+        "immediately, so the correctly-calibrated 0.22%/pass AML hazard barely",
+        "got a chance to fire (only 0.0022/(0.0022+0.2268+0.0906) = 0.69% of",
+        "loop-exits were AML transformation).",
+        "",
+        "All three competing per-pass hazards are now independently converted",
+        "from their intended annual rates at this loop's actual ~31.5-day pass",
+        "length, and RBC_Transfusion_Encounter (continue) absorbs whatever",
+        "probability remains -- the standard way to combine independent",
+        "competing annual hazards into a single discrete-time pass:",
+        "  p_pass = 1-(1-p_annual)^(31.5/365)",
+        "  AML transform  (2.5%/yr, this state's own re-derivation):  0.00218",
+        "  Escalate       (0.20/yr, authored-as-annual, per reviewer): 0.01907",
+        "  Palliative     (0.08/yr, authored-as-annual, per reviewer): 0.00717",
+        "  Continue (loop) = 1 - 0.00218 - 0.01907 - 0.00717 = 0.97158",
+        "Sanity check (annualizing back): 1-(1-0.00218)^11.587=0.0250,",
+        "1-(1-0.01907)^11.587=0.2000, 1-(1-0.00717)^11.587=0.0800 -- all three",
+        "recover their intended annual rates exactly.",
+        "Expected loop residence = 1/(0.00218+0.01907+0.00717) = 35.2 passes",
+        "(~3.0 years) -- plausible for chronic transfusion-dependent lower-risk",
+        "MDS (median OS for this IPSS-R band is years, per this module's own",
+        "module-level epidemiology remarks). Realized fraction of loop-exits that",
+        "are AML transformation = 0.00218/(0.00218+0.01907+0.00717) = 7.7%,",
+        "consistent in direction with the per-subtype rates cited on",
+        "AML_Transformation (lower-risk subtypes: 1-8%/year each) without",
+        "collapsing to either the round-0 near-zero (0.69%) or the pre-fix",
+        "runaway (~77%/yr) failure modes."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.6,
+          "distribution": 0.97158,
           "transition": "RBC_Transfusion_Encounter"
         },
         {
-          "distribution": 0.2,
+          "distribution": 0.01907,
           "transition": "Escalate_To_Higher_Risk"
         },
         {
-          "distribution": 0.12,
+          "distribution": 0.00218,
           "transition": "AML_Transformation"
         },
         {
-          "distribution": 0.08,
+          "distribution": 0.00717,
           "transition": "Lower_Risk_Palliative_Support"
         }
       ]
@@ -1784,11 +2130,40 @@
           "display": "Referral to haematology service (procedure)"
         }
       ],
-      "direct_transition": "Azacitidine_Medication"
+      "direct_transition": "Azacitidine_Order_Guard"
+    },
+    "Azacitidine_Order_Guard": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 13: SCT_Not_Eligible_Route loops back to HMA_Azacitidine_Encounter for a",
+        "patient who failed SCT evaluation while already on azacitidine, and",
+        "HMA_Maintenance_Cycle/HMA_Relapse can also re-enter this encounter on a",
+        "later relapse. Guarded on assign_to_attribute below so a still-active course",
+        "is not re-ordered (and the ordering provider's prescription count not",
+        "re-incremented) on every re-entry; see Deferasirox_Order_Guard for the full",
+        "mechanism rationale."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "azacitidine_active",
+            "operator": "is not nil"
+          },
+          "transition": "HMA_Encounter_End"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "azacitidine_active",
+            "operator": "is nil"
+          },
+          "transition": "Azacitidine_Medication"
+        }
+      ]
     },
     "Azacitidine_Medication": {
       "type": "MedicationOrder",
-      "administration": true,
       "remarks": [
         "Azacitidine (Vidaza) — hypomethylating agent (HMA); first-line for higher-risk MDS.",
         "RxNorm 278177 = azacitidine 100 MG Injection.",
@@ -1797,7 +2172,23 @@
         "Dosing: 75 mg/m² SC/IV daily × 7 days every 28 days.",
         "Overall response rate: ~50% (CR ~17%, PR ~12%, HI ~21%).",
         "Assess response after ≥4–6 cycles (minimum); continue until progression.",
-        "Oral azacitidine (CC-486) approved for AML maintenance — not for MDS."
+        "Oral azacitidine (CC-486) approved for AML maintenance — not for MDS.",
+        "FIX ROUND 1 (reviewer): dropped chronic: true. Azacitidine here is a",
+        "7-of-28-day in-clinic injectable (SC/IV), not a take-home prescription --",
+        "chronic:true makes the person's routine wellness encounters auto-renew",
+        "it indefinitely (person.chronicMedications, HealthRecord.medicationStart/",
+        "wellness refill logic), which is the right behavior for an ongoing oral",
+        "prescription like deferasirox or venetoclax but not for a drug whose",
+        "administration is itself the clinical event. Azacitidine_Order_Guard",
+        "(above) already prevents this state from re-ordering/re-stacking on",
+        "every HMA_Azacitidine_Encounter re-entry; sibling HMA_Decitabine_",
+        "Encounter's Decitabine_Medication is non-chronic for the same reason.",
+        "MERGE (master): administration:true ported. It is the flag that matches",
+        "the reasoning above -- azacitidine is never retail-dispensed, so route it",
+        "through rxnorm_hcpcs_map (J9025, verified row for 485246) as a",
+        "clinician-administered drug rather than an NDC fill. chronic stays off.",
+        "Same precedent as ESA_Medication FIX 17. No MedicationEnd references this",
+        "state, so suppressing the prescription (State.java:1527) breaks nothing."
       ],
       "codes": [
         {
@@ -1806,7 +2197,9 @@
           "display": "azacitidine 100 MG Injection"
         }
       ],
+      "administration": true,
       "reason": "MDS_Onset",
+      "assign_to_attribute": "azacitidine_active",
       "direct_transition": "HMA_Encounter_End"
     },
     "HMA_Decitabine_Encounter": {
@@ -1824,14 +2217,16 @@
     },
     "Decitabine_Medication": {
       "type": "MedicationOrder",
-      "administration": true,
       "remarks": [
         "Decitabine (Dacogen) — alternative HMA for higher-risk MDS.",
         "RxNorm 583214 = decitabine 50 MG Injection.",
         "FDA approved 2006. ADOPT trial: ~17–26% ORR.",
         "Dosing: 20 mg/m² IV × 5 days q28 days (most common).",
         "Oral decitabine + cedazuridine (Inqovi) FDA approved 2020 — bioequivalent to IV.",
-        "Similar efficacy to azacitidine; centre/patient preference drives selection."
+        "Similar efficacy to azacitidine; centre/patient preference drives selection.",
+        "MERGE (master): administration:true ported, same rationale as the sibling",
+        "Azacitidine_Medication -- IV-only in-clinic HMA, verified J0894 row for",
+        "636631 in rxnorm_hcpcs_map, no MedicationEnd references this state."
       ],
       "codes": [
         {
@@ -1840,6 +2235,7 @@
           "display": "decitabine 50 MG Injection"
         }
       ],
+      "administration": true,
       "reason": "MDS_Onset",
       "direct_transition": "HMA_Encounter_End"
     },
@@ -2042,7 +2438,35 @@
           "display": "Referral to haematology service (procedure)"
         }
       ],
-      "direct_transition": "Venetoclax_Medication"
+      "direct_transition": "Venetoclax_Order_Guard"
+    },
+    "Venetoclax_Order_Guard": {
+      "type": "Simple",
+      "remarks": [
+        "FIX 14: Venetoclax_Response_Assessment's 0.3 HMA_Maintenance_Cycle branch",
+        "represents continuing the SAME venetoclax course, and HMA_Relapse can send",
+        "that same patient back into Venetoclax_Combination_Encounter a second time",
+        "on a later relapse. Guarded on assign_to_attribute below; see",
+        "Deferasirox_Order_Guard for the full mechanism rationale."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "venetoclax_active",
+            "operator": "is not nil"
+          },
+          "transition": "Venetoclax_Encounter_End"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "venetoclax_active",
+            "operator": "is nil"
+          },
+          "transition": "Venetoclax_Medication"
+        }
+      ]
     },
     "Venetoclax_Medication": {
       "type": "MedicationOrder",
@@ -2057,7 +2481,9 @@
         "Dosing: venetoclax 400 mg PO daily + azacitidine 75 mg/m² days 1–7 q28 days.",
         "Response in HMA-naive: CR ~45–50%. In HMA-failure: CR ~20–30%.",
         "TLS risk: mandatory ramp-up protocol with daily CBC monitoring.",
-        "Key toxicities: febrile neutropaenia, infections, grade 3/4 cytopaenias."
+        "Key toxicities: febrile neutropaenia, infections, grade 3/4 cytopaenias.",
+        "Ongoing/chronic therapy (chronic: true) -- guarded by Venetoclax_Order_Guard",
+        "above rather than given an artificial short MedicationEnd."
       ],
       "codes": [
         {
@@ -2067,6 +2493,8 @@
         }
       ],
       "reason": "MDS_Onset",
+      "chronic": true,
+      "assign_to_attribute": "venetoclax_active",
       "direct_transition": "Venetoclax_Encounter_End"
     },
     "Venetoclax_Encounter_End": {
@@ -2232,8 +2660,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "1259237005",
-          "display": "Recurrent malignant neoplasm"
+          "code": "234522008",
+          "display": "Disease relapse in transplant marrow"
         }
       ],
       "direct_transition": "AML_Transformation"
@@ -2315,7 +2743,6 @@
     },
     "Cytarabine_Medication": {
       "type": "MedicationOrder",
-      "administration": true,
       "remarks": [
         "Cytarabine — cornerstone of intensive '3+7' induction for higher-risk MDS.",
         "RxNorm 28648 = cytarabine 20 MG/ML Injectable Solution.",
@@ -2326,7 +2753,13 @@
         "Bridge to allo-SCT if CR achieved.",
         "NOT appropriate for: MDS-biTP53, monosomal karyotype, TP53 single-hit, ECOG ≥2.",
         "Significant morbidity: prolonged BM aplasia (4–6 weeks), febrile neutropaenia,",
-        "mucositis, organ toxicity."
+        "mucositis, organ toxicity.",
+        "MERGE (master): administration:true REJECTED here and on Idarubicin_Medication.",
+        "administration sets createPrescription=false (State.java:1527-1533), so no",
+        "prescription is started and FIX 16's paired Cytarabine_End/Idarubicin_End",
+        "MedicationEnds become no-ops -- erasing the modelled 3-day/7-day '3+7'",
+        "course durations. Ported only where no MedicationEnd depends on the order",
+        "(Azacitidine_Medication, Decitabine_Medication)."
       ],
       "codes": [
         {
@@ -2340,13 +2773,16 @@
     },
     "Idarubicin_Medication": {
       "type": "MedicationOrder",
-      "administration": true,
       "remarks": [
         "Idarubicin — anthracycline component of '3+7' induction.",
         "RxNorm 25463 = idarubicin hydrochloride 5 MG/ML Injectable Solution.",
         "Dosing: 12 mg/m²/day IV × 3 days (concurrent with cytarabine).",
         "Daunorubicin (60 mg/m²/day × 3 days) is an acceptable alternative.",
-        "Liposomal formulations available for elderly/cardiac-risk patients."
+        "Liposomal formulations available for elderly/cardiac-risk patients.",
+        "FIX 16: '3+7' timing is now real: idarubicin (3 days) and cytarabine (7 days)",
+        "both started together, idarubicin ending first with its own MedicationEnd,",
+        "cytarabine continuing 4 more days before its own MedicationEnd. Both fired",
+        "at the same instant with no course duration or end at all before."
       ],
       "codes": [
         {
@@ -2356,6 +2792,40 @@
         }
       ],
       "reason": "MDS_Onset",
+      "direct_transition": "Idarubicin_Course_Delay"
+    },
+    "Idarubicin_Course_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 3,
+        "unit": "days"
+      },
+      "direct_transition": "Idarubicin_End"
+    },
+    "Idarubicin_End": {
+      "type": "MedicationEnd",
+      "medication_order": "Idarubicin_Medication",
+      "direct_transition": "Cytarabine_Continuation_Delay"
+    },
+    "Cytarabine_Continuation_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Days 4-7 of the 7-day continuous cytarabine infusion, after the 3-day",
+        "idarubicin course has already ended. Both delays sit inside",
+        "Intensive_Chemo_Encounter (encounter_class: inpatient), a legitimate",
+        "bounded length-of-stay carve-out."
+      ],
+      "range": {
+        "low": 4,
+        "high": 4,
+        "unit": "days"
+      },
+      "direct_transition": "Cytarabine_End"
+    },
+    "Cytarabine_End": {
+      "type": "MedicationEnd",
+      "medication_order": "Cytarabine_Medication",
       "direct_transition": "Intensive_Chemo_Encounter_End"
     },
     "Intensive_Chemo_Encounter_End": {

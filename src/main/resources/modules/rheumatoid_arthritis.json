@@ -90,21 +90,14 @@
     },
     "Initial_Labs": {
       "type": "Procedure",
+      "remarks": [
+        "Blood draw for the RF/anti-CCP/CRP workup; the individual result codes live on the Observation states below (Lab_Results, AntiCCP_Test, CRP_Result), not here -- a Procedure state needs a procedure code, not three LOINC result codes."
+      ],
       "codes": [
         {
-          "system": "LOINC",
-          "code": "2571-8",
-          "display": "Rheumatoid factor"
-        },
-        {
-          "system": "LOINC",
-          "code": "33935-8",
-          "display": "Cyclic citrullinated peptide IgG Ab [Units/volume] in Serum or Plasma"
-        },
-        {
-          "system": "LOINC",
-          "code": "1988-5",
-          "display": "C-reactive protein"
+          "system": "SNOMED-CT",
+          "code": "28520004",
+          "display": "Venipuncture for blood test (procedure)"
         }
       ],
       "direct_transition": "Lab_Results"
@@ -215,23 +208,49 @@
       "type": "SetAttribute",
       "attribute": "crp_high",
       "value": true,
-      "direct_transition": "Joint_Count_Assessment"
+      "direct_transition": "Small_Joint_Count_Draw"
     },
     "CRP_Normal": {
       "type": "SetAttribute",
       "attribute": "crp_high",
       "value": false,
+      "direct_transition": "Small_Joint_Count_Draw"
+    },
+    "Small_Joint_Count_Draw": {
+      "type": "SetAttribute",
+      "attribute": "small_joint_count",
+      "remarks": [
+        "assign_to_attribute on an Observation state is silently dropped by the engine -- draw the value here via SetAttribute, then emit it below via Observation.attribute."
+      ],
+      "distribution": {
+        "kind": "UNIFORM",
+        "round": true,
+        "parameters": {
+          "low": 0,
+          "high": 28
+        }
+      },
       "direct_transition": "Joint_Count_Assessment"
     },
     "Joint_Count_Assessment": {
       "type": "Observation",
       "category": "exam",
       "unit": "{count}",
-      "assign_to_attribute": "small_joint_count",
-      "range": {
-        "low": 0,
-        "high": 28
-      },
+      "attribute": "small_joint_count",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "88981-6",
+          "display": "Tender joint"
+        }
+      ],
+      "direct_transition": "Encounter_Ends_After_Workup"
+    },
+    "Encounter_Ends_After_Workup": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Close Primary_Care_Visit here so it never sits open across the 3-6mo Watchful_Waiting delay below (CRITICAL encounter-lock fix)."
+      ],
       "direct_transition": "ACR_EULAR_Heuristic"
     },
     "ACR_EULAR_Heuristic": {
@@ -255,7 +274,7 @@
               }
             ]
           },
-          "transition": "Rheumatology_Referral"
+          "transition": "Rheumatoid_Arthritis_Onset"
         },
         {
           "condition": {
@@ -275,7 +294,7 @@
               }
             ]
           },
-          "transition": "Rheumatology_Referral"
+          "transition": "Rheumatoid_Arthritis_Onset"
         },
         {
           "transition": "Watchful_Waiting"
@@ -289,6 +308,19 @@
         "high": 6,
         "unit": "months"
       },
+      "direct_transition": "Rheumatoid_Arthritis_Onset"
+    },
+    "Rheumatoid_Arthritis_Onset": {
+      "type": "ConditionOnset",
+      "target_encounter": "Rheumatology_Referral",
+      "assign_to_attribute": "rheumatoid_arthritis",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "69896004",
+          "display": "Rheumatoid arthritis"
+        }
+      ],
       "direct_transition": "Rheumatology_Referral"
     },
     "Rheumatology_Referral": {
@@ -336,6 +368,11 @@
     "RA_Nonopioid_Pain_Medication": {
       "type": "MedicationOrder",
       "reason": "Rheumatoid_Arthritis_Onset",
+      "chronic": true,
+      "remarks": [
+        "Chronic: NSAID pain control typically continues alongside DMARD therapy for the life of the disease, not a single unrenewed fill.",
+        "The former gate here was a Date >= 1990 conditional_transition: in a modern-clock simulated population essentially every patient is diagnosed long after 1990, so the else-branch (Corticosteroid-only) was structurally dead. Rewired to a distributed_transition modeling the real-world minority who are DMARD-intolerant/contraindicated (pregnancy, active infection, significant hepatic/renal disease, frailty) and are managed on corticosteroid monotherapy instead."
+      ],
       "codes": [
         {
           "system": "RxNorm",
@@ -343,16 +380,13 @@
           "display": "Naproxen 500 MG Oral Tablet"
         }
       ],
-      "conditional_transition": [
+      "distributed_transition": [
         {
-          "condition": {
-            "condition_type": "Date",
-            "operator": ">=",
-            "year": 1990
-          },
+          "distribution": 0.88,
           "transition": "DMARD"
         },
         {
+          "distribution": 0.12,
           "transition": "Corticosteroid"
         }
       ]
@@ -361,6 +395,9 @@
       "type": "MedicationOrder",
       "reason": "Rheumatoid_Arthritis_Onset",
       "chronic": true,
+      "remarks": [
+        "Chronic: methotrexate is continued indefinitely as maintenance DMARD therapy for RA, not stopped on a fixed timetable. DMARD_Treatment_Period below models years of ongoing chronic therapy before a remission-taper assessment; only the minority who reach sustained drug-free remission (~15%, consistent with EULAR guidance on tapering DMARDs after sustained remission) get an explicit MedicationEnd -- the rest continue on chronic methotrexate for the rest of Living_With_RA via annual auto-renewal."
+      ],
       "codes": [
         {
           "system": "RxNorm",
@@ -381,21 +418,21 @@
         "high": 60,
         "unit": "months"
       },
-      "direct_transition": "End_DMARD"
+      "distributed_transition": [
+        {
+          "distribution": 0.15,
+          "transition": "End_DMARD"
+        },
+        {
+          "distribution": 0.85,
+          "transition": "Living_With_RA"
+        }
+      ]
     },
     "End_DMARD": {
       "type": "MedicationEnd",
       "medication_order": "DMARD",
-      "distributed_transition": [
-        {
-          "distribution": 0.75,
-          "transition": "RA_Ends"
-        },
-        {
-          "distribution": 0.25,
-          "transition": "Living_With_RA"
-        }
-      ]
+      "direct_transition": "RA_Ends"
     },
     "Corticosteroid": {
       "type": "MedicationOrder",

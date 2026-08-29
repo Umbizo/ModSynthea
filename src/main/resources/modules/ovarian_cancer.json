@@ -1,11 +1,85 @@
 {
   "name": "Ovarian Cancer",
+  "gmf_version": 2,
+  "remarks": [
+    "Epithelial ovarian cancer: risk stratification, high-risk surveillance,",
+    "diagnosis, primary/interval cytoreductive surgery, platinum-taxane",
+    "chemotherapy, PARP-inhibitor maintenance, surveillance, recurrence,",
+    "second-line therapy and terminal decline.",
+    "",
+    "ENCOUNTER DISCIPLINE: ModSynthea gives each person a single encounter",
+    "reservation (State.java Encounter/EncounterEnd). Every Encounter opened",
+    "here reaches an EncounterEnd before any Delay or Guard, and every Delay",
+    "sits between an EncounterEnd and the next Encounter. The only Delays",
+    "inside an open encounter are Primary_Surgery_Stay, Interval_Surgery_Stay",
+    "(inpatient lengths of stay) and Hospice_Stay (hospice benefit period).",
+    "The pre-fix module opened exactly one wellness Encounter and never closed",
+    "it, so genetic testing, surgery, every chemotherapy cycle, PARP",
+    "maintenance and all recurrence care were recorded with no encounter of",
+    "this module's own open - HealthRecord.currentEncounter() attached them to",
+    "whatever stale visit happened to be last in the record, or minted a",
+    "'First Wellness' encounter. All clinical content is now inside an",
+    "explicit, closed encounter of the right class.",
+    "",
+    "CALIBRATION TARGETS (per-state remarks carry the arithmetic):",
+    "- Average-risk women (98.5%): age-banded annual incidence rising from",
+    "  0.7e-4 at 40-44 to 3.0e-4 at 60-84, i.e. ~1.1-1.4% lifetime, matching",
+    "  SEER 2017-2021 ovarian cancer incidence (age-specific rates ~7/100,000",
+    "  at 40-44 rising to ~28/100,000 at 70-74) and the SEER lifetime risk of",
+    "  roughly 1 in 78-87 women.",
+    "- BRCA1/2 carriers (0.3% of women): 2%/yr from age 40, i.e. ~40-45%",
+    "  cumulative by age 80 after competing mortality (Kuchenbaecker, JAMA",
+    "  2017;317:2402 - ovarian cancer risk to 80 of 44% for BRCA1, 17% for",
+    "  BRCA2). Risk-reducing salpingo-oophorectomy is NOT modelled, so this",
+    "  arm is the untreated-carrier penetrance.",
+    "- Women with an affected first-degree relative but no identified mutation",
+    "  (1.2%): ~3x the population rate (Stratton, Br J Obstet Gynaecol 1998",
+    "  meta-analysis: RR ~3.1 for one affected first-degree relative).",
+    "- Population-weighted lifetime risk = 0.985 x ~1.14% + 0.012 x ~3.4%",
+    "  + 0.003 x ~55% (undiscounted) = ~1.33%.",
+    "- Stage at diagnosis, weighted over the histology mix, is ~19% I, 8% II,",
+    "  45% III, 28% IV, matching SEER 2018-2022 (localised 17%, regional 20%,",
+    "  distant 58%).",
+    "- Recurrence after first-line therapy: ~1.5%/yr for stage I-II and",
+    "  ~25%/yr for stage III-IV, blending to the ~20%/yr platinum-sensitive",
+    "  figure, with a genuine 5-year sustained-remission discharge.",
+    "- Cause-specific mortality among diagnosed women lands near 50%, against",
+    "  a SEER 2018-2022 5-year relative survival of ~51%.",
+    "",
+    "ATTRIBUTES (all module-local, including histology/stage: 'histology' and",
+    "'cancer_stage' were shared with pancreatic_cancer.json and were renamed",
+    "to 'ovarian_histology' / 'ovarian_stage' by the cross-module",
+    "attribute-rename task -- verified by grep that no other module reads",
+    "the new names):",
+    "  Ovarian Cancer            - ConditionOnset entry set at diagnosis; used",
+    "                              as the 'reason' pointer on treatment-phase",
+    "                              encounters, procedures and medications",
+    "  Recurrent Ovarian Cancer  - ConditionOnset entry set at first recurrence",
+    "                              (also the stacking guard for that onset)",
+    "  ovarian_cancer_risk       - average | family_history | high_brca",
+    "  ovarian_histology         - high_grade_serous | endometrioid |",
+    "                              clear_cell | mucinous | low_grade_serous",
+    "  ovarian_stage             - FIGO stage I..IV, as a plain string",
+    "  ecog_status               - ECOG performance status 0..3, as an integer",
+    "  last_ca125                - most recent CA-125 in U/mL. Observation",
+    "                              states cannot assign_to_attribute (the field",
+    "                              is declared on AttributeAssignableState and",
+    "                              Procedure only, so Gson silently drops it on",
+    "                              an Observation), so each value is drawn by a",
+    "                              SetAttribute and read back by the",
+    "                              Observation through its 'attribute' field",
+    "  ovarian_chemo_cycles      - completed first-line chemotherapy cycles",
+    "  ovarian_second_line_cycles- completed second-line chemotherapy cycles",
+    "  ovarian_surveillance_visits - completed post-treatment surveillance visits",
+    "  ovarian_recurrences       - number of recurrences experienced",
+    "  ovarian_parp_status       - active | completed | stopped"
+  ],
   "states": {
     "Initial": {
       "type": "Initial",
-      "direct_transition": "Gender_Check"
+      "direct_transition": "Female_Check"
     },
-    "Gender_Check": {
+    "Female_Check": {
       "type": "Simple",
       "conditional_transition": [
         {
@@ -13,58 +87,84 @@
             "condition_type": "Gender",
             "gender": "F"
           },
-          "transition": "Age_Check"
+          "transition": "Risk_Assessment"
         },
         {
           "transition": "Terminal"
         }
       ]
     },
-    "Age_Check": {
-      "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 30,
-          "standardDeviation": 10
-        }
-      },
-      "unit": "years",
-      "direct_transition": "Ovarian_Age_Guard"
-    },
-    "Wellness_Encounter": {
-      "type": "Encounter",
-      "wellness": true,
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "185349003",
-          "display": "Encounter for check up"
-        }
-      ],
-      "direct_transition": "Risk_Assessment"
-    },
     "Risk_Assessment": {
       "type": "Simple",
+      "remarks": [
+        "Congenital risk stratum, assigned once at birth. Only the stratum is",
+        "assigned here - disease onset is rerolled every year (or every six",
+        "months in the carrier arm) in the loops below.",
+        "",
+        "BRCA1/2 pathogenic-variant carriers are ~0.2-0.4% of unselected women",
+        "(Maxwell, Genet Med 2016; gnomAD founder-adjusted estimates); 0.3% is",
+        "used. A further ~1.2% of women have an affected first-degree relative",
+        "without an identified mutation."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.0015,
-          "transition": "High_Risk_BRCA"
+          "distribution": 0.003,
+          "transition": "Set_Risk_BRCA_Carrier"
         },
         {
-          "distribution": 0.008,
-          "transition": "Family_History_Risk"
+          "distribution": 0.012,
+          "transition": "Set_Risk_Family_History"
         },
         {
-          "distribution": 0.9905,
-          "transition": "Average_Risk"
+          "distribution": 0.985,
+          "transition": "Set_Risk_Average"
         }
       ]
     },
-    "High_Risk_BRCA": {
+    "Set_Risk_BRCA_Carrier": {
       "type": "SetAttribute",
       "attribute": "ovarian_cancer_risk",
       "value": "high_brca",
+      "direct_transition": "BRCA_Testing_Age_Guard"
+    },
+    "Set_Risk_Family_History": {
+      "type": "SetAttribute",
+      "attribute": "ovarian_cancer_risk",
+      "value": "family_history",
+      "direct_transition": "FH_Surveillance_Age_Guard"
+    },
+    "Set_Risk_Average": {
+      "type": "SetAttribute",
+      "attribute": "ovarian_cancer_risk",
+      "value": "average",
+      "direct_transition": "Population_Risk_Age_Guard"
+    },
+
+    "BRCA_Testing_Age_Guard": {
+      "type": "Guard",
+      "remarks": [
+        "NCCN Genetic/Familial High-Risk Assessment recommends BRCA testing",
+        "from age 25 for known-family-mutation carriers; testing and the",
+        "gynaecologic surveillance that follows are offered here from 30."
+      ],
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 30,
+        "unit": "years"
+      },
+      "direct_transition": "Genetics_Clinic_Visit"
+    },
+    "Genetics_Clinic_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
       "direct_transition": "Genetic_Testing"
     },
     "Genetic_Testing": {
@@ -80,6 +180,10 @@
     },
     "BRCA_Mutation_Result": {
       "type": "ConditionOnset",
+      "remarks": [
+        "Outside every loop, so it fires exactly once - no stacking guard",
+        "needed."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -98,44 +202,52 @@
           "display": "Genetic counseling"
         }
       ],
-      "direct_transition": "Risk_Based_Surveillance"
+      "direct_transition": "End_Genetics_Clinic_Visit"
     },
-    "Family_History_Risk": {
-      "type": "SetAttribute",
-      "attribute": "ovarian_cancer_risk",
-      "value": "family_history",
-      "direct_transition": "Enhanced_Screening"
+    "End_Genetics_Clinic_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "BRCA_Surveillance_Delay"
     },
-    "Enhanced_Screening": {
-      "type": "Procedure",
+    "BRCA_Surveillance_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Six-monthly CA-125 plus transvaginal ultrasound is the surveillance",
+        "regimen offered to carriers who decline or defer risk-reducing",
+        "salpingo-oophorectomy (NCCN; SGO). It does not reduce mortality, which",
+        "is why it is confined to the 0.3% carrier arm and is not offered to",
+        "average-risk women - USPSTF 2018 (JAMA 319:588) recommends AGAINST",
+        "screening average-risk women for ovarian cancer."
+      ],
+      "range": {
+        "low": 5,
+        "high": 7,
+        "unit": "months"
+      },
+      "direct_transition": "BRCA_Surveillance_Visit"
+    },
+    "BRCA_Surveillance_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "426491001",
-          "display": "Transvaginal ultrasound of female genital tract"
+          "code": "185347001",
+          "display": "Encounter for problem"
         }
       ],
-      "direct_transition": "Risk_Based_Surveillance"
+      "direct_transition": "BRCA_CA125_Value"
     },
-    "Average_Risk": {
+    "BRCA_CA125_Value": {
       "type": "SetAttribute",
-      "attribute": "ovarian_cancer_risk",
-      "value": "average",
-      "direct_transition": "Terminal"
-    },
-    "Risk_Based_Surveillance": {
-      "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 6,
-          "standardDeviation": 1
-        }
+      "attribute": "last_ca125",
+      "range": {
+        "low": 5.0,
+        "high": 35.0,
+        "decimals": 1
       },
-      "unit": "months",
-      "direct_transition": "CA125_Screening"
+      "direct_transition": "BRCA_CA125_Test"
     },
-    "CA125_Screening": {
+    "BRCA_CA125_Test": {
       "type": "Observation",
       "category": "laboratory",
       "codes": [
@@ -145,51 +257,246 @@
           "display": "Cancer Ag 125 [Units/volume] in Serum or Plasma"
         }
       ],
-      "direct_transition": "Cancer_Onset_Check",
+      "attribute": "last_ca125",
       "unit": "U/mL",
-      "range": {
-        "low": 5.0,
-        "high": 35.0
-      },
-      "assign_to_attribute": "last_ca125"
+      "direct_transition": "BRCA_Surveillance_Ultrasound"
     },
-    "Cancer_Onset_Check": {
-      "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 12,
-          "standardDeviation": 6
+    "BRCA_Surveillance_Ultrasound": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "426491001",
+          "display": "Transvaginal ultrasound of female genital tract"
         }
-      },
-      "unit": "months",
+      ],
+      "direct_transition": "End_BRCA_Surveillance_Visit"
+    },
+    "End_BRCA_Surveillance_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "BRCA_Onset_Check"
+    },
+    "BRCA_Onset_Check": {
+      "type": "Simple",
+      "remarks": [
+        "2%/yr from age 40. This loop runs on a ~6-month pass, so",
+        "p_pass = 1 - (1 - 0.02)^0.5 = 0.01005.",
+        "Cumulative to age 80 = 1 - 0.98^40 = 55% before competing mortality,",
+        "~40-45% realised - Kuchenbaecker (JAMA 2017;317:2402) reports ovarian",
+        "cancer risk to 80 of 44% (BRCA1) and 17% (BRCA2) in unselected",
+        "carriers who have not had risk-reducing surgery."
+      ],
       "complex_transition": [
         {
           "condition": {
-            "condition_type": "And",
-            "conditions": [
-              {
-                "condition_type": "Age",
-                "operator": ">=",
-                "quantity": 45,
-                "unit": "years"
-              },
-              {
-                "condition_type": "Attribute",
-                "attribute": "ovarian_cancer_risk",
-                "operator": "==",
-                "value": "high_brca"
-              }
-            ]
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 40,
+            "unit": "years"
           },
           "distributions": [
             {
               "transition": "Ovarian_Cancer_Onset_High_Risk",
-              "distribution": 0.8
+              "distribution": 0.01005
             },
             {
-              "transition": "Risk_Based_Surveillance",
-              "distribution": 0.2
+              "transition": "BRCA_Surveillance_Delay",
+              "distribution": 0.98995
+            }
+          ]
+        },
+        {
+          "transition": "BRCA_Surveillance_Delay"
+        }
+      ]
+    },
+
+    "FH_Surveillance_Age_Guard": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 45,
+        "unit": "years"
+      },
+      "direct_transition": "FH_Surveillance_Delay"
+    },
+    "FH_Surveillance_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 11,
+        "high": 13,
+        "unit": "months"
+      },
+      "direct_transition": "FH_Surveillance_Visit"
+    },
+    "FH_Surveillance_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "FH_CA125_Value"
+    },
+    "FH_CA125_Value": {
+      "type": "SetAttribute",
+      "attribute": "last_ca125",
+      "range": {
+        "low": 5.0,
+        "high": 35.0,
+        "decimals": 1
+      },
+      "direct_transition": "FH_CA125_Test"
+    },
+    "FH_CA125_Test": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "10334-1",
+          "display": "Cancer Ag 125 [Units/volume] in Serum or Plasma"
+        }
+      ],
+      "attribute": "last_ca125",
+      "unit": "U/mL",
+      "direct_transition": "FH_Surveillance_Ultrasound"
+    },
+    "FH_Surveillance_Ultrasound": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "426491001",
+          "display": "Transvaginal ultrasound of female genital tract"
+        }
+      ],
+      "direct_transition": "End_FH_Surveillance_Visit"
+    },
+    "End_FH_Surveillance_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "FH_Onset_Check"
+    },
+    "FH_Onset_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Annual pass. Three times the average-risk rate for the same age band",
+        "(Stratton, Br J Obstet Gynaecol 1998: RR ~3.1 with one affected",
+        "first-degree relative): 4.5e-4/yr from 45-59 and 9.0e-4/yr from 60.",
+        "Cumulative 45-90 = 15 x 4.5e-4 + 30 x 9.0e-4 = 3.4%."
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 60,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "transition": "Ovarian_Cancer_Onset_Sporadic",
+              "distribution": 0.0009
+            },
+            {
+              "transition": "FH_Surveillance_Delay",
+              "distribution": 0.9991
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "transition": "Ovarian_Cancer_Onset_Sporadic",
+              "distribution": 0.00045
+            },
+            {
+              "transition": "FH_Surveillance_Delay",
+              "distribution": 0.99955
+            }
+          ]
+        }
+      ]
+    },
+
+    "Population_Risk_Age_Guard": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 40,
+        "unit": "years"
+      },
+      "direct_transition": "Population_Reroll_Delay"
+    },
+    "Population_Reroll_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Average-risk women get NO surveillance encounters - USPSTF 2018 (JAMA",
+        "319:588) recommends against screening asymptomatic average-risk women",
+        "for ovarian cancer, and PLCO/UKCTOCS found no mortality benefit. This",
+        "loop is a pure annual incidence reroll and generates no health-record",
+        "activity until disease onset."
+      ],
+      "range": {
+        "low": 11,
+        "high": 13,
+        "unit": "months"
+      },
+      "direct_transition": "Population_Onset_Check"
+    },
+    "Population_Onset_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Age-banded annual incidence, approximating SEER 2017-2021 age-specific",
+        "ovarian cancer incidence (about 7/100,000 at 40-44, 11 at 45-49, 15 at",
+        "50-54, 20 at 55-59, 24-28 across 60-84, falling to ~18 at 85+).",
+        "Bands are evaluated oldest-first because ComplexTransition takes the",
+        "first condition that is true.",
+        "",
+        "Cumulative for a woman who survives to 90:",
+        "  5(0.7) + 5(1.0) + 5(1.5) + 5(2.0) + 25(3.0) + 5(2.5), all e-4",
+        "  = 1.14%, and ~1.38% for one who survives to 100. SEER puts the",
+        "lifetime risk of an ovarian cancer diagnosis at roughly 1.1-1.3%."
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 85,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "transition": "Ovarian_Cancer_Onset_Sporadic",
+              "distribution": 0.00025
+            },
+            {
+              "transition": "Population_Reroll_Delay",
+              "distribution": 0.99975
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 60,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "transition": "Ovarian_Cancer_Onset_Sporadic",
+              "distribution": 0.0003
+            },
+            {
+              "transition": "Population_Reroll_Delay",
+              "distribution": 0.9997
             }
           ]
         },
@@ -203,42 +510,87 @@
           "distributions": [
             {
               "transition": "Ovarian_Cancer_Onset_Sporadic",
-              "distribution": 0.0015
+              "distribution": 0.0002
             },
             {
-              "transition": "Risk_Based_Surveillance",
-              "distribution": 0.9985
+              "transition": "Population_Reroll_Delay",
+              "distribution": 0.9998
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 50,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "transition": "Ovarian_Cancer_Onset_Sporadic",
+              "distribution": 0.00015
+            },
+            {
+              "transition": "Population_Reroll_Delay",
+              "distribution": 0.99985
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 45,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "transition": "Ovarian_Cancer_Onset_Sporadic",
+              "distribution": 0.0001
+            },
+            {
+              "transition": "Population_Reroll_Delay",
+              "distribution": 0.9999
             }
           ]
         },
         {
           "distributions": [
             {
-              "transition": "Risk_Based_Surveillance",
-              "distribution": 1.0
+              "transition": "Ovarian_Cancer_Onset_Sporadic",
+              "distribution": 0.00007
+            },
+            {
+              "transition": "Population_Reroll_Delay",
+              "distribution": 0.99993
             }
           ]
         }
       ]
     },
+
     "Ovarian_Cancer_Onset_High_Risk": {
       "type": "Simple",
+      "remarks": [
+        "BRCA-associated ovarian cancer is overwhelmingly high-grade serous",
+        "(Mavaddat, J Natl Cancer Inst 2012)."
+      ],
       "distributed_transition": [
         {
           "distribution": 0.85,
-          "transition": "High_Grade_Serous"
+          "transition": "Set_Histology_Serous"
         },
         {
           "distribution": 0.08,
-          "transition": "Endometrioid"
+          "transition": "Set_Histology_Endometrioid"
         },
         {
           "distribution": 0.05,
-          "transition": "Clear_Cell"
+          "transition": "Set_Histology_Clear_Cell"
         },
         {
           "distribution": 0.02,
-          "transition": "Low_Grade_Serous"
+          "transition": "Set_Histology_Low_Grade"
         }
       ]
     },
@@ -247,100 +599,133 @@
       "distributed_transition": [
         {
           "distribution": 0.68,
-          "transition": "High_Grade_Serous"
+          "transition": "Set_Histology_Serous"
         },
         {
           "distribution": 0.12,
-          "transition": "Endometrioid"
+          "transition": "Set_Histology_Endometrioid"
         },
         {
           "distribution": 0.1,
-          "transition": "Clear_Cell"
+          "transition": "Set_Histology_Clear_Cell"
         },
         {
           "distribution": 0.06,
-          "transition": "Mucinous"
+          "transition": "Set_Histology_Mucinous"
         },
         {
           "distribution": 0.04,
-          "transition": "Low_Grade_Serous"
+          "transition": "Set_Histology_Low_Grade"
         }
       ]
     },
-    "High_Grade_Serous": {
-      "type": "ConditionOnset",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "93796005",
-          "display": "Primary malignant neoplasm of ovary"
-        }
-      ],
-      "direct_transition": "Set_Histology_Serous",
-      "assign_to_attribute": "Ovarian Cancer"
-    },
     "Set_Histology_Serous": {
       "type": "SetAttribute",
-      "attribute": "histology",
+      "attribute": "ovarian_histology",
       "value": "high_grade_serous",
-      "direct_transition": "Set_Cancer_Stage"
-    },
-    "Endometrioid": {
-      "type": "ConditionOnset",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "93934004",
-          "display": "Primary malignant neoplasm of ovary"
-        }
-      ],
-      "direct_transition": "Set_Histology_Endometrioid",
-      "assign_to_attribute": "Ovarian Cancer"
+      "direct_transition": "Diagnostic_Presentation_Delay"
     },
     "Set_Histology_Endometrioid": {
       "type": "SetAttribute",
-      "attribute": "histology",
+      "attribute": "ovarian_histology",
       "value": "endometrioid",
-      "direct_transition": "Set_Cancer_Stage"
-    },
-    "Clear_Cell": {
-      "type": "ConditionOnset",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "93796005",
-          "display": "Primary malignant neoplasm of ovary"
-        }
-      ],
-      "direct_transition": "Set_Histology_Clear_Cell",
-      "assign_to_attribute": "Ovarian Cancer"
+      "direct_transition": "Diagnostic_Presentation_Delay"
     },
     "Set_Histology_Clear_Cell": {
       "type": "SetAttribute",
-      "attribute": "histology",
+      "attribute": "ovarian_histology",
       "value": "clear_cell",
-      "direct_transition": "Set_Cancer_Stage"
-    },
-    "Mucinous": {
-      "type": "ConditionOnset",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "93796005",
-          "display": "Primary malignant neoplasm of ovary"
-        }
-      ],
-      "direct_transition": "Set_Histology_Mucinous",
-      "assign_to_attribute": "Ovarian Cancer"
+      "direct_transition": "Diagnostic_Presentation_Delay"
     },
     "Set_Histology_Mucinous": {
       "type": "SetAttribute",
-      "attribute": "histology",
+      "attribute": "ovarian_histology",
       "value": "mucinous",
-      "direct_transition": "Set_Cancer_Stage"
+      "direct_transition": "Diagnostic_Presentation_Delay"
     },
-    "Low_Grade_Serous": {
+    "Set_Histology_Low_Grade": {
+      "type": "SetAttribute",
+      "attribute": "ovarian_histology",
+      "value": "low_grade_serous",
+      "direct_transition": "Diagnostic_Presentation_Delay"
+    },
+
+    "Diagnostic_Presentation_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Interval between biological onset and clinical presentation. Ovarian",
+        "cancer symptoms (bloating, early satiety, pelvic pain) are non-",
+        "specific; Goff (JAMA 2004) found a median 3-4 month symptom duration",
+        "before diagnosis."
+      ],
+      "range": {
+        "low": 14,
+        "high": 120,
+        "unit": "days"
+      },
+      "direct_transition": "Diagnostic_Workup_Visit"
+    },
+    "Diagnostic_Workup_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "Diagnostic_Pelvic_Ultrasound"
+    },
+    "Diagnostic_Pelvic_Ultrasound": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "426491001",
+          "display": "Transvaginal ultrasound of female genital tract"
+        }
+      ],
+      "direct_transition": "Diagnostic_CA125_Value"
+    },
+    "Diagnostic_CA125_Value": {
+      "type": "SetAttribute",
+      "remarks": [
+        "CA-125 is raised above 35 U/mL in ~80% of epithelial ovarian cancers",
+        "at presentation and is typically in the hundreds for advanced serous",
+        "disease."
+      ],
+      "attribute": "last_ca125",
+      "range": {
+        "low": 45.0,
+        "high": 900.0,
+        "decimals": 1
+      },
+      "direct_transition": "Diagnostic_CA125_Test"
+    },
+    "Diagnostic_CA125_Test": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "10334-1",
+          "display": "Cancer Ag 125 [Units/volume] in Serum or Plasma"
+        }
+      ],
+      "attribute": "last_ca125",
+      "unit": "U/mL",
+      "direct_transition": "Diagnose_Ovarian_Cancer"
+    },
+    "Diagnose_Ovarian_Cancer": {
       "type": "ConditionOnset",
+      "remarks": [
+        "One diagnosis code for every histology - the histology itself lives in",
+        "the 'ovarian_histology' attribute. The pre-fix module split the diagnosis",
+        "across 93796005 and 93934004 (both of which the export map sends to",
+        "ICD-10 C56.9), which fragmented every downstream count.",
+        "Outside every loop: a person can only be diagnosed once."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -348,51 +733,179 @@
           "display": "Primary malignant neoplasm of ovary"
         }
       ],
-      "direct_transition": "Set_Histology_Low_Grade",
-      "assign_to_attribute": "Ovarian Cancer"
+      "assign_to_attribute": "Ovarian Cancer",
+      "direct_transition": "Stage_Assignment_Router"
     },
-    "Set_Histology_Low_Grade": {
+    "Stage_Assignment_Router": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "ovarian_histology",
+            "operator": "==",
+            "value": "high_grade_serous"
+          },
+          "transition": "Serous_Stage_Router"
+        },
+        {
+          "transition": "Nonserous_Stage_Router"
+        }
+      ]
+    },
+    "Serous_Stage_Router": {
+      "type": "Simple",
+      "remarks": [
+        "High-grade serous carcinoma presents at an advanced stage in about",
+        "90% of cases (Prat, Int J Gynaecol Obstet 2014; SEER stage",
+        "distribution). Replaces the pre-fix Set_Cancer_Stage, whose",
+        "'value_set' dict was silently deserialised into a LinkedTreeMap, so",
+        "every later 'cancer_stage == I' comparison threw",
+        "'Cannot compare LinkedTreeMap to String' at runtime."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.04,
+          "transition": "Set_Stage_I"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "Set_Stage_II"
+        },
+        {
+          "distribution": 0.55,
+          "transition": "Set_Stage_III"
+        },
+        {
+          "distribution": 0.36,
+          "transition": "Set_Stage_IV"
+        }
+      ]
+    },
+    "Nonserous_Stage_Router": {
+      "type": "Simple",
+      "remarks": [
+        "Endometrioid, clear cell, mucinous and low-grade serous carcinomas are",
+        "far more often confined to the pelvis at diagnosis. Weighted with the",
+        "serous router over the histology mix this yields ~19% I, 8% II, 45%",
+        "III, 28% IV overall, against SEER 2018-2022 (localised 17%, regional",
+        "20%, distant 58%)."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.55,
+          "transition": "Set_Stage_I"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "Set_Stage_II"
+        },
+        {
+          "distribution": 0.22,
+          "transition": "Set_Stage_III"
+        },
+        {
+          "distribution": 0.08,
+          "transition": "Set_Stage_IV"
+        }
+      ]
+    },
+    "Set_Stage_I": {
       "type": "SetAttribute",
-      "attribute": "histology",
-      "value": "low_grade_serous",
-      "direct_transition": "Set_Cancer_Stage"
+      "attribute": "ovarian_stage",
+      "value": "I",
+      "direct_transition": "ECOG_Assessment_Router"
     },
-    "Set_Cancer_Stage": {
+    "Set_Stage_II": {
       "type": "SetAttribute",
-      "attribute": "cancer_stage",
-      "value": {
-        "type": "String",
-        "value_set": [
-          "I",
-          "II",
-          "III",
-          "IV"
-        ]
-      },
-      "direct_transition": "Set_ECOG_Status"
+      "attribute": "ovarian_stage",
+      "value": "II",
+      "direct_transition": "ECOG_Assessment_Router"
     },
-    "Set_ECOG_Status": {
+    "Set_Stage_III": {
+      "type": "SetAttribute",
+      "attribute": "ovarian_stage",
+      "value": "III",
+      "direct_transition": "ECOG_Assessment_Router"
+    },
+    "Set_Stage_IV": {
+      "type": "SetAttribute",
+      "attribute": "ovarian_stage",
+      "value": "IV",
+      "direct_transition": "ECOG_Assessment_Router"
+    },
+    "ECOG_Assessment_Router": {
+      "type": "Simple",
+      "remarks": [
+        "Baseline ECOG performance status in first-line ovarian cancer trials",
+        "(GOG-218, ICON7) is 0 in roughly half and 2 or worse in under 20%.",
+        "Replaces the pre-fix Set_ECOG_Status, whose 'range' dict was another",
+        "silently-dropped non-scalar SetAttribute value."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.45,
+          "transition": "Set_ECOG_0"
+        },
+        {
+          "distribution": 0.35,
+          "transition": "Set_ECOG_1"
+        },
+        {
+          "distribution": 0.15,
+          "transition": "Set_ECOG_2"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "Set_ECOG_3"
+        }
+      ]
+    },
+    "Set_ECOG_0": {
       "type": "SetAttribute",
       "attribute": "ecog_status",
-      "value": {
-        "type": "Integer",
-        "range": {
-          "low": 0,
-          "high": 3
-        }
+      "value": 0,
+      "direct_transition": "End_Diagnostic_Workup_Visit"
+    },
+    "Set_ECOG_1": {
+      "type": "SetAttribute",
+      "attribute": "ecog_status",
+      "value": 1,
+      "direct_transition": "End_Diagnostic_Workup_Visit"
+    },
+    "Set_ECOG_2": {
+      "type": "SetAttribute",
+      "attribute": "ecog_status",
+      "value": 2,
+      "direct_transition": "End_Diagnostic_Workup_Visit"
+    },
+    "Set_ECOG_3": {
+      "type": "SetAttribute",
+      "attribute": "ecog_status",
+      "value": 3,
+      "direct_transition": "End_Diagnostic_Workup_Visit"
+    },
+    "End_Diagnostic_Workup_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Treatment_Planning_Delay"
+    },
+    "Treatment_Planning_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 14,
+        "high": 28,
+        "unit": "days"
       },
       "direct_transition": "Treatment_Decision"
     },
     "Treatment_Decision": {
-      "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 14,
-          "standardDeviation": 7
-        }
-      },
-      "unit": "days",
+      "type": "Simple",
+      "remarks": [
+        "Early-stage disease goes straight to primary cytoreductive surgery.",
+        "For stage III-IV, neoadjuvant chemotherapy followed by interval",
+        "debulking is now the majority pathway in the US (Vergote, NEJM 2010;",
+        "Wright, J Clin Oncol 2016 ASCO/SGO guideline)."
+      ],
       "complex_transition": [
         {
           "condition": {
@@ -400,22 +913,130 @@
             "conditions": [
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "I"
               },
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "II"
               }
             ]
           },
+          "transition": "Primary_Surgery_Admission"
+        },
+        {
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "ovarian_stage",
+                "operator": "==",
+                "value": "III"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "ovarian_stage",
+                "operator": "==",
+                "value": "IV"
+              }
+            ]
+          },
           "distributions": [
             {
-              "transition": "Primary_Surgery",
-              "distribution": 1.0
+              "transition": "Start_Neoadjuvant_Chemotherapy",
+              "distribution": 0.7
+            },
+            {
+              "transition": "Primary_Surgery_Admission",
+              "distribution": 0.3
+            }
+          ]
+        },
+        {
+          "transition": "Primary_Surgery_Admission"
+        }
+      ]
+    },
+
+    "Primary_Surgery_Admission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission"
+        }
+      ],
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Primary_Cytoreductive_Surgery"
+    },
+    "Primary_Cytoreductive_Surgery": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "116028008",
+          "display": "Salpingo-oophorectomy"
+        }
+      ],
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Primary_Surgery_Stay"
+    },
+    "Primary_Surgery_Stay": {
+      "type": "Delay",
+      "remarks": [
+        "Genuine inpatient length of stay after cytoreductive surgery; one of",
+        "the three Delays in this module allowed to sit inside an open",
+        "encounter."
+      ],
+      "range": {
+        "low": 3,
+        "high": 7,
+        "unit": "days"
+      },
+      "direct_transition": "End_Primary_Surgery_Admission"
+    },
+    "End_Primary_Surgery_Admission": {
+      "type": "EncounterEnd",
+      "direct_transition": "Post_Primary_Surgery_Recovery"
+    },
+    "Post_Primary_Surgery_Recovery": {
+      "type": "Delay",
+      "range": {
+        "low": 21,
+        "high": 35,
+        "unit": "days"
+      },
+      "direct_transition": "Adjuvant_Therapy_Decision"
+    },
+    "Adjuvant_Therapy_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "Stage IA/IB grade 1 disease is observed after surgery; everything",
+        "else gets adjuvant platinum-taxane chemotherapy (NCCN Ovarian Cancer",
+        "guideline)."
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "ovarian_stage",
+            "operator": "==",
+            "value": "I"
+          },
+          "distributions": [
+            {
+              "transition": "Start_Adjuvant_Chemotherapy",
+              "distribution": 0.55
+            },
+            {
+              "transition": "Enter_Surveillance",
+              "distribution": 0.45
             }
           ]
         },
@@ -425,13 +1046,19 @@
             "conditions": [
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
+                "operator": "==",
+                "value": "II"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "III"
               },
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "IV"
               }
@@ -439,34 +1066,139 @@
           },
           "distributions": [
             {
-              "transition": "Neoadjuvant_Chemotherapy",
-              "distribution": 0.7
+              "transition": "Start_Adjuvant_Chemotherapy",
+              "distribution": 0.95
             },
             {
-              "transition": "Primary_Surgery",
-              "distribution": 0.3
+              "transition": "Enter_Surveillance",
+              "distribution": 0.05
             }
           ]
         },
         {
-          "condition": {
-            "condition_type": "Attribute",
-            "attribute": "cancer_stage",
-            "operator": "is nil"
-          },
-          "distributions": [
-            {
-              "transition": "Primary_Surgery",
-              "distribution": 1.0
-            }
-          ]
-        },
-        {
-          "transition": "Primary_Surgery"
+          "transition": "Start_Adjuvant_Chemotherapy"
         }
       ]
     },
-    "Primary_Surgery": {
+
+    "Start_Neoadjuvant_Chemotherapy": {
+      "type": "SetAttribute",
+      "attribute": "ovarian_chemo_cycles",
+      "value": 0,
+      "direct_transition": "Neoadjuvant_Cycle_Visit"
+    },
+    "Neoadjuvant_Cycle_Visit": {
+      "type": "Encounter",
+      "remarks": [
+        "One closed outpatient encounter per 21-day chemotherapy cycle, so",
+        "each infusion lands on its own claim with its own date of service."
+      ],
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Neoadjuvant_Carboplatin"
+    },
+    "Neoadjuvant_Carboplatin": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Clinician-administered infusion: administration:true routes this to a",
+        "professional/outpatient claim line through rxnorm_hcpcs_map (J9045)",
+        "rather than to a Part D dispensing event, and administration rows",
+        "cannot stack, so no MedicationEnd is needed."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "40048",
+          "display": "Carboplatin"
+        }
+      ],
+      "administration": true,
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Neoadjuvant_Paclitaxel"
+    },
+    "Neoadjuvant_Paclitaxel": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "56946",
+          "display": "Paclitaxel"
+        }
+      ],
+      "administration": true,
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Count_Neoadjuvant_Cycle"
+    },
+    "Count_Neoadjuvant_Cycle": {
+      "type": "Counter",
+      "attribute": "ovarian_chemo_cycles",
+      "action": "increment",
+      "direct_transition": "End_Neoadjuvant_Cycle_Visit"
+    },
+    "End_Neoadjuvant_Cycle_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Neoadjuvant_Cycle_Check"
+    },
+    "Neoadjuvant_Cycle_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Three cycles before interval debulking, three after, per EORTC 55971",
+        "(Vergote, NEJM 2010)."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "ovarian_chemo_cycles",
+            "operator": ">=",
+            "value": 3
+          },
+          "transition": "Interval_Surgery_Delay"
+        },
+        {
+          "transition": "Neoadjuvant_Cycle_Delay"
+        }
+      ]
+    },
+    "Neoadjuvant_Cycle_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 20,
+        "high": 22,
+        "unit": "days"
+      },
+      "direct_transition": "Neoadjuvant_Cycle_Visit"
+    },
+    "Interval_Surgery_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 21,
+        "high": 35,
+        "unit": "days"
+      },
+      "direct_transition": "Interval_Surgery_Admission"
+    },
+    "Interval_Surgery_Admission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission"
+        }
+      ],
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Interval_Cytoreductive_Surgery"
+    },
+    "Interval_Cytoreductive_Surgery": {
       "type": "Procedure",
       "codes": [
         {
@@ -475,18 +1207,387 @@
           "display": "Salpingo-oophorectomy"
         }
       ],
-      "direct_transition": "Adjuvant_Therapy_Decision"
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Interval_Surgery_Stay"
     },
-    "Adjuvant_Therapy_Decision": {
+    "Interval_Surgery_Stay": {
       "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 21,
-          "standardDeviation": 7
-        }
+      "range": {
+        "low": 3,
+        "high": 7,
+        "unit": "days"
       },
-      "unit": "days",
+      "direct_transition": "End_Interval_Surgery_Admission"
+    },
+    "End_Interval_Surgery_Admission": {
+      "type": "EncounterEnd",
+      "direct_transition": "Post_Interval_Surgery_Recovery"
+    },
+    "Post_Interval_Surgery_Recovery": {
+      "type": "Delay",
+      "range": {
+        "low": 21,
+        "high": 35,
+        "unit": "days"
+      },
+      "direct_transition": "Set_Post_Interval_Cycle_Count"
+    },
+    "Set_Post_Interval_Cycle_Count": {
+      "type": "SetAttribute",
+      "remarks": [
+        "Three neoadjuvant cycles are already done; the shared adjuvant loop",
+        "below runs to a total of six."
+      ],
+      "attribute": "ovarian_chemo_cycles",
+      "value": 3,
+      "direct_transition": "Adjuvant_Cycle_Visit"
+    },
+
+    "Start_Adjuvant_Chemotherapy": {
+      "type": "SetAttribute",
+      "attribute": "ovarian_chemo_cycles",
+      "value": 0,
+      "direct_transition": "Adjuvant_Cycle_Visit"
+    },
+    "Adjuvant_Cycle_Visit": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Adjuvant_Carboplatin"
+    },
+    "Adjuvant_Carboplatin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "40048",
+          "display": "Carboplatin"
+        }
+      ],
+      "administration": true,
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Adjuvant_Paclitaxel"
+    },
+    "Adjuvant_Paclitaxel": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "56946",
+          "display": "Paclitaxel"
+        }
+      ],
+      "administration": true,
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Count_Adjuvant_Cycle"
+    },
+    "Count_Adjuvant_Cycle": {
+      "type": "Counter",
+      "attribute": "ovarian_chemo_cycles",
+      "action": "increment",
+      "direct_transition": "End_Adjuvant_Cycle_Visit"
+    },
+    "End_Adjuvant_Cycle_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Adjuvant_Cycle_Check"
+    },
+    "Adjuvant_Cycle_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Six cycles of carboplatin/paclitaxel is the standard first-line course",
+        "(GOG-158, GOG-182)."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "ovarian_chemo_cycles",
+            "operator": ">=",
+            "value": 6
+          },
+          "transition": "Response_Assessment_Delay"
+        },
+        {
+          "transition": "Adjuvant_Cycle_Delay"
+        }
+      ]
+    },
+    "Adjuvant_Cycle_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 20,
+        "high": 22,
+        "unit": "days"
+      },
+      "direct_transition": "Adjuvant_Cycle_Visit"
+    },
+    "Response_Assessment_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 21,
+        "high": 35,
+        "unit": "days"
+      },
+      "direct_transition": "Maintenance_Therapy_Decision"
+    },
+    "Maintenance_Therapy_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "PARP-inhibitor maintenance after a response to first-line platinum:",
+        "SOLO-1 (Moore, NEJM 2018) established olaparib for BRCA-mutated",
+        "advanced disease, PRIMA/PAOLA-1 extended maintenance to a wider",
+        "advanced-stage population. Early-stage disease is not a maintenance",
+        "indication, so stage I-II uptake is nominal."
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "ovarian_cancer_risk",
+            "operator": "==",
+            "value": "high_brca"
+          },
+          "distributions": [
+            {
+              "transition": "PARP_Maintenance_Visit",
+              "distribution": 0.75
+            },
+            {
+              "transition": "Enter_Surveillance",
+              "distribution": 0.25
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "ovarian_stage",
+                "operator": "==",
+                "value": "III"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "ovarian_stage",
+                "operator": "==",
+                "value": "IV"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "transition": "PARP_Maintenance_Visit",
+              "distribution": 0.35
+            },
+            {
+              "transition": "Enter_Surveillance",
+              "distribution": 0.65
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "transition": "PARP_Maintenance_Visit",
+              "distribution": 0.05
+            },
+            {
+              "transition": "Enter_Surveillance",
+              "distribution": 0.95
+            }
+          ]
+        }
+      ]
+    },
+    "PARP_Maintenance_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Start_Olaparib_Maintenance"
+    },
+    "Start_Olaparib_Maintenance": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Olaparib is an ORAL PARP inhibitor the patient takes at home, so it is",
+        "a dispensed prescription (Part D), not administration:true. The code",
+        "is the RxNorm SCD 'olaparib 150 MG Oral Tablet' (1942487) rather than",
+        "the ingredient concept 1597582, because only a clinical-drug concept",
+        "can be resolved to an NDC for the PDE export.",
+        "Fixed 2-year course (SOLO-1), ended by Stop_Olaparib_Course after 8",
+        "quarterly surveillance visits, or early at recurrence.",
+        "refills 8 (task 6.1): PDEExporter caps one fill at a 90-day supply and,",
+        "with refills unset, PrescriptionFill.refillsRemaining() is false at fill 1",
+        "-- so this whole 2-year course used to export as a SINGLE Part D fill. The",
+        "course runs 8 x 80-100 days = 640-800 days, and 9 fills x 90 days = 810",
+        "days covers its maximum. Refills is only a ceiling: the exporter's loop",
+        "condition is time < medication.stop, so no fill is generated past the",
+        "modelled course, including the early-recurrence exit.",
+        "MERGE (master): chronic:true on the old 'PARP_Inhibitor_Maintenance' state",
+        "REJECTED. This is a FIXED 2-year SOLO-1 course with two MedicationEnds --",
+        "exactly the case the chronic invariant excludes -- and the refills ceiling",
+        "above already delivers the recurring Part D fills master was after."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1942487",
+          "display": "olaparib 150 MG Oral Tablet"
+        }
+      ],
+      "reason": "Ovarian Cancer",
+      "prescription": {
+        "refills": 8
+      },
+      "direct_transition": "Set_PARP_Active"
+    },
+    "Set_PARP_Active": {
+      "type": "SetAttribute",
+      "attribute": "ovarian_parp_status",
+      "value": "active",
+      "direct_transition": "End_PARP_Maintenance_Visit"
+    },
+    "End_PARP_Maintenance_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Enter_Surveillance"
+    },
+
+    "Enter_Surveillance": {
+      "type": "SetAttribute",
+      "attribute": "ovarian_surveillance_visits",
+      "value": 0,
+      "direct_transition": "Surveillance_Interval_Delay"
+    },
+    "Surveillance_Interval_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Quarterly clinical review with CA-125 for the first years after",
+        "first-line therapy (NCCN Ovarian Cancer surveillance schedule)."
+      ],
+      "range": {
+        "low": 80,
+        "high": 100,
+        "unit": "days"
+      },
+      "direct_transition": "Count_Surveillance_Visit"
+    },
+    "Count_Surveillance_Visit": {
+      "type": "Counter",
+      "attribute": "ovarian_surveillance_visits",
+      "action": "increment",
+      "direct_transition": "Surveillance_Visit"
+    },
+    "Surveillance_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Surveillance_CA125_Value"
+    },
+    "Surveillance_CA125_Value": {
+      "type": "SetAttribute",
+      "attribute": "last_ca125",
+      "range": {
+        "low": 5.0,
+        "high": 35.0,
+        "decimals": 1
+      },
+      "direct_transition": "Surveillance_CA125_Test"
+    },
+    "Surveillance_CA125_Test": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "10334-1",
+          "display": "Cancer Ag 125 [Units/volume] in Serum or Plasma"
+        }
+      ],
+      "attribute": "last_ca125",
+      "unit": "U/mL",
+      "direct_transition": "PARP_Course_Check"
+    },
+    "PARP_Course_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "And",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "ovarian_parp_status",
+                "operator": "==",
+                "value": "active"
+              },
+              {
+                "condition_type": "Attribute",
+                "attribute": "ovarian_surveillance_visits",
+                "operator": ">=",
+                "value": 8
+              }
+            ]
+          },
+          "transition": "Stop_Olaparib_Course"
+        },
+        {
+          "transition": "End_Surveillance_Visit"
+        }
+      ]
+    },
+    "Stop_Olaparib_Course": {
+      "type": "MedicationEnd",
+      "medication_order": "Start_Olaparib_Maintenance",
+      "direct_transition": "Set_PARP_Completed"
+    },
+    "Set_PARP_Completed": {
+      "type": "SetAttribute",
+      "attribute": "ovarian_parp_status",
+      "value": "completed",
+      "direct_transition": "End_Surveillance_Visit"
+    },
+    "End_Surveillance_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Recurrence_Check"
+    },
+    "Recurrence_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Stage-specific annual recurrence hazard converted to this loop's",
+        "quarterly pass with p_pass = 1 - (1 - p_annual)^0.25:",
+        "  stage I-II   6%/yr  -> 0.0153 per pass",
+        "  stage III-IV 25%/yr -> 0.0685 per pass",
+        "Weighted over the stage mix (~27% early, ~73% advanced) that is the",
+        "~20%/yr platinum-sensitive relapse rate. Over the 5 years before",
+        "sustained-remission discharge it gives ~26% cumulative relapse for",
+        "early-stage and ~76% for advanced disease, against the ~70-80% of",
+        "advanced-stage patients who relapse within 3 years (Ledermann, Ann",
+        "Oncol 2013 ESMO guideline).",
+        "The pre-fix module rolled 25% per 4.5-month pass with no exit, so",
+        "every diagnosed woman relapsed and then died in the same instant."
+      ],
       "complex_transition": [
         {
           "condition": {
@@ -494,19 +1595,42 @@
             "conditions": [
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
-                "value": "II"
+                "value": "I"
               },
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
+                "operator": "==",
+                "value": "II"
+              }
+            ]
+          },
+          "distributions": [
+            {
+              "transition": "Recurrence_Workup_Delay",
+              "distribution": 0.0153
+            },
+            {
+              "transition": "Remission_Duration_Check",
+              "distribution": 0.9847
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Attribute",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "III"
               },
               {
                 "condition_type": "Attribute",
-                "attribute": "cancer_stage",
+                "attribute": "ovarian_stage",
                 "operator": "==",
                 "value": "IV"
               }
@@ -514,137 +1638,104 @@
           },
           "distributions": [
             {
-              "transition": "Adjuvant_Chemotherapy",
-              "distribution": 0.9
+              "transition": "Recurrence_Workup_Delay",
+              "distribution": 0.0685
             },
             {
-              "transition": "Surveillance_Phase",
-              "distribution": 0.1
+              "transition": "Remission_Duration_Check",
+              "distribution": 0.9315
             }
           ]
         },
+        {
+          "distributions": [
+            {
+              "transition": "Recurrence_Workup_Delay",
+              "distribution": 0.03
+            },
+            {
+              "transition": "Remission_Duration_Check",
+              "distribution": 0.97
+            }
+          ]
+        }
+      ]
+    },
+    "Remission_Duration_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Twenty quarterly visits is five relapse-free years - the genuine",
+        "remission exit the pre-fix module lacked. The person leaves the module",
+        "alive; competing mortality is the lifecycle module's job."
+      ],
+      "conditional_transition": [
         {
           "condition": {
             "condition_type": "Attribute",
-            "attribute": "cancer_stage",
-            "operator": "is nil"
+            "attribute": "ovarian_surveillance_visits",
+            "operator": ">=",
+            "value": 20
           },
-          "distributions": [
-            {
-              "transition": "Surveillance_Phase",
-              "distribution": 1.0
-            }
-          ]
+          "transition": "Sustained_Remission_Discharge"
         },
         {
-          "transition": "Surveillance_Phase"
+          "transition": "Surveillance_Interval_Delay"
         }
       ]
     },
-    "Neoadjuvant_Chemotherapy": {
-      "type": "MedicationOrder",
-      "administration": true,
-      "direct_transition": "Interval_Surgery",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "40048",
-          "display": "Carboplatin"
-        },
-        {
-          "system": "RxNorm",
-          "code": "56946",
-          "display": "Paclitaxel"
-        }
-      ]
+    "Sustained_Remission_Discharge": {
+      "type": "SetAttribute",
+      "attribute": "ovarian_cancer_status",
+      "value": "sustained_remission",
+      "direct_transition": "Terminal"
     },
-    "Interval_Surgery": {
-      "type": "Procedure",
+
+    "Recurrence_Workup_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 7,
+        "high": 21,
+        "unit": "days"
+      },
+      "direct_transition": "Recurrence_Visit"
+    },
+    "Recurrence_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "116028008",
-          "display": "Salpingo-oophorectomy"
+          "code": "185347001",
+          "display": "Encounter for problem"
         }
       ],
-      "direct_transition": "Adjuvant_Chemotherapy"
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Count_Recurrence"
     },
-    "Adjuvant_Chemotherapy": {
-      "type": "MedicationOrder",
-      "administration": true,
-      "direct_transition": "Response_Assessment",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "40048",
-          "display": "Carboplatin"
-        },
-        {
-          "system": "RxNorm",
-          "code": "56946",
-          "display": "Paclitaxel"
-        }
-      ]
+    "Count_Recurrence": {
+      "type": "Counter",
+      "attribute": "ovarian_recurrences",
+      "action": "increment",
+      "direct_transition": "Recurrence_Onset_Guard"
     },
-    "Response_Assessment": {
-      "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 1,
-          "standardDeviation": 0.5
-        }
-      },
-      "unit": "months",
-      "direct_transition": "Maintenance_Therapy_Decision"
-    },
-    "Maintenance_Therapy_Decision": {
+    "Recurrence_Onset_Guard": {
       "type": "Simple",
-      "distributed_transition": [
+      "remarks": [
+        "Stacking guard: Recurrent_Disease sits inside a loop that a person can",
+        "re-enter, so the ConditionOnset only fires on the first pass, when its",
+        "assign_to_attribute target is still nil."
+      ],
+      "conditional_transition": [
         {
-          "distribution": 0.5,
-          "transition": "PARP_Inhibitor_Maintenance"
-        },
-        {
-          "distribution": 0.5,
-          "transition": "Surveillance_Phase"
-        }
-      ]
-    },
-    "PARP_Inhibitor_Maintenance": {
-      "type": "MedicationOrder",
-      "chronic": true,
-      "direct_transition": "Surveillance_Phase",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "1597582",
-          "display": "olaparib"
-        }
-      ]
-    },
-    "Surveillance_Phase": {
-      "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 4.5,
-          "standardDeviation": 1.5
-        }
-      },
-      "unit": "months",
-      "direct_transition": "Recurrence_Check"
-    },
-    "Recurrence_Check": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.25,
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "Recurrent Ovarian Cancer",
+            "operator": "is nil"
+          },
           "transition": "Recurrent_Disease"
         },
         {
-          "distribution": 0.75,
-          "transition": "Surveillance_Phase"
+          "transition": "Recurrence_PARP_Check"
         }
       ]
     },
@@ -653,25 +1744,318 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "1259237005",
-          "display": "Recurrent malignant neoplasm"
+          "code": "254849005",
+          "display": "Malignant epithelial neoplasm of ovary"
         }
       ],
-      "direct_transition": "Second_Line_Treatment"
+      "assign_to_attribute": "Recurrent Ovarian Cancer",
+      "direct_transition": "Recurrence_PARP_Check"
     },
-    "Second_Line_Treatment": {
+    "Recurrence_PARP_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "ovarian_parp_status",
+            "operator": "==",
+            "value": "active"
+          },
+          "transition": "Stop_Olaparib_At_Recurrence"
+        },
+        {
+          "transition": "End_Recurrence_Visit"
+        }
+      ]
+    },
+    "Stop_Olaparib_At_Recurrence": {
+      "type": "MedicationEnd",
+      "medication_order": "Start_Olaparib_Maintenance",
+      "direct_transition": "Set_PARP_Stopped"
+    },
+    "Set_PARP_Stopped": {
+      "type": "SetAttribute",
+      "attribute": "ovarian_parp_status",
+      "value": "stopped",
+      "direct_transition": "End_Recurrence_Visit"
+    },
+    "End_Recurrence_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Recurrence_Line_Check"
+    },
+    "Recurrence_Line_Check": {
+      "type": "Simple",
+      "remarks": [
+        "A second relapse after second-line chemotherapy goes to best",
+        "supportive care rather than a third cytotoxic line; this also bounds",
+        "the treatment loop."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "ovarian_recurrences",
+            "operator": ">=",
+            "value": 2
+          },
+          "transition": "Progressive_Disease_Delay"
+        },
+        {
+          "transition": "Second_Line_Regimen_Decision"
+        }
+      ]
+    },
+    "Second_Line_Regimen_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "About 60% of first relapses occur more than six months after platinum",
+        "and are retreated with a platinum doublet; the rest are",
+        "platinum-resistant and get single-agent pegylated liposomal",
+        "doxorubicin (CALYPSO, Pujade-Lauraine J Clin Oncol 2010; AURELIA)."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.6,
+          "transition": "Start_Platinum_Sensitive_Regimen"
+        },
+        {
+          "distribution": 0.4,
+          "transition": "Start_Platinum_Resistant_Regimen"
+        }
+      ]
+    },
+
+    "Start_Platinum_Sensitive_Regimen": {
+      "type": "SetAttribute",
+      "attribute": "ovarian_second_line_cycles",
+      "value": 0,
+      "direct_transition": "Platinum_Sensitive_Cycle_Visit"
+    },
+    "Platinum_Sensitive_Cycle_Visit": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Second_Line_Carboplatin"
+    },
+    "Second_Line_Carboplatin": {
       "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "40048",
+          "display": "Carboplatin"
+        }
+      ],
       "administration": true,
-      "direct_transition": "Palliative_Care",
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Second_Line_Liposomal_Doxorubicin"
+    },
+    "Second_Line_Liposomal_Doxorubicin": {
+      "type": "MedicationOrder",
       "codes": [
         {
           "system": "RxNorm",
           "code": "466523",
           "display": "doxorubicin hydrochloride liposome"
         }
+      ],
+      "administration": true,
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Count_Platinum_Sensitive_Cycle"
+    },
+    "Count_Platinum_Sensitive_Cycle": {
+      "type": "Counter",
+      "attribute": "ovarian_second_line_cycles",
+      "action": "increment",
+      "direct_transition": "End_Platinum_Sensitive_Cycle_Visit"
+    },
+    "End_Platinum_Sensitive_Cycle_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Platinum_Sensitive_Cycle_Check"
+    },
+    "Platinum_Sensitive_Cycle_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "ovarian_second_line_cycles",
+            "operator": ">=",
+            "value": 6
+          },
+          "transition": "Platinum_Sensitive_Outcome_Delay"
+        },
+        {
+          "transition": "Platinum_Sensitive_Cycle_Delay"
+        }
       ]
     },
-    "Palliative_Care": {
+    "Platinum_Sensitive_Cycle_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 27,
+        "high": 29,
+        "unit": "days"
+      },
+      "direct_transition": "Platinum_Sensitive_Cycle_Visit"
+    },
+    "Platinum_Sensitive_Outcome_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 21,
+        "high": 35,
+        "unit": "days"
+      },
+      "direct_transition": "Platinum_Sensitive_Outcome"
+    },
+    "Platinum_Sensitive_Outcome": {
+      "type": "Simple",
+      "remarks": [
+        "CALYPSO reported ~65% objective response to carboplatin-PLD in",
+        "platinum-sensitive relapse; half of the arm re-enters a surveillance",
+        "remission here rather than progressing."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "Enter_Surveillance"
+        },
+        {
+          "distribution": 0.5,
+          "transition": "Progressive_Disease_Delay"
+        }
+      ]
+    },
+
+    "Start_Platinum_Resistant_Regimen": {
+      "type": "SetAttribute",
+      "attribute": "ovarian_second_line_cycles",
+      "value": 0,
+      "direct_transition": "Platinum_Resistant_Cycle_Visit"
+    },
+    "Platinum_Resistant_Cycle_Visit": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Resistant_Liposomal_Doxorubicin"
+    },
+    "Resistant_Liposomal_Doxorubicin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "466523",
+          "display": "doxorubicin hydrochloride liposome"
+        }
+      ],
+      "administration": true,
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Count_Platinum_Resistant_Cycle"
+    },
+    "Count_Platinum_Resistant_Cycle": {
+      "type": "Counter",
+      "attribute": "ovarian_second_line_cycles",
+      "action": "increment",
+      "direct_transition": "End_Platinum_Resistant_Cycle_Visit"
+    },
+    "End_Platinum_Resistant_Cycle_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Platinum_Resistant_Cycle_Check"
+    },
+    "Platinum_Resistant_Cycle_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "ovarian_second_line_cycles",
+            "operator": ">=",
+            "value": 6
+          },
+          "transition": "Platinum_Resistant_Outcome_Delay"
+        },
+        {
+          "transition": "Platinum_Resistant_Cycle_Delay"
+        }
+      ]
+    },
+    "Platinum_Resistant_Cycle_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 27,
+        "high": 29,
+        "unit": "days"
+      },
+      "direct_transition": "Platinum_Resistant_Cycle_Visit"
+    },
+    "Platinum_Resistant_Outcome_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 21,
+        "high": 35,
+        "unit": "days"
+      },
+      "direct_transition": "Platinum_Resistant_Outcome"
+    },
+    "Platinum_Resistant_Outcome": {
+      "type": "Simple",
+      "remarks": [
+        "Single-agent PLD in platinum-resistant relapse achieves a response in",
+        "only ~12-20% (AURELIA chemotherapy arm), so most of this arm",
+        "progresses."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.15,
+          "transition": "Enter_Surveillance"
+        },
+        {
+          "distribution": 0.85,
+          "transition": "Progressive_Disease_Delay"
+        }
+      ]
+    },
+
+    "Progressive_Disease_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Interval from documented progression to the palliative-care handoff."
+      ],
+      "range": {
+        "low": 60,
+        "high": 240,
+        "unit": "days"
+      },
+      "direct_transition": "Palliative_Care_Visit"
+    },
+    "Palliative_Care_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Palliative_Care_Plan"
+    },
+    "Palliative_Care_Plan": {
       "type": "CarePlanStart",
       "codes": [
         {
@@ -680,24 +2064,80 @@
           "display": "Palliative care"
         }
       ],
-      "direct_transition": "Death_from_Cancer"
+      "reason": "Ovarian Cancer",
+      "direct_transition": "End_Palliative_Care_Visit"
     },
-    "Death_from_Cancer": {
+    "End_Palliative_Care_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Hospice_Interval_Delay"
+    },
+    "Hospice_Interval_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 14,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Hospice_Visit"
+    },
+    "Hospice_Visit": {
+      "type": "Encounter",
+      "encounter_class": "hospice",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "305336008",
+          "display": "Admission to hospice (procedure)"
+        }
+      ],
+      "reason": "Ovarian Cancer",
+      "direct_transition": "Hospice_Stay"
+    },
+    "Hospice_Stay": {
+      "type": "Delay",
+      "remarks": [
+        "A bounded hospice benefit period, the third and last Delay allowed to",
+        "sit inside an open encounter here. Well under the linter's 90-day",
+        "warning threshold."
+      ],
+      "range": {
+        "low": 21,
+        "high": 45,
+        "unit": "days"
+      },
+      "direct_transition": "End_Hospice_Visit"
+    },
+    "End_Hospice_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Terminal_Decline_Check"
+    },
+    "Terminal_Decline_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Roughly two hospice benefit periods on average (~3-4 months from",
+        "hospice enrolment to death). Death is recorded here with the encounter",
+        "already closed, and is separated from the recurrence event by the",
+        "second-line course, the progression interval and hospice - typically",
+        "6-20 months, never the same instant."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "Death_From_Ovarian_Cancer"
+        },
+        {
+          "distribution": 0.5,
+          "transition": "Hospice_Interval_Delay"
+        }
+      ]
+    },
+    "Death_From_Ovarian_Cancer": {
       "type": "Death",
+      "condition_onset": "Diagnose_Ovarian_Cancer",
       "direct_transition": "Terminal"
     },
     "Terminal": {
       "type": "Terminal"
-    },
-    "Ovarian_Age_Guard": {
-      "type": "Guard",
-      "allow": {
-        "condition_type": "Age",
-        "operator": ">=",
-        "quantity": 18,
-        "unit": "years"
-      },
-      "direct_transition": "Wellness_Encounter"
     }
   }
 }

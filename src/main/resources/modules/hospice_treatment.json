@@ -63,24 +63,29 @@
       ]
     },
     "Certification_Procedure": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "310417005",
-          "display": "Certification procedure (procedure)"
-        }
+      "type": "Simple",
+      "remarks": [
+        "Task 6.1: was a Procedure coded SNOMED 310417005 \"Certification",
+        "procedure\". An unmapped Procedure is not inert:",
+        "Carrier/Outpatient/InpatientExporter still emit a claim line for it with",
+        "real dollar amounts and a blank HCPCS_CD (the skip-unmapped branch is",
+        "commented out in CarrierExporter.java). Physician certification of",
+        "terminal illness is a condition of the hospice benefit, not a separately",
+        "payable HCPCS service (unlike home health, which has G0180/G0179). Now a",
+        "Simple pass-through; no duration, so timing is unchanged."
       ],
       "direct_transition": "Notifications"
     },
     "Notifications": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "185087000",
-          "display": "Notifications (procedure)"
-        }
+      "type": "Simple",
+      "remarks": [
+        "Task 6.1: was a Procedure coded SNOMED 185087000 \"Notifications\". An",
+        "unmapped Procedure is not inert: Carrier/Outpatient/InpatientExporter",
+        "still emit a claim line for it with real dollar amounts and a blank",
+        "HCPCS_CD (the skip-unmapped branch is commented out in",
+        "CarrierExporter.java). Notifying family/providers is an administrative act",
+        "with no HCPCS. Now a Simple pass-through; no duration, so timing is",
+        "unchanged."
       ],
       "direct_transition": "Initial_Patient_Assessment"
     },
@@ -127,8 +132,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "385763009",
-          "display": "Hospice care (regime/therapy)"
+          "code": "385765002",
+          "display": "Hospice care management (procedure)"
         }
       ],
       "range": {
@@ -136,7 +141,27 @@
         "low": 30,
         "unit": "minutes"
       },
-      "direct_transition": "End_Day"
+      "direct_transition": "End_Day",
+      "remarks": [
+        "Task 2.11 (present-map collision sweep): was 385763009 'Hospice",
+        "care (regime/therapy)', shared with dlbcl.json's Hospice",
+        "CarePlanStart. present is a single map keyed by code shared",
+        "across Condition/Procedure/CarePlan/Medication/Device/Allergy",
+        "entries -- this state fires once per day for the length of stay,",
+        "so an unconditional Procedure present.put() here would silently",
+        "orphan a same-coded, still-open CarePlan from any DLBCL patient",
+        "routed through this shared submodule (alzheimers.json,",
+        "prostate_cancer.json, veteran_prostate_cancer.json all",
+        "CallSubmodule this file), or the reverse ordering would throw",
+        "ClassCastException in HealthRecord.careplanStart. 385763009's FSN",
+        "tag is 'regime/therapy', a correct fit for CarePlanStart and a",
+        "loose fit for a repeating per-diem Procedure event, so this side",
+        "recodes. 385765002 'Hospice care management' is active,",
+        "Verhoeff-valid, unused elsewhere in the module tree, and the",
+        "hcpcs_code_map.json row below mirrors 385763009's existing G0156/",
+        "G0299/G0155/G9857/G9858/S9126 mapping so per-diem billing is",
+        "unchanged."
+      ]
     },
     "End_Day": {
       "type": "Delay",

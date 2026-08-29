@@ -2,7 +2,39 @@
   "name": "chf_meds",
   "specialty": "CARDIOVASCULAR DISEASE (CARDIOLOGY)",
   "remarks": [
-    "Congestive Heart Failure Medications."
+    "Congestive Heart Failure Medications.",
+    "",
+    "Task 1.7 remediation (2026-08-10): 'chf_med_check' was a typo for",
+    "'chf_med_step' -- nothing ever wrote 'chf_med_check', so 'Initialize Check'",
+    "always re-initialized chf_med_step to 1, freezing titration at step 1 for",
+    "life (MRA/ivabradine/BiDil/digoxin/ARNI-switch dead code). Fixed to read",
+    "'chf_med_step', the attribute every other state in this module writes.",
+    "",
+    "All medication orders for a visit now fire back-to-back (same clinical",
+    "visit, zero elapsed time) and CHF_Medication_Encounter closes",
+    "(EncounterEnd) immediately afterward; every *_Supply_Delay that used to",
+    "run BEFORE the close (holding the ambulatory encounter reservation open",
+    "for cumulative months) now runs AFTER it. The 30-day MedicationEnd on",
+    "each chronic:true GDMT drug is deleted -- the engine's own chronic-",
+    "medication renewal (State.java ~963) refills these annually, so an",
+    "explicit 30-day end just produced 1 fill/drug/yr instead of ~12.",
+    "Every path that used to reach this module's own Terminal state directly",
+    "(step>3 fully-titrated, HFmEF submodule return, HFrEF NYHA1 no-op",
+    "revisit) now closes the encounter first -- Terminal does NOT auto-close",
+    "an open encounter for modules loaded from a subdirectory (State.java",
+    "Terminal.process: 'only auto-close encounter for top-level modules',",
+    "gated on `!module.submodule`; every file under modules/heart/ is",
+    "structurally a submodule regardless of how it's invoked).",
+    "",
+    "Task 5.4 remediation (2026-08-10/11): 'furosemide_40_mg_oral_tablet_rx'",
+    "and 'lisinopril_20_mg_oral_tablet_rx' were person-global attribute",
+    "names also written by right_sided_heart_failure.json under the",
+    "identical strings, so a future MedicationEnd or Guard added to either",
+    "module could silently act on the other's order. Prefixed 'chf_' here",
+    "(shared consistently across chf_meds.json and the chf_meds_hfref_",
+    "nyha2/3/4.json submodules it calls into, which intentionally continue",
+    "the same titration attributes) -- verified by grep that no other",
+    "module reads the new names."
   ],
   "states": {
     "Initial": {
@@ -19,7 +51,7 @@
           "transition": "Initialize",
           "condition": {
             "condition_type": "Attribute",
-            "attribute": "chf_med_check",
+            "attribute": "chf_med_step",
             "operator": "is nil"
           }
         },
@@ -50,7 +82,7 @@
       "type": "Simple",
       "conditional_transition": [
         {
-          "transition": "Terminal",
+          "transition": "No_Titration_Encounter_End",
           "condition": {
             "condition_type": "Attribute",
             "attribute": "chf_med_step",
@@ -86,7 +118,7 @@
           }
         },
         {
-          "transition": "Terminal"
+          "transition": "No_Titration_Encounter_End"
         }
       ]
     },
@@ -99,7 +131,7 @@
     "HFmEF": {
       "type": "CallSubmodule",
       "submodule": "heart/chf_meds_hfmef",
-      "direct_transition": "Terminal"
+      "direct_transition": "No_Titration_Encounter_End"
     },
     "HFpEF": {
       "type": "Simple",
@@ -114,23 +146,9 @@
           }
         },
         {
-          "transition": "CHF_Medication_Encounter_End"
+          "transition": "No_Titration_Encounter_End"
         }
       ]
-    },
-    "BB_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "BB_End"
-    },
-    "BB_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "carvedilol_25_mg_oral_tablet_rx",
-      "direct_transition": "ACE_ARB_ARNI_Choice"
     },
     "Diuretic": {
       "type": "MedicationOrder",
@@ -156,8 +174,8 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "Diuretic_Supply_Delay",
-      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx"
+      "direct_transition": "BNP_Monitoring",
+      "assign_to_attribute": "chf_furosemide_40_mg_oral_tablet_rx"
     },
     "HFrEF Branch": {
       "type": "Simple",
@@ -208,8 +226,8 @@
       "codes": [
         {
           "system": "RxNorm",
-          "code": 1545653,
-          "display": "Empagliflozin 10 MG Oral Tablet"
+          "code": "1545658",
+          "display": "empagliflozin 10 MG Oral Tablet"
         }
       ],
       "reason": "chf",
@@ -227,7 +245,7 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "Empagliflozin_Supply_Delay",
+      "direct_transition": "Diuretic",
       "assign_to_attribute": "empagliflozin_10_mg_oral_tablet_rx"
     },
     "HFrEF NYHA 1": {
@@ -243,7 +261,7 @@
           }
         },
         {
-          "transition": "Terminal"
+          "transition": "No_Titration_Encounter_End"
         }
       ]
     },
@@ -286,7 +304,7 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "BB_Supply_Delay",
+      "direct_transition": "ACE_ARB_ARNI_Choice",
       "assign_to_attribute": "carvedilol_25_mg_oral_tablet_rx"
     },
     "CHF_Medication_Encounter": {
@@ -303,6 +321,21 @@
     },
     "CHF_Medication_Encounter_End": {
       "type": "EncounterEnd",
+      "remarks": [
+        "The 'did work this visit' closer -- reached only after every GDMT",
+        "order for this titration step has been placed. Chains into the",
+        "post-close *_Supply_Delay sequence (moved here from before the",
+        "close per Task 1.7) before returning to Terminal."
+      ],
+      "direct_transition": "BB_Supply_Delay"
+    },
+    "No_Titration_Encounter_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Closer for visits where nothing new was ordered this pass (already",
+        "fully titrated past step 3, HFmEF/HFpEF maintenance revisits, or an",
+        "HFrEF NYHA1 revisit past step 1) -- no post-close delay needed."
+      ],
       "direct_transition": "Terminal"
     },
     "ACE_ARB_ARNI_Choice": {
@@ -346,7 +379,7 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "Spironolactone_Supply_Delay",
+      "direct_transition": "Empagliflozin",
       "assign_to_attribute": "spironolactone_25_mg_oral_tablet_rx"
     },
     "ACE": {
@@ -373,8 +406,8 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "ACE_Supply_Delay",
-      "assign_to_attribute": "lisinopril_20_mg_oral_tablet_rx"
+      "direct_transition": "Spironolactone",
+      "assign_to_attribute": "chf_lisinopril_20_mg_oral_tablet_rx"
     },
     "ARNI": {
       "type": "MedicationOrder",
@@ -400,7 +433,7 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "ARNI_Supply_Delay",
+      "direct_transition": "Spironolactone",
       "assign_to_attribute": "sacubitril_97_mg___valsartan_103_rx"
     },
     "ARB": {
@@ -427,50 +460,48 @@
         "as_needed": true
       },
       "chronic": true,
-      "direct_transition": "ARB_Supply_Delay",
+      "direct_transition": "Spironolactone",
       "assign_to_attribute": "losartan_potassium_50_mg_oral_ta_rx"
     },
-    "Diuretic_Supply_Delay": {
+    "BB_Supply_Delay": {
       "type": "Delay",
+      "remarks": [
+        "Post-close titration-cadence delay (Task 1.7) -- fires only after",
+        "CHF_Medication_Encounter_End, never while the encounter is open.",
+        "Routes to whichever of ACE/ARB/ARNI was actually ordered this visit",
+        "via GDMT_Choice_Delay_Router; falls back to the ARNI leg for the",
+        "HFpEF step-1 path, which never ordered BB/ACE/ARB/ARNI at all -- a",
+        "harmless mislabeling of a generic post-visit wait, not a correctness",
+        "issue (the encounter is already closed either way)."
+      ],
       "range": {
         "low": 30,
         "high": 30,
         "unit": "days"
       },
-      "direct_transition": "Diuretic_End"
+      "direct_transition": "GDMT_Choice_Delay_Router"
     },
-    "Diuretic_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "furosemide_40_mg_oral_tablet_rx",
-      "direct_transition": "BNP_Monitoring"
-    },
-    "Empagliflozin_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "Empagliflozin_End"
-    },
-    "Empagliflozin_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "empagliflozin_10_mg_oral_tablet_rx",
-      "direct_transition": "Diuretic"
-    },
-    "Spironolactone_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "Spironolactone_End"
-    },
-    "Spironolactone_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "spironolactone_25_mg_oral_tablet_rx",
-      "direct_transition": "Empagliflozin"
+    "GDMT_Choice_Delay_Router": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "transition": "ACE_Supply_Delay",
+          "condition": {
+            "condition_type": "PriorState",
+            "name": "ACE"
+          }
+        },
+        {
+          "transition": "ARB_Supply_Delay",
+          "condition": {
+            "condition_type": "PriorState",
+            "name": "ARB"
+          }
+        },
+        {
+          "transition": "ARNI_Supply_Delay"
+        }
+      ]
     },
     "ACE_Supply_Delay": {
       "type": "Delay",
@@ -479,12 +510,7 @@
         "high": 30,
         "unit": "days"
       },
-      "direct_transition": "ACE_End"
-    },
-    "ACE_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "lisinopril_20_mg_oral_tablet_rx",
-      "direct_transition": "Spironolactone"
+      "direct_transition": "Spironolactone_Supply_Delay"
     },
     "ARNI_Supply_Delay": {
       "type": "Delay",
@@ -493,12 +519,7 @@
         "high": 30,
         "unit": "days"
       },
-      "direct_transition": "ARNI_End"
-    },
-    "ARNI_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "sacubitril_97_mg___valsartan_103_rx",
-      "direct_transition": "Spironolactone"
+      "direct_transition": "Spironolactone_Supply_Delay"
     },
     "ARB_Supply_Delay": {
       "type": "Delay",
@@ -507,13 +528,35 @@
         "high": 30,
         "unit": "days"
       },
-      "direct_transition": "ARB_End"
+      "direct_transition": "Spironolactone_Supply_Delay"
     },
-    "ARB_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "losartan_potassium_50_mg_oral_ta_rx",
-      "direct_transition": "Spironolactone"
+    "Spironolactone_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Empagliflozin_Supply_Delay"
+    },
+    "Empagliflozin_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Diuretic_Supply_Delay"
+    },
+    "Diuretic_Supply_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 30,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Terminal"
     }
   },
-  "gmf_version": 1
+  "gmf_version": 2
 }

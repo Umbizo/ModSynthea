@@ -6,21 +6,155 @@
   "states": {
     "Initial": {
       "type": "Initial",
-      "direct_transition": "Risk_Assessment"
+      "direct_transition": "DLBCL_Age_Guard"
     },
     "Terminal": {
       "type": "Terminal"
     },
-    "Risk_Assessment": {
-      "type": "Simple",
-      "distributed_transition": [
+    "DLBCL_Age_Guard": {
+      "type": "Guard",
+      "remarks": [
+        "DLBCL is a disease of older adults (median age at diagnosis 66-67;",
+        "SEER Cancer Stat Facts: NHL - Diffuse Large B-Cell Lymphoma,",
+        "https://seer.cancer.gov/statfacts/html/dlbcl.html); the pre-fix module",
+        "rolled a flat 0.002 (0.2%) probability once at birth (Risk_Assessment,",
+        "reached directly from Initial with no age gate at all), so every case",
+        "was a newborn. Gated here at age 40 to capture the small but real",
+        "younger-adult tail while keeping the mass of onsets where they belong."
+      ],
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 40,
+        "unit": "years"
+      },
+      "direct_transition": "DLBCL_Annual_Incidence_Check"
+    },
+    "DLBCL_Annual_Incidence_Check": {
+      "type": "Delay",
+      "remarks": [
+        "Annual reroll (340-390 day jitter), age-banded, replacing the one-shot",
+        "birth roll.",
+        "",
+        "FIX ROUND 1 (reviewer): round 0's raw hazard schedule (2e-05/40-54,",
+        "4e-05/55-64, 8e-05/65-74, 1e-04/75+, unbounded above) put its heaviest",
+        "weight in the open-ended 75+ band. Competing all-cause mortality does",
+        "thin the population there, but not fast enough to offset a rate that",
+        "stays flat and highest for the rest of a person's life -- the reviewer's",
+        "survivorship-weighted re-derivation put the realized median age AT",
+        "DIAGNOSIS around 71-73, above the 64-68 target (SEER median 66-67).",
+        "",
+        "Re-derived here using this engine's OWN competing-mortality model",
+        "(LifecycleModule.likelihoodOfDeath, src/main/java/org/mitre/synthea/",
+        "modules/LifecycleModule.java:1006 -- the actual all-cause hazard that",
+        "determines who survives to be diagnosed in this pipeline, not an",
+        "external approximation): 145.7/100k (40-44), 326.5/100k (45-54),",
+        "737.8/100k (55-64), 1817.0/100k (65-74), 4877.3/100k (75-84),",
+        "13499.4/100k (85-94), 50000/100k (95+).",
+        "",
+        "Combining that with each candidate DLBCL hazard schedule via",
+        "S(age+1) = S(age)*(1-mortality(age))*(1-dlbcl(age)), diagnosis density",
+        "= S(age)*dlbcl(age), and reading off the cumulative-mass age at which",
+        "the running total first reaches 50% of all eventual diagnoses (python,",
+        "ages 40-100, 1-year steps) gives, for this module's new schedule",
+        "(2e-05/40-54, 7e-05/55-64, 1e-04/65-74, 6e-05/75+ -- peak moved from",
+        "75+ to 65-74, matching SEER's own finding that incidence is 'most",
+        "frequently diagnosed among people aged 65-74' rather than monotonically",
+        "rising past 74; SEER Cancer Stat Facts: NHL - Diffuse Large B-Cell",
+        "Lymphoma): cumulative mass 48.98% by age 66, 52.73% by age 67 ->",
+        "**median age at diagnosis = 67**, inside the 64-68 target and matching",
+        "the cited SEER median (66-67) directly. p5 = 45, p95 = 87.",
+        "",
+        "Fix round 2 (reviewer): restoring an acknowledgment the round-1 rewrite",
+        "of this remarks block dropped. This schedule's lifetime risk (age 40+",
+        "survivors, same competing-mortality model as above) is ~0.23% -- below",
+        "the ~0.55% implied by SEER's own NHL lifetime-risk figure (2.0% of",
+        "men/women diagnosed with NHL in their lifetime, 2018-2021 data; SEER",
+        "Cancer Stat Facts: Non-Hodgkin Lymphoma) combined with DLBCL's ~25-30%",
+        "share of NHL cases (Lymphoma Research Foundation / Cancer Support",
+        "Community: DLBCL is 'about one out of every three cases of NHL'). This",
+        "is deliberate, not an error: this module's per-band rates are the",
+        "controller-specified calibration (2e-05/40-54 through 1e-04/65-74),",
+        "which this task was not asked to re-target to the population-wide SEER",
+        "level -- the same conservative-by-design pattern as the other cancer",
+        "modules fixed in this remediation pass (e.g. acute_myeloid_leukemia's",
+        "module-level remarks make the identical acknowledgment against Shallis",
+        "et al. 2019).",
+        "",
+        "ComplexTransition.follow takes the first true branch, so bands are",
+        "checked age-descending."
+      ],
+      "range": {
+        "low": 340,
+        "high": 390,
+        "unit": "days"
+      },
+      "complex_transition": [
         {
-          "distribution": 0.002,
-          "transition": "Symptom_Onset"
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 75,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "distribution": 0.00006,
+              "transition": "Symptom_Onset"
+            },
+            {
+              "distribution": 0.99994,
+              "transition": "DLBCL_Annual_Incidence_Check"
+            }
+          ]
         },
         {
-          "distribution": 0.998,
-          "transition": "Terminal"
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 65,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "distribution": 0.0001,
+              "transition": "Symptom_Onset"
+            },
+            {
+              "distribution": 0.9999,
+              "transition": "DLBCL_Annual_Incidence_Check"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 55,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "distribution": 0.00007,
+              "transition": "Symptom_Onset"
+            },
+            {
+              "distribution": 0.99993,
+              "transition": "DLBCL_Annual_Incidence_Check"
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "distribution": 0.00002,
+              "transition": "Symptom_Onset"
+            },
+            {
+              "distribution": 0.99998,
+              "transition": "DLBCL_Annual_Incidence_Check"
+            }
+          ]
         }
       ]
     },
@@ -38,6 +172,7 @@
     },
     "Presentation_Encounter": {
       "type": "Encounter",
+      "encounter_class": "outpatient",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -49,13 +184,23 @@
     },
     "Lymphadenopathy": {
       "type": "Symptom",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "30746006",
-          "display": "Lymphadenopathy"
-        }
+      "remarks": [
+        "FIX: Symptom has no 'codes' field (Gson silently drops it, same class of",
+        "defect as Observation's missing assign_to_attribute support -- see the",
+        "prostate_cancer.json PSA_Interpretation fix). Without the required",
+        "'symptom' field, State$Symptom.process passes a null symptom name into",
+        "person.setSymptom, which NPEs and discards the whole patient record --",
+        "named explicitly in task 1.10's tree-wide static check of Symptom states",
+        "missing this field. B_Symptoms two states later already uses the correct",
+        "'symptom' field; this now matches that pattern."
       ],
+      "symptom": "Lymphadenopathy",
+      "cause": "Diffuse large B-cell lymphoma",
+      "probability": 0.9,
+      "range": {
+        "low": 40,
+        "high": 90
+      },
       "direct_transition": "B_Symptoms_Check"
     },
     "B_Symptoms_Check": {
@@ -78,11 +223,23 @@
     },
     "Excisional_Biopsy": {
       "type": "Procedure",
+      "remarks": [
+        "Fix round 1 (reviewer): 86273004 is the generic root 'Biopsy' concept, not",
+        "a lymph node biopsy specifically -- its shared hcpcs_code_map row bills",
+        "CPT 38221 (bone marrow biopsy), which is wrong for a diagnostic",
+        "excisional lymph node biopsy. Recoded to 307996001 'Excisional biopsy of",
+        "lymph node', verified active via the NCI EVS REST API",
+        "(api-evsrest.nci.nih.gov/api/v1/concept/snomedct_us/307996001: name",
+        "'Excisional biopsy of lymph node', active=true) and Verhoeff-valid. New",
+        "hcpcs_code_map row added (CPT 38510, 'Biopsy or excision of lymph",
+        "node(s); open, deep cervical node(s)' -- cervical lymphadenopathy is the",
+        "most common diagnostic-biopsy presentation for DLBCL)."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "86273004",
-          "display": "Excision biopsy of lymph node"
+          "code": "307996001",
+          "display": "Excisional biopsy of lymph node"
         }
       ],
       "direct_transition": "DLBCL_Diagnosis"
@@ -92,8 +249,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "118601006",
-          "display": "Diffuse large B-cell lymphoma"
+          "code": "1172695008",
+          "display": "Diffuse large B cell lymphoma"
         }
       ],
       "direct_transition": "PET_CT",
@@ -161,6 +318,7 @@
     },
     "Medical_Oncology_Encounter": {
       "type": "Encounter",
+      "encounter_class": "outpatient",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -175,13 +333,40 @@
       "distributed_transition": [
         {
           "distribution": 0.9,
-          "transition": "Rituximab"
+          "transition": "Init_RCHOP_Cycle_Counter"
         },
         {
           "distribution": 0.1,
           "transition": "Dose_Adjusted_RCHOP"
         }
       ]
+    },
+    "Init_RCHOP_Cycle_Counter": {
+      "type": "SetAttribute",
+      "attribute": "dlbcl_rchop_cycle",
+      "value": 0,
+      "direct_transition": "Rituximab"
+    },
+    "Interim_PET_CT_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for oncology service"
+        }
+      ],
+      "remarks": [
+        "Task 2.11 (sweep): RCHOP_Cycle_Check previously transitioned",
+        "straight to Interim_PET_CT with no open encounter (Medical_",
+        "Oncology_Encounter_End had already closed the last cycle's",
+        "encounter). Wraps the scan in its own outpatient visit, matching",
+        "the same same-instant open/close idiom this module uses for every",
+        "other oncology touchpoint (Medical_Oncology_Encounter, RCHOP_",
+        "Cycle_Visit, Salvage_Oncology_Encounter)."
+      ],
+      "direct_transition": "Interim_PET_CT"
     },
     "Interim_PET_CT": {
       "type": "Procedure",
@@ -192,6 +377,10 @@
           "display": "Positron emission tomography with computed tomography"
         }
       ],
+      "direct_transition": "Interim_PET_CT_Encounter_End"
+    },
+    "Interim_PET_CT_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "Response_Assessment"
     },
     "Response_Assessment": {
@@ -359,13 +548,39 @@
       "distributed_transition": [
         {
           "distribution": 0.65,
-          "transition": "Autologous_Stem_Cell_Transplant"
+          "transition": "ASCT_Encounter"
         },
         {
           "distribution": 0.35,
           "transition": "CAR_T_Assessment"
         }
       ]
+    },
+    "ASCT_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for oncology service"
+        }
+      ],
+      "remarks": [
+        "Task 2.11 (sweep): Salvage_Oncology_Encounter_End closes the salvage",
+        "chemo encounter before Transplant_Assessment, so the whole salvage",
+        "tail (Transplant_Assessment, Autologous_Stem_Cell_Transplant,",
+        "Post_Transplant_Response, CAR_T_Assessment, CAR_T_Therapy,",
+        "CAR_T_Response, Palliative_Care, Hospice) was reachable with no",
+        "encounter open. Wraps ASCT in the same same-instant outpatient",
+        "idiom used tree-wide in this module (see Interim_PET_CT_Encounter's",
+        "remark). The real-world ~2-4 week inpatient conditioning/",
+        "engraftment stay (modeled with encounter_class:inpatient + a",
+        "Procedure duration in myelodysplastic_syndromes.json's Allo_SCT_",
+        "Procedure for the same 58776007 code) is not reproduced here --",
+        "out of scope for this structural fix, follow-up candidate."
+      ],
+      "direct_transition": "Autologous_Stem_Cell_Transplant"
     },
     "Autologous_Stem_Cell_Transplant": {
       "type": "Procedure",
@@ -376,6 +591,10 @@
           "display": "Autologous bone marrow transplant"
         }
       ],
+      "direct_transition": "ASCT_Encounter_End"
+    },
+    "ASCT_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "Post_Transplant_Response"
     },
     "Post_Transplant_Response": {
@@ -396,13 +615,31 @@
       "distributed_transition": [
         {
           "distribution": 0.5,
-          "transition": "CAR_T_Therapy"
+          "transition": "CAR_T_Encounter"
         },
         {
           "distribution": 0.5,
-          "transition": "Palliative_Care"
+          "transition": "Palliative_Care_Encounter"
         }
       ]
+    },
+    "CAR_T_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for oncology service"
+        }
+      ],
+      "remarks": [
+        "Task 2.11 (sweep): see ASCT_Encounter's remark -- same no-encounter",
+        "defect, same fix. Real-world CAR-T administration typically",
+        "involves ~1-2 weeks of inpatient monitoring for cytokine release",
+        "syndrome; not reproduced here, out of scope for this structural fix."
+      ],
+      "direct_transition": "CAR_T_Therapy"
     },
     "CAR_T_Therapy": {
       "type": "Procedure",
@@ -413,6 +650,10 @@
           "display": "Chimeric antigen receptor T-cell immunotherapy"
         }
       ],
+      "direct_transition": "CAR_T_Encounter_End"
+    },
+    "CAR_T_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "CAR_T_Response"
     },
     "CAR_T_Response": {
@@ -424,9 +665,30 @@
         },
         {
           "distribution": 0.45,
-          "transition": "Palliative_Care"
+          "transition": "Palliative_Care_Encounter"
         }
       ]
+    },
+    "Palliative_Care_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for oncology service"
+        }
+      ],
+      "remarks": [
+        "Task 2.11 (sweep): see ASCT_Encounter's remark -- same no-encounter",
+        "defect (reachable from both CAR_T_Assessment's 50% branch and",
+        "CAR_T_Response's 45% branch, both converging here), same fix. Wraps",
+        "both palliative-care and hospice enrollment in one end-of-life",
+        "planning visit, closed before Death_From_DLBCL (never left open",
+        "through death, matching the convention established in Task 1.1's",
+        "prostate_cancer.json fix)."
+      ],
+      "direct_transition": "Palliative_Care"
     },
     "Palliative_Care": {
       "type": "CarePlanStart",
@@ -448,10 +710,23 @@
           "display": "Hospice care"
         }
       ],
+      "direct_transition": "Palliative_Care_Encounter_End"
+    },
+    "Palliative_Care_Encounter_End": {
+      "type": "EncounterEnd",
       "direct_transition": "Death_From_DLBCL"
     },
     "Death_From_DLBCL": {
       "type": "Death",
+      "referenced_by_attribute": "Diffuse Large B Cell Lymphoma",
+      "remarks": [
+        "Task 2.11 (sweep): had none of codes/condition_onset/",
+        "referenced_by_attribute -- null cause of death for every DLBCL",
+        "death (reached from the Hospice CarePlanStart above). `Diffuse",
+        "Large B Cell Lymphoma` is assign_to_attribute'd by DLBCL_Diagnosis,",
+        "which dominates this state (verified by dominator analysis), so",
+        "the attribute is guaranteed set."
+      ],
       "direct_transition": "Terminal"
     },
     "Complete_Response": {
@@ -468,14 +743,25 @@
     },
     "Primary_Refractory": {
       "type": "ConditionOnset",
+      "remarks": [
+        "FIX: used to transition straight to Salvage_Treatment_Decision, skipping",
+        "Salvage_Oncology_Encounter -- unlike Partial_Response and Relapsed_DLBCL,",
+        "which both correctly route through that encounter first. A (state,",
+        "encounter_open) BFS confirmed the entire RICE/RDHAP salvage chemo chain",
+        "(RICE_Rituximab...End_Etoposide_Salvage, RDHAP_Rituximab...",
+        "End_Dexamethasone, Salvage_Treatment_Decision, Salvage_Oncology_",
+        "Encounter_End -- 18 states) was reachable in both an encounter-open and",
+        "an encounter-closed context: administration:true medications were being",
+        "ordered with no encounter open at all on this arm."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "1259237005",
-          "display": "Recurrent malignant neoplasm"
+          "code": "109969005",
+          "display": "Diffuse non-Hodgkin's lymphoma, large cell"
         }
       ],
-      "direct_transition": "Salvage_Treatment_Decision"
+      "direct_transition": "Salvage_Oncology_Encounter"
     },
     "Surveillance_Careplan": {
       "type": "CarePlanStart",
@@ -522,8 +808,8 @@
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "1259237005",
-          "display": "Recurrent malignant neoplasm"
+          "code": "109969005",
+          "display": "Diffuse non-Hodgkin's lymphoma, large cell"
         }
       ],
       "direct_transition": "Salvage_Oncology_Encounter"
@@ -550,7 +836,7 @@
       "remarks": [
         "Placeholder for intensified regimen"
       ],
-      "direct_transition": "Rituximab"
+      "direct_transition": "Init_RCHOP_Cycle_Counter"
     },
     "Rituximab": {
       "type": "MedicationOrder",
@@ -669,6 +955,7 @@
     },
     "Salvage_Oncology_Encounter": {
       "type": "Encounter",
+      "encounter_class": "outpatient",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -685,6 +972,14 @@
     },
     "Ondansetron": {
       "type": "MedicationOrder",
+      "remarks": [
+        "Constraint 3: administration:true added -- given IV as chemo antiemetic",
+        "premedication, same convention as the other administered drugs in this",
+        "module. New J2405 row added to rxnorm_hcpcs_map.json (was the module's",
+        "one scanner gap; verified real via web search, 'Injection, ondansetron",
+        "hydrochloride, per 1 mg')."
+      ],
+      "administration": true,
       "assign_to_attribute": "ondansetron_tx",
       "codes": [
         {
@@ -698,11 +993,82 @@
     "End_Ondansetron": {
       "type": "MedicationEnd",
       "referenced_by_attribute": "ondansetron_tx",
-      "direct_transition": "Medical_Oncology_Encounter_End"
+      "direct_transition": "Count_RCHOP_Cycle"
     },
     "Medical_Oncology_Encounter_End": {
       "type": "EncounterEnd",
-      "direct_transition": "Interim_PET_CT"
+      "remarks": [
+        "Now reached after every R-CHOP cycle (1-6), not just once: closes the",
+        "cycle's encounter before RCHOP_Cycle_Check decides whether to advance",
+        "to the next 21-day cycle or, after cycle 6, to response assessment."
+      ],
+      "direct_transition": "RCHOP_Cycle_Check"
+    },
+    "Count_RCHOP_Cycle": {
+      "type": "Counter",
+      "attribute": "dlbcl_rchop_cycle",
+      "action": "increment",
+      "direct_transition": "Medical_Oncology_Encounter_End"
+    },
+    "RCHOP_Cycle_Check": {
+      "type": "Simple",
+      "remarks": [
+        "FIX: R-CHOP was a single instantaneous pass through all five drugs with",
+        "no encounter class, no elapsed time, and no repetition -- one cycle,",
+        "given once, at whatever instant Medical_Oncology_Encounter opened.",
+        "Standard R-CHOP-21 is 6 cycles at 21-day intervals (~18 weeks total).",
+        "This checks the just-incremented cycle count: at 6, treatment is",
+        "complete and the module proceeds to response assessment; otherwise it",
+        "waits out the rest of the 21-day cycle (already closed, above) before",
+        "opening a new encounter for the next cycle."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "dlbcl_rchop_cycle",
+            "operator": ">=",
+            "value": 6
+          },
+          "transition": "Interim_PET_CT_Encounter"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "dlbcl_rchop_cycle",
+            "operator": "<",
+            "value": 6
+          },
+          "transition": "RCHOP_Cycle_Delay"
+        }
+      ]
+    },
+    "RCHOP_Cycle_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "21-day R-CHOP cycle interval. The encounter is already closed (via",
+        "Medical_Oncology_Encounter_End above), so this multi-day gap sits",
+        "entirely outside any open encounter -- the closed-before-blocked",
+        "pattern the encounter-lock linter requires."
+      ],
+      "range": {
+        "low": 20,
+        "high": 22,
+        "unit": "days"
+      },
+      "direct_transition": "RCHOP_Cycle_Visit"
+    },
+    "RCHOP_Cycle_Visit": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for oncology service"
+        }
+      ],
+      "direct_transition": "Rituximab"
     }
   }
 }

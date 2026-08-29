@@ -1,8 +1,90 @@
 {
   "name": "Pancreatic Cancer",
+  "gmf_version": 2,
   "remarks": [
-    "Clinically accurate pancreatic cancer module reflecting current guidelines",
-    "Includes proper risk stratification, diagnostic pathways, and evidence-based treatments"
+    "Pancreatic adenocarcinoma: age-shaped incidence, symptomatic/incidental",
+    "presentation, diagnostic workup, NCCN resectability-based treatment",
+    "(resectable / borderline resectable / locally advanced / metastatic),",
+    "gemcitabine chemotherapy, surveillance, recurrence and terminal decline.",
+    "",
+    "ENCOUNTER DISCIPLINE: ModSynthea gives each person a single encounter",
+    "reservation (State.java Encounter/EncounterEnd). Every Encounter opened",
+    "here reaches an EncounterEnd before any Delay >= 1 day or Guard, and",
+    "every such Delay sits between an EncounterEnd and the next Encounter.",
+    "The only Delays inside an open encounter are Postoperative_Stay (Whipple",
+    "length of stay) and Hospice_Stay (hospice benefit period), both far",
+    "under the linter's 90-day warning threshold. The pre-fix module opened",
+    "Staging_Workup and then ran Determine_Resectability straight into",
+    "months-to-years of Postoperative_Recovery / Reassessment_After_Neoadjuvant",
+    "/ Supportive_Care with that encounter still open -- three CRITICAL",
+    "encounter-lock findings. All chemotherapy is now closed per-cycle",
+    "encounters (open -> administer -> close -> inter-cycle Delay), surgery",
+    "is a bounded inpatient admission, and terminal decline is a closed",
+    "hospice-visit loop ending in Death recorded outside any open encounter.",
+    "",
+    "INCIDENCE: the pre-fix module rolled a single 0.00013 chance at exactly",
+    "age 50 (~100x under SEER and spiked at one age). Replaced with an",
+    "annual age-banded reroll from 45: 5e-5/yr (45-54), 1.5e-4/yr (55-64),",
+    "3e-4/yr (65+). Cumulative to age 90 = 10(5e-5) + 10(1.5e-4) + 25(3e-4)",
+    "= 0.95%, ~1.25% to age 100 -- below SEER's cited ~1.7% lifetime risk",
+    "(SEER Cancer Stat Facts: Pancreatic Cancer,",
+    "https://seer.cancer.gov/statfacts/html/pancreas.html) because SEER's",
+    "figure integrates rates that keep climbing past age 70 (peak incidence",
+    "~40-50/100,000/yr in the 70s-80s) more steeply than this three-band",
+    "approximation; the brief-specified bands are used as given rather than",
+    "re-solved to hit 1.7% exactly. Onset is spread across ages 45+, not",
+    "spiked at one age.",
+    "",
+    "GEMCITABINE: every dose is now a clinician-administered infusion",
+    "(administration: true), routed to a professional/outpatient claim line",
+    "via rxnorm_hcpcs_map (RxNorm 1719003 -> HCPCS J9201). Administration",
+    "rows cannot stack in ModSynthea (verified in prior remediation tasks),",
+    "so no MedicationEnd is needed; the pre-fix module's single open-ended",
+    "MedicationOrder (no administration flag, no MedicationEnd, no course",
+    "length) is gone from every arm.",
+    "",
+    "TREATMENT COURSES (NCCN Pancreatic Adenocarcinoma Guideline categories",
+    "match this module's pre-existing pancreatic_stage values):",
+    "- Resectable (15%): upfront pancreaticoduodenectomy (Whipple), then 6",
+    "  cycles adjuvant gemcitabine (CONKO-001, Oettle et al. JAMA",
+    "  2013;310:1473 -- 6 months adjuvant gemcitabine, median OS 22.8mo).",
+    "- Borderline resectable (25%): 3 cycles neoadjuvant gemcitabine,",
+    "  restaging, resection, then 3 more cycles adjuvant (6 total, split",
+    "  around surgery -- PREOPANC, Versteijne et al. J Clin Oncol",
+    "  2020;38:1763).",
+    "- Locally advanced / unresectable (40%): 6 cycles induction gemcitabine",
+    "  then palliative-care integration and hospice (LAP07, Hammel et al.",
+    "  JAMA 2016;315:1844 -- chemo alone median OS ~13mo in this population).",
+    "- Metastatic (20%): palliative-care referral at diagnosis, 4 cycles",
+    "  gemcitabine (Burris et al. J Clin Oncol 1997;15:2403 -- single-agent",
+    "  gemcitabine median OS 5.65mo), then hospice.",
+    "",
+    "the former shared 'cancer_stage' attribute (also written by",
+    "ovarian_cancer.json under a different value set: resectable/",
+    "borderline/locally_advanced/metastatic here vs. I/II/III/IV there) was",
+    "renamed to 'pancreatic_stage' by the cross-module attribute-rename task",
+    "-- verified by grep that no other module reads it.",
+    "",
+    "SECOND ROOT CAUSE OF THE UNDER-COUNT (found during this task's own",
+    "verification, not named in the audit): the module's six Symptom states",
+    "(Jaundice/Dark_Urine/Pruritus/Abdominal_Pain/Weight_Loss/Anorexia) had",
+    "'codes' but no top-level 'symptom' field. State$Symptom.process calls",
+    "Person.setSymptom(module, cause, symptom, ...), which does",
+    "symptoms.containsKey(type) on a ConcurrentHashMap -- with symptom",
+    "deserialized null, this throws NullPointerException the instant",
+    "generatePerson() first reached one of these states, discarding that",
+    "person's entire in-progress record (including any ConditionOnset from",
+    "a few states earlier) before it could ever reach the CSV export.",
+    "90% of onsets route through Jaundice_Presentation or",
+    "Abdominal_Pain_Presentation (Determine_Presentation_Type: 0.7/0.2),",
+    "so this alone was enough to explain a smoke run showing zero cases",
+    "against a nonzero calibrated hazard. Confirmed by an isolated in-memory",
+    "harness (TestHelper.exportOff() + Generator, no CSV/FHIR writes): 1500",
+    "people, 33775 Cancer_Incidence_Check rolls, expected 5.15 onsets by the",
+    "bands above, 0 recorded (Poisson P(X=0)=0.6%) before the fix; every",
+    "Symptom state now carries 'symptom' (Person.setSymptom's map key) and",
+    "an 'exact' severity, matching the working convention used by",
+    "pneumonia.json/valvular_heart_failure.json/mantle_cell_lymphoma.json."
   ],
   "states": {
     "Initial": {
@@ -14,23 +96,84 @@
       "allow": {
         "condition_type": "Age",
         "operator": ">=",
-        "quantity": 50,
+        "quantity": 45,
         "unit": "years"
       },
       "direct_transition": "Cancer_Incidence_Check"
     },
     "Cancer_Incidence_Check": {
       "type": "Simple",
-      "distributed_transition": [
+      "remarks": [
+        "Age-banded annual incidence (brief-specified bands): 5e-5/yr 45-54,",
+        "1.5e-4/yr 55-64, 3e-4/yr 65+. Evaluated oldest-first because",
+        "ComplexTransition.follow takes the first condition that is true.",
+        "See module header for the cumulative-risk arithmetic and SEER",
+        "citation."
+      ],
+      "complex_transition": [
         {
-          "distribution": 0.00013,
-          "transition": "Pancreatic_Cancer_Onset"
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 65,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "transition": "Pancreatic_Cancer_Onset",
+              "distribution": 0.0003
+            },
+            {
+              "transition": "Annual_Reroll_Delay",
+              "distribution": 0.9997
+            }
+          ]
         },
         {
-          "distribution": 0.99987,
-          "transition": "Terminal"
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 55,
+            "unit": "years"
+          },
+          "distributions": [
+            {
+              "transition": "Pancreatic_Cancer_Onset",
+              "distribution": 0.00015
+            },
+            {
+              "transition": "Annual_Reroll_Delay",
+              "distribution": 0.99985
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "transition": "Pancreatic_Cancer_Onset",
+              "distribution": 5e-05
+            },
+            {
+              "transition": "Annual_Reroll_Delay",
+              "distribution": 0.99995
+            }
+          ]
         }
       ]
+    },
+    "Annual_Reroll_Delay": {
+      "type": "Delay",
+      "remarks": [
+        "Pure annual incidence reroll; no screening test exists for average-",
+        "risk pancreatic cancer (no USPSTF recommendation), so this loop",
+        "generates no health-record activity until onset."
+      ],
+      "range": {
+        "low": 11,
+        "high": 13,
+        "unit": "months"
+      },
+      "direct_transition": "Cancer_Incidence_Check"
     },
     "Pancreatic_Cancer_Onset": {
       "type": "ConditionOnset",
@@ -63,6 +206,18 @@
     },
     "Jaundice_Presentation": {
       "type": "Symptom",
+      "remarks": [
+        "The 'symptom' field is required by State$Symptom (Person.setSymptom",
+        "keys its internal severity-tracking map on it) -- the pre-fix",
+        "module's six Symptom states omitted it, so `symptom` deserialized",
+        "null and every presentation crashed with a NullPointerException in",
+        "ConcurrentHashMap.containsKey(null) the moment the module first",
+        "reached one of them. Verified: this silently discarded the",
+        "in-progress generatePerson() call (and with it the ConditionOnset",
+        "already recorded a few states earlier), which is why the pre-fix",
+        "module's already-rare onsets never reliably reached conditions.csv."
+      ],
+      "symptom": "Jaundice",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -70,10 +225,14 @@
           "display": "Jaundice"
         }
       ],
+      "exact": {
+        "quantity": 1
+      },
       "direct_transition": "Dark_Urine"
     },
     "Dark_Urine": {
       "type": "Symptom",
+      "symptom": "Dark urine",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -81,10 +240,14 @@
           "display": "Dark urine"
         }
       ],
+      "exact": {
+        "quantity": 1
+      },
       "direct_transition": "Pruritus"
     },
     "Pruritus": {
       "type": "Symptom",
+      "symptom": "Pruritus",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -92,65 +255,14 @@
           "display": "Pruritus due to systemic disorder"
         }
       ],
+      "exact": {
+        "quantity": 1
+      },
       "direct_transition": "Seek_Medical_Care_Jaundice"
-    },
-    "Abdominal_Pain_Presentation": {
-      "type": "Symptom",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "21522001",
-          "display": "Abdominal pain"
-        }
-      ],
-      "direct_transition": "Weight_Loss"
-    },
-    "Weight_Loss": {
-      "type": "Symptom",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "161832001",
-          "display": "Weight loss"
-        }
-      ],
-      "direct_transition": "Anorexia"
-    },
-    "Anorexia": {
-      "type": "Symptom",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "79890006",
-          "display": "Loss of appetite"
-        }
-      ],
-      "direct_transition": "Seek_Medical_Care_Pain"
-    },
-    "Incidental_Finding": {
-      "type": "Encounter",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "185349003",
-          "display": "Encounter for check up"
-        }
-      ],
-      "direct_transition": "Incidental_Imaging_Finding"
-    },
-    "Incidental_Imaging_Finding": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "169070004",
-          "display": "CT of abdomen"
-        }
-      ],
-      "direct_transition": "Seek_Medical_Care_Incidental"
     },
     "Seek_Medical_Care_Jaundice": {
       "type": "Encounter",
+      "encounter_class": "ambulatory",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -158,29 +270,8 @@
           "display": "Encounter for problem"
         }
       ],
+      "reason": "Pancreatic Cancer",
       "direct_transition": "Liver_Function_Tests"
-    },
-    "Seek_Medical_Care_Pain": {
-      "type": "Encounter",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "185347001",
-          "display": "Encounter for problem"
-        }
-      ],
-      "direct_transition": "Initial_Imaging"
-    },
-    "Seek_Medical_Care_Incidental": {
-      "type": "Encounter",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "185347001",
-          "display": "Encounter for problem"
-        }
-      ],
-      "direct_transition": "Referral_To_Specialist"
     },
     "Liver_Function_Tests": {
       "type": "Observation",
@@ -213,18 +304,8 @@
           "display": "Ultrasound of abdomen"
         }
       ],
+      "reason": "Pancreatic Cancer",
       "direct_transition": "CT_Pancreas_Protocol"
-    },
-    "Initial_Imaging": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "169070004",
-          "display": "CT of abdomen"
-        }
-      ],
-      "direct_transition": "CA19_9_Testing"
     },
     "CT_Pancreas_Protocol": {
       "type": "Procedure",
@@ -235,6 +316,7 @@
           "display": "CT of abdomen"
         }
       ],
+      "reason": "Pancreatic Cancer",
       "direct_transition": "CA19_9_Testing"
     },
     "CA19_9_Testing": {
@@ -258,6 +340,7 @@
           "display": "Referral to service (procedure)"
         }
       ],
+      "reason": "Pancreatic Cancer",
       "direct_transition": "End_Initial_Encounter"
     },
     "End_Initial_Encounter": {
@@ -276,15 +359,147 @@
       "unit": "days",
       "direct_transition": "Staging_Workup"
     },
-    "Staging_Workup": {
-      "type": "Encounter",
+    "Abdominal_Pain_Presentation": {
+      "type": "Symptom",
+      "symptom": "Abdominal pain",
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "185317003",
-          "display": "Telephone Encounter"
+          "code": "21522001",
+          "display": "Abdominal pain"
         }
       ],
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "Weight_Loss"
+    },
+    "Weight_Loss": {
+      "type": "Symptom",
+      "symptom": "Weight loss",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "161832001",
+          "display": "Weight loss"
+        }
+      ],
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "Anorexia"
+    },
+    "Anorexia": {
+      "type": "Symptom",
+      "symptom": "Loss of appetite",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "79890006",
+          "display": "Loss of appetite"
+        }
+      ],
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "Seek_Medical_Care_Pain"
+    },
+    "Seek_Medical_Care_Pain": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Pancreatic Cancer",
+      "direct_transition": "Initial_Imaging"
+    },
+    "Initial_Imaging": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "169070004",
+          "display": "CT of abdomen"
+        }
+      ],
+      "reason": "Pancreatic Cancer",
+      "direct_transition": "CA19_9_Testing"
+    },
+    "Incidental_Finding": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185349003",
+          "display": "Encounter for check up"
+        }
+      ],
+      "direct_transition": "Incidental_Imaging_Finding"
+    },
+    "Incidental_Imaging_Finding": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "169070004",
+          "display": "CT of abdomen"
+        }
+      ],
+      "direct_transition": "End_Incidental_Encounter"
+    },
+    "End_Incidental_Encounter": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Closes the same day the incidental finding is imaged, per the",
+        "fix spec. The referral encounter below is a separate visit after",
+        "a short scheduling delay, not a continuation of this one."
+      ],
+      "direct_transition": "Incidental_Referral_Delay"
+    },
+    "Incidental_Referral_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 7,
+        "unit": "days"
+      },
+      "direct_transition": "Seek_Medical_Care_Incidental"
+    },
+    "Seek_Medical_Care_Incidental": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Pancreatic Cancer",
+      "direct_transition": "Referral_To_Specialist"
+    },
+    "Staging_Workup": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "remarks": [
+        "Resectability determination / multidisciplinary tumor-board",
+        "review visit. Was previously coded as a Telephone Encounter",
+        "(185317003), which does not fit an in-person staging discussion;",
+        "recoded to the module's standard problem-visit code."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Pancreatic Cancer",
       "direct_transition": "Determine_Resectability"
     },
     "Determine_Resectability": {
@@ -310,27 +525,96 @@
     },
     "Resectable_Disease": {
       "type": "SetAttribute",
-      "attribute": "cancer_stage",
+      "attribute": "pancreatic_stage",
       "value": "resectable",
-      "direct_transition": "Surgical_Resection"
+      "direct_transition": "End_Staging_Workup"
     },
     "Borderline_Resectable": {
       "type": "SetAttribute",
-      "attribute": "cancer_stage",
+      "attribute": "pancreatic_stage",
       "value": "borderline",
-      "direct_transition": "Neoadjuvant_Therapy"
+      "direct_transition": "End_Staging_Workup"
     },
     "Locally_Advanced": {
       "type": "SetAttribute",
-      "attribute": "cancer_stage",
+      "attribute": "pancreatic_stage",
       "value": "locally_advanced",
-      "direct_transition": "Systemic_Therapy"
+      "direct_transition": "End_Staging_Workup"
     },
     "Metastatic_Disease": {
       "type": "SetAttribute",
-      "attribute": "cancer_stage",
+      "attribute": "pancreatic_stage",
       "value": "metastatic",
-      "direct_transition": "Palliative_Care_Referral"
+      "direct_transition": "End_Staging_Workup"
+    },
+    "End_Staging_Workup": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Was the module's principal defect: this encounter never reached",
+        "an EncounterEnd, held the reservation across every treatment arm's",
+        "delays (Postoperative_Recovery, Reassessment_After_Neoadjuvant,",
+        "Supportive_Care -- weeks to months each). Now closes the same day",
+        "resectability is determined; every arm's own encounters (surgical",
+        "admission, chemo-cycle visits, hospice) are opened fresh."
+      ],
+      "direct_transition": "Post_Staging_Router"
+    },
+    "Post_Staging_Router": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "pancreatic_stage",
+            "operator": "==",
+            "value": "resectable"
+          },
+          "transition": "Surgical_Scheduling_Delay"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "pancreatic_stage",
+            "operator": "==",
+            "value": "borderline"
+          },
+          "transition": "Neoadjuvant_Scheduling_Delay"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "pancreatic_stage",
+            "operator": "==",
+            "value": "locally_advanced"
+          },
+          "transition": "Systemic_Scheduling_Delay"
+        },
+        {
+          "transition": "Palliative_Care_Referral"
+        }
+      ]
+    },
+    "Surgical_Scheduling_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 7,
+        "high": 14,
+        "unit": "days"
+      },
+      "direct_transition": "Surgical_Admission"
+    },
+    "Surgical_Admission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission"
+        }
+      ],
+      "reason": "Pancreatic Cancer",
+      "direct_transition": "Surgical_Resection"
     },
     "Surgical_Resection": {
       "type": "Procedure",
@@ -341,76 +625,324 @@
           "display": "Pancreaticoduodenectomy"
         }
       ],
+      "reason": "Pancreatic Cancer",
+      "direct_transition": "Postoperative_Stay"
+    },
+    "Postoperative_Stay": {
+      "type": "Delay",
+      "remarks": [
+        "Genuine inpatient length of stay after a Whipple procedure --",
+        "the one Delay in the surgical arm allowed to sit inside an open",
+        "encounter. Median LOS 7-11 days at high-volume centers, longer",
+        "with complications (Vollmer et al., J Gastrointest Surg",
+        "2012;16:89)."
+      ],
+      "range": {
+        "low": 7,
+        "high": 14,
+        "unit": "days"
+      },
+      "direct_transition": "End_Surgical_Admission"
+    },
+    "End_Surgical_Admission": {
+      "type": "EncounterEnd",
       "direct_transition": "Postoperative_Recovery"
     },
     "Postoperative_Recovery": {
       "type": "Delay",
+      "remarks": [
+        "Recovery at home before adjuvant chemotherapy can start, outside",
+        "any encounter. NCCN recommends initiating adjuvant therapy within",
+        "8-12 weeks of surgery in patients who have recovered adequately."
+      ],
       "distribution": {
         "kind": "GAUSSIAN",
         "parameters": {
-          "mean": 10,
-          "standardDeviation": 3
-        }
-      },
-      "unit": "days",
-      "direct_transition": "Adjuvant_Chemotherapy"
-    },
-    "Neoadjuvant_Therapy": {
-      "type": "MedicationOrder",
-      "direct_transition": "Reassessment_After_Neoadjuvant",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "1719003",
-          "display": "gemcitabine 1000 MG Injection"
-        }
-      ]
-    },
-    "Reassessment_After_Neoadjuvant": {
-      "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 16,
-          "standardDeviation": 4
+          "mean": 8,
+          "standardDeviation": 2
         }
       },
       "unit": "weeks",
-      "direct_transition": "Surgical_Resection"
+      "direct_transition": "Post_Surgery_Chemo_Router"
     },
-    "Systemic_Therapy": {
-      "type": "MedicationOrder",
-      "direct_transition": "Palliative_Care_Integration",
-      "codes": [
+    "Post_Surgery_Chemo_Router": {
+      "type": "Simple",
+      "remarks": [
+        "Borderline-resectable patients already received 3 cycles of",
+        "neoadjuvant gemcitabine before surgery (Set_Post_Neoadjuvant_",
+        "Cycle_Count seeds the shared adjuvant counter at 3, so the loop",
+        "below only runs 3 more cycles to reach a 6-cycle total course).",
+        "Upfront-resectable patients start the same loop from 0."
+      ],
+      "conditional_transition": [
         {
-          "system": "RxNorm",
-          "code": "1719003",
-          "display": "gemcitabine 1000 MG Injection"
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "pancreatic_stage",
+            "operator": "==",
+            "value": "borderline"
+          },
+          "transition": "Set_Post_Neoadjuvant_Cycle_Count"
+        },
+        {
+          "transition": "Adjuvant_Cycle_Visit"
         }
       ]
     },
-    "Adjuvant_Chemotherapy": {
-      "type": "MedicationOrder",
-      "administration": true,
-      "direct_transition": "Surveillance",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "1719003",
-          "display": "gemcitabine 1000 MG Injection"
-        }
-      ]
+    "Set_Post_Neoadjuvant_Cycle_Count": {
+      "type": "SetAttribute",
+      "attribute": "pancreatic_adjuvant_cycles",
+      "value": 3,
+      "direct_transition": "Adjuvant_Cycle_Visit"
     },
-    "Palliative_Care_Integration": {
-      "type": "CarePlanStart",
+    "Adjuvant_Cycle_Visit": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "remarks": [
+        "One closed outpatient encounter per cycle, so each infusion lands",
+        "on its own claim with its own date of service."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "103735009",
-          "display": "Palliative care"
+          "code": "185347001",
+          "display": "Encounter for problem"
         }
       ],
-      "direct_transition": "Supportive_Care"
+      "reason": "Pancreatic Cancer",
+      "direct_transition": "Adjuvant_Gemcitabine"
+    },
+    "Adjuvant_Gemcitabine": {
+      "type": "MedicationOrder",
+      "remarks": [
+        "Clinician-administered infusion: administration:true routes this",
+        "to a professional/outpatient claim line through rxnorm_hcpcs_map",
+        "(RxNorm 1719003 -> HCPCS J9201) rather than a Part D dispensing",
+        "event. Administration rows cannot stack, so no MedicationEnd is",
+        "needed even though this fires once per cycle."
+      ],
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1719003",
+          "display": "gemcitabine 1000 MG Injection"
+        }
+      ],
+      "administration": true,
+      "reason": "Pancreatic Cancer",
+      "direct_transition": "Count_Adjuvant_Cycle"
+    },
+    "Count_Adjuvant_Cycle": {
+      "type": "Counter",
+      "attribute": "pancreatic_adjuvant_cycles",
+      "action": "increment",
+      "direct_transition": "End_Adjuvant_Cycle_Visit"
+    },
+    "End_Adjuvant_Cycle_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Adjuvant_Cycle_Check"
+    },
+    "Adjuvant_Cycle_Check": {
+      "type": "Simple",
+      "remarks": [
+        "6 cycles of adjuvant gemcitabine monotherapy is the CONKO-001",
+        "regimen (Oettle et al., JAMA 2013;310:1473): median OS 22.8",
+        "months vs 20.2 months observation, 6-month course."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "pancreatic_adjuvant_cycles",
+            "operator": ">=",
+            "value": 6
+          },
+          "transition": "Surveillance"
+        },
+        {
+          "transition": "Adjuvant_Cycle_Delay"
+        }
+      ]
+    },
+    "Adjuvant_Cycle_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 26,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Adjuvant_Cycle_Visit"
+    },
+    "Neoadjuvant_Scheduling_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 7,
+        "high": 14,
+        "unit": "days"
+      },
+      "direct_transition": "Neoadjuvant_Cycle_Visit"
+    },
+    "Neoadjuvant_Cycle_Visit": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Pancreatic Cancer",
+      "direct_transition": "Neoadjuvant_Gemcitabine"
+    },
+    "Neoadjuvant_Gemcitabine": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1719003",
+          "display": "gemcitabine 1000 MG Injection"
+        }
+      ],
+      "administration": true,
+      "reason": "Pancreatic Cancer",
+      "direct_transition": "Count_Neoadjuvant_Cycle"
+    },
+    "Count_Neoadjuvant_Cycle": {
+      "type": "Counter",
+      "attribute": "pancreatic_neoadjuvant_cycles",
+      "action": "increment",
+      "direct_transition": "End_Neoadjuvant_Cycle_Visit"
+    },
+    "End_Neoadjuvant_Cycle_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Neoadjuvant_Cycle_Check"
+    },
+    "Neoadjuvant_Cycle_Check": {
+      "type": "Simple",
+      "remarks": [
+        "3 cycles of neoadjuvant gemcitabine before restaging and surgery;",
+        "the shared adjuvant loop after surgery runs 3 more to a 6-cycle",
+        "total perioperative course (PREOPANC, Versteijne et al., J Clin",
+        "Oncol 2020;38:1763)."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "pancreatic_neoadjuvant_cycles",
+            "operator": ">=",
+            "value": 3
+          },
+          "transition": "Reassessment_After_Neoadjuvant"
+        },
+        {
+          "transition": "Neoadjuvant_Cycle_Delay"
+        }
+      ]
+    },
+    "Neoadjuvant_Cycle_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 26,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Neoadjuvant_Cycle_Visit"
+    },
+    "Reassessment_After_Neoadjuvant": {
+      "type": "Delay",
+      "remarks": [
+        "Restaging imaging/labs and surgical planning window between the",
+        "last neoadjuvant cycle and the operating room, outside any",
+        "encounter. Was previously a bare 16(+/-4)-week delay standing in",
+        "for the whole neoadjuvant course with the staging encounter still",
+        "open across it; that course is now the explicit cycle loop above,",
+        "so this delay covers only the post-chemo restaging interval."
+      ],
+      "range": {
+        "low": 14,
+        "high": 28,
+        "unit": "days"
+      },
+      "direct_transition": "Surgical_Admission"
+    },
+    "Systemic_Scheduling_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 7,
+        "high": 14,
+        "unit": "days"
+      },
+      "direct_transition": "Systemic_Cycle_Visit"
+    },
+    "Systemic_Cycle_Visit": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Pancreatic Cancer",
+      "direct_transition": "Systemic_Gemcitabine"
+    },
+    "Systemic_Gemcitabine": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1719003",
+          "display": "gemcitabine 1000 MG Injection"
+        }
+      ],
+      "administration": true,
+      "reason": "Pancreatic Cancer",
+      "direct_transition": "Count_Systemic_Cycle"
+    },
+    "Count_Systemic_Cycle": {
+      "type": "Counter",
+      "attribute": "pancreatic_systemic_cycles",
+      "action": "increment",
+      "direct_transition": "End_Systemic_Cycle_Visit"
+    },
+    "End_Systemic_Cycle_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Systemic_Cycle_Check"
+    },
+    "Systemic_Cycle_Check": {
+      "type": "Simple",
+      "remarks": [
+        "6 cycles (~6 months) of induction gemcitabine for unresectable",
+        "locally advanced disease (LAP07, Hammel et al., JAMA",
+        "2016;315:1844 -- chemotherapy-alone arm median OS ~13 months),",
+        "then palliative-care integration."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "pancreatic_systemic_cycles",
+            "operator": ">=",
+            "value": 6
+          },
+          "transition": "Palliative_Care_Integration"
+        },
+        {
+          "transition": "Systemic_Cycle_Delay"
+        }
+      ]
+    },
+    "Systemic_Cycle_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 26,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Systemic_Cycle_Visit"
     },
     "Palliative_Care_Referral": {
       "type": "CarePlanStart",
@@ -421,30 +953,85 @@
           "display": "Palliative care"
         }
       ],
-      "direct_transition": "Systemic_Therapy_Metastatic"
+      "reason": "Pancreatic Cancer",
+      "direct_transition": "Metastatic_Scheduling_Delay"
     },
-    "Systemic_Therapy_Metastatic": {
+    "Metastatic_Scheduling_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 7,
+        "high": 14,
+        "unit": "days"
+      },
+      "direct_transition": "Metastatic_Cycle_Visit"
+    },
+    "Metastatic_Cycle_Visit": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "reason": "Pancreatic Cancer",
+      "direct_transition": "Metastatic_Gemcitabine"
+    },
+    "Metastatic_Gemcitabine": {
       "type": "MedicationOrder",
-      "direct_transition": "Supportive_Care",
       "codes": [
         {
           "system": "RxNorm",
           "code": "1719003",
           "display": "gemcitabine 1000 MG Injection"
         }
+      ],
+      "administration": true,
+      "reason": "Pancreatic Cancer",
+      "direct_transition": "Count_Metastatic_Cycle"
+    },
+    "Count_Metastatic_Cycle": {
+      "type": "Counter",
+      "attribute": "pancreatic_metastatic_cycles",
+      "action": "increment",
+      "direct_transition": "End_Metastatic_Cycle_Visit"
+    },
+    "End_Metastatic_Cycle_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Metastatic_Cycle_Check"
+    },
+    "Metastatic_Cycle_Check": {
+      "type": "Simple",
+      "remarks": [
+        "4 cycles (~4 months) single-agent palliative gemcitabine (Burris",
+        "et al., J Clin Oncol 1997;15:2403 -- median OS 5.65 months with",
+        "gemcitabine monotherapy in advanced pancreatic cancer), then",
+        "transition to the shared pre-hospice supportive-care interval."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "pancreatic_metastatic_cycles",
+            "operator": ">=",
+            "value": 4
+          },
+          "transition": "Supportive_Care"
+        },
+        {
+          "transition": "Metastatic_Cycle_Delay"
+        }
       ]
     },
-    "Supportive_Care": {
+    "Metastatic_Cycle_Delay": {
       "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 6,
-          "standardDeviation": 3
-        }
+      "range": {
+        "low": 26,
+        "high": 30,
+        "unit": "days"
       },
-      "unit": "months",
-      "direct_transition": "Disease_Progression"
+      "direct_transition": "Metastatic_Cycle_Visit"
     },
     "Surveillance": {
       "type": "Delay",
@@ -482,19 +1069,6 @@
       ],
       "direct_transition": "Palliative_Care_Integration"
     },
-    "Disease_Progression": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.9,
-          "transition": "Cancer_Death"
-        },
-        {
-          "distribution": 0.1,
-          "transition": "Continue_Supportive_Care"
-        }
-      ]
-    },
     "Continue_Surveillance": {
       "type": "Delay",
       "distribution": {
@@ -506,18 +1080,6 @@
       },
       "unit": "months",
       "direct_transition": "Long_Term_Survival"
-    },
-    "Continue_Supportive_Care": {
-      "type": "Delay",
-      "distribution": {
-        "kind": "GAUSSIAN",
-        "parameters": {
-          "mean": 3,
-          "standardDeviation": 2
-        }
-      },
-      "unit": "months",
-      "direct_transition": "Cancer_Death"
     },
     "Long_Term_Survival": {
       "type": "Delay",
@@ -531,8 +1093,107 @@
       "unit": "months",
       "direct_transition": "Terminal"
     },
+    "Palliative_Care_Integration": {
+      "type": "CarePlanStart",
+      "remarks": [
+        "Shared by post-resection recurrence and by locally-advanced",
+        "disease after induction chemotherapy."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "103735009",
+          "display": "Palliative care"
+        }
+      ],
+      "reason": "Pancreatic Cancer",
+      "direct_transition": "Supportive_Care"
+    },
+    "Supportive_Care": {
+      "type": "Delay",
+      "remarks": [
+        "Interval from palliative-care integration/referral to hospice",
+        "enrollment, outside any encounter. Shared by the recurrence,",
+        "locally-advanced and metastatic arms. Values unchanged from the",
+        "pre-fix module."
+      ],
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 6,
+          "standardDeviation": 3
+        }
+      },
+      "unit": "months",
+      "direct_transition": "Hospice_Enrollment"
+    },
+    "Hospice_Enrollment": {
+      "type": "Encounter",
+      "encounter_class": "hospice",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "305336008",
+          "display": "Admission to hospice (procedure)"
+        }
+      ],
+      "reason": "Pancreatic Cancer",
+      "direct_transition": "Hospice_Stay"
+    },
+    "Hospice_Stay": {
+      "type": "Delay",
+      "remarks": [
+        "A bounded hospice benefit period -- the other Delay allowed to",
+        "sit inside an open encounter. Well under the linter's 90-day",
+        "warning threshold."
+      ],
+      "range": {
+        "low": 14,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "End_Hospice_Visit"
+    },
+    "End_Hospice_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Terminal_Decline_Check"
+    },
+    "Terminal_Decline_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Roughly two hospice benefit periods on average. Death is recorded",
+        "here with the encounter already closed, and is separated from",
+        "recurrence/diagnosis by the treatment course, the supportive-care",
+        "interval and hospice -- months, never the same instant."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.5,
+          "transition": "Cancer_Death"
+        },
+        {
+          "distribution": 0.5,
+          "transition": "Hospice_Interval_Delay"
+        }
+      ]
+    },
+    "Hospice_Interval_Delay": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 10,
+        "unit": "days"
+      },
+      "direct_transition": "Hospice_Enrollment"
+    },
     "Cancer_Death": {
       "type": "Death",
+      "remarks": [
+        "condition_onset rather than bare codes, so this can never take",
+        "the null-codes path that produces the tree's Observation NPE",
+        "family."
+      ],
+      "condition_onset": "Pancreatic_Cancer_Onset",
       "direct_transition": "Terminal"
     },
     "Terminal": {

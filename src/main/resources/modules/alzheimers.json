@@ -1,33 +1,226 @@
 {
   "name": "Alzheimers Disease Module",
   "remarks": [
-    "Comprehensive Alzheimer's disease simulation from preclinical to end-stage",
-    "Includes cognitive decline, functional impairment, and behavioral symptoms",
-    "Models diagnosis, treatment, caregiver burden, and advanced care planning"
+    "Alzheimer's disease from age-gated MCI incidence through mild, moderate and",
+    "severe dementia, long-term care and hospice, with stage-specific mortality.",
+    "",
+    "STRUCTURE (Task 4.2, 2026-08-10 -- staged-progression rework built on top of",
+    "Task 1.6's containment hotfix, whose mechanisms are all preserved: the age>=65",
+    "Guard + 1.5%/yr annual-reroll MCI incidence, the 10%/yr MCI->AD conversion,",
+    "post-diagnosis mortality, the memantine re-order guard, and explicit",
+    "EncounterEnds at every supersession point):",
+    "",
+    "  MCI  --10%/yr-->  mild AD  --40%/yr-->  moderate  --33%/yr-->  severe",
+    "                                                                   |",
+    "                              community severe --35%/yr--> nursing facility",
+    "                                                                   |",
+    "                                          hospice (via the hospice contract)",
+    "",
+    "Each stage transition is an annual reroll (a ~365-day Delay carrying its own",
+    "distributed_transition), never a per-visit-pass roll, so the stated rate is",
+    "the realised per-year rate.",
+    "",
+    "STAGE-DURATION CALIBRATION. Per-year transition rates are set from published",
+    "stage durations rather than a single flat rate: the Global Deterioration",
+    "Scale/FAST literature puts mild dementia (GDS 4) at roughly 2 years,",
+    "moderate (GDS 5) at roughly 1.5-2 years and moderately-severe-to-severe",
+    "(GDS 6-7) at roughly 2.5 years (Reisberg B, Ferris SH, de Leon MJ, Crook T,",
+    "'The Global Deterioration Scale for assessment of primary degenerative",
+    "dementia', Am J Psychiatry 1982;139(9):1136-1139; Reisberg B, 'Functional",
+    "assessment staging (FAST)', Psychopharmacol Bull 1988;24(4):653-659).",
+    "Converting mean durations to annual hazards gives ~40%/yr mild->moderate and",
+    "~33%/yr moderate->severe. Stage-specific competing mortality is taken from",
+    "the elevated all-cause mortality reported across dementia severity (Todd S,",
+    "Barr S, Roberts M, Passmore AP, 'Survival in dementia and predictors of",
+    "mortality: a review', Int J Geriatr Psychiatry 2013;28(11):1109-1124) and,",
+    "for the advanced/long-term-care arm, from Mitchell SL, Teno JM, Kiely DK,",
+    "et al., 'The clinical course of advanced dementia', N Engl J Med",
+    "2009;361(16):1529-1538 (median survival ~1.3 years after meeting",
+    "advanced-dementia criteria). In the mild and moderate stages death is a",
+    "single branch (5%/yr and 10%/yr); from the severe stage onward it is split",
+    "between dying without hospice, staying in place, and electing hospice",
+    "first, because hospice here is a route to death rather than an additional",
+    "endpoint. The resulting mean survival from",
+    "AD diagnosis is ~6.1 years by graph arithmetic (see the Task 4.2 report for",
+    "the original computation and the fix-round-2 section of gate72-report.md",
+    "for the current one), inside the 4-8 year range the Alzheimer's",
+    "Association commonly cites. These are calibration approximations, not",
+    "literature-exact replications, and they were NOT fitted to a simulated",
+    "cohort -- per-task generation runs are not performed in this lane.",
+    "",
+    "HOSPICE ELECTION -- STOCK STACKING (fix round 2, 2026-08-11). The severe/",
+    "LTC hospice-election rates below were set in Task 4.2 to reach 48.5%",
+    "standalone, matching the ~50% Medicare-dementia-decedent hospice-use",
+    "literature figure on the (incorrect, per Task 5.2) assumption that this",
+    "module's patients cannot reach any other hospice route. Task 5.2 found",
+    "that ~38% of the population passes through dementia.json's prodrome",
+    "(AlzheimersOnset/EarlyOnsetAlzheimersOnset) before this module's own",
+    "diagnosis gate ever runs, and that prodrome sets `Type of Alzheimer's` --",
+    "which survives the exclusivity gate and independently satisfies",
+    "home_hospice_snf.json's `Alzheimers` branch. So ~38% of this module's",
+    "patients can elect hospice via TWO stacked, uncoordinated mechanisms (this",
+    "module's own 48.5% engine, union'd with the stock route), not one. The",
+    "2026-08-11 gate measured combined hospice election among ALL AD decedents",
+    "(this module's patients plus stock dementia.json's) at 79.8% (AD-reason-",
+    "coded) to 86.3% (any-reason) against a 45-55% target, with 71% of AD",
+    "decedents attributed to stock dementia.json and 24% to this module.",
+    "Back-solved: this module's OWN standalone election is cut 48.5% -> 18.9%",
+    "(Severe_Stage_Annual_Check hospice 0.30->0.07, NursingHome_Period_Check",
+    "hospice 0.16->0.04; arithmetic on those two states). This module's",
+    "patients' REALISED rate -- own engine unioned with the near-certain",
+    "eventual stock route for the ~38% who carry `Type of Alzheimer's`",
+    "(home_hospice_snf.json rechecks eligibility every wellness visit for",
+    "years, so a permanently-eligible flag converges toward certain eventual",
+    "election, not a single low-probability roll) -- is then",
+    "1-(1-0.189)*(1-0.38) = 49.7%, matching the ~50% target for this module's",
+    "own population. CONCERN, not fixed here: the population-WIDE combined",
+    "figure cannot be brought into the 45-55% band by this module's",
+    "parameters alone -- the measured floor (79.8%) forces stock",
+    "dementia.json's own hospice-election rate to be at least",
+    "(0.798 - 0.24)/0.71 = 78.6% by itself, and 71% of that alone (55.8%)",
+    "already exceeds the ceiling before this module contributes anything. A",
+    "population-wide fix needs dementia.json/home_hospice_snf.json changes,",
+    "out of scope for a this-module-only fix; flagged for follow-up.",
+    "",
+    "TREATMENT. Cholinesterase inhibitors (donepezil / rivastigmine / galantamine)",
+    "are dispensed prescriptions -- prescribable SCD RxCUIs with chronic:true, so",
+    "the engine's chronic-medication renewal keeps refilling them for life",
+    "(Birks JS, 'Cholinesterase inhibitors for Alzheimer's disease', Cochrane",
+    "Database Syst Rev 2006;(1):CD005593). Memantine is added at the moderate",
+    "stage, also chronic and still guarded against re-ordering. Anti-amyloid",
+    "antibodies are administered infusions (administration:true -> J-code path,",
+    "never the Part D/NDC path) restricted to the early-stage, amyloid-positive",
+    "subgroup and given as a bounded course with a real cadence: lecanemab 39",
+    "biweekly infusions over ~18 months (van Dyck CH, Swanson CJ, Aisen P, et al.,",
+    "'Lecanemab in early Alzheimer's disease', N Engl J Med 2023;388(1):9-21) and",
+    "donanemab 18 monthly infusions over ~72 weeks (Sims JR, Zimmer JA, Evans CD,",
+    "et al., 'Donanemab in early symptomatic Alzheimer disease', JAMA",
+    "2023;330(6):512-527), each with periodic ARIA surveillance MRI. Amyloid",
+    "positivity is attribute-modelled at 55% of incident MCI, consistent with the",
+    "amyloid-PET positivity prevalence reported in MCI populations (Jansen WJ,",
+    "Ossenkoppele R, Knol DL, et al., 'Prevalence of cerebral amyloid pathology in",
+    "persons without dementia', JAMA 2015;313(19):1924-1938, which reports",
+    "positivity rising with age across the MCI range). Only 12% of the",
+    "amyloid-positive subgroup starts an antibody, reflecting real-world uptake",
+    "limits (eligibility work-up, infusion capacity, APOE4/ARIA risk) rather than",
+    "a published uptake figure -- an explicit assumption.",
+    "",
+    "CARE SETTING. The long-term-care phase is a recurring *closed* skilled-nursing",
+    "encounter: a bounded 20-30 day covered period inside the encounter, then an",
+    "EncounterEnd, then a 60-75 day interval OUTSIDE any encounter. Real nursing",
+    "facility residence is continuous, but a continuously-open encounter would hold",
+    "the engine's single per-person encounter reservation for the rest of the",
+    "patient's life and silently suppress every other module's visits -- the exact",
+    "defect class this remediation exists to remove. Sampling residence as",
+    "recurring bounded covered periods keeps plausible institutional claim",
+    "durations without a lifelong lock. This is a deliberate modelling trade-off,",
+    "documented rather than hidden.",
+    "",
+    "HOSPICE. This module does not model hospice encounters itself. It honours the",
+    "tree's hospice contract: it sets `hospice_reason` (to its own AD condition",
+    "entry) and `hospice` = true, which is what home_hospice_snf.json's own",
+    "Alzheimers branch does, and which hospice_treatment.json's `Wait for Hospice`",
+    "Guard reads to run the real hospice-class encounter, certification, per-diem",
+    "hospice care and discharge. A module-isolated run therefore shows no hospice",
+    "encounters from this module; a full-tree run gets them from",
+    "hospice_treatment.json with a correct `reason`.",
+    "",
+    "COORDINATION WITH stock dementia.json (Task 5.2, group 2 -- CLOSED). Both",
+    "modules diagnose SNOMED 26929004 and had no cross-gating; dementia.json also",
+    "diagnoses 230265002 (familial early-onset AD) from the same encounter. The",
+    "two are now mutually exclusive, first-to-diagnose wins, gated on both sides:",
+    "Stock_Dementia_Dx_Guard / Stock_Dementia_Dx_Recheck here, and",
+    "Custom_AD_Dx_Guard / Custom_AD_Dx_Recheck in dementia.json (which tests this",
+    "module's `alzheimers_disease` attribute).",
+    "The single most damaging consequence this closes is NOT the duplicate",
+    "diagnosis -- HealthRecord.conditionStart is idempotent per code, so 26929004",
+    "never produced two condition rows -- it is dementia.json's EndFirstPrescription",
+    "(MedicationEnd, referenced_by_attribute 'Alzheimer's Medication'). Because",
+    "HealthRecord.medicationStart is idempotent per RxCUI, dementia.json's donepezil",
+    "997223 / galantamine 310436 orders bound that attribute to THIS module's",
+    "already-open chronic order, and the MedicationEnd then ran",
+    "HealthRecord.chronicMedicationEnd on it -- deleting the lifelong refill stream",
+    "for the ~80% of this module's patients on those two drugs. See",
+    "task-4.2-report.md section 5 item 3 and task-5.2-report.md group 2.",
+    "What the gate does NOT do: it does not move the Phase 1 gate's combined 65+",
+    "26929004 share of 0.166 (vs 0.078 for this module alone). Mutual exclusion",
+    "removes overlapping care pathways, not patients -- the union of the two",
+    "modules' diagnosed populations is unchanged by construction. That 0.166 is a",
+    "calibration question for whoever owns the ceiling, not a coordination bug."
   ],
+  "gmf_version": 2,
   "states": {
     "Initial": {
       "type": "Initial",
-      "direct_transition": "MedicareMaturationDelay"
+      "direct_transition": "MCI_Age_Guard"
     },
-    "MedicareMaturationDelay": {
-      "type": "Delay",
-      "range": {
-        "low": 0,
-        "high": 1825,
-        "unit": "days"
-      },
-      "direct_transition": "PreclinicalPhase"
-    },
-    "PreclinicalPhase": {
-      "type": "Delay",
-      "range": {
-        "low": 2,
-        "high": 10,
+
+    "MCI_Age_Guard": {
+      "type": "Guard",
+      "remarks": [
+        "Task 1.6 containment fix, preserved unchanged by Task 4.2: the pre-1.6",
+        "module opened MildCognitiveImpairment unconditionally off a fixed",
+        "birth-anchored delay chain, so ~100% of the population eventually got MCI.",
+        "Entry is gated at 65 and Annual_MCI_Incidence_Check does the per-year",
+        "rolling, so the earliest possible onset age is ~66."
+      ],
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 65,
         "unit": "years"
       },
+      "direct_transition": "Annual_MCI_Incidence_Check"
+    },
+
+    "Annual_MCI_Incidence_Check": {
+      "type": "Delay",
+      "remarks": [
+        "Annual reroll loop, not a birth/age roll: the Delay and the",
+        "distributed_transition live on the same state, so 1.5% is the realised",
+        "per-year incidence. Approximates population-based amnestic-MCI incidence",
+        "in adults 65+ (pooled cohort estimates cluster around 1-2 per 100",
+        "person-years; Petersen RC, 'Mild Cognitive Impairment', Continuum",
+        "(Minneap Minn) 2016;22(2):404-418). Calibration approximation, not a",
+        "literature-exact replication."
+      ],
+      "range": {
+        "low": 350,
+        "high": 380,
+        "unit": "days"
+      },
+      "distributed_transition": [
+        {
+          "distribution": 0.015,
+          "transition": "MCI_Workup_Visit"
+        },
+        {
+          "distribution": 0.985,
+          "transition": "Annual_MCI_Incidence_Check"
+        }
+      ]
+    },
+
+    "MCI_Workup_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "remarks": [
+        "Task 4.2: the MCI diagnosis, its MoCA and the memory-impairment symptom",
+        "used to fire BEFORE this visit opened (Task 1.6 reported them as",
+        "clinical states reached with no encounter open and deferred the fix",
+        "here). The encounter now opens first, so every clinical row it produces",
+        "is attributable to a real visit."
+      ],
       "direct_transition": "MildCognitiveImpairment"
     },
+
     "MildCognitiveImpairment": {
       "type": "ConditionOnset",
       "assign_to_attribute": "cognitive_status",
@@ -43,8 +236,19 @@
           "display": "Mild cognitive impairment, so stated"
         }
       ],
+      "direct_transition": "Memory_Impairment"
+    },
+
+    "Memory_Impairment": {
+      "type": "Symptom",
+      "symptom": "Memory impairment",
+      "range": {
+        "low": 40,
+        "high": 70
+      },
       "direct_transition": "MCI_MoCA"
     },
+
     "MCI_MoCA": {
       "type": "Observation",
       "category": "exam",
@@ -55,30 +259,125 @@
           "display": "Montreal Cognitive Assessment total score"
         }
       ],
-      "value": {
-        "type": "Range",
-        "low": 18,
-        "high": 25,
-        "unit": "points"
-      },
-      "direct_transition": "Memory_Impairment"
-    },
-    "End_MCI_Encounter": {
-      "type": "EncounterEnd",
-      "direct_transition": "AmyloidEligibilityAssessment"
-    },
-    "Memory_Impairment": {
-      "type": "Symptom",
-      "symptom": "Memory impairment",
       "range": {
-        "low": 40,
-        "high": 70
+        "low": 18,
+        "high": 25
       },
-      "direct_transition": "PrimaryCareVisit_MCI"
+      "unit": "{score}",
+      "remarks": [
+        "MoCA is 0-30; 18-25 approximates the MCI band."
+      ],
+      "direct_transition": "MCI_Cognitive_Assessment"
     },
-    "PrimaryCareVisit_MCI": {
+
+    "MCI_Cognitive_Assessment": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "113024001",
+          "display": "Assessment and interpretation of higher cerebral function, cognitive testing"
+        }
+      ],
+      "remarks": [
+        "Task 1.6 recoded this from CPT 99483 (a bad-system entry the RIF",
+        "mapper cannot see). 113024001 is an active SNOMED concept mapped to",
+        "99483 in hcpcs_code_map.json, so the CPT billing code survives export."
+      ],
+      "direct_transition": "BrainMRI"
+    },
+
+    "BrainMRI": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "816077007",
+          "display": "MRI of brain"
+        }
+      ],
+      "remarks": [
+        "TASK 6.1 EXPORT-MAP FLAG (recorded here because this module is the row's",
+        "only consumer): 113091000's hcpcs_code_map row is [S8035 'Magnetic",
+        "source imaging', S8042 'MRI, low-field']. Neither is a payable brain-MRI",
+        "code -- brain MRI is CPT 70551 (without contrast) / 70552 (with) /",
+        "70553 (without and with). 113091000 is used ONLY in this module, in",
+        "three states (BrainMRI, Baseline_ARIA_MRI, ARIA_MRISurveillance), so",
+        "6.1 can re-weight or replace the row with no effect on any other",
+        "module. Task 4.2 grew the row's traffic (two states to three, and the",
+        "anti-amyloid infusion loop fires ARIA_MRISurveillance ~3 times per",
+        "treated patient), which raises the value of fixing it."
+      ],
+      "direct_transition": "End_MCI_Workup_Visit"
+    },
+
+    "End_MCI_Workup_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "MCI_Amyloid_Status_Roll"
+    },
+
+    "MCI_Amyloid_Status_Roll": {
+      "type": "Simple",
+      "remarks": [
+        "Amyloid status is attribute-modelled (per the Task 4.2 brief), not",
+        "modelled as a PET/CSF procedure -- there is no verified-active SNOMED",
+        "amyloid-PET concept with an existing hcpcs_code_map row in this tree,",
+        "and inventing one is out of scope. 55% positivity approximates the",
+        "amyloid-PET positivity prevalence reported across MCI populations",
+        "(Jansen WJ et al., JAMA 2015;313(19):1924-1938)."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.55,
+          "transition": "Set_Amyloid_Positive"
+        },
+        {
+          "distribution": 0.45,
+          "transition": "Set_Amyloid_Negative"
+        }
+      ]
+    },
+
+    "Set_Amyloid_Positive": {
+      "type": "SetAttribute",
+      "attribute": "ad_amyloid_status",
+      "value": "positive",
+      "direct_transition": "AntiAmyloid_Candidacy"
+    },
+
+    "Set_Amyloid_Negative": {
+      "type": "SetAttribute",
+      "attribute": "ad_amyloid_status",
+      "value": "negative",
+      "direct_transition": "Annual_MCI_Progression_Check"
+    },
+
+    "AntiAmyloid_Candidacy": {
+      "type": "Simple",
+      "remarks": [
+        "Only amyloid-positive, early-stage (MCI) patients can reach this state,",
+        "which is the labelled population for lecanemab and donanemab. 12% uptake",
+        "among eligible patients is an explicit assumption standing in for",
+        "real-world access limits (specialist referral, infusion capacity,",
+        "APOE4/ARIA risk tolerance), not a published figure. Net effect: ~6.6% of",
+        "incident MCI starts an anti-amyloid antibody."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.12,
+          "transition": "AntiAmyloid_Baseline_Visit"
+        },
+        {
+          "distribution": 0.88,
+          "transition": "Annual_MCI_Progression_Check"
+        }
+      ]
+    },
+
+    "AntiAmyloid_Baseline_Visit": {
       "type": "Encounter",
       "encounter_class": "ambulatory",
+      "reason": "cognitive_status",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -86,56 +385,139 @@
           "display": "Encounter for problem (procedure)"
         }
       ],
-      "direct_transition": "MCI_Cognitive_Assessment"
+      "direct_transition": "Baseline_ARIA_MRI"
     },
-    "MCI_Cognitive_Assessment": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "CPT",
-          "code": "99483",
-          "display": "Cognitive assessment and care plan services"
-        }
-      ],
-      "direct_transition": "BrainMRI"
-    },
-    "BrainMRI": {
+
+    "Baseline_ARIA_MRI": {
       "type": "Procedure",
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "113091000",
-          "display": "Magnetic resonance imaging of brain"
+          "code": "816077007",
+          "display": "MRI of brain"
         }
       ],
-      "direct_transition": "End_MCI_Encounter"
+      "remarks": [
+        "Baseline MRI is required by both antibodies' labels before the first",
+        "infusion, to establish ARIA risk."
+      ],
+      "direct_transition": "End_AntiAmyloid_Baseline_Visit"
     },
-    "AmyloidEligibilityAssessment": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.85,
-          "transition": "MCIProgression"
-        },
-        {
-          "distribution": 0.15,
-          "transition": "ChooseBiologicTherapy"
-        }
-      ]
+
+    "End_AntiAmyloid_Baseline_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "ChooseBiologicTherapy"
     },
+
     "ChooseBiologicTherapy": {
       "type": "Simple",
+      "remarks": [
+        "Reached exactly once per patient (the infusion loop re-enters",
+        "Infusion_Visit, not this state), so the agent choice is made once and",
+        "then locked into `chosen_biologic`. Task 1.6 introduced that lock to",
+        "stop the old loop re-rolling 60/40 and switching a patient's antibody",
+        "mid-therapy; the lock is preserved and is now also what routes the",
+        "per-agent infusion interval."
+      ],
       "distributed_transition": [
         {
           "distribution": 0.6,
-          "transition": "StartLecanemab"
+          "transition": "Set_Lecanemab_Choice"
         },
         {
           "distribution": 0.4,
+          "transition": "Set_Donanemab_Choice"
+        }
+      ]
+    },
+
+    "Set_Lecanemab_Choice": {
+      "type": "SetAttribute",
+      "attribute": "chosen_biologic",
+      "value": "lecanemab",
+      "direct_transition": "Set_Lecanemab_Course"
+    },
+
+    "Set_Lecanemab_Course": {
+      "type": "SetAttribute",
+      "attribute": "ad_infusions_remaining",
+      "value": 39,
+      "remarks": [
+        "CLARITY AD: 10 mg/kg IV every 2 weeks for 18 months = 39 infusions",
+        "(van Dyck CH et al., NEJM 2023;388(1):9-21)."
+      ],
+      "direct_transition": "Infusion_Visit"
+    },
+
+    "Set_Donanemab_Choice": {
+      "type": "SetAttribute",
+      "attribute": "chosen_biologic",
+      "value": "donanemab",
+      "direct_transition": "Set_Donanemab_Course"
+    },
+
+    "Set_Donanemab_Course": {
+      "type": "SetAttribute",
+      "attribute": "ad_infusions_remaining",
+      "value": 18,
+      "remarks": [
+        "TRAILBLAZER-ALZ 2: IV every 4 weeks for up to 72 weeks = 18 infusions",
+        "(Sims JR et al., JAMA 2023;330(6):512-527)."
+      ],
+      "direct_transition": "Infusion_Visit"
+    },
+
+    "Infusion_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "cognitive_status",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "remarks": [
+        "Task 1.6 established that the administration must run INSIDE this",
+        "encounter (HealthRecord.medicationAdministration calls currentEncounter,",
+        "which silently reuses the most recent historical encounter rather than",
+        "opening one, so an administration outside an encounter is mis-attributed",
+        "rather than merely orphaned). Task 4.2 keeps that ordering and turns the",
+        "single visit into a real, counted, per-agent course.",
+        "HealthRecord.medicationAdministration builds a NEW Medication entry on",
+        "every call (unlike medicationStart, which is idempotent per RxCUI), so",
+        "each pass through this loop is a genuine separate administered claim."
+      ],
+      "direct_transition": "Decrement_Infusion_Counter"
+    },
+
+    "Decrement_Infusion_Counter": {
+      "type": "Counter",
+      "attribute": "ad_infusions_remaining",
+      "action": "decrement",
+      "amount": 1,
+      "direct_transition": "Administer_Biologic"
+    },
+
+    "Administer_Biologic": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "chosen_biologic",
+            "operator": "==",
+            "value": "lecanemab"
+          },
+          "transition": "StartLecanemab"
+        },
+        {
           "transition": "StartDonanemab"
         }
       ]
     },
+
     "StartLecanemab": {
       "type": "MedicationOrder",
       "administration": true,
@@ -146,32 +528,19 @@
           "display": "lecanemab"
         }
       ],
-      "reason": "alzheimers_disease",
-      "direct_transition": "InfusionProgram"
-    },
-    "FallAdmission": {
-      "type": "Encounter",
-      "encounter_class": "inpatient",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "185347001",
-          "display": "Encounter for problem"
-        }
+      "reason": "cognitive_status",
+      "remarks": [
+        "administration:true routes this to the J-code path; RxCUI 2626143 has a",
+        "rxnorm_hcpcs_map row (J0174, lecanemab-irmb 1 mg) with a single",
+        "unweighted entry, so CodeMapper's default weight 1.0 applies and it",
+        "cannot mis-bill as another drug. `reason` is the MCI condition, not",
+        "`alzheimers_disease`: this arm is early-stage by construction, so the",
+        "AD attribute is not set yet (it was previously referenced here and",
+        "resolved to nil)."
       ],
-      "direct_transition": "FallAssessment"
+      "direct_transition": "ARIA_Surveillance_Check"
     },
-    "FallAssessment": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "225358003",
-          "display": "Assessment after fall"
-        }
-      ],
-      "direct_transition": "EndFallAdmission"
-    },
+
     "StartDonanemab": {
       "type": "MedicationOrder",
       "administration": true,
@@ -182,144 +551,317 @@
           "display": "donanemab"
         }
       ],
-      "reason": "alzheimers_disease",
-      "direct_transition": "InfusionProgram"
-    },
-    "AdvancedDiseaseFollowup": {
-      "type": "Encounter",
-      "encounter_class": "ambulatory",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "185347001",
-          "display": "Encounter for problem"
-        }
+      "reason": "cognitive_status",
+      "remarks": [
+        "RxCUI 2687966 -> J0175 (donanemab-azbt, 2 mg), single unweighted row."
       ],
-      "direct_transition": "AdvancedDiseaseAssessment"
+      "direct_transition": "ARIA_Surveillance_Check"
     },
-    "AdvancedDiseaseAssessment": {
-      "type": "Observation",
-      "category": "exam",
-      "codes": [
-        {
-          "system": "LOINC",
-          "code": "72172-0",
-          "display": "Montreal Cognitive Assessment total score"
-        }
-      ],
-      "value": {
-        "type": "Range",
-        "low": 0,
-        "high": 5,
-        "unit": "points"
-      },
-      "direct_transition": "EndAdvancedDiseaseFollowup"
-    },
-    "EndAdvancedDiseaseFollowup": {
-      "type": "EncounterEnd",
-      "direct_transition": "LongTermCareConsideration"
-    },
-    "EndFallAdmission": {
-      "type": "EncounterEnd",
-      "direct_transition": "PalliativeCareReferral"
-    },
-    "StartDonepezil": {
-      "type": "MedicationOrder",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "997223",
-          "display": "donepezil hydrochloride 10 MG Oral Tablet"
-        }
-      ],
-      "reason": "alzheimers_disease",
-      "direct_transition": "AnnualADFollowup"
-    },
-    "InfusionProgram": {
-      "type": "Encounter",
-      "encounter_class": "ambulatory",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "185347001",
-          "display": "Encounter for problem"
-        }
-      ],
-      "direct_transition": "InfusionProgram_Encounter_End"
-    },
-    "InfusionDelay": {
-      "type": "Delay",
-      "range": {
-        "low": 2,
-        "high": 4,
-        "unit": "weeks"
-      },
-      "direct_transition": "InfusionContinuation"
-    },
-    "InfusionContinuation": {
+
+    "ARIA_Surveillance_Check": {
       "type": "Simple",
+      "remarks": [
+        "Both labels require surveillance MRI at a small number of fixed points in",
+        "the course (lecanemab before the 5th, 7th and 14th infusions). An 8%",
+        "per-infusion probability reproduces roughly that count over a 39-infusion",
+        "course without a second counter; it is a frequency approximation, not the",
+        "label's exact schedule."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.6,
-          "transition": "InfusionProgram"
-        },
-        {
-          "distribution": 0.2,
+          "distribution": 0.08,
           "transition": "ARIA_MRISurveillance"
         },
         {
-          "distribution": 0.2,
-          "transition": "InfusionContinuation_Encounter_End"
+          "distribution": 0.92,
+          "transition": "End_Infusion_Visit"
         }
       ]
     },
+
     "ARIA_MRISurveillance": {
       "type": "Procedure",
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "113091000",
-          "display": "Magnetic resonance imaging of brain"
+          "code": "816077007",
+          "display": "MRI of brain"
         }
       ],
-      "direct_transition": "ARIA_MRISurveillance_Encounter_End"
+      "direct_transition": "End_Infusion_Visit"
     },
-    "MCIProgression": {
-      "type": "Delay",
-      "range": {
-        "low": 1,
-        "high": 3,
-        "unit": "years"
-      },
-      "distributed_transition": [
+
+    "End_Infusion_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Infusion_Course_Check"
+    },
+
+    "Infusion_Course_Check": {
+      "type": "Simple",
+      "conditional_transition": [
         {
-          "distribution": 0.5,
-          "transition": "MildDementia"
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "ad_infusions_remaining",
+            "operator": "<=",
+            "value": 0
+          },
+          "transition": "AntiAmyloid_Course_Complete"
         },
         {
-          "distribution": 0.4,
-          "transition": "RemainMCI"
-        },
-        {
-          "distribution": 0.1,
-          "transition": "RevertToNormal"
+          "transition": "Infusion_Tolerance_Check"
         }
       ]
     },
-    "RemainMCI": {
+
+    "Infusion_Tolerance_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Early discontinuation (symptomatic ARIA, infusion reactions, withdrawal).",
+        "1.5% per infusion compounds to ~45% of a 39-infusion lecanemab course",
+        "and ~24% of an 18-infusion donanemab course not being completed, the",
+        "right order of magnitude for real-world antibody discontinuation; the",
+        "per-infusion figure itself is an assumption, not a published rate."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.015,
+          "transition": "AntiAmyloid_Course_Complete"
+        },
+        {
+          "distribution": 0.985,
+          "transition": "Infusion_Interval_Router"
+        }
+      ]
+    },
+
+    "Infusion_Interval_Router": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "chosen_biologic",
+            "operator": "==",
+            "value": "lecanemab"
+          },
+          "transition": "Lecanemab_Interval"
+        },
+        {
+          "transition": "Donanemab_Interval"
+        }
+      ]
+    },
+
+    "Lecanemab_Interval": {
       "type": "Delay",
       "range": {
-        "low": 1,
-        "high": 3,
-        "unit": "years"
+        "low": 13,
+        "high": 15,
+        "unit": "days"
       },
-      "direct_transition": "MCIProgression"
+      "direct_transition": "Infusion_Visit"
     },
+
+    "Donanemab_Interval": {
+      "type": "Delay",
+      "range": {
+        "low": 27,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "Infusion_Visit"
+    },
+
+    "AntiAmyloid_Course_Complete": {
+      "type": "Simple",
+      "remarks": [
+        "The treated arm spends ~18 months inside the infusion loop, during which",
+        "no MCI->AD progression roll fires. That is an incidental consequence of",
+        "Synthea's single-threaded module execution, not an explicitly modelled",
+        "treatment effect -- but it does displace ~1.5 annual progression rolls,",
+        "which points in the same direction as the ~27% slowing of decline",
+        "reported in CLARITY AD. Named here so nobody mistakes it for a",
+        "calibrated efficacy model."
+      ],
+      "direct_transition": "Annual_MCI_Progression_Check"
+    },
+
+    "Annual_MCI_Progression_Check": {
+      "type": "Delay",
+      "remarks": [
+        "Task 1.6 replaced the pre-fix 0.5/0.4/0.1 absorbing chain (which sent",
+        "~83% of MCI patients to AD) with this annual reroll; Task 4.2 keeps the",
+        "rates unchanged. 10%/yr MCI->AD conversion is the fix brief's mandated",
+        "rate and is the order of magnitude reported for amnestic MCI in",
+        "population-based cohorts; 5%/yr reversion to normal cognition is a",
+        "calibration approximation (Petersen RC, Continuum 2016;22(2):404-418)."
+      ],
+      "range": {
+        "low": 350,
+        "high": 380,
+        "unit": "days"
+      },
+      "distributed_transition": [
+        {
+          "distribution": 0.1,
+          "transition": "Stock_Dementia_Dx_Guard"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "RevertToNormal"
+        },
+        {
+          "distribution": 0.85,
+          "transition": "Annual_MCI_Progression_Check"
+        }
+      ]
+    },
+
     "RevertToNormal": {
       "type": "ConditionEnd",
       "referenced_by_attribute": "cognitive_status",
+      "remarks": [
+        "Reverting patients leave the module permanently (Task 1.6 behaviour,",
+        "preserved). Routing them back to Annual_MCI_Incidence_Check would be more",
+        "faithful -- MCI reversion is not protective against later MCI -- but it",
+        "would let MildCognitiveImpairment fire a second time and stack a",
+        "duplicate diagnosis, the Class 8 defect this remediation is removing.",
+        "Accepted simplification, named rather than hidden."
+      ],
       "direct_transition": "Terminal"
     },
+
+    "Stock_Dementia_Dx_Guard": {
+      "type": "Simple",
+      "remarks": [
+        "CROSS-MODULE GATE (audit Class 7, task 5.2 group 2) -- this module <->",
+        "stock dementia.json. Closes the KNOWN COORDINATION GAP recorded in this",
+        "module's header remarks and in task-4.2-report.md section 5.",
+        "Rule: FIRST-TO-DIAGNOSE WINS. dementia.json records the very same SNOMED",
+        "26929004 from its AlzheimersOnset arm, and 230265002 (familial early-onset",
+        "AD) from its PreEarlyOnsetAlzheimers arm; both are checked here because",
+        "both are a dementia diagnosis on the same patient. If either is already",
+        "an Active Condition this module stands down (Terminal) rather than adding",
+        "a second, parallel AD care pathway.",
+        "This is the only entry point to AD_Diagnosis_Visit -> MildDementia, so",
+        "26929004 has exactly one gate on this side.",
+        "Terminal, not a return to Annual_MCI_Progression_Check: the patient keeps",
+        "the MCI condition this module already gave them and dementia.json owns",
+        "their AD course from here (staging, ChEIs, MMSE, hospice via",
+        "`Type of Alzheimer's`). Rerouting into the reroll loop would just retry",
+        "the same blocked diagnosis every year.",
+        "Timing note (why a second check follows the visit): AD_Diagnosis_Visit is",
+        "a non-wellness Encounter, and State.Encounter.process returns false --",
+        "i.e. blocks across ticks -- while another module holds the person's",
+        "encounter lock. So passing this gate does not guarantee the diagnosis",
+        "lands in the same tick, and dementia.json could win the race in between.",
+        "Stock_Dementia_Dx_Recheck re-tests immediately before MildDementia, where",
+        "the chain to the ConditionOnset really is Delay-free and atomic."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "26929004",
+                "display": "Alzheimer's disease (disorder)"
+              },
+              {
+                "system": "SNOMED-CT",
+                "code": "230265002",
+                "display": "Familial Alzheimer's disease of early onset (disorder)"
+              }
+            ]
+          },
+          "transition": "Terminal"
+        },
+        {
+          "transition": "AD_Diagnosis_Visit"
+        }
+      ]
+    },
+
+    "AD_Diagnosis_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "cognitive_status",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "remarks": [
+        "Task 4.2: the AD diagnosis used to fire before its memory-clinic visit",
+        "opened (reported by Task 1.6, deferred here). Encounter first now."
+      ],
+      "direct_transition": "Stock_Dementia_Dx_Recheck"
+    },
+
+    "Stock_Dementia_Dx_Recheck": {
+      "type": "Simple",
+      "remarks": [
+        "CROSS-MODULE GATE, second half (task 5.2 group 2). Same test as",
+        "Stock_Dementia_Dx_Guard, re-run after the memory-clinic visit has",
+        "actually opened. This is the check that makes the exclusion airtight on",
+        "this side: from here to MildDementia there is no Delay and no blocking",
+        "state, and module processing is single-threaded per person per tick, so",
+        "no other module can diagnose between this test and our ConditionOnset.",
+        "Using the CODE (not dementia.json's `Type of Alzheimer's` attribute) is",
+        "deliberate: that attribute is set at dementia.json's AlzheimersOnset,",
+        "which precedes its diagnosis by years of undiagnosed prodrome, and about",
+        "38% of the population passes through that prodrome. Gating on it would",
+        "suppress this module for roughly a third of the elderly and would push",
+        "the combined 26929004 prevalence BELOW either module's own calibration.",
+        "Gating on the recorded diagnosis keeps the union of the two modules",
+        "exactly what it was -- see the report for why 5.2 therefore does not, and",
+        "cannot, move the Phase 1 gate's 0.166 combined 65+ share.",
+        "Cost of a hit here: this patient keeps one ambulatory 'encounter for",
+        "problem' with reason = their MCI entry and no further clinical content.",
+        "That is a real memory-clinic follow-up visit, so it is left in the record",
+        "rather than suppressed."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "26929004",
+                "display": "Alzheimer's disease (disorder)"
+              },
+              {
+                "system": "SNOMED-CT",
+                "code": "230265002",
+                "display": "Familial Alzheimer's disease of early onset (disorder)"
+              }
+            ]
+          },
+          "transition": "End_Gated_AD_Diagnosis_Visit"
+        },
+        {
+          "transition": "MildDementia"
+        }
+      ]
+    },
+
+    "End_Gated_AD_Diagnosis_Visit": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Closes the memory-clinic visit opened by AD_Diagnosis_Visit when",
+        "Stock_Dementia_Dx_Recheck hands the patient to dementia.json. Required:",
+        "leaving the encounter open would hold this person's encounter lock",
+        "forever -- the exact Class 6 defect the audit recorded for",
+        "high_output_heart_failure.json."
+      ],
+      "direct_transition": "Terminal"
+    },
+
     "MildDementia": {
       "type": "ConditionOnset",
       "assign_to_attribute": "alzheimers_disease",
@@ -330,26 +872,49 @@
           "display": "Alzheimer's disease (disorder)"
         }
       ],
+      "remarks": [
+        "State name kept from the pre-4.2 module. NOTE (5.2 fix round 1): the",
+        "reason given here used to be that Death_From_Alzheimers referenced this",
+        "state by name via `condition_onset` -- that dependency no longer exists,",
+        "because task 5.2 re-pointed that state at `referenced_by_attribute:",
+        "alzheimers_disease` precisely so a rename of the shared 26929004 entry by",
+        "stock dementia.json cannot null the recorded cause of death. The name is",
+        "now kept only for continuity with the 1.6/4.2 reports and remarks.",
+        "This is the single AD diagnosis",
+        "for the whole disease course, not a mild-stage-specific code. Stage is",
+        "carried by the `ad_stage` attribute, deliberately NOT by additional",
+        "ConditionOnset states -- adding stage-specific dementia codes would widen",
+        "the code universe this module contributes to the double-diagnosis overlap",
+        "with stock dementia.json that Task 5.2 has to resolve."
+      ],
       "direct_transition": "Stage_Mild_AD"
     },
+
     "Stage_Mild_AD": {
       "type": "SetAttribute",
       "attribute": "ad_stage",
       "value": "mild",
-      "direct_transition": "MemoryClinicVisit"
+      "direct_transition": "AD_Diagnosis_MoCA"
     },
-    "MemoryClinicVisit": {
-      "type": "Encounter",
-      "encounter_class": "ambulatory",
+
+    "AD_Diagnosis_MoCA": {
+      "type": "Observation",
+      "category": "exam",
       "codes": [
         {
-          "system": "SNOMED-CT",
-          "code": "185347001",
-          "display": "Encounter for problem"
+          "system": "LOINC",
+          "code": "72172-0",
+          "display": "Montreal Cognitive Assessment total score"
         }
       ],
+      "range": {
+        "low": 15,
+        "high": 22
+      },
+      "unit": "{score}",
       "direct_transition": "ChooseInitialTherapy"
     },
+
     "ChooseInitialTherapy": {
       "type": "Simple",
       "distributed_transition": [
@@ -367,59 +932,142 @@
         }
       ]
     },
-    "StartGalantamine": {
+
+    "StartDonepezil": {
       "type": "MedicationOrder",
       "chronic": true,
       "codes": [
         {
           "system": "RxNorm",
-          "code": "384641",
-          "display": "galantamine Oral Tablet"
+          "code": "997223",
+          "display": "donepezil hydrochloride 10 MG Oral Tablet"
         }
       ],
       "reason": "alzheimers_disease",
-      "direct_transition": "AnnualADFollowup"
+      "remarks": [
+        "Task 4.2: added chronic:true. Verified 997223 is a prescribable SCD with",
+        "a medication_code_map.json row carrying real NDCs, so it exports on the",
+        "Part D / PDE path. Without chronic:true the engine's chronic-medication",
+        "renewal (State.java:963-966) never sees it and the patient gets exactly",
+        "one lifetime fill of a drug taken daily for years."
+      ],
+      "direct_transition": "Set_On_ChEI"
     },
+
     "StartRivastigmine": {
       "type": "MedicationOrder",
       "chronic": true,
       "codes": [
         {
           "system": "RxNorm",
-          "code": "373797",
-          "display": "rivastigmine Oral Capsule"
+          "code": "312835",
+          "display": "rivastigmine 3 MG Oral Capsule"
         }
       ],
       "reason": "alzheimers_disease",
-      "direct_transition": "AnnualADFollowup"
+      "remarks": [
+        "RxCUI corrected by Task 1.6 from the dose-form-level 373797 to this real",
+        "SCD; medication_code_map row added there. Task 4.2 adds chronic:true."
+      ],
+      "direct_transition": "Set_On_ChEI"
     },
-    "AnnualADFollowup": {
+
+    "StartGalantamine": {
+      "type": "MedicationOrder",
+      "chronic": true,
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "310436",
+          "display": "galantamine 4 MG Oral Tablet"
+        }
+      ],
+      "reason": "alzheimers_disease",
+      "remarks": [
+        "RxCUI corrected by Task 1.6 from the dose-form-level 384641 to this real",
+        "SCD (already in medication_code_map). Task 4.2 adds chronic:true."
+      ],
+      "direct_transition": "Set_On_ChEI"
+    },
+
+    "Set_On_ChEI": {
+      "type": "SetAttribute",
+      "attribute": "ad_on_chei",
+      "value": true,
+      "direct_transition": "End_AD_Diagnosis_Visit"
+    },
+
+    "End_AD_Diagnosis_Visit": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Explicit close (Task 1.6 fix round 1 added this at the equivalent point;",
+        "without it the next annual visit superseded this one at the same",
+        "simulated instant and the diagnosis visit exported STOP == START)."
+      ],
+      "direct_transition": "Mild_Stage_Annual_Check"
+    },
+
+    "Mild_Stage_Annual_Check": {
+      "type": "Delay",
+      "remarks": [
+        "Annual reroll for the mild stage. 40%/yr to moderate corresponds to a",
+        "~2-year mean mild-stage duration (Reisberg GDS 4). 5%/yr mortality is",
+        "the competing all-cause risk at this severity (Todd S et al., Int J",
+        "Geriatr Psychiatry 2013). Pre-4.2 this roll lived on a 9-15 month",
+        "review loop at 30% per pass, so the realised annual rate did not match",
+        "any stated figure."
+      ],
+      "range": {
+        "low": 350,
+        "high": 380,
+        "unit": "days"
+      },
+      "distributed_transition": [
+        {
+          "distribution": 0.4,
+          "transition": "ModerateDementia"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "Death_From_Alzheimers"
+        },
+        {
+          "distribution": 0.55,
+          "transition": "Mild_Annual_Review_Visit"
+        }
+      ]
+    },
+
+    "Mild_Annual_Review_Visit": {
       "type": "Encounter",
       "encounter_class": "ambulatory",
+      "reason": "alzheimers_disease",
       "codes": [
         {
           "system": "SNOMED-CT",
           "code": "185347001",
-          "display": "Encounter for problem"
+          "display": "Encounter for problem (procedure)"
         }
       ],
-      "direct_transition": "MedicationReview"
+      "direct_transition": "AnnualCognitiveAssessment"
     },
-    "MedicationReview": {
-      "type": "Simple",
-      "direct_transition": "MedicationReview_Action_1"
-    },
+
     "AnnualCognitiveAssessment": {
       "type": "Procedure",
       "codes": [
         {
-          "system": "CPT",
-          "code": "96116",
-          "display": "Neurobehavioral status examination"
+          "system": "SNOMED-CT",
+          "code": "273643004",
+          "display": "Neurobehavioural cognitive status examination"
         }
+      ],
+      "remarks": [
+        "Task 1.6 recoded this from CPT 96116; 273643004 is active and mapped to",
+        "96116 in hcpcs_code_map.json."
       ],
       "direct_transition": "AnnualMoCA"
     },
+
     "AnnualMoCA": {
       "type": "Observation",
       "category": "exam",
@@ -430,62 +1078,67 @@
           "display": "Montreal Cognitive Assessment total score"
         }
       ],
-      "value": {
-        "type": "Range",
-        "low": 8,
-        "high": 18,
-        "unit": "points"
-      },
-      "direct_transition": "AnnualMoCA_Encounter_End"
-    },
-    "AnnualMildReviewDelay": {
-      "type": "Delay",
       "range": {
-        "low": 9,
-        "high": 15,
-        "unit": "months"
+        "low": 8,
+        "high": 18
       },
-      "direct_transition": "MildProgressionCheck"
+      "unit": "{score}",
+      "direct_transition": "End_Mild_Annual_Review_Visit"
     },
-    "MildProgressionCheck": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.65,
-          "transition": "AnnualADFollowup"
-        },
-        {
-          "distribution": 0.3,
-          "transition": "ModerateDementia"
-        },
-        {
-          "distribution": 0.05,
-          "transition": "LongTermCareConsideration"
-        }
-      ]
+
+    "End_Mild_Annual_Review_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Mild_Stage_Annual_Check"
     },
+
     "ModerateDementia": {
       "type": "SetAttribute",
       "attribute": "ad_stage",
       "value": "moderate",
-      "direct_transition": "ModerateSymptoms"
+      "direct_transition": "Moderate_Stage_Visit"
     },
-    "ModerateSymptoms": {
-      "type": "Simple",
-      "direct_transition": "ModerateSymptoms_Action_1"
-    },
-    "NeurologyFollowup": {
+
+    "Moderate_Stage_Visit": {
       "type": "Encounter",
       "encounter_class": "ambulatory",
+      "reason": "alzheimers_disease",
       "codes": [
         {
           "system": "SNOMED-CT",
           "code": "185347001",
-          "display": "Encounter for problem"
+          "display": "Encounter for problem (procedure)"
         }
       ],
-      "direct_transition": "AddMemantine"
+      "remarks": [
+        "Task 4.2: the moderate-stage MoCA and the ADL/behaviour symptoms used to",
+        "fire between the stage SetAttribute and this encounter opening (reported",
+        "by Task 1.6 as clinical states with no encounter open, deferred here).",
+        "They are now all inside the visit."
+      ],
+      "direct_transition": "MemantineGuard"
     },
+
+    "MemantineGuard": {
+      "type": "Simple",
+      "remarks": [
+        "Task 1.6 containment fix, preserved: stops the annual moderate-stage",
+        "visit re-issuing an order for a drug the patient is already on."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "on_memantine",
+            "operator": "is not nil"
+          },
+          "transition": "Moderate_MoCA"
+        },
+        {
+          "transition": "AddMemantine"
+        }
+      ]
+    },
+
     "AddMemantine": {
       "type": "MedicationOrder",
       "chronic": true,
@@ -497,189 +1150,17 @@
         }
       ],
       "reason": "alzheimers_disease",
-      "direct_transition": "BehavioralSymptomsAssessment"
+      "direct_transition": "Set_On_Memantine"
     },
-    "BehavioralSymptomsAssessment": {
-      "type": "Simple",
-      "direct_transition": "BehavioralSymptomsAssessment_Action_1_Gate"
-    },
-    "ModerateStageFollowup": {
-      "type": "Delay",
-      "range": {
-        "low": 9,
-        "high": 15,
-        "unit": "months"
-      },
-      "direct_transition": "ModerateProgressionCheck"
-    },
-    "ModerateProgressionCheck": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.6,
-          "transition": "NeurologyFollowup"
-        },
-        {
-          "distribution": 0.35,
-          "transition": "SevereDementia"
-        },
-        {
-          "distribution": 0.05,
-          "transition": "LongTermCareConsideration"
-        }
-      ]
-    },
-    "SevereDementia": {
+
+    "Set_On_Memantine": {
       "type": "SetAttribute",
-      "attribute": "ad_stage",
-      "value": "severe",
-      "direct_transition": "SevereSymptoms"
+      "attribute": "on_memantine",
+      "value": true,
+      "direct_transition": "Moderate_MoCA"
     },
-    "SevereSymptoms": {
-      "type": "Simple",
-      "direct_transition": "SevereSymptoms_Action_1"
-    },
-    "SevereComplicationBranch": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.4,
-          "transition": "AdvancedDiseaseFollowup"
-        },
-        {
-          "distribution": 0.2,
-          "transition": "AspirationAdmission"
-        },
-        {
-          "distribution": 0.2,
-          "transition": "FallAdmission"
-        },
-        {
-          "distribution": 0.2,
-          "transition": "PalliativeCareReferral"
-        }
-      ]
-    },
-    "AspirationAdmission": {
-      "type": "Encounter",
-      "encounter_class": "inpatient",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "422588002",
-          "display": "Aspiration pneumonia"
-        }
-      ],
-      "direct_transition": "PalliativeCareReferral"
-    },
-    "PalliativeCareReferral": {
-      "type": "Encounter",
-      "encounter_class": "ambulatory",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "306237005",
-          "display": "Referral to palliative care (procedure)"
-        }
-      ],
-      "direct_transition": "ACPProcedure"
-    },
-    "ACPProcedure": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "310303002",
-          "display": "Advance directive discussion"
-        }
-      ],
-      "direct_transition": "AdvancedCarePlanning"
-    },
-    "AdvancedCarePlanning": {
-      "type": "Simple",
-      "direct_transition": "AdvancedCarePlanning_Action_1_Gate"
-    },
-    "LongTermCareConsideration": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.7,
-          "transition": "NursingHomeAdmission"
-        },
-        {
-          "distribution": 0.2,
-          "transition": "HomeHospice"
-        },
-        {
-          "distribution": 0.1,
-          "transition": "LongTermCareConsideration_Encounter_End"
-        }
-      ]
-    },
-    "NursingHomeAdmission": {
-      "type": "Encounter",
-      "encounter_class": "ambulatory",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "160734000",
-          "display": "Admission to long-term care facility (procedure)"
-        }
-      ],
-      "direct_transition": "EndStageComplications"
-    },
-    "HomeHospice": {
-      "type": "Encounter",
-      "encounter_class": "ambulatory",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "305336008",
-          "display": "Admission to hospice"
-        }
-      ],
-      "direct_transition": "HospiceAssessment"
-    },
-    "HospiceAssessment": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "305336008",
-          "display": "Hospice care assessment"
-        }
-      ],
-      "direct_transition": "EndStageComplications"
-    },
-    "FamilyCareAtHome": {
-      "type": "Delay",
-      "range": {
-        "low": 6,
-        "high": 18,
-        "unit": "months"
-      },
-      "direct_transition": "EndStageComplications"
-    },
-    "EndStageComplications": {
-      "type": "Simple",
-      "direct_transition": "EndStageComplications_Action_1_Gate"
-    },
-    "Terminal": {
-      "type": "Terminal"
-    },
-    "MedicationReview_Action_1": {
-      "type": "Observation",
-      "category": "therapy",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "182836005",
-          "display": "Review of medication"
-        }
-      ],
-      "direct_transition": "AnnualCognitiveAssessment"
-    },
-    "ModerateSymptoms_Action_1": {
+
+    "Moderate_MoCA": {
       "type": "Observation",
       "category": "exam",
       "codes": [
@@ -693,52 +1174,123 @@
         "low": 5,
         "high": 12
       },
-      "unit": "points",
-      "direct_transition": "ModerateSymptoms_Action_2_Gate"
+      "unit": "{score}",
+      "remarks": [
+        "Task 4.2: unit was the free-text 'points' here and in the severe-stage",
+        "observation; standardised to UCUM {score}, matching the other MoCA",
+        "observations in this module."
+      ],
+      "direct_transition": "Moderate_ADL_Gate"
     },
-    "ModerateSymptoms_Action_2_Gate": {
+
+    "Moderate_ADL_Gate": {
       "type": "Simple",
       "distributed_transition": [
         {
-          "transition": "ModerateSymptoms_Action_2",
-          "distribution": 0.8
+          "distribution": 0.8,
+          "transition": "Moderate_ADL_Symptom"
         },
         {
-          "transition": "NeurologyFollowup",
-          "distribution": 0.2
+          "distribution": 0.2,
+          "transition": "Behavioral_Symptom_Gate"
         }
       ]
     },
-    "ModerateSymptoms_Action_2": {
+
+    "Moderate_ADL_Symptom": {
       "type": "Symptom",
       "symptom": "Requires assistance with ADLs",
       "exact": {
         "quantity": 1
       },
-      "direct_transition": "NeurologyFollowup"
+      "direct_transition": "Behavioral_Symptom_Gate"
     },
-    "BehavioralSymptomsAssessment_Action_1_Gate": {
+
+    "Behavioral_Symptom_Gate": {
       "type": "Simple",
       "distributed_transition": [
         {
-          "transition": "BehavioralSymptomsAssessment_Action_1",
-          "distribution": 0.6
+          "distribution": 0.6,
+          "transition": "Behavioral_Agitation_Symptom"
         },
         {
-          "transition": "BehavioralSymptomsAssessment_Action_1_Gate_Encounter_End",
-          "distribution": 0.4
+          "distribution": 0.4,
+          "transition": "End_Moderate_Stage_Visit"
         }
       ]
     },
-    "BehavioralSymptomsAssessment_Action_1": {
+
+    "Behavioral_Agitation_Symptom": {
       "type": "Symptom",
       "symptom": "Agitation (finding)",
       "exact": {
         "quantity": 1
       },
-      "direct_transition": "BehavioralSymptomsAssessment_Action_1_Encounter_End"
+      "direct_transition": "End_Moderate_Stage_Visit"
     },
-    "SevereSymptoms_Action_1": {
+
+    "End_Moderate_Stage_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Moderate_Stage_Annual_Check"
+    },
+
+    "Moderate_Stage_Annual_Check": {
+      "type": "Delay",
+      "remarks": [
+        "33%/yr to severe corresponds to a ~2-3 year mean moderate-stage duration",
+        "(Reisberg GDS 5-6); 10%/yr competing mortality. Pre-4.2 this was 35% per",
+        "9-15 month pass."
+      ],
+      "range": {
+        "low": 350,
+        "high": 380,
+        "unit": "days"
+      },
+      "distributed_transition": [
+        {
+          "distribution": 0.33,
+          "transition": "SevereDementia"
+        },
+        {
+          "distribution": 0.1,
+          "transition": "Death_From_Alzheimers"
+        },
+        {
+          "distribution": 0.57,
+          "transition": "Moderate_Stage_Visit"
+        }
+      ]
+    },
+
+    "SevereDementia": {
+      "type": "SetAttribute",
+      "attribute": "ad_stage",
+      "value": "severe",
+      "direct_transition": "Severe_Stage_Visit"
+    },
+
+    "Severe_Stage_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "alzheimers_disease",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "remarks": [
+        "Pre-4.2 the severe stage had no annual loop at all: it fired one set of",
+        "symptoms and dropped every patient straight into the long-term-care /",
+        "hospice branch, so 100% of severe patients were institutionalised within",
+        "one pass. It is now an annual cycle with its own review visit,",
+        "complication rolls, and competing exits."
+      ],
+      "direct_transition": "Severe_MoCA"
+    },
+
+    "Severe_MoCA": {
       "type": "Observation",
       "category": "exam",
       "codes": [
@@ -752,102 +1304,548 @@
         "low": 0,
         "high": 5
       },
-      "unit": "points",
-      "direct_transition": "SevereSymptoms_Action_2_Gate"
+      "unit": "{score}",
+      "direct_transition": "Severe_Incontinence_Gate"
     },
-    "SevereSymptoms_Action_2_Gate": {
+
+    "Severe_Incontinence_Gate": {
       "type": "Simple",
       "distributed_transition": [
         {
-          "transition": "SevereSymptoms_Action_2",
-          "distribution": 0.8
+          "distribution": 0.8,
+          "transition": "Severe_Incontinence_Symptom"
         },
         {
-          "transition": "SevereComplicationBranch",
-          "distribution": 0.2
+          "distribution": 0.2,
+          "transition": "ACP_Gate"
         }
       ]
     },
-    "SevereSymptoms_Action_2": {
+
+    "Severe_Incontinence_Symptom": {
       "type": "Symptom",
       "symptom": "Incontinence of urine (finding)",
       "exact": {
         "quantity": 1
       },
-      "direct_transition": "SevereComplicationBranch"
+      "direct_transition": "ACP_Gate"
     },
-    "AdvancedCarePlanning_Action_1_Gate": {
+
+    "ACP_Gate": {
       "type": "Simple",
-      "distributed_transition": [
+      "remarks": [
+        "Advance care planning is billed once, not at every annual severe-stage",
+        "visit -- pre-4.2 the module had two separate ACP Procedure states on the",
+        "same path (ACPProcedure and AdvancedCarePlanning_Action_1), both coded",
+        "310303002, which double-billed 99497 for 90% of the patients who reached",
+        "the palliative branch."
+      ],
+      "conditional_transition": [
         {
-          "transition": "AdvancedCarePlanning_Action_1",
-          "distribution": 0.9
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "ad_acp_completed",
+            "operator": "is not nil"
+          },
+          "transition": "End_Severe_Stage_Visit"
         },
         {
-          "transition": "LongTermCareConsideration",
-          "distribution": 0.1
+          "transition": "ACPProcedure"
         }
       ]
     },
-    "AdvancedCarePlanning_Action_1": {
+
+    "ACPProcedure": {
       "type": "Procedure",
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "310303002",
-          "display": "Advance directive discussion (procedure)"
+          "code": "713662007",
+          "display": "Discussion about advance care planning (procedure)"
         }
       ],
-      "direct_transition": "LongTermCareConsideration"
+      "remarks": [
+        "Task 4.2, following Task 2.2's finding: the previous code 310303002",
+        "('Advance directive discussion') is INACTIVE in current SNOMED.",
+        "713603004 'Advance care planning' is active (verified via Ontoserver",
+        "CodeSystem/$lookup, inactive=false) and already carries the same",
+        "hcpcs_code_map row -> CPT 99497, so no export-map change is needed and",
+        "the billing code is unchanged.",
+        "Task 2.11 (present-map collision sweep): 713603004 turned out to",
+        "collide with parkinsons.json's AdvanceCarePlanning CarePlanStart,",
+        "which independently verified and adopted the same code for the",
+        "same reason (Task 2.2, before this module's Task 4.2 reused it).",
+        "present is a single map keyed by code shared across Condition/",
+        "Procedure/CarePlan/Medication/Device/Allergy entries; a Procedure",
+        "write here would silently overwrite/orphan a same-coded, still-",
+        "open Parkinson's ACP CarePlan for any comorbid patient, or the",
+        "reverse ordering would throw ClassCastException in",
+        "HealthRecord.careplanStart. Parkinsons' CarePlanStart usage is",
+        "left at 713603004 (first claim on the code, and CarePlanStart is",
+        "the correct fit for an unbounded, never-ended plan state).",
+        "Recoded this one-shot Procedure event to 713662007 'Discussion",
+        "about advance care planning (procedure)' -- active, Verhoeff-",
+        "valid, unused elsewhere in the module tree, semantically a closer",
+        "fit for a single billable ACP conversation anyway -- with a new",
+        "hcpcs_code_map.json row mapping it to the same CPT 99497 used by",
+        "713603004/310303002, so billing is unchanged."
+      ],
+      "direct_transition": "Set_ACP_Completed"
     },
-    "EndStageComplications_Action_1_Gate": {
+
+    "Set_ACP_Completed": {
+      "type": "SetAttribute",
+      "attribute": "ad_acp_completed",
+      "value": true,
+      "direct_transition": "End_Severe_Stage_Visit"
+    },
+
+    "End_Severe_Stage_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Severe_Complication_Check"
+    },
+
+    "Severe_Complication_Check": {
       "type": "Simple",
+      "remarks": [
+        "Aspiration pneumonia and injurious falls are the two dominant acute",
+        "events in advanced dementia (Mitchell SL et al., NEJM 2009;361:1529-38:",
+        "pneumonia and febrile episodes are the commonest complications and carry",
+        "the highest 6-month mortality). Rates per severe-stage year are",
+        "assumptions of the right order, not published incidences."
+      ],
       "distributed_transition": [
         {
-          "transition": "EndStageComplications_Action_1",
-          "distribution": 0.6
+          "distribution": 0.12,
+          "transition": "AspirationAdmission"
         },
         {
-          "transition": "AdvancedDiseaseFollowup",
-          "distribution": 0.4
+          "distribution": 0.1,
+          "transition": "FallAdmission"
+        },
+        {
+          "distribution": 0.78,
+          "transition": "Severe_Living_Setting_Check"
         }
       ]
     },
-    "EndStageComplications_Action_1": {
-      "type": "Symptom",
-      "symptom": "Aspiration pneumonia (disorder)",
-      "exact": {
-        "quantity": 1
+
+    "AspirationAdmission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "reason": "alzheimers_disease",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "422588002",
+          "display": "Aspiration pneumonia"
+        }
+      ],
+      "remarks": [
+        "Task 1.6 fixed this state's lint CRITICAL (no closer reachable at all,",
+        "because its only target was another Encounter and Encounter re-entry",
+        "does not satisfy the inpatient-class check). The bounded LOS + explicit",
+        "close are preserved; LOS widened to 3-7 days for an aspiration-pneumonia",
+        "antibiotic course."
+      ],
+      "direct_transition": "AspirationAdmission_Stay"
+    },
+
+    "AspirationAdmission_Stay": {
+      "type": "Delay",
+      "range": {
+        "low": 3,
+        "high": 7,
+        "unit": "days"
       },
-      "direct_transition": "AdvancedDiseaseFollowup"
+      "direct_transition": "End_AspirationAdmission"
     },
-    "InfusionProgram_Encounter_End": {
+
+    "End_AspirationAdmission": {
       "type": "EncounterEnd",
-      "direct_transition": "InfusionDelay"
+      "direct_transition": "Severe_Living_Setting_Check"
     },
-    "InfusionContinuation_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "MCIProgression"
+
+    "FallAdmission": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "reason": "alzheimers_disease",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem (procedure)"
+        }
+      ],
+      "remarks": [
+        "Task 1.6 flagged this as the same zero-duration inpatient pattern it",
+        "fixed for AspirationAdmission but left it alone as out of containment",
+        "scope (its report, concern 7). Task 4.2 gives it a bounded LOS and an",
+        "explicit close."
+      ],
+      "direct_transition": "FallAssessment"
     },
-    "ARIA_MRISurveillance_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "InfusionDelay"
+
+    "FallAssessment": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "762993000",
+          "display": "Assessment using Morse Fall Scale"
+        }
+      ],
+      "remarks": [
+        "Task 4.2 recode, reasoning corrected in fix round 1. The previous code",
+        "here was 225358003 under the display 'Assessment after fall'. That",
+        "display was fabricated: 225358003 is an active concept whose real",
+        "SNOMED display is 'Wound care' (Ontoserver CodeSystem/$lookup). Its",
+        "hcpcs_code_map row -> G0282 (electrical stimulation for wound care) /",
+        "S9097 (home visit for wound care) is therefore CORRECT, and",
+        "gallstones.json and injuries.json use that code and row correctly. The",
+        "defect was only ever this module's wrong display and wrong choice of",
+        "concept -- so the row must NOT be touched by the Task 6.1 sweep.",
+        "Fixed by moving to 762993000 'Assessment using Morse Fall Scale'",
+        "(verified active via Ontoserver $lookup, Verhoeff-valid), which already",
+        "has its own hcpcs_code_map row -> M1069. No new map row needed."
+      ],
+      "direct_transition": "FallAdmission_Stay"
     },
-    "AnnualMoCA_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "AnnualMildReviewDelay"
+
+    "FallAdmission_Stay": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 5,
+        "unit": "days"
+      },
+      "direct_transition": "End_FallAdmission"
     },
-    "LongTermCareConsideration_Encounter_End": {
+
+    "End_FallAdmission": {
       "type": "EncounterEnd",
-      "direct_transition": "FamilyCareAtHome"
+      "direct_transition": "Severe_Living_Setting_Check"
     },
-    "BehavioralSymptomsAssessment_Action_1_Gate_Encounter_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "ModerateStageFollowup"
+
+    "Severe_Living_Setting_Check": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "ad_long_term_care",
+            "operator": "is not nil"
+          },
+          "transition": "NursingHome_Visit"
+        },
+        {
+          "transition": "Severe_Stage_Annual_Check"
+        }
+      ]
     },
-    "BehavioralSymptomsAssessment_Action_1_Encounter_End": {
+
+    "Severe_Stage_Annual_Check": {
+      "type": "Delay",
+      "remarks": [
+        "Annual reroll for community-dwelling severe patients. 35%/yr entry into",
+        "long-term care, 22%/yr death without hospice, 7%/yr direct hospice",
+        "election. Pre-4.2 there was no annual severe cycle: institutionalisation",
+        "was effectively certain on the first pass.",
+        "HOSPICE RATE, corrected in fix round 2 (2026-08-11 gate). Fix round 1",
+        "set this to 30% believing this module's patients could not reach any",
+        "other hospice route (see module header for the now-retracted claim and",
+        "Task 5.2's finding that ~38% of patients pass through dementia.json's",
+        "prodrome and can also reach home_hospice_snf.json's Alzheimers branch,",
+        "which stacks on top of this module's own election and pushed measured",
+        "combined election among AD decedents to 79.8-86.3% against a 45-55%",
+        "target). Cut back 30% -> 7% (paired with NursingHome_Period_Check's",
+        "16% -> 4%) so this module's own standalone election among its AD",
+        "decedents drops 48.5% -> 18.9%; unioned with the ~38%-eligible stock",
+        "route (treated as near-certain given repeated yearly eligibility",
+        "rechecks over a multi-year remaining lifespan) that comes back to",
+        "~49.7%, matching the ~50% Medicare-dementia-decedent target for this",
+        "module's own population. See the module header for the full arithmetic",
+        "and the concern that the population-wide figure needs a stock-side fix",
+        "this module's parameters alone cannot reach.",
+        "Renormalisation: hospice is a competing ROUTE to death, not an extra",
+        "endpoint (every election reaches Death_From_Alzheimers ~55 days later),",
+        "so the freed hospice probability was split back between the",
+        "direct-death branch and the stay-in-place branch in the same 39%/61%",
+        "ratio fix round 1 used when it moved the other direction (13%->22%",
+        "death, 22%->36% stay), keeping both routes populated rather than",
+        "dumping the change into a single branch. Net effect on the module's",
+        "calibration: mean survival from AD diagnosis moves 5.6 -> 6.1 years",
+        "(still inside the cited 4-8 year range, closer to fix round 0's 6.0y),",
+        "and mean long-term-care entry share moves 30.6% -> 37.3% of AD",
+        "decedents (more patients now reach LTC before any exit, since exits/yr",
+        "from severe dropped 0.78 -> 0.64 while LTC entry (0.35) is unchanged)."
+      ],
+      "range": {
+        "low": 350,
+        "high": 380,
+        "unit": "days"
+      },
+      "distributed_transition": [
+        {
+          "distribution": 0.35,
+          "transition": "Set_Long_Term_Care"
+        },
+        {
+          "distribution": 0.22,
+          "transition": "Death_From_Alzheimers"
+        },
+        {
+          "distribution": 0.07,
+          "transition": "Hospice_Transition"
+        },
+        {
+          "distribution": 0.36,
+          "transition": "Severe_Stage_Visit"
+        }
+      ]
+    },
+
+    "Set_Long_Term_Care": {
+      "type": "SetAttribute",
+      "attribute": "ad_long_term_care",
+      "value": true,
+      "direct_transition": "NursingHome_Visit"
+    },
+
+    "NursingHome_Visit": {
+      "type": "Encounter",
+      "encounter_class": "snf",
+      "reason": "alzheimers_disease",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "45618002",
+          "display": "Skilled nursing facility"
+        }
+      ],
+      "remarks": [
+        "Pre-4.2 this was a single ambulatory-class encounter coded 160734000",
+        "with a 60-120 day delay after it. Two problems: the class made a nursing",
+        "facility stay export as an office visit, and 160734000 is actually",
+        "'Lives in nursing home' (a finding), not the 'Admission to long-term care",
+        "facility (procedure)' the display text claimed -- verified via Ontoserver",
+        "$lookup. Now encounter_class snf with 45618002 'Skilled nursing facility'",
+        "(active, Verhoeff-valid). Encounter codes are not HCPCS-mapped, so no",
+        "export-map row is involved.",
+        "The stay is a bounded covered period held open across a 20-30 day Delay",
+        "(permitted for snf class; the lint only warns above 90 days) and then",
+        "explicitly closed, with the inter-period gap outside any encounter. See",
+        "the module header for why continuous residence is not modelled as a",
+        "continuously-open encounter."
+      ],
+      "direct_transition": "NursingHome_Care"
+    },
+
+    "NursingHome_Care": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "410401003",
+          "display": "Nursing care/supplementary surveillance"
+        }
+      ],
+      "remarks": [
+        "Same code the stock snf/skilled_nursing_facility submodule uses for its",
+        "daily nursing care; active per Ontoserver $lookup and already mapped in",
+        "hcpcs_code_map.json (G0299/G0300 skilled nursing services)."
+      ],
+      "direct_transition": "NursingHome_Covered_Period"
+    },
+
+    "NursingHome_Covered_Period": {
+      "type": "Delay",
+      "range": {
+        "low": 20,
+        "high": 30,
+        "unit": "days"
+      },
+      "direct_transition": "End_NursingHome_Visit"
+    },
+
+    "End_NursingHome_Visit": {
       "type": "EncounterEnd",
-      "direct_transition": "ModerateStageFollowup"
+      "direct_transition": "NursingHome_Interval"
+    },
+
+    "NursingHome_Interval": {
+      "type": "Delay",
+      "range": {
+        "low": 60,
+        "high": 75,
+        "unit": "days"
+      },
+      "direct_transition": "NursingHome_Period_Check"
+    },
+
+    "NursingHome_Period_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Per ~92-day cycle (a 20-30 day covered period plus a 60-75 day gap).",
+        "Fix round 2 (2026-08-11 gate) cut hospice election 16% -> 4% per cycle",
+        "and death without hospice 6% -> 9% to renormalise, undoing most of fix",
+        "round 1's raise now that Task 5.2 showed ~38% of this module's patients",
+        "can ALSO elect via the stock home_hospice_snf.json route -- see",
+        "Severe_Stage_Annual_Check and the module header for the full back-solve",
+        "arithmetic and the population-wide concern this alone does not close.",
+        "31% of long-term-care residents now elect hospice before death (was",
+        "73%) and mean residence is ~1.95 years (was ~1.2y, closer to fix round",
+        "0's ~1.9y -- Mitchell SL et al., NEJM 2009;361:1529-38 puts median",
+        "survival in advanced dementia at ~1.3y, so this is a deliberate",
+        "trade against that literature figure in exchange for closing the",
+        "hospice-election overshoot; flagged, not silently accepted). Direct",
+        "death without hospice is correspondingly higher per cycle. 4% per",
+        "cycle (unchanged) routes back through the acute-complication roll",
+        "(a hospitalisation from the facility), which returns here via",
+        "Severe_Living_Setting_Check and is not an exit."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.09,
+          "transition": "Death_From_Alzheimers"
+        },
+        {
+          "distribution": 0.04,
+          "transition": "Hospice_Transition"
+        },
+        {
+          "distribution": 0.04,
+          "transition": "Severe_Complication_Check"
+        },
+        {
+          "distribution": 0.83,
+          "transition": "NursingHome_Visit"
+        }
+      ]
+    },
+
+    "Hospice_Transition": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "alzheimers_disease",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "306237005",
+          "display": "Referral to palliative care (procedure)"
+        }
+      ],
+      "direct_transition": "Hospice_Eligibility_Assessment"
+    },
+
+    "Hospice_Eligibility_Assessment": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "385762004",
+          "display": "Hospice care assessment"
+        }
+      ],
+      "remarks": [
+        "Pre-election hospice evaluation; mapped to HCPCS G0337 in",
+        "hcpcs_code_map.json. Code corrected by Task 1.6 (the previous 305336008",
+        "is 'Admission to hospice', the encounter-type code, under a mismatched",
+        "display)."
+      ],
+      "direct_transition": "End_Hospice_Transition"
+    },
+
+    "End_Hospice_Transition": {
+      "type": "EncounterEnd",
+      "direct_transition": "Set_Hospice_Reason"
+    },
+
+    "Set_Hospice_Reason": {
+      "type": "SetAttribute",
+      "attribute": "hospice_reason",
+      "value_attribute": "alzheimers_disease",
+      "remarks": [
+        "Task 4.2: honours the tree's hospice contract instead of modelling",
+        "hospice locally. hospice_treatment.json's Hospice_Admission Encounter",
+        "carries `reason: hospice_reason`, so this attribute must hold a condition",
+        "entry -- `alzheimers_disease` is this module's own ConditionOnset",
+        "attribute. This mirrors home_hospice_snf.json's own `Alzheimers` state,",
+        "which sets hospice_reason from dementia.json's `Type of Alzheimer's`.",
+        "This module does NOT set `Type of Alzheimer's`: that attribute belongs to",
+        "stock dementia.json and writing it from here would be a cross-module",
+        "contract violation (see the Task 4.2 report's note to Task 5.2)."
+      ],
+      "direct_transition": "Set_Hospice_Flag"
+    },
+
+    "Set_Hospice_Flag": {
+      "type": "SetAttribute",
+      "attribute": "hospice",
+      "value": true,
+      "remarks": [
+        "hospice_treatment.json's `Wait for Hospice` Guard allows on",
+        "`hospice == true`; it then opens the hospice-class encounter, runs",
+        "certification/notification/assessment/care-plan and per-diem hospice",
+        "care for an exponential LOS (mean 22.7 days), and closes it. That module",
+        "resets `hospice` to false on discharge, so this flag is a one-shot",
+        "election, not a latch."
+      ],
+      "direct_transition": "Hospice_Period"
+    },
+
+    "Hospice_Period": {
+      "type": "Delay",
+      "remarks": [
+        "Time from hospice election to death. Median hospice length of stay in",
+        "dementia is a few weeks to a few months; 20-90 days brackets the",
+        "hospice_treatment.json LOS distribution (exponential, mean 22.7 days,",
+        "capped at 240) so the stock hospice episode has room to run and close",
+        "before this module kills the patient."
+      ],
+      "range": {
+        "low": 20,
+        "high": 90,
+        "unit": "days"
+      },
+      "direct_transition": "Death_From_Alzheimers"
+    },
+
+    "Death_From_Alzheimers": {
+      "type": "Death",
+      "referenced_by_attribute": "alzheimers_disease",
+      "remarks": [
+        "Single Death state, reached from the mild, moderate, community-severe and",
+        "long-term-care annual/periodic checks and from the hospice period. Task",
+        "1.6 introduced mortality (the pre-1.6 module had no Death state at all);",
+        "Task 4.2 spreads it across the stages instead of concentrating it in one",
+        "end-stage arm. AD is the recorded cause of death, so 100% of this",
+        "module's deaths carry the diagnosis.",
+        "No encounter is open at any of the five call sites: every one of them is",
+        "reached from a Delay that sits after an EncounterEnd (verified by the",
+        "both-context BFS -- see the report).",
+        "Task 5.2: switched from `condition_onset: MildDementia` to",
+        "`referenced_by_attribute: alzheimers_disease`, which resolves to the same",
+        "26929004 entry in the normal case but is immune to one residual",
+        "cross-module effect. State.Death resolves `condition_onset` by scanning",
+        "person.record.present for an entry whose `name` equals the state name",
+        "(State.java, Death.process). HealthRecord.conditionStart is idempotent per",
+        "code, and State.ConditionOnset.diagnose overwrites `entry.name` on the",
+        "entry it gets back -- so if dementia.json's deferred AlzheimersOnset is",
+        "diagnosed onto our already-present 26929004, the entry is renamed to",
+        "'AlzheimersOnset' and the by-name scan finds nothing, silently recording",
+        "a death with a NULL cause. The attribute holds the Entry object itself, so",
+        "it survives the rename. Safety: `alzheimers_disease` is assigned by",
+        "MildDementia, which dominates every path to this state (verified by BFS",
+        "from Initial with MildDementia removed -- this state becomes unreachable),",
+        "so the RuntimeException that Death.process throws for an unset referenced",
+        "attribute cannot fire."
+      ],
+      "direct_transition": "Terminal"
+    },
+
+    "Terminal": {
+      "type": "Terminal"
     }
   }
 }

@@ -2,29 +2,104 @@
   "name": "CIDP",
   "author": "Your Name or Organization",
   "version": "1.0.0",
+  "gmf_version": 2,
   "remarks": [
     "Chronic Inflammatory Demyelinating Polyneuropathy (CIDP) module",
     "Based on 2021 EAN/PNS diagnostic guidelines",
     "Models onset, diagnosis, treatment, and progression of CIDP and variants",
-    "Prevalence: 0.67-10.3 per 100,000 (using 2 per 100,000)"
+    "",
+    "2026-08 remediation (audit: 'the next HOHF' -- decades-long encounter lock",
+    "plus a 100x incidence typo):",
+    "- Annual incidence 0.00002 (2/100,000/yr), gated to ages 30+ (peak onset",
+    "  40-60). The pre-fix module rolled 0.002 (100x too high) exactly once at",
+    "  birth instead of annually from age 30. Broers et al., 'Incidence and",
+    "  Prevalence of Chronic Inflammatory Demyelinating Polyradiculoneuropathy:",
+    "  A Systematic Review and Meta-Analysis', Neuroepidemiology 2019;52(3-4):",
+    "  161-172 -- pooled incidence 0.33/100,000 person-years, pooled prevalence",
+    "  2.81/100,000, with wide heterogeneity (0.67-10.3/100,000) across included",
+    "  studies by diagnostic criteria. 2/100,000/yr sits at the upper end of that",
+    "  range, consistent with this module's original 'using 2 per 100,000'",
+    "  working value, chosen so CIDP cases remain observable in a synthetic",
+    "  population.",
+    "- Every Encounter now closes (EncounterEnd) before any Delay of a day or",
+    "  more, per visit. The pre-fix module opened CIDP_Diagnostic_Encounter,",
+    "  Adjust_Treatment, and Regular_Monitoring and never closed any of them,",
+    "  holding the person's single encounter-reservation lock for the rest of",
+    "  their life once diagnosed.",
+    "- Monitoring loop restructured to Delay(~3mo) -> Encounter (open) ->",
+    "  assess -> EncounterEnd -> loop, matching a standard CIDP maintenance",
+    "  follow-up interval (EAN/PNS 2021 guidelines recommend reassessment",
+    "  roughly every 3 months on stable maintenance therapy).",
+    "- The old 1%/cycle exit (0.89 loop / 0.10 complication / 0.01 Terminal,",
+    "  which held the lock a median ~24 years before this fix) is replaced by",
+    "  three real per-quarter outcomes: continue 94%, remission 5%, death",
+    "  (other/unspecified cause) 1%. Compounded annually: ~78% remain in active",
+    "  monitoring, ~18.5% enter remission, ~3.9% die of any cause per year.",
+    "  Remission rate is consistent with published 1-year remission figures",
+    "  (28-38% at 52 weeks in IVIG/IVMP vs IVIG/placebo trials; ~36% in remission",
+    "  at 1 year in prospective cohorts) -- see PMC8782785 and related IVIG",
+    "  cessation-trial literature. The ~3.9%/yr all-cause mortality figure is in",
+    "  the range of pooled CIDP case-fatality estimates (~3.3-3.5%; 'Outcome in",
+    "  chronic inflammatory demyelinating polyneuropathy: A systematic review",
+    "  and meta-analysis', Muscle Nerve), reflecting this population's excess",
+    "  comorbidity burden (cardiovascular disease, diabetes, infection) rather",
+    "  than a CIDP-specific cause -- the Death state below carries no cause-of-",
+    "  death attribution.",
+    "- Loop-resident ConditionOnset/MedicationOrder states are now guarded",
+    "  against duplicate stacking: Disease_Complications only fires once per",
+    "  person (attribute-guarded), and oral maintenance azathioprine is",
+    "  reachable at most once per person by construction (chronic: true, no",
+    "  re-order path).",
+    "- IVIG_Therapy is now administration: true (clinician-administered",
+    "  infusion, single administration row per firing, RxNorm 42386 already",
+    "  maps to HCPCS J1599 in rxnorm_hcpcs_map.json -- no new export row",
+    "  needed). Second_Line_Treatment (azathioprine) moved from the bare",
+    "  ingredient RxCUI 1256 to the prescribable SCD RxCUI 197388 (Azathioprine",
+    "  50 MG Oral Tablet), added to medication_code_map.json."
   ],
   "states": {
     "Initial": {
       "type": "Initial",
+      "direct_transition": "CIDP_Age_Guard"
+    },
+    "CIDP_Age_Guard": {
+      "type": "Guard",
+      "remarks": [
+        "CIDP incidence is negligible before age 30 and peaks 40-60 (Broers 2019).",
+        "Nobody rolls the annual incidence check before 30."
+      ],
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 30,
+        "unit": "years"
+      },
       "direct_transition": "CIDP_Incidence_Check"
     },
     "CIDP_Incidence_Check": {
       "type": "Simple",
+      "remarks": [
+        "Annual incidence roll, 2/100,000/yr (was a one-time 0.002 = 100x too",
+        "high, rolled once at birth instead of annually from age 30)."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.002,
+          "distribution": 0.00002,
           "transition": "CIDP_Onset"
         },
         {
-          "distribution": 0.998,
-          "transition": "Terminal"
+          "distribution": 0.99998,
+          "transition": "CIDP_Incidence_Wait"
         }
       ]
+    },
+    "CIDP_Incidence_Wait": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 1,
+        "unit": "years"
+      },
+      "direct_transition": "CIDP_Age_Guard"
     },
     "CIDP_Onset": {
       "type": "ConditionOnset",
@@ -125,7 +200,8 @@
     },
     "IVIG_Therapy": {
       "type": "MedicationOrder",
-      "direct_transition": "Treatment_Response_Assessment",
+      "administration": true,
+      "direct_transition": "End_Diagnostic_Treatment_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -136,8 +212,14 @@
     },
     "Corticosteroids_Therapy": {
       "type": "MedicationOrder",
-      "chronic": true,
-      "direct_transition": "Treatment_Response_Assessment",
+      "remarks": [
+        "MERGE (master): chronic:true REJECTED. This is a fixed-course prednisone",
+        "induction/taper (~8-12 weeks) that End_Corticosteroids_Course explicitly",
+        "stops; chronic would auto-renew it at every wellness visit for the rest of",
+        "the patient's life. Contrast Second_Line_Treatment (azathioprine), which is",
+        "genuinely open-ended and already carries chronic:true on both sides."
+      ],
+      "direct_transition": "End_Diagnostic_Treatment_Encounter",
       "codes": [
         {
           "system": "RxNorm",
@@ -155,6 +237,10 @@
           "display": "Plasmapheresis"
         }
       ],
+      "direct_transition": "End_Diagnostic_Treatment_Encounter"
+    },
+    "End_Diagnostic_Treatment_Encounter": {
+      "type": "EncounterEnd",
       "direct_transition": "Treatment_Response_Assessment"
     },
     "Treatment_Response_Assessment": {
@@ -167,6 +253,24 @@
         }
       },
       "unit": "weeks",
+      "direct_transition": "End_Corticosteroids_Course"
+    },
+    "End_Corticosteroids_Course": {
+      "type": "MedicationEnd",
+      "remarks": [
+        "Corticosteroids_Therapy is a fixed-course induction taper (typical CIDP",
+        "prednisone course/taper ~8-12 weeks), not a chronic maintenance drug --",
+        "it needs a MedicationEnd (Global Constraint 6), unlike IVIG",
+        "(administration: true, single row per firing) or Second_Line_Treatment",
+        "(chronic: true azathioprine). Reuses the existing ~12wk",
+        "Treatment_Response_Assessment Delay -- already the right duration for a",
+        "steroid taper -- rather than adding a new delay. This state is on the",
+        "shared path for all three initial-treatment arms; medicationEndByState",
+        "(HealthRecord.java:1602-1618) is a safe no-op for patients who took",
+        "IVIG or plasma exchange instead of corticosteroids (no matching",
+        "medication entry found -> nothing happens)."
+      ],
+      "medication_order": "Corticosteroids_Therapy",
       "direct_transition": "Treatment_Response_Decision"
     },
     "Treatment_Response_Decision": {
@@ -182,7 +286,7 @@
         },
         {
           "distribution": 0.15,
-          "transition": "Second_Line_Treatment"
+          "transition": "Second_Line_Treatment_Encounter"
         }
       ]
     },
@@ -210,17 +314,39 @@
       ],
       "direct_transition": "Second_Line_Treatment"
     },
+    "Second_Line_Treatment_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "remarks": [
+        "Pre-fix module ordered azathioprine on this branch with no open",
+        "encounter at all -- it silently attached to whatever encounter (or",
+        "synthetic wellness visit) happened to be current. Gets its own visit,",
+        "same as the Adjust_Treatment arm."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "Second_Line_Treatment"
+    },
     "Second_Line_Treatment": {
       "type": "MedicationOrder",
       "chronic": true,
-      "direct_transition": "Followup_Response",
+      "direct_transition": "End_Second_Line_Encounter",
       "codes": [
         {
           "system": "RxNorm",
-          "code": "1256",
-          "display": "azathioprine"
+          "code": "197388",
+          "display": "Azathioprine 50 MG Oral Tablet"
         }
       ]
+    },
+    "End_Second_Line_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "Followup_Response"
     },
     "Followup_Response": {
       "type": "Delay",
@@ -236,32 +362,21 @@
     },
     "Continue_Care": {
       "type": "Delay",
+      "remarks": [
+        "Quarterly monitoring-loop pass (~3 months), matching EAN/PNS 2021",
+        "guideline follow-up interval for stable CIDP on maintenance therapy.",
+        "Was GAUSSIAN mean=18 sd=6 weeks (~4.2mo); shortened to a true quarterly",
+        "cadence to match the per-pass outcome rates on Long_Term_Outcome."
+      ],
       "distribution": {
         "kind": "GAUSSIAN",
         "parameters": {
-          "mean": 18,
-          "standardDeviation": 6
+          "mean": 13,
+          "standardDeviation": 2
         }
       },
       "unit": "weeks",
-      "direct_transition": "Long_Term_Outcome"
-    },
-    "Long_Term_Outcome": {
-      "type": "Simple",
-      "distributed_transition": [
-        {
-          "distribution": 0.89,
-          "transition": "Regular_Monitoring"
-        },
-        {
-          "distribution": 0.1,
-          "transition": "Disease_Complications"
-        },
-        {
-          "distribution": 0.01,
-          "transition": "Terminal"
-        }
-      ]
+      "direct_transition": "Regular_Monitoring"
     },
     "Regular_Monitoring": {
       "type": "Encounter",
@@ -285,7 +400,67 @@
           "display": "Protein in Cerebrospinal Fluid"
         }
       ],
-      "direct_transition": "Continue_Care"
+      "direct_transition": "End_Regular_Monitoring_Visit"
+    },
+    "End_Regular_Monitoring_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Long_Term_Outcome"
+    },
+    "Long_Term_Outcome": {
+      "type": "Simple",
+      "remarks": [
+        "Real per-quarter outcomes replacing the old 1%/cycle exit (0.89 loop /",
+        "0.10 complication / 0.01 Terminal, which held the encounter lock a",
+        "median ~24 years). See module remarks for sourcing."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.94,
+          "transition": "Complication_Guard"
+        },
+        {
+          "distribution": 0.05,
+          "transition": "Remission_Onset"
+        },
+        {
+          "distribution": 0.01,
+          "transition": "Death_Other"
+        }
+      ]
+    },
+    "Complication_Guard": {
+      "type": "Simple",
+      "remarks": [
+        "Stacking guard: Disease_Complications is a ConditionOnset inside this",
+        "re-enterable loop, so it must fire at most once per person. Skips",
+        "straight back to Continue_Care once cidp_complication_onset is set."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "cidp_complication_onset",
+            "operator": "is nil"
+          },
+          "transition": "Complication_Roll"
+        },
+        {
+          "transition": "Continue_Care"
+        }
+      ]
+    },
+    "Complication_Roll": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.15,
+          "transition": "Disease_Complications"
+        },
+        {
+          "distribution": 0.85,
+          "transition": "Continue_Care"
+        }
+      ]
     },
     "Disease_Complications": {
       "type": "ConditionOnset",
@@ -296,7 +471,89 @@
           "display": "Brachial variant of chronic immune demyelinating polyradiculoneuropathy (disorder)"
         }
       ],
+      "assign_to_attribute": "cidp_complication_onset",
       "direct_transition": "Continue_Care"
+    },
+    "Remission_Onset": {
+      "type": "SetAttribute",
+      "attribute": "cidp_remission",
+      "value": true,
+      "remarks": [
+        "Remission exits the quarterly monitoring loop into a lower-intensity",
+        "annual surveillance loop rather than dead-ending at Terminal."
+      ],
+      "direct_transition": "Low_Intensity_Delay"
+    },
+    "Low_Intensity_Delay": {
+      "type": "Delay",
+      "distribution": {
+        "kind": "GAUSSIAN",
+        "parameters": {
+          "mean": 52,
+          "standardDeviation": 6
+        }
+      },
+      "unit": "weeks",
+      "direct_transition": "Low_Intensity_Encounter"
+    },
+    "Low_Intensity_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "390906007",
+          "display": "Follow-up encounter"
+        }
+      ],
+      "direct_transition": "Low_Intensity_Assessment"
+    },
+    "Low_Intensity_Assessment": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "5792-7",
+          "display": "Protein in Cerebrospinal Fluid"
+        }
+      ],
+      "direct_transition": "End_Low_Intensity_Visit"
+    },
+    "End_Low_Intensity_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "Low_Intensity_Outcome"
+    },
+    "Low_Intensity_Outcome": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "distribution": 0.93,
+          "transition": "Low_Intensity_Delay"
+        },
+        {
+          "distribution": 0.07,
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Death_Other": {
+      "type": "Death",
+      "remarks": [
+        "Death from other/unspecified causes during a monitoring interval --",
+        "deliberately carries no codes/condition_onset/referenced_by_attribute",
+        "so it is not coded as a CIDP-caused death (State.java Death.process:",
+        "reason stays null when none of the three cause-of-death fields are",
+        "set). Represents this population's excess comorbidity-driven",
+        "mortality (cardiovascular disease, diabetes, infection), not CIDP",
+        "itself."
+      ],
+      "range": {
+        "low": 1,
+        "high": 90,
+        "unit": "days"
+      },
+      "direct_transition": "Terminal"
     },
     "Terminal": {
       "type": "Terminal"

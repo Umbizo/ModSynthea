@@ -11,7 +11,7 @@
           },
           "distributions": [
             {
-              "transition": "AML_Already_Present_Check",
+              "transition": "Cancerous",
               "distribution": 0.002
             },
             {
@@ -27,7 +27,7 @@
           },
           "distributions": [
             {
-              "transition": "AML_Already_Present_Check",
+              "transition": "Cancerous",
               "distribution": 0.003
             },
             {
@@ -46,6 +46,13 @@
     },
     "Levofloxacin": {
       "type": "MedicationOrder",
+      "remarks": [
+        "Oral tablet dispensed as a prescription, not administered. `administration: true`",
+        "routes this through the J-code/HCPCS path, which has no code for an oral",
+        "levofloxacin tablet -- the drug silently vanished from every export. The RxNorm",
+        "CUI 199885 already has NDC rows in export/medication_code_map.json, so the",
+        "dispensed-Rx (PDE) path maps cleanly without this flag."
+      ],
       "codes": [
         {
           "system": "RxNorm",
@@ -55,7 +62,6 @@
       ],
       "chronic": false,
       "assign_to_attribute": "levofloxacin",
-      "administration": true,
       "reason": "Acute_Myeloid_Leukemia_AML",
       "prescription": {
         "dosage": {
@@ -397,21 +403,19 @@
       "direct_transition": "Wait for Treatment"
     },
     "Death_Event": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "16983000",
-          "display": "Death in hospital (event)"
-        }
+      "type": "Simple",
+      "remarks": [
+        "Task 6.1: was a Procedure coded SNOMED 16983000 \"Death in hospital",
+        "(event)\" with a 30-60 minute duration. An unmapped Procedure is not inert:",
+        "Carrier/Outpatient/InpatientExporter still emit a claim line for it with",
+        "real dollar amounts and a blank HCPCS_CD (the skip-unmapped branch is",
+        "commented out in CarrierExporter.java). A death is an event, not a",
+        "billable service -- there is no HCPCS for it -- so this is now a Simple",
+        "pass-through straight into Death. Transition graph unchanged; the only",
+        "behavioural difference is that the 30-60 minutes no longer elapse before",
+        "death."
       ],
-      "duration": {
-        "low": 30,
-        "high": 60,
-        "unit": "minutes"
-      },
-      "direct_transition": "Death",
-      "reason": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "Death"
     },
     "Determine_Levofloxacin_Prophylaxis": {
       "type": "Delay",
@@ -446,21 +450,20 @@
       }
     },
     "Transfer_to_Stepdown": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "449214001",
-          "display": "Transfer to stepdown unit (procedure)"
-        }
+      "type": "Simple",
+      "remarks": [
+        "Task 6.1: was a Procedure coded SNOMED 449214001 \"Transfer to stepdown",
+        "unit\" with a 60-120 minute duration. An unmapped Procedure is not inert:",
+        "Carrier/Outpatient/InpatientExporter still emit a claim line for it with",
+        "real dollar amounts and a blank HCPCS_CD (the skip-unmapped branch is",
+        "commented out in CarrierExporter.java). An intra-hospital transfer is not",
+        "separately billable -- level of care is reported through revenue centers",
+        "on the inpatient claim, not a HCPCS line -- so this is now a Simple pass-",
+        "through. Transfer_to_ICU keeps its Procedure form: ICU admission of a",
+        "neutropenic patient does carry a billable service (critical care, CPT",
+        "99291), and that code was added to hcpcs_code_map.json."
       ],
-      "duration": {
-        "low": 60,
-        "high": 120,
-        "unit": "minutes"
-      },
-      "direct_transition": "Wait for Discharge",
-      "reason": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "Wait for Discharge"
     },
     "Delay_1": {
       "type": "Delay",
@@ -471,7 +474,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_2": {
       "type": "Delay",
@@ -482,7 +485,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_3": {
       "type": "Delay",
@@ -493,7 +496,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_4": {
       "type": "Delay",
@@ -504,7 +507,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_5": {
       "type": "Delay",
@@ -515,7 +518,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_6": {
       "type": "Delay",
@@ -526,7 +529,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_7": {
       "type": "Delay",
@@ -537,7 +540,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_8": {
       "type": "Delay",
@@ -548,7 +551,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_9": {
       "type": "Delay",
@@ -559,7 +562,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_10": {
       "type": "Delay",
@@ -570,7 +573,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_11": {
       "type": "Delay",
@@ -581,7 +584,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_12": {
       "type": "Delay",
@@ -592,7 +595,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_13": {
       "type": "Delay",
@@ -603,7 +606,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_14": {
       "type": "Delay",
@@ -614,7 +617,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_15": {
       "type": "Delay",
@@ -625,7 +628,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_16": {
       "type": "Delay",
@@ -636,7 +639,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_17": {
       "type": "Delay",
@@ -647,7 +650,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_18": {
       "type": "Delay",
@@ -658,7 +661,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_19": {
       "type": "Delay",
@@ -669,7 +672,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_20": {
       "type": "Delay",
@@ -680,7 +683,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_21": {
       "type": "Delay",
@@ -691,7 +694,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Delay_0": {
       "type": "Delay",
@@ -702,7 +705,7 @@
         }
       },
       "unit": "years",
-      "direct_transition": "Acute_Myeloid_Leukemia_AML"
+      "direct_transition": "AML_Already_Present_Check"
     },
     "Acute_Myeloid_Leukemia_AML": {
       "type": "ConditionOnset",
@@ -746,7 +749,50 @@
     "End_AML": {
       "type": "ConditionEnd",
       "direct_transition": "End_Non-Febrile_Neutropenia",
-      "condition_onset": "Acute_Myeloid_Leukemia_AML"
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "91861009",
+          "display": "Acute myeloid leukemia (disorder)"
+        }
+      ],
+      "remarks": [
+        "Task 2.11 sweep fix round 1: was condition_onset:",
+        "\"Acute_Myeloid_Leukemia_AML\", at risk of the renamed-entry silent-",
+        "no-op bug -- 91861009 is also ConditionOnset'd by",
+        "acute_myeloid_leukemia.json [AML_Condition],",
+        "myelodysplastic_syndromes.json [AML_Transformation], and",
+        "polycythemia_vera.json [AML_Transformation], each under a different",
+        "state name. HealthRecord.conditionStart is idempotent per code, so",
+        "whichever of those fires last on a comorbid patient renames the",
+        "shared present-map entry away from",
+        "'Acute_Myeloid_Leukemia_AML'. State.ConditionEnd.process's",
+        "condition_onset form unconditionally calls",
+        "person.record.conditionEndByState(time, conditionOnset), which",
+        "scans present.values() for entry.name.equals(stateName) and does",
+        "nothing if no match -- a SILENT NO-OP, not a crash: the AML",
+        "condition would stay active in present forever.",
+        "Acute_Myeloid_Leukemia_AML (this module's own onset) does",
+        "assign_to_attribute: \"acute_myeloid_leukemia\" and dominates this",
+        "state (verified by dominator analysis), so",
+        "referenced_by_attribute would also resolve safely against a",
+        "renamed entry -- but that exact attribute name",
+        "(\"acute_myeloid_leukemia\") is ALSO written by",
+        "acute_myeloid_leukemia.json's own AML_Condition state (grep-",
+        "verified, only these two modules use that attribute name tree-",
+        "wide), the same class of shared-mutable-attribute risk that",
+        "dementia.json's PneumoniaDeath fix (this same commit) had to back",
+        "out of for hospice_reason. Used the static codes form instead:",
+        "HealthRecord.conditionEnd(time, code) resolves by",
+        "present.containsKey(code) -- by CODE, not by name or by attribute",
+        "-- so it is immune to both the renamed-entry trap and the shared-",
+        "attribute-name trap, and ends whichever entry currently holds",
+        "91861009 regardless of which of the four sharing modules put it",
+        "there. No precision is lost: unlike Death's codes form (which",
+        "hardcodes a cause that may not match the patient's actual",
+        "diagnosed variant), ConditionEnd's codes form ends exactly the",
+        "condition this state names -- there is no variant to lose."
+      ]
     },
     "Cancerous": {
       "type": "Simple",
@@ -882,13 +928,23 @@
           "transition": "Terminal"
         },
         {
-          "transition": "Cancerous"
+          "transition": "Acute_Myeloid_Leukemia_AML"
         }
       ],
       "remarks": [
-        "Two modules in this repo onset SNOMED 91861009. Without this check a",
-        "patient can receive two independent AML diagnoses and two unrelated",
-        "treatment courses, roughly doubling apparent AML prevalence."
+        "Four modules in this repo onset SNOMED 91861009 (this one, acute_myeloid_leukemia,",
+        "myelodysplastic_syndromes, polycythemia_vera). acute_lymphoblastic_leukemia.json only",
+        "mentions 91861009 in a remark explaining its own correction -- its actual onset code",
+        "is 91857003 (acute lymphoid leukaemia), not this one.",
+        "Without this check a patient can receive two independent AML diagnoses and two",
+        "unrelated treatment courses, roughly doubling apparent AML prevalence.",
+        "Re-anchored here (immediately before this module's own onset, at the age drawn",
+        "by Cancerous/Delay_N) rather than at the birth-instant it used to run at: a",
+        "check performed at age 0 can only catch a diagnosis that predates birth, which",
+        "is impossible, so it was a permanent no-op. Checking right before this module's",
+        "own onset -- which is also what gates entry into the chemo/prophylaxis encounter",
+        "below -- actually catches the case where a sibling module diagnosed the patient",
+        "with AML sometime during the 0-21 year window this module spent waiting."
       ]
     }
   },

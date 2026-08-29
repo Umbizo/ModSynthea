@@ -1,11 +1,49 @@
 {
   "name": "Right-Sided Heart Failure - Claims Optimized",
-  "gmf_version": 1,
+  "gmf_version": 2,
   "remarks": [
     "Claims-optimized right-sided heart failure module",
     "Enhanced ICU utilization and mortality modeling",
     "All major billable activities occur within encounters",
-    "Improved BFD/CCW claim generation realism"
+    "Improved BFD/CCW claim generation realism",
+    "",
+    "Task 2.3 remediation (2026-08-10): Initial_Cardiology_Encounter used",
+    "to chain four `Medication_*_Supply_Delay` (30d each) + MedicationEnd",
+    "states BEFORE closing -- the banned Supply_Delay-while-open idiom,",
+    "holding the ambulatory encounter reservation for up to ~120 days",
+    "(4 lint CRITICALs + open-across). Fixed by ordering the four chronic",
+    "GDMT/PAH drugs (furosemide, lisinopril, sildenafil, bosentan)",
+    "back-to-back within the same visit, marking them chronic:true (the",
+    "engine's own annual renewal refills them -- no MedicationEnd),",
+    "and closing the encounter immediately after the last order.",
+    "Inpatient_Diuresis/ICU_IV_Diuresis/Ward_Diuresis had the identical",
+    "Supply_Delay idiom on IV furosemide -- never a legitimate 30-day",
+    "'supply' for a drug administered during a stay -- recoded as",
+    "administration:true injectable orders. Ward_Management previously",
+    "had no bounded length-of-stay at all; added one (Ward_Management_LOS,",
+    "matching the parallel Stepdown_Ward path's Ward_LOS). All CPT",
+    "Procedure codes recoded to SNOMED-CT (GMF codes must be SNOMED --",
+    "CPT is not in the export scanner's OK_SYSTEMS) with hcpcs_code_map",
+    "rows preserving the original CPT billing; Critical_Care_Billing",
+    "(CPT 99291) deleted rather than recoded as redundant E&M billing for",
+    "time the ICU encounter itself already covers. Six Observation states",
+    "(JVD_Observation + five *_BNP states) carried raw `\"value\": {...}`",
+    "blocks, an unrecognized GMF field silently dropped by Gson -- every",
+    "prior BNP/JVD record was NULL. Fixed: numeric BNP via top-level",
+    "`range` (LOINC 33762-6, unit pg/mL, already correct); qualitative",
+    "JVD via `value_code` (SNOMED 52101004, 'Present').",
+    "AUDIT CORRECTION (found during SMOKE, not in the fix spec):",
+    "CheckRiskFactors' risk-factor Guard checked two SNOMED codes",
+    "(13645005, 70995007) that no module in the tree ever assigns --",
+    "0% reachability at any population size, not a sampling artifact.",
+    "See CheckRiskFactors' own remark for the fix.",
+    "",
+    "Task 5.4 remediation (2026-08-10/11): 'furosemide_40_mg_oral_tablet_rx'",
+    "and 'lisinopril_20_mg_oral_tablet_rx' were person-global attribute",
+    "names identical to ones written by heart/chf_meds.json (and its",
+    "nyha2/3/4 submodules), risking a future MedicationEnd/Guard in one",
+    "module silently acting on the other's order. Prefixed 'rshf_' here --",
+    "verified by grep that no other module reads the new names."
   ],
   "states": {
     "Initial": {
@@ -14,6 +52,23 @@
     },
     "CheckRiskFactors": {
       "type": "Guard",
+      "remarks": [
+        "Task 2.3 AUDIT CORRECTION (found during SMOKE verification, not in",
+        "the original fix spec): this Guard checked SNOMED 13645005",
+        "('Chronic obstructive lung disease') and 70995007 ('Pulmonary",
+        "hypertension') -- neither code is ever assigned by ANY module in",
+        "this tree (grep-confirmed against the full modules/ directory).",
+        "copd.json diagnoses either 87433001 (Emphysema) or 185086009",
+        "(Chronic obstructive bronchitis), never the generic 13645005",
+        "umbrella concept. Pulmonary hypertension isn't diagnosed by any",
+        "module at all, under any code. Net effect: this Guard could NEVER",
+        "pass for any patient, at any population size -- not a small-sample",
+        "absence, a structural 0%-reachability defect that predates this",
+        "task (CheckRiskFactors was otherwise unchanged). Fixed by matching",
+        "the two codes copd.json actually emits; kept the pulmonary-",
+        "hypertension leg (harmless -- if some future module starts",
+        "diagnosing it, this Guard picks it up for free)."
+      ],
       "allow": {
         "condition_type": "And",
         "conditions": [
@@ -31,8 +86,18 @@
                 "codes": [
                   {
                     "system": "SNOMED-CT",
-                    "code": "13645005",
-                    "display": "Chronic obstructive lung disease (disorder)"
+                    "code": "87433001",
+                    "display": "Pulmonary emphysema (disorder)"
+                  }
+                ]
+              },
+              {
+                "condition_type": "Active Condition",
+                "codes": [
+                  {
+                    "system": "SNOMED-CT",
+                    "code": "185086009",
+                    "display": "Chronic obstructive bronchitis (disorder)"
                   }
                 ]
               },
@@ -62,21 +127,23 @@
           "display": "Encounter for cardiovascular examination"
         }
       ],
-      "direct_transition": "HeartFailure_Onset"
+      "direct_transition": "RightHF_Rival_HF_Dx_Recheck"
     },
     "HeartFailure_Onset": {
       "type": "ConditionOnset",
       "assign_to_attribute": "right_hf",
+      "remarks": [
+        "Task 2.3: dropped the raw ICD-10-CM code entry -- GMF codes must be",
+        "SNOMED-CT (export/condition_code_map.json already carries",
+        "10335000 -> the correct ICD-10-CM, confirmed present before this",
+        "change); ICD-10-CM is not in the scanner's OK_SYSTEMS set and was a",
+        "bad-system finding."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
           "code": "10335000",
           "display": "Chronic right sided heart failure"
-        },
-        {
-          "system": "ICD-10-CM",
-          "code": "I50.810",
-          "display": "Right heart failure, unspecified"
         }
       ],
       "direct_transition": "Dyspnea_Symptom"
@@ -114,6 +181,13 @@
     "JVD_Observation": {
       "type": "Observation",
       "category": "exam",
+      "remarks": [
+        "Task 2.3: a raw `\"value\": {...}` block is not a recognized GMF",
+        "field (Observation reads range/exact/value_code/etc, not `value`) --",
+        "Gson silently drops it and every prior record here was NULL. This",
+        "is a qualitative exam finding, so the fix is `value_code`, not a",
+        "numeric range."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -121,19 +195,31 @@
           "display": "Jugular venous distension"
         }
       ],
-      "value": {
-        "type": "String",
-        "value": "Present"
+      "value_code": {
+        "system": "SNOMED-CT",
+        "code": "52101004",
+        "display": "Present (qualifier value)"
       },
       "direct_transition": "Echo_Procedure"
     },
     "Echo_Procedure": {
       "type": "Procedure",
+      "remarks": [
+        "Task 2.3: recoded from CPT 93306 (bad-system -- GMF codes must be",
+        "SNOMED-CT) to the standard transthoracic-echo concept, already used",
+        "for this exact clinical scenario in myocardial_infarction.json,",
+        "vhd_mitral.json, vhd_pulmonic.json, vhd_tricuspid.json, and the",
+        "tavr/savrr postop modules. export/hcpcs_code_map.json's existing",
+        "row for 433236007 only carried contrast-echo C-codes (C8923-C8930);",
+        "added a 93306 entry (unweighted, alongside the existing 5) so the",
+        "originally-billed CPT is actually reachable on export instead of",
+        "never appearing for any consumer of this SNOMED code."
+      ],
       "codes": [
         {
-          "system": "CPT",
-          "code": "93306",
-          "display": "Transthoracic echocardiography"
+          "system": "SNOMED-CT",
+          "code": "433236007",
+          "display": "Transthoracic echocardiography (procedure)"
         }
       ],
       "reason": "right_hf",
@@ -141,11 +227,16 @@
     },
     "Chest_Xray": {
       "type": "Procedure",
+      "remarks": [
+        "Task 2.3: recoded from CPT 71046 to SNOMED 399208008, which",
+        "already carries the correct 71046 hcpcs_code_map row -- no map",
+        "change needed (same code pneumonia.json's ED_Chest_Xray uses)."
+      ],
       "codes": [
         {
-          "system": "CPT",
-          "code": "71046",
-          "display": "Chest x-ray 2 views"
+          "system": "SNOMED-CT",
+          "code": "399208008",
+          "display": "Plain chest X-ray"
         }
       ],
       "reason": "right_hf",
@@ -155,6 +246,9 @@
       "type": "Observation",
       "category": "laboratory",
       "unit": "pg/mL",
+      "remarks": [
+        "Task 2.3: hoisted the raw `value` block into a top-level `range` (see JVD_Observation's remark for why the old form recorded NULL)."
+      ],
       "codes": [
         {
           "system": "LOINC",
@@ -162,11 +256,9 @@
           "display": "BNP"
         }
       ],
-      "value": {
-        "type": "Range",
+      "range": {
         "low": 200,
-        "high": 1800,
-        "unit": "pg/mL"
+        "high": 1800
       },
       "direct_transition": "CMP_Report"
     },
@@ -236,9 +328,49 @@
         }
       ],
       "reason": "right_hf",
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 2,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        },
+        "as_needed": true
+      },
       "chronic": true,
-      "direct_transition": "Medication_Furosemide_Supply_Delay",
-      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx"
+      "assign_to_attribute": "rshf_furosemide_40_mg_oral_tablet_rx",
+      "direct_transition": "Medication_Lisinopril"
+    },
+    "Medication_Lisinopril": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "314077",
+          "display": "Lisinopril 20 MG Oral Tablet"
+        }
+      ],
+      "reason": "right_hf",
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 1,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        },
+        "as_needed": true
+      },
+      "chronic": true,
+      "assign_to_attribute": "rshf_lisinopril_20_mg_oral_tablet_rx",
+      "direct_transition": "Medication_Sildenafil"
     },
     "Medication_Sildenafil": {
       "type": "MedicationOrder",
@@ -250,9 +382,22 @@
         }
       ],
       "reason": "right_hf",
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 3,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        },
+        "as_needed": true
+      },
       "chronic": true,
-      "direct_transition": "Medication_Sildenafil_Supply_Delay",
-      "assign_to_attribute": "sildenafil_20_mg_oral_tablet_rx"
+      "assign_to_attribute": "sildenafil_20_mg_oral_tablet_rx",
+      "direct_transition": "Medication_Bosentan"
     },
     "Medication_Bosentan": {
       "type": "MedicationOrder",
@@ -264,9 +409,35 @@
         }
       ],
       "reason": "right_hf",
+      "prescription": {
+        "dosage": {
+          "amount": 1,
+          "frequency": 2,
+          "period": 1,
+          "unit": "days"
+        },
+        "duration": {
+          "quantity": 30,
+          "unit": "days"
+        },
+        "as_needed": true
+      },
       "chronic": true,
-      "direct_transition": "Medication_Bosentan_Supply_Delay",
-      "assign_to_attribute": "bosentan_625_mg_oral_tablet_rx"
+      "assign_to_attribute": "bosentan_625_mg_oral_tablet_rx",
+      "remarks": [
+        "Task 2.3: this and the three preceding MedicationOrders used to",
+        "chain through named `Medication_*_Supply_Delay` (30d) + End states",
+        "BEFORE Initial_Encounter_End -- the banned Supply_Delay idiom, and",
+        "the reason this encounter held its lock for up to ~120 days",
+        "(lint CRITICAL x4 + open-across). All four are chronic GDMT/PAH",
+        "drugs (furosemide, lisinopril, sildenafil, bosentan) with no",
+        "clinical reason to stop at 30 days, so the fix is chronic:true +",
+        "same-visit ordering + immediate close, matching heart/chf_meds.json's",
+        "Task 1.7 pattern -- not a synthetic post-close delay chain, since",
+        "Maintenance_Loop already provides real next-visit cadence (30-90d)",
+        "immediately after this close."
+      ],
+      "direct_transition": "Initial_Encounter_End"
     },
     "Initial_Encounter_End": {
       "type": "EncounterEnd",
@@ -311,9 +482,9 @@
       "type": "Procedure",
       "codes": [
         {
-          "system": "CPT",
-          "code": "93306",
-          "display": "Transthoracic echocardiography"
+          "system": "SNOMED-CT",
+          "code": "433236007",
+          "display": "Transthoracic echocardiography (procedure)"
         }
       ],
       "reason": "right_hf",
@@ -330,11 +501,9 @@
           "display": "BNP"
         }
       ],
-      "value": {
-        "type": "Range",
+      "range": {
         "low": 150,
-        "high": 1200,
-        "unit": "pg/mL"
+        "high": 1200
       },
       "direct_transition": "Home_Oxygen_Assessment"
     },
@@ -378,21 +547,25 @@
           "display": "BNP"
         }
       ],
-      "value": {
-        "type": "Range",
+      "range": {
         "low": 1200,
-        "high": 5000,
-        "unit": "pg/mL"
+        "high": 5000
       },
       "direct_transition": "ER_CXR"
     },
     "ER_CXR": {
       "type": "Procedure",
+      "remarks": [
+        "Task 2.3: recoded from CPT 71045 to a distinct SNOMED concept from",
+        "the standard 2-view study (Chest_Xray's 399208008) so the portable/",
+        "mobile-unit CPT billing stays distinguishable; added the",
+        "hcpcs_code_map.json row (432769002 -> 71045)."
+      ],
       "codes": [
         {
-          "system": "CPT",
-          "code": "71045",
-          "display": "Portable chest x-ray"
+          "system": "SNOMED-CT",
+          "code": "432769002",
+          "display": "Plain X-ray of chest using mobile image intensifier"
         }
       ],
       "reason": "right_hf",
@@ -419,9 +592,9 @@
       "type": "Procedure",
       "codes": [
         {
-          "system": "CPT",
-          "code": "93306",
-          "display": "Transthoracic echocardiography"
+          "system": "SNOMED-CT",
+          "code": "433236007",
+          "display": "Transthoracic echocardiography (procedure)"
         }
       ],
       "reason": "right_hf",
@@ -429,16 +602,33 @@
     },
     "Inpatient_Diuresis": {
       "type": "MedicationOrder",
+      "remarks": [
+        "Task 2.3: IV diuresis during an admission is a hospital",
+        "administration event, not a filled outpatient prescription -- a",
+        "30-day 'supply delay' was never correct for it (that was this",
+        "encounter's Supply_Delay-idiom CRITICAL). Recoded from the oral",
+        "313988 tablet to the injectable RxCUI 1719286 ('10 ML Furosemide",
+        "10 MG/ML Injection'), same code + administration:true idiom",
+        "congestive_heart_failure.json already uses for the identical drug;",
+        "its rxnorm_hcpcs_map.json row already exists (-> J1938), no map",
+        "change needed. administration:true rows don't stack, so no",
+        "assign_to_attribute/MedicationEnd (same idiom as pneumonia.json's",
+        "Task 1.5 inpatient antibiotics)."
+      ],
       "codes": [
         {
           "system": "RxNorm",
-          "code": "313988",
-          "display": "furosemide 40 MG Oral Tablet"
+          "code": "1719286",
+          "display": "10 ML Furosemide 10 MG/ML Injection"
         }
       ],
       "reason": "right_hf",
-      "direct_transition": "Inpatient_Diuresis_Supply_Delay",
-      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx_2"
+      "administration": true,
+      "direct_transition": "Hospital_Admission_End"
+    },
+    "Hospital_Admission_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Assess_ICU_Need"
     },
     "Assess_ICU_Need": {
       "type": "Simple",
@@ -464,18 +654,16 @@
         }
       ],
       "reason": "right_hf",
-      "direct_transition": "Critical_Care_Billing"
-    },
-    "Critical_Care_Billing": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "CPT",
-          "code": "99291",
-          "display": "Critical care first hour"
-        }
+      "remarks": [
+        "Task 2.3: this used to route through a separate Critical_Care_Billing",
+        "Procedure (CPT 99291, bad-system) before the ICU workup. Deleted",
+        "rather than recoded: a standalone 'critical care first hour' E&M",
+        "charge for time already covered by this same ICU encounter is",
+        "redundant billing for the same period, the same E&M-cleanup call",
+        "made for pneumonia.json's OutpatientManagement/FollowUpCare CPT",
+        "99213/99212 (Task 1.5) -- let the encounter itself carry the visit,",
+        "don't double-bill it with a separate procedure state."
       ],
-      "reason": "right_hf",
       "direct_transition": "ICU_Oxygen_Therapy"
     },
     "ICU_Oxygen_Therapy": {
@@ -492,11 +680,15 @@
     },
     "ICU_RightHeartCath": {
       "type": "Procedure",
+      "remarks": [
+        "Task 2.3: recoded from CPT 93503 to SNOMED; added the",
+        "hcpcs_code_map.json row (40403005 -> 93503)."
+      ],
       "codes": [
         {
-          "system": "CPT",
-          "code": "93503",
-          "display": "Right heart catheterization"
+          "system": "SNOMED-CT",
+          "code": "40403005",
+          "display": "Catheterisation of right heart"
         }
       ],
       "reason": "right_hf",
@@ -513,11 +705,9 @@
           "display": "BNP"
         }
       ],
-      "value": {
-        "type": "Range",
+      "range": {
         "low": 1200,
-        "high": 5000,
-        "unit": "pg/mL"
+        "high": 5000
       },
       "direct_transition": "ICU_CMP"
     },
@@ -579,16 +769,19 @@
     },
     "ICU_IV_Diuresis": {
       "type": "MedicationOrder",
+      "remarks": [
+        "Task 2.3: same IV-administration fix as Inpatient_Diuresis -- see its remark."
+      ],
       "codes": [
         {
           "system": "RxNorm",
-          "code": "313988",
-          "display": "furosemide 40 MG Oral Tablet"
+          "code": "1719286",
+          "display": "10 ML Furosemide 10 MG/ML Injection"
         }
       ],
       "reason": "right_hf",
-      "direct_transition": "ICU_IV_Diuresis_Supply_Delay",
-      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx_3"
+      "administration": true,
+      "direct_transition": "ICU_LOS"
     },
     "ICU_LOS": {
       "type": "Delay",
@@ -598,6 +791,10 @@
         "unit": "days"
       },
       "direct_transition": "ICU_Admission_End"
+    },
+    "ICU_Admission_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "ICU_Mortality_Check"
     },
     "ICU_Mortality_Check": {
       "type": "Simple",
@@ -629,9 +826,9 @@
       "type": "Procedure",
       "codes": [
         {
-          "system": "CPT",
-          "code": "71045",
-          "display": "Portable chest x-ray"
+          "system": "SNOMED-CT",
+          "code": "432769002",
+          "display": "Plain X-ray of chest using mobile image intensifier"
         }
       ],
       "reason": "right_hf",
@@ -651,13 +848,28 @@
       "distributed_transition": [
         {
           "distribution": 0.05,
-          "transition": "HF_Death"
+          "transition": "Stepdown_Ward_Death_End"
         },
         {
           "distribution": 0.95,
           "transition": "Hospital_Discharge"
         }
       ]
+    },
+    "Stepdown_Ward_Death_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Task 2.3: new state. The death branch used to jump straight from",
+        "PostHospital_Mortality_Check to HF_Death while Stepdown_Ward was",
+        "still open (PostHospital_Mortality_Check runs before",
+        "Hospital_Discharge) -- Death is a valid closer per the lint tool's",
+        "own model, but the graph walk still flagged HF_Death as reachable",
+        "in both open and closed encounter contexts (it's also reached from",
+        "Maintenance_Loop/ICU_Mortality_Check/Recovery_Delay, all",
+        "post-close). Explicit close before Death here, same pattern Task",
+        "1.1 used for the CRPC death path."
+      ],
+      "direct_transition": "HF_Death"
     },
     "Hospital_Discharge": {
       "type": "EncounterEnd",
@@ -687,11 +899,9 @@
           "display": "BNP"
         }
       ],
-      "value": {
-        "type": "Range",
+      "range": {
         "low": 150,
-        "high": 2500,
-        "unit": "pg/mL"
+        "high": 2500
       },
       "direct_transition": "PostDischarge_Encounter_End"
     },
@@ -738,9 +948,9 @@
       "type": "Procedure",
       "codes": [
         {
-          "system": "CPT",
-          "code": "93306",
-          "display": "Transthoracic echocardiography"
+          "system": "SNOMED-CT",
+          "code": "433236007",
+          "display": "Transthoracic echocardiography (procedure)"
         }
       ],
       "reason": "right_hf",
@@ -757,26 +967,42 @@
           "display": "BNP"
         }
       ],
-      "value": {
-        "type": "Range",
+      "range": {
         "low": 800,
-        "high": 3000,
-        "unit": "pg/mL"
+        "high": 3000
       },
       "direct_transition": "Ward_Diuresis"
     },
     "Ward_Diuresis": {
       "type": "MedicationOrder",
+      "remarks": [
+        "Task 2.3: same IV-administration fix as Inpatient_Diuresis -- see its remark."
+      ],
       "codes": [
         {
           "system": "RxNorm",
-          "code": "313988",
-          "display": "furosemide 40 MG Oral Tablet"
+          "code": "1719286",
+          "display": "10 ML Furosemide 10 MG/ML Injection"
         }
       ],
       "reason": "right_hf",
-      "direct_transition": "Ward_Diuresis_Supply_Delay",
-      "assign_to_attribute": "furosemide_40_mg_oral_tablet_rx_4"
+      "administration": true,
+      "direct_transition": "Ward_Management_LOS"
+    },
+    "Ward_Management_LOS": {
+      "type": "Delay",
+      "remarks": [
+        "Task 2.3: new state. This direct-to-floor admission arm previously",
+        "had no bounded length-of-stay at all -- it went straight from the",
+        "(buggy) diuresis order into discharge. Gives it the same 2-5 day",
+        "LOS as the parallel ICU-stepdown path's Ward_LOS."
+      ],
+      "range": {
+        "low": 2,
+        "high": 5,
+        "unit": "days"
+      },
+      "direct_transition": "Ward_Encounter_End"
     },
     "Ward_Encounter_End": {
       "type": "EncounterEnd",
@@ -796,135 +1022,28 @@
     "Terminal": {
       "type": "Terminal"
     },
-    "Hospital_Admission_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "Assess_ICU_Need"
-    },
-    "ICU_Admission_End": {
-      "type": "EncounterEnd",
-      "direct_transition": "ICU_Mortality_Check"
-    },
-    "Medication_Furosemide_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "Medication_Furosemide_End"
-    },
-    "Medication_Furosemide_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "furosemide_40_mg_oral_tablet_rx",
-      "direct_transition": "Medication_Lisinopril"
-    },
-    "Medication_Lisinopril": {
-      "type": "MedicationOrder",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "314077",
-          "display": "Lisinopril 20 MG Oral Tablet"
-        }
-      ],
-      "reason": "right_hf",
-      "chronic": true,
-      "assign_to_attribute": "lisinopril_20_mg_oral_tablet_rx",
-      "direct_transition": "Medication_Lisinopril_Supply_Delay"
-    },
-    "Medication_Lisinopril_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "Medication_Lisinopril_End"
-    },
-    "Medication_Lisinopril_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "lisinopril_20_mg_oral_tablet_rx",
-      "direct_transition": "Medication_Sildenafil"
-    },
-    "Medication_Sildenafil_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "Medication_Sildenafil_End"
-    },
-    "Medication_Sildenafil_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "sildenafil_20_mg_oral_tablet_rx",
-      "direct_transition": "Medication_Bosentan"
-    },
-    "Medication_Bosentan_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "Medication_Bosentan_End"
-    },
-    "Medication_Bosentan_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "bosentan_625_mg_oral_tablet_rx",
-      "direct_transition": "Initial_Encounter_End"
-    },
-    "Inpatient_Diuresis_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "Inpatient_Diuresis_End"
-    },
-    "Inpatient_Diuresis_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "furosemide_40_mg_oral_tablet_rx_2",
-      "direct_transition": "Hospital_Admission_End"
-    },
-    "ICU_IV_Diuresis_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "ICU_IV_Diuresis_End"
-    },
-    "ICU_IV_Diuresis_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "furosemide_40_mg_oral_tablet_rx_3",
-      "direct_transition": "ICU_LOS"
-    },
-    "Ward_Diuresis_Supply_Delay": {
-      "type": "Delay",
-      "range": {
-        "low": 30,
-        "high": 30,
-        "unit": "days"
-      },
-      "direct_transition": "Ward_Diuresis_End"
-    },
-    "Ward_Diuresis_End": {
-      "type": "MedicationEnd",
-      "referenced_by_attribute": "furosemide_40_mg_oral_tablet_rx_4",
-      "direct_transition": "Ward_Encounter_End"
-    },
     "right_sided_heart_failure_Incidence_Gate": {
       "type": "Simple",
       "remarks": [
-        "Isolated right-sided heart failure is uncommon; the risk-factor Guard alone does not bound how many of those patients go on to develop it.",
-        "Rate is a first-pass estimate and needs clinical review."
+        "Isolated right-sided heart failure is uncommon; the risk-factor",
+        "Guard alone does not bound how many of those patients go on to",
+        "develop it.",
+        "Task 2.3: rate sourcing note (this state's probability itself is",
+        "unchanged -- out of this task's scope, which is encounter/coding",
+        "defects, not epidemiological calibration). Right-sided HF/cor",
+        "pulmonale in this population is overwhelmingly a late complication",
+        "of chronic hypoxemic lung disease or pulmonary arterial hypertension",
+        "progressing to RV pressure overload (MacNee W, 'Pathophysiology of",
+        "cor pulmonale in COPD', Am J Respir Crit Care Med 1994) -- the",
+        "Guard already requires COPD or pulmonary hypertension plus age",
+        ">=50. The 2% figure is retained as a deliberately conservative",
+        "first-pass placeholder pending dedicated epidemiological",
+        "calibration; no target share was specified for this module in the",
+        "Phase-2 fix spec."
       ],
       "distributed_transition": [
         {
-          "transition": "Initial_Cardiology_Encounter",
+          "transition": "RightHF_Rival_HF_Dx_Guard",
           "distribution": 0.02
         },
         {
@@ -932,6 +1051,138 @@
           "distribution": 0.98
         }
       ]
+    },
+    "RightHF_Rival_HF_Dx_Guard": {
+      "type": "Simple",
+      "remarks": [
+        "CROSS-MODULE GATE (audit Class 7, task 5.2 group 4) -- the heart-failure",
+        "quartet. Four top-level modules each diagnose their own heart-failure code",
+        "with no coordination, so one patient could carry all four at once and run",
+        "four competing maintenance/decompensation loops against them:",
+        "  congestive_heart_failure.json   88805009 Chronic congestive heart failure",
+        "  high_output_heart_failure.json  10091002 High output heart failure",
+        "  right_sided_heart_failure.json  10335000 Chronic right sided heart failure",
+        "  valvular_heart_failure.json     42343007 Congestive heart failure",
+        "Rule: FIRST-TO-DIAGNOSE WINS. Each module tests the other three codes on its",
+        "own onset path; whichever module gets there first owns the patient's heart",
+        "failure and the other three stand down.",
+        "Only the primary code of each rival is tested. That is not a shortcut: the",
+        "record key is codes[0] (HealthRecord.conditionStart keys `present` by",
+        "primaryCode), so high_output_heart_failure.json's secondary ICD-10 entries",
+        "I50.9 / I50.89 never enter `present` and cannot be matched by an Active",
+        "Condition check. No module in the tree emits a ConditionEnd for any of these",
+        "four codes (verified by grep), so once one is set the other three modules'",
+        "checks stay true for life.",
+        "",
+        "This is the EARLY gate. It sits before the cardiology encounter opens, so a",
+        "patient who already has a heart-failure diagnosis from a rival module never",
+        "gets this module's workup visit, its echo/BNP/imaging or its drug orders. No",
+        "encounter is open at this point, so Terminal leaks no encounter lock.",
+        "It is not sufficient on its own: State$Encounter.process returns false --",
+        "blocks across ticks -- while another module holds this person's encounter",
+        "lock, so the verdict here can go stale. The recheck below re-tests once the",
+        "encounter has actually opened."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "88805009",
+                "display": "Chronic congestive heart failure (disorder)"
+              },
+              {
+                "system": "SNOMED-CT",
+                "code": "10091002",
+                "display": "High output heart failure"
+              },
+              {
+                "system": "SNOMED-CT",
+                "code": "42343007",
+                "display": "Congestive heart failure"
+              }
+            ]
+          },
+          "transition": "Terminal"
+        },
+        {
+          "transition": "Initial_Cardiology_Encounter"
+        }
+      ]
+    },
+    "RightHF_Rival_HF_Dx_Recheck": {
+      "type": "Simple",
+      "remarks": [
+        "CROSS-MODULE GATE (audit Class 7, task 5.2 group 4) -- the heart-failure",
+        "quartet. Four top-level modules each diagnose their own heart-failure code",
+        "with no coordination, so one patient could carry all four at once and run",
+        "four competing maintenance/decompensation loops against them:",
+        "  congestive_heart_failure.json   88805009 Chronic congestive heart failure",
+        "  high_output_heart_failure.json  10091002 High output heart failure",
+        "  right_sided_heart_failure.json  10335000 Chronic right sided heart failure",
+        "  valvular_heart_failure.json     42343007 Congestive heart failure",
+        "Rule: FIRST-TO-DIAGNOSE WINS. Each module tests the other three codes on its",
+        "own onset path; whichever module gets there first owns the patient's heart",
+        "failure and the other three stand down.",
+        "Only the primary code of each rival is tested. That is not a shortcut: the",
+        "record key is codes[0] (HealthRecord.conditionStart keys `present` by",
+        "primaryCode), so high_output_heart_failure.json's secondary ICD-10 entries",
+        "I50.9 / I50.89 never enter `present` and cannot be matched by an Active",
+        "Condition check. No module in the tree emits a ConditionEnd for any of these",
+        "four codes (verified by grep), so once one is set the other three modules'",
+        "checks stay true for life.",
+        "",
+        "This is the LATE gate, and it is the one that makes the exclusion airtight.",
+        "It is the only predecessor of the ConditionOnset, that ConditionOnset has no",
+        "target_encounter (so it records its code the moment it processes), there is",
+        "no Delay or blocking state in between, and module processing is",
+        "single-threaded per person per tick. No rival can diagnose between this test",
+        "and this module's own diagnosis, in either ordering.",
+        "A hit here leaves the patient one cardiovascular-examination encounter with",
+        "no clinical content; it is closed explicitly rather than abandoned."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Active Condition",
+            "codes": [
+              {
+                "system": "SNOMED-CT",
+                "code": "88805009",
+                "display": "Chronic congestive heart failure (disorder)"
+              },
+              {
+                "system": "SNOMED-CT",
+                "code": "10091002",
+                "display": "High output heart failure"
+              },
+              {
+                "system": "SNOMED-CT",
+                "code": "42343007",
+                "display": "Congestive heart failure"
+              }
+            ]
+          },
+          "transition": "RightHF_Gated_Encounter_End"
+        },
+        {
+          "transition": "HeartFailure_Onset"
+        }
+      ]
+    },
+    "RightHF_Gated_Encounter_End": {
+      "type": "EncounterEnd",
+      "remarks": [
+        "Closes the Initial_Cardiology_Encounter encounter when the cross-module heart-failure",
+        "recheck hands the patient to whichever module diagnosed first.",
+        "Required, not cosmetic: going to Terminal with the encounter still",
+        "open would hold this person's encounter lock for the rest of their",
+        "life -- the Class 6 defect the audit recorded against this very",
+        "module family (high_output_heart_failure.json)."
+      ],
+      "direct_transition": "Terminal"
     }
   }
 }

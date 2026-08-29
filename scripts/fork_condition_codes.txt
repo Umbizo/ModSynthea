@@ -1,0 +1,170 @@
+# Fork-module disease-monoculture universe for scripts/tools_smoke_check.py --top-share-universe
+# Regenerated 2026-08-11 for the final 1000-person generation gate.
+# Supersedes the 2026-08-10 Phase 1 gate version, which predated Phases 2-6.
+# Re-verified 2026-08-11 at HEAD c7d606d3 (post-adjudication re-run, after
+# 78399db0 "fix(nsclc): value_code stage observation ends String-vs-Code collision"
+# and c7d606d3 "fix(alzheimers): hospice election rates for combined stock+fork
+# target"): the touched-module file list is unchanged (same 47 surviving files of
+# 48 touched since feffd500) and the extracted code set is byte-identical (150
+# codes) -- 78399db0 only rewrote Observation-type states (Stage_Observation_I-IV),
+# not ConditionOnset states, and c7d606d3 only edited probability/rate values, not
+# codes.
+# Command used to derive the module list:
+#   git diff --name-only feffd500..HEAD -- src/main/resources/modules/
+# One file from that diff, b_cell_lymphomas.json, was retired (commit 61ed01ac,
+# "retire b_cell_lymphomas in favor of dlbcl/mantle_cell_lymphoma") and does not
+# survive on the current branch tip, so it contributes no codes.
+# For each surviving .json in that list, every ConditionOnset state codes[].code
+# was extracted (sorted, deduplicated). Regenerate by re-running that diff against
+# the current branch tip and re-extracting; the file is not auto-generated at gate time.
+# 150 unique codes from 47 surviving fork modules (of 48 files touched since feffd500).
+10091002
+10335000
+109838007
+1098981000119101
+109962001
+109969005
+109989006
+109992005
+109995007
+11218009
+1172695008
+11934000
+1228957006
+12295008
+1229852009
+1229859000
+1229864001
+12301000132103
+125605004
+1259051000
+126906006
+128053003
+128209004
+128462008
+131148009
+1371415000
+14669001
+162573006
+16294009
+17964000
+188247000
+190905008
+192071009
+200936003
+203646004
+206523001
+230265002
+230297002
+230690007
+233604007
+234522008
+236077008
+237072009
+23986001
+24982008
+254632001
+254637007
+254849005
+255108000
+263855007
+26544005
+267718000
+26929004
+277572006
+277575008
+277577000
+277605001
+27942005
+28770003
+302226006
+314954002
+314964006
+315268008
+34020007
+363346000
+363406005
+363418001
+363456000
+37151006
+386805003
+386806002
+399056007
+399068003
+399326009
+406602003
+40739000
+409089005
+409622000
+412734009
+413587002
+414173003
+414875008
+4210003
+422968005
+423121009
+42343007
+424132000
+425048006
+425066001
+425231005
+425390006
+427089005
+443487006
+446022000
+448417001
+448813005
+449803009
+46177005
+46970008
+47318007
+48724000
+49049000
+55464009
+57054005
+5758002
+58606001
+59282003
+59621000
+60573004
+6072007
+609558009
+61301000119102
+63986002
+65710008
+66931009
+67406007
+67811000119102
+67821000119109
+67831000119107
+67841000119103
+68496003
+698306007
+69896004
+707418001
+707577004
+709044004
+713197008
+765330003
+8011004
+80976008
+85898001
+876882001
+88805009
+91302008
+91637004
+91857003
+91861009
+92546004
+92691004
+93675008
+93761005
+93781006
+93796005
+93863000
+93972009
+94109006
+94122003
+94124002
+94260004
+94503003

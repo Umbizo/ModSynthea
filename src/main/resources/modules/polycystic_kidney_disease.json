@@ -2,8 +2,31 @@
   "name": "Polycystic_Kidney_Disease",
   "remarks": [
     "Simplified module for polycystic kidney disease (PKD) with hypertension, CKD progression, and ESRD management.",
-    "Codes: SNOMED CT, ICD-10-CM, RxNorm, LOINC."
+    "Codes: SNOMED CT, ICD-10-CM, RxNorm, LOINC.",
+    "2026-08 remediation (module-audit-remediation task 1.2): the decades-long",
+    "CKD -> dialysis -> transplant course is now a sequence of closed visits separated",
+    "by Delays -- every Encounter reaches EncounterEnd (or Terminal) before crossing any",
+    "Delay >= 1 day, per ModSynthea's single-encounter-reservation engine constraint",
+    "(each person has one encounter reservation; an unclosed Encounter blocks every",
+    "other module's Encounter state and EncounterModule's wellness scheduling for that",
+    "person). Acute admissions (ARPKD infant workup, kidney transplant surgery) are",
+    "'inpatient' with a bounded length of stay then EncounterEnd. 'Hypertension'",
+    "attribute lowercased to 'hypertension' to match the stock-visible contract read by",
+    "chronic_kidney_disease.json's Guard_for_Htn_or_DM. ACEi_Therapy recoded from the",
+    "lisinopril ingredient CUI (29046) to the dispensable SCD (314076, lisinopril 10 MG",
+    "Oral Tablet). Advance_CKD_Stage's dict-shaped SetAttribute value (invalid GMF --",
+    "Gson silently turns it into a LinkedTreeMap crash landmine) replaced with a",
+    "distributed_transition into three plain-integer SetAttribute states. No incidence",
+    "or clinical rates were changed in this pass; all distributed_transition",
+    "probabilities are unchanged from the pre-remediation module except where noted.",
+    "Fix round 1 (2026-08, same task): Hypertension_Onset no longer uses",
+    "assign_to_attribute (it stored a HealthRecord.Entry OBJECT, invisible to every",
+    "stock '== true' consumer of 'hypertension'); a new Set_Hypertension_True",
+    "SetAttribute state now sets the boolean, matching stock hypertension.json's own",
+    "convention. ACEi_Therapy marked 'chronic: true' (Global Constraint 6) -- lifelong",
+    "antihypertensive, no MedicationEnd."
   ],
+  "gmf_version": 2,
   "states": {
     "Initial": {
       "type": "Initial",
@@ -68,6 +91,13 @@
     },
     "Acute_Care_Encounter": {
       "type": "Encounter",
+      "encounter_class": "inpatient",
+      "remarks": [
+        "Neonatal/infant admission for ARPKD workup. Was open-ended (no encounter_class,",
+        "silently ambulatory, held the single-encounter reservation across the multi-year",
+        "CKD_Progression Delay -- lint CRITICAL). Now inpatient with a bounded LOS, closed",
+        "before leaving the encounter (module-audit-remediation task 1.2)."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -75,10 +105,53 @@
           "display": "Hospital admission"
         }
       ],
-      "direct_transition": "PKD_Screening_Labs"
+      "direct_transition": "ARPKD_Screening_Labs"
+    },
+    "ARPKD_Screening_Labs": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2160-0",
+          "display": "Creatinine"
+        }
+      ],
+      "direct_transition": "ARPKD_Initialize_CKD_Stage"
+    },
+    "ARPKD_Initialize_CKD_Stage": {
+      "type": "SetAttribute",
+      "attribute": "ckd_stage",
+      "value": 1,
+      "direct_transition": "Acute_Care_LOS"
+    },
+    "Acute_Care_LOS": {
+      "type": "Delay",
+      "remarks": [
+        "Genuine inpatient length of stay for the ARPKD diagnostic admission -- the only",
+        "Delay in this encounter, and it is allowed to sit inside an open inpatient",
+        "encounter per the engine's inpatient/snf/hospice rule (bounded, well under the",
+        "90-day warning threshold)."
+      ],
+      "range": {
+        "low": 2,
+        "high": 5,
+        "unit": "days"
+      },
+      "direct_transition": "End_Acute_Care_Encounter"
+    },
+    "End_Acute_Care_Encounter": {
+      "type": "EncounterEnd",
+      "direct_transition": "CKD_Progression"
     },
     "PCP_Encounter": {
       "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "remarks": [
+        "Was open-ended (no encounter_class, silently ambulatory, held the reservation",
+        "across the multi-year CKD_Progression Delay -- lint CRITICAL). Now closes",
+        "same-visit before any Delay (module-audit-remediation task 1.2)."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -97,19 +170,49 @@
           "display": "Essential hypertension"
         }
       ],
+      "direct_transition": "Set_Hypertension_True",
+      "remarks": [
+        "module-audit-remediation task 1.2 fix round 1: no assign_to_attribute here",
+        "(nothing in this module reads a dx-Entry attribute back). Setting hypertension",
+        "is now handled by Set_Hypertension_True immediately after this state."
+      ]
+    },
+    "Set_Hypertension_True": {
+      "type": "SetAttribute",
+      "attribute": "hypertension",
+      "value": true,
       "direct_transition": "ACEi_Therapy",
-      "assign_to_attribute": "Hypertension"
+      "remarks": [
+        "module-audit-remediation task 1.2 fix round 1: assign_to_attribute on",
+        "Hypertension_Onset stored a HealthRecord.Entry OBJECT under 'hypertension', not",
+        "a boolean -- every '== true' consumer (stock hypertension.json:838 'Check for",
+        "Hypertension Override', metabolic_syndrome_disease.json:106,",
+        "endometrial_cancer.json:57, covid19/determine_risk.json:36) stayed blind to it;",
+        "only 'is not nil' consumers (chronic_kidney_disease.json's Guard_for_Htn_or_DM)",
+        "worked. This SetAttribute now matches the stock convention -- stock",
+        "hypertension.json's own Onset_Hypertension state sets the same attribute the",
+        "same way -- so both '== true' and 'is not nil' consumers see it."
+      ]
     },
     "ACEi_Therapy": {
       "type": "MedicationOrder",
-      "chronic": true,
       "direct_transition": "PKD_Screening_Labs",
       "codes": [
         {
           "system": "RxNorm",
-          "code": "29046",
-          "display": "Lisinopril"
+          "code": "314076",
+          "display": "Lisinopril 10 MG Oral Tablet"
         }
+      ],
+      "chronic": true,
+      "remarks": [
+        "Recoded from 29046 (the bare 'Lisinopril' ingredient CUI, not prescribable) to",
+        "314076, the lisinopril 10 MG Oral Tablet SCD -- verified present as a key in",
+        "export/medication_code_map.json (NDCs for 'Lisinopril 10 MG Oral Tablet [Zestril]'",
+        "and equivalents), per Global Constraint 3/9.",
+        "module-audit-remediation task 1.2 fix round 1: added 'chronic: true' (Global",
+        "Constraint 6) -- lisinopril for PKD-associated hypertension is a lifelong",
+        "antihypertensive, correctly never stopped via MedicationEnd."
       ]
     },
     "PKD_Screening_Labs": {
@@ -128,6 +231,10 @@
       "type": "SetAttribute",
       "attribute": "ckd_stage",
       "value": 1,
+      "direct_transition": "End_PCP_Encounter"
+    },
+    "End_PCP_Encounter": {
+      "type": "EncounterEnd",
       "direct_transition": "CKD_Progression"
     },
     "CKD_Progression": {
@@ -140,6 +247,35 @@
         }
       },
       "unit": "years",
+      "direct_transition": "CKD_Stage_Review_Encounter"
+    },
+    "CKD_Stage_Review_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "remarks": [
+        "Each ~2-year CKD-stage review is its own open->close ambulatory visit",
+        "(module-audit-remediation task 1.2), instead of the decades-long course sharing",
+        "one never-closed encounter."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "CKD_Stage_Review_Labs"
+    },
+    "CKD_Stage_Review_Labs": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2160-0",
+          "display": "Creatinine"
+        }
+      ],
       "direct_transition": "CKD_Stage_Advancement"
     },
     "CKD_Stage_Advancement": {
@@ -156,15 +292,50 @@
       ]
     },
     "Advance_CKD_Stage": {
+      "type": "Simple",
+      "remarks": [
+        "Was a SetAttribute with a dict-shaped Integer range value -- invalid GMF that Gson",
+        "silently turns into a LinkedTreeMap (a crash landmine identical to the",
+        "value_set/value bad-gmf class the scanner flags elsewhere in this tree).",
+        "Replaced with a distributed_transition into three plain-integer SetAttribute leaf",
+        "states, the same uniform draw over stages {2,3,4} as the original",
+        "'range': {low:2, high:4}."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.34,
+          "transition": "Set_CKD_Stage_2"
+        },
+        {
+          "distribution": 0.33,
+          "transition": "Set_CKD_Stage_3"
+        },
+        {
+          "distribution": 0.33,
+          "transition": "Set_CKD_Stage_4"
+        }
+      ]
+    },
+    "Set_CKD_Stage_2": {
       "type": "SetAttribute",
       "attribute": "ckd_stage",
-      "value": {
-        "type": "Integer",
-        "range": {
-          "low": 2,
-          "high": 4
-        }
-      },
+      "value": 2,
+      "direct_transition": "End_CKD_Stage_Review_Visit"
+    },
+    "Set_CKD_Stage_3": {
+      "type": "SetAttribute",
+      "attribute": "ckd_stage",
+      "value": 3,
+      "direct_transition": "End_CKD_Stage_Review_Visit"
+    },
+    "Set_CKD_Stage_4": {
+      "type": "SetAttribute",
+      "attribute": "ckd_stage",
+      "value": 4,
+      "direct_transition": "End_CKD_Stage_Review_Visit"
+    },
+    "End_CKD_Stage_Review_Visit": {
+      "type": "EncounterEnd",
       "direct_transition": "CKD_Progression"
     },
     "ESRD_Onset": {
@@ -176,8 +347,30 @@
           "display": "End-stage renal disease"
         }
       ],
-      "direct_transition": "RRT_Choice",
+      "direct_transition": "End_ESRD_Diagnosis_Visit",
       "assign_to_attribute": "End Stage Renal Disease"
+    },
+    "End_ESRD_Diagnosis_Visit": {
+      "type": "EncounterEnd",
+      "direct_transition": "RRT_Selection_Visit"
+    },
+    "RRT_Selection_Visit": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "remarks": [
+        "Renal replacement therapy selection/counseling visit. RRT_Choice, and the",
+        "dialysis-start Procedure / transplant-listing ConditionOnset it routes to, now",
+        "happen inside an open->close visit instead of firing with no encounter at all",
+        "(module-audit-remediation task 1.2)."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "RRT_Choice"
     },
     "RRT_Choice": {
       "type": "Simple",
@@ -205,7 +398,7 @@
           "display": "Hemodialysis"
         }
       ],
-      "direct_transition": "Dialysis_Monitoring"
+      "direct_transition": "End_Dialysis_Initiation_Visit"
     },
     "Peritoneal_Dialysis_Start": {
       "type": "Procedure",
@@ -216,6 +409,14 @@
           "display": "Peritoneal dialysis"
         }
       ],
+      "direct_transition": "End_Dialysis_Initiation_Visit",
+      "remarks": [
+        "hcpcs_code_map.json row added for 14684005 (90945/90947 dialysis-procedure-other-",
+        "than-hemodialysis CPT family), per Global Constraint 9."
+      ]
+    },
+    "End_Dialysis_Initiation_Visit": {
+      "type": "EncounterEnd",
       "direct_transition": "Dialysis_Monitoring"
     },
     "Transplant_List": {
@@ -227,6 +428,10 @@
           "display": "Awaiting kidney transplant"
         }
       ],
+      "direct_transition": "End_Transplant_Listing_Visit"
+    },
+    "End_Transplant_Listing_Visit": {
+      "type": "EncounterEnd",
       "direct_transition": "Wait_For_Transplant"
     },
     "Dialysis_Monitoring": {
@@ -239,6 +444,34 @@
         }
       },
       "unit": "years",
+      "direct_transition": "Dialysis_Followup_Encounter"
+    },
+    "Dialysis_Followup_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "outpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "185347001",
+          "display": "Encounter for problem"
+        }
+      ],
+      "direct_transition": "Dialysis_Followup_Labs"
+    },
+    "Dialysis_Followup_Labs": {
+      "type": "Observation",
+      "category": "laboratory",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "2160-0",
+          "display": "Creatinine"
+        }
+      ],
+      "direct_transition": "End_Dialysis_Followup_Visit"
+    },
+    "End_Dialysis_Followup_Visit": {
+      "type": "EncounterEnd",
       "direct_transition": "Dialysis_Outcome"
     },
     "Dialysis_Outcome": {
@@ -271,13 +504,30 @@
       "distributed_transition": [
         {
           "distribution": 0.99,
-          "transition": "Kidney_Transplant"
+          "transition": "Transplant_Surgery_Encounter"
         },
         {
           "distribution": 0.01,
           "transition": "Terminal"
         }
       ]
+    },
+    "Transplant_Surgery_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "remarks": [
+        "Kidney transplant admission. Was a bare Procedure with no enclosing encounter at",
+        "all; now an inpatient admission with a bounded LOS, closed before the multi-year",
+        "Post_Transplant_Followup Delay (module-audit-remediation task 1.2)."
+      ],
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "32485007",
+          "display": "Hospital admission"
+        }
+      ],
+      "direct_transition": "Kidney_Transplant"
     },
     "Kidney_Transplant": {
       "type": "Procedure",
@@ -288,6 +538,24 @@
           "display": "Kidney transplant"
         }
       ],
+      "direct_transition": "Transplant_Surgery_LOS"
+    },
+    "Transplant_Surgery_LOS": {
+      "type": "Delay",
+      "remarks": [
+        "Genuine inpatient length of stay for the transplant admission -- typical kidney",
+        "transplant LOS is ~4-8 days. Allowed inside the open inpatient encounter per the",
+        "engine's inpatient/snf/hospice rule (well under the 90-day warning threshold)."
+      ],
+      "range": {
+        "low": 4,
+        "high": 8,
+        "unit": "days"
+      },
+      "direct_transition": "End_Transplant_Surgery_Encounter"
+    },
+    "End_Transplant_Surgery_Encounter": {
+      "type": "EncounterEnd",
       "direct_transition": "Post_Transplant_Followup"
     },
     "Post_Transplant_Followup": {

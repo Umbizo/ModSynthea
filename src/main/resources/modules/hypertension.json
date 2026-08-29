@@ -250,7 +250,7 @@
         {
           "system": "SNOMED-CT",
           "code": "185349003",
-          "display": "Encounter for symptom"
+          "display": "Encounter for check up (procedure)"
         }
       ],
       "direct_transition": "Diagnose_Hypertension"
@@ -533,13 +533,16 @@
       ]
     },
     "Referral To Hypertension Clinic": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": "183856001",
-          "display": "Referral to hypertension clinic (procedure)"
-        }
+      "type": "Simple",
+      "remarks": [
+        "Task 6.1: was a Procedure coded SNOMED 183856001 \"Referral to hypertension",
+        "clinic\". An unmapped Procedure is not inert:",
+        "Carrier/Outpatient/InpatientExporter still emit a claim line for it with",
+        "real dollar amounts and a blank HCPCS_CD (the skip-unmapped branch is",
+        "commented out in CarrierExporter.java). Placing a referral is part of the",
+        "E/M visit; there is no HCPCS for the referral itself, and the referred-to",
+        "visit bills its own E/M. Now a Simple pass-through; no duration, so timing",
+        "is unchanged."
       ],
       "direct_transition": "End_Hypertension_Followup_Encounter_3"
     },
@@ -1004,5 +1007,5 @@
       "direct_transition": "Set_BP_Not Controlled"
     }
   },
-  "gmf_version": 1
+  "gmf_version": 2
 }

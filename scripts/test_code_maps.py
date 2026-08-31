@@ -5,10 +5,19 @@ import json, os, sys, unittest
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXP = os.path.join(ROOT, 'src', 'main', 'resources', 'export')
 HCPCS = json.load(open(os.path.join(EXP, 'hcpcs_code_map.json')))
+CONDITIONS = json.load(open(os.path.join(EXP, 'condition_code_map.json')))
 
 
 def mapped_codes(snomed):
     return [e['code'] for e in (HCPCS.get(snomed) or [])]
+
+
+def condition_weight(snomed, code):
+    """Total weight on `code` among snomed's condition-map entries.
+    Missing weight defaults to 1.0 (CodeMapper draws unweighted lists
+    uniformly), so an explicit '0.0' is required to exclude a code."""
+    return sum(float(e.get('weight', 1))
+               for e in (CONDITIONS.get(snomed) or []) if e['code'] == code)
 
 
 class TestRevascularisation(unittest.TestCase):
@@ -33,6 +42,19 @@ class TestRevascularisation(unittest.TestCase):
 
     def test_coronary_angiography_maps_to_left_heart_cath(self):
         self.assertIn('93458', mapped_codes('33367005'))
+
+
+
+
+
+
+class TestHypertensionDiagnosisCode(unittest.TestCase):
+    def test_essential_hypertension_cannot_resolve_to_neonatal_code(self):
+        entries = CONDITIONS.get('59621000') or []
+        non_i10_weight = sum(float(e.get('weight', 1)) for e in entries if e['code'] != 'I10')
+        self.assertEqual(non_i10_weight, 0.0,
+                          f'59621000 has nonzero weight on non-I10 codes: {entries}')
+
 
 
 class TestNoDuplicateKeys(unittest.TestCase):

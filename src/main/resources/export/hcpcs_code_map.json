@@ -2934,11 +2934,28 @@
       "description": "Patient with a diagnosis of major depression not documented as being treated with antidepressant medication during the entire 84 day (12 week) acute treatment phase"
     }
   ],
+  "415070008": [
+    { "code": "92928", "weight": "0.62", "description": "Percutaneous transcatheter placement of intracoronary stent, single major coronary artery" },
+    { "code": "92920", "weight": "0.16", "description": "Percutaneous transluminal coronary angioplasty, single major coronary artery" },
+    { "code": "92941", "weight": "0.12", "description": "Percutaneous transluminal revascularization of acute total/subtotal occlusion during acute myocardial infarction" },
+    { "code": "92933", "weight": "0.05", "description": "Percutaneous transluminal coronary atherectomy with intracoronary stent" },
+    { "code": "92937", "weight": "0.03", "description": "Percutaneous transluminal revascularization of or through coronary artery bypass graft" },
+    { "code": "92943", "weight": "0.02", "description": "Percutaneous transluminal revascularization of chronic total occlusion" }
+  ],
+  "418824004": [
+    { "code": "33533", "weight": "0.85", "description": "Coronary artery bypass, using arterial graft; single arterial graft" },
+    { "code": "33510", "weight": "0.15", "description": "Coronary artery bypass, vein only; single coronary venous graft" }
+  ],
+  "414088005": [
+    { "code": "33533", "weight": "0.85", "description": "Coronary artery bypass, using arterial graft; single arterial graft" },
+    { "code": "33510", "weight": "0.15", "description": "Coronary artery bypass, vein only; single coronary venous graft" }
+  ],
   "232717009": [
-    {
-      "code": "G8159",
-      "description": "Patient documented to have received coronary artery bypass graft without use of internal mammary artery"
-    }
+    { "code": "33533", "weight": "0.85", "description": "Coronary artery bypass, using arterial graft; single arterial graft" },
+    { "code": "33510", "weight": "0.15", "description": "Coronary artery bypass, vein only; single coronary venous graft" }
+  ],
+  "33367005": [
+    { "code": "93458", "description": "Catheter placement in coronary arteries with left heart catheterization" }
   ],
   "134395001": [
     {

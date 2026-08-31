@@ -7778,5 +7778,39 @@
       "code": "96365",
       "description": "Infusion into a vein for therapy, prevention, or diagnosis, 1 hour or less"
     }
+  ],
+  "164847006": [
+    {
+      "code": "93784",
+      "weight": "0.55",
+      "description": "Ambulatory blood pressure monitoring, 24 hours or longer; including recording, scanning analysis, interpretation and report"
+    },
+    {
+      "code": "93788",
+      "weight": "0.20",
+      "description": "Ambulatory blood pressure monitoring; scanning analysis with report"
+    },
+    {
+      "code": "93790",
+      "weight": "0.15",
+      "description": "Ambulatory blood pressure monitoring; review with interpretation and report"
+    },
+    {
+      "code": "93786",
+      "weight": "0.10",
+      "description": "Ambulatory blood pressure monitoring; recording only"
+    }
+  ],
+  "413153004": [
+    {
+      "code": "99473",
+      "weight": "0.60",
+      "description": "Self-measured blood pressure, patient education/training and device calibration"
+    },
+    {
+      "code": "99474",
+      "weight": "0.40",
+      "description": "Self-measured blood pressure, separate self-measurements with report"
+    }
   ]
 }

@@ -2,6 +2,7 @@ package org.mitre.synthea.modules;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.BeforeClass;
@@ -12,7 +13,9 @@ import org.mitre.synthea.world.agents.PayerManager;
 import org.mitre.synthea.world.agents.Person;
 import org.mitre.synthea.world.agents.Provider;
 import org.mitre.synthea.world.agents.ProviderTest;
+import org.mitre.synthea.world.concepts.ClinicianSpecialty;
 import org.mitre.synthea.world.concepts.HealthRecord.Encounter;
+import org.mitre.synthea.world.concepts.HealthRecord.EncounterType;
 import org.mitre.synthea.world.geography.Location;
 
 public class EncounterModuleTest {
@@ -99,6 +102,33 @@ public class EncounterModuleTest {
     Encounter encounter = person.record.encounters.get(last);
     assertNotNull("Encounter must have clinician", encounter.clinician);
     assertNotNull("Encounter must have provider organization", encounter.provider);
+  }
+
+  @Test
+  public void testCardiologyEncounterDoesNotAssignVeteranProviderToNonVeteran() {
+    // Regression test: EncounterModule.createEncounter used to special-case cardiology
+    // specialty encounters by assigning Provider.getProviderList().get(0) (arbitrary
+    // HashMap iteration order) instead of the person's normal preferred provider. In
+    // practice that first-in-the-list provider is a VETERAN (VA) facility, which is an
+    // impossible/invalid assignment for a person who is not a veteran, and which also
+    // caused RIFExporter.isVAorIHS() to suppress the encounter's RIF claims entirely.
+    Person nonVeteran = new Person(2L);
+    nonVeteran.attributes.put(Person.INCOME, 100000);
+    nonVeteran.attributes.put(Person.BIRTHDATE, 0L);
+    nonVeteran.attributes.remove(Person.VETERAN);
+    location.assignPoint(nonVeteran, location.randomCityName(nonVeteran));
+    nonVeteran.coverage.setPlanToNoInsurance((long) nonVeteran.attributes.get(Person.BIRTHDATE));
+    nonVeteran.coverage.setPlanToNoInsurance(System.currentTimeMillis()
+        + Config.getAsLong("generate.timestep"));
+
+    Encounter encounter = EncounterModule.createEncounter(nonVeteran,
+        System.currentTimeMillis(), EncounterType.AMBULATORY, ClinicianSpecialty.CARDIOLOGY,
+        null, "EncounterModuleTest");
+
+    assertNotNull("Cardiology encounter must have a provider organization", encounter.provider);
+    assertNotEquals(
+        "A non-veteran patient's cardiology encounter must not be assigned a VETERAN provider",
+        Provider.ProviderType.VETERAN, encounter.provider.type);
   }
 
   @Test

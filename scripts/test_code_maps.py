@@ -70,6 +70,18 @@ class TestHypertension(unittest.TestCase):
 
 
 
+
+class TestPneumococcal(unittest.TestCase):
+    def test_pneumococcal_vaccine_maps_to_vaccine_cpt(self):
+        got = set(mapped_codes('12866006'))
+        self.assertTrue(got <= {'90670', '90671', '90677', '90732'} and got,
+                        f'pneumococcal vaccination 12866006 -> {got}')
+
+    def test_vaccine_administration_maps_to_g0009(self):
+        self.assertIn('G0009', mapped_codes('33879002'))
+
+
+
 class TestNoDuplicateKeys(unittest.TestCase):
     def test_hcpcs_map_has_no_duplicate_top_level_keys(self):
         """Gson keeps the LAST duplicate silently; json.load hides it identically."""

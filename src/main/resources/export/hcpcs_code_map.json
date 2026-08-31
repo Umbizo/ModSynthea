@@ -7812,5 +7812,33 @@
       "weight": "0.40",
       "description": "Self-measured blood pressure, separate self-measurements with report"
     }
+  ],
+  "12866006": [
+    {
+      "code": "90677",
+      "weight": "0.45",
+      "description": "Pneumococcal conjugate vaccine, 20 valent (PCV20)"
+    },
+    {
+      "code": "90732",
+      "weight": "0.30",
+      "description": "Pneumococcal polysaccharide vaccine, 23 valent (PPSV23)"
+    },
+    {
+      "code": "90670",
+      "weight": "0.15",
+      "description": "Pneumococcal conjugate vaccine, 13 valent (PCV13)"
+    },
+    {
+      "code": "90671",
+      "weight": "0.10",
+      "description": "Pneumococcal conjugate vaccine, 15 valent (PCV15)"
+    }
+  ],
+  "33879002": [
+    {
+      "code": "G0009",
+      "description": "Administration of pneumococcal vaccine"
+    }
   ]
 }

@@ -761,11 +761,19 @@
     },
     "GeriatricComplications": {
       "type": "ConditionOnset",
+      "remarks": [
+        "Streptococcus pneumoniae, not Mycoplasma pneumoniae, is the leading",
+        "bacterial cause of severe community-acquired pneumonia in older",
+        "adults (File, Lancet 2003; Jain, NEJM 2015 CDC EPIC study).",
+        "Mycoplasma is disproportionately a younger-patient/atypical",
+        "pathogen and rarely drives ICU-level disease in the elderly.",
+        "Corrected from the prior Mycoplasma coding on clinical grounds."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "46970008",
-          "display": "Pneumonia caused by Mycoplasma pneumoniae (disorder)"
+          "code": "34020007",
+          "display": "Pneumonia caused by Streptococcus (disorder)"
         }
       ],
       "direct_transition": "ICUAdmission_Stay"

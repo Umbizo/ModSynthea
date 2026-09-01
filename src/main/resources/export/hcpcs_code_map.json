@@ -3899,16 +3899,11 @@
     }
   ],
   "367336001": [
-    {
-      "code": "96413",
-      "weight": "1.0",
-      "description": "Administration of chemotherapy into vein, 1 hour or less"
-    },
-    {
-      "code": "96415",
-      "weight": "0.0",
-      "description": "Administration of chemotherapy into vein, each additional hour"
-    }
+    { "code": "96413", "weight": "0.50", "description": "Chemotherapy administration, intravenous infusion technique; up to 1 hour, single or initial substance/drug" },
+    { "code": "96415", "weight": "0.18", "description": "Chemotherapy administration, intravenous infusion technique; each additional hour" },
+    { "code": "96417", "weight": "0.14", "description": "Chemotherapy administration, intravenous infusion technique; each additional sequential infusion" },
+    { "code": "96409", "weight": "0.11", "description": "Chemotherapy administration; intravenous, push technique, single or initial substance/drug" },
+    { "code": "96411", "weight": "0.07", "description": "Chemotherapy administration; intravenous, push technique, each additional substance/drug" }
   ],
   "260874000": [
     {

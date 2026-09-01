@@ -126,5 +126,53 @@ class TestEndometrial(unittest.TestCase):
                       'the targeted-agent selector is unreachable')
 
 
+class TestBladder(unittest.TestCase):
+    """Bladder is the healthiest oncology sheet (col3 61%) but col1 was 17.5%
+    -- only 8 of Rick's 57 J-codes -- and it is the only sheet carrying the
+    96409-96417 chemotherapy-administration CPT family, which was defined in
+    hcpcs_code_map.json but never referenced by a reachable module state.
+
+    Note: classic MVAC and dose-dense MVAC are the same four agents
+    (methotrexate, vinblastine, doxorubicin, cisplatin), so both map to the
+    same J-code set: J9250, J9360, J9000, J9060.
+    """
+    MVAC = {'J9250', 'J9360', 'J9000', 'J9060'}
+
+    def test_emits_classic_mvac_or_ddmvac_agents(self):
+        got = emitted_hcpcs('bladder_cancer') & self.MVAC
+        self.assertGreaterEqual(len(got), 2, f'only {sorted(got)}')
+
+    def test_emits_sacituzumab_govitecan(self):
+        self.assertIn('J9317', emitted_hcpcs('bladder_cancer'))
+
+    def test_chemotherapy_administration_push_technique_is_coded(self):
+        """96413/96415 were already reachable via a pre-existing (orphaned
+        elsewhere) Procedure state referencing SNOMED 367336001, so this
+        checks the codes that only exist once the map is widened: the push
+        technique and additional-infusion codes Rick's csv also lists."""
+        got = emitted_hcpcs('bladder_cancer')
+        self.assertTrue(got & {'96409', '96411', '96417'},
+                         'no widened chemotherapy administration CPT emitted')
+
+    def test_regimen_administration_states_are_reachable(self):
+        j = module('bladder_cancer')
+        targets = set()
+        for _n, s in j['states'].items():
+            if isinstance(s.get('direct_transition'), str):
+                targets.add(s['direct_transition'])
+            for key in ('conditional_transition', 'distributed_transition', 'complex_transition'):
+                for t in (s.get(key) or []):
+                    if t.get('transition'):
+                        targets.add(t['transition'])
+                    for d in (t.get('distributions') or []):
+                        if d.get('transition'):
+                            targets.add(d['transition'])
+        for name in ('Chemotherapy_Administration_Periop',
+                     'Chemotherapy_Administration_First_Line',
+                     'Chemotherapy_Administration_Trimodal',
+                     'Chemotherapy_Administration_Palliative'):
+            self.assertIn(name, targets, f'{name} is unreachable')
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -7006,10 +7006,12 @@
   "59621000": [
     {
       "code": "P29.2",
+      "weight": "0.0",
       "description": "Neonatal hypertension"
     },
     {
       "code": "I10",
+      "weight": "1.0",
       "description": "Essential (primary) hypertension"
     }
   ],

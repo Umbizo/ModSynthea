@@ -56,3 +56,7 @@ src/main/resources/export/outpatient_rev_cntr_code_map.json
 .superpowers/
 docs/superpowers/
 .claude/
+
+# Python
+__pycache__/
+*.pyc

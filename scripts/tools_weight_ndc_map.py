@@ -105,7 +105,7 @@ def main():
     print('reweighted %d RxCUIs' % changed)
     print('tiers: 0.90=%d  0.75=%d  0.50=%d' % (tiers[0.90], tiers[0.75], tiers[0.50]))
     if a.apply:
-        json.dump(med, open(path, 'w'), indent=1)
+        json.dump(med, open(path, 'w'), indent=2)
         print('written to', path)
     else:
         print('dry run; pass --apply to write')

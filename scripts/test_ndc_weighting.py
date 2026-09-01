@@ -3,13 +3,14 @@
 import json, os, sys, unittest
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import tools_ta_coverage as T
+import tools_weight_ndc_map as W
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXP = os.path.join(ROOT, 'src', 'main', 'resources', 'export')
 MED = json.load(open(os.path.join(EXP, 'medication_code_map.json')))
 
 
-def hit_probability(rxcui, target_ndc):
+def in_sheet_mass_ratio(rxcui, target_ndc):
     entries = MED.get(str(rxcui)) or []
     if not entries:
         return None
@@ -21,20 +22,44 @@ def hit_probability(rxcui, target_ndc):
 
 
 class TestNDCWeighting(unittest.TestCase):
-    # (rxcui, TA key) pairs where the TA sheet does carry NDC rows
-    CASES = [('313988', 'HF'), ('314076', 'HF'), ('312615', 'HF')]
+    def test_tiered_mass_matches_in_sheet_count(self):
+        """Regression guard for the tiering ruling (a deviation from the
+        brief's flat FAVOURED_MASS=0.90): for every RxCUI the tool actually
+        reweights, derive the expected favoured mass from that RxCUI's own
+        in-sheet NDC count (>=10 -> 0.90, 3-9 -> 0.75, 1-2 -> 0.50) and
+        assert the map's actual in-sheet weight mass matches it. Nothing
+        here is hardcoded to a specific RxCUI or tier, so it covers all
+        three tiers and keeps working if the set of reweighted drugs
+        changes.
+        """
+        by_ta = W.rxcuis_by_ta()
+        targets = {}
+        for ta, cuis in by_ta.items():
+            for c in cuis:
+                targets.setdefault(c, set()).update(T.TA_CONFIG[ta]['target_ndc'])
 
-    def test_weighted_draw_favours_ricks_ndcs(self):
-        for rxcui, ta in self.CASES:
-            target = T.TA_CONFIG[ta]['target_ndc']
-            p = hit_probability(rxcui, target)
-            if p is None:
+        exercised = {0.90: 0, 0.75: 0, 0.50: 0}
+        for rxcui, wanted in targets.items():
+            entries = MED.get(rxcui)
+            if not entries:
                 continue
-            overlap = [e for e in MED[rxcui] if str(e['code']) in target]
-            if not overlap:
-                continue  # no Rick NDC exists for this drug; nothing to weight toward
-            self.assertGreaterEqual(p, 0.80,
-                                    f'RxCUI {rxcui} ({ta}): P(hit) is {p:.3f}, expected >= 0.80')
+            inside = [e for e in entries if str(e['code']) in wanted]
+            outside = [e for e in entries if str(e['code']) not in wanted]
+            if not inside or not outside:
+                continue  # nothing to favour, or nothing to demote -- tool skips these too
+            expected_mass = W.favoured_mass(len(inside))
+            actual = in_sheet_mass_ratio(rxcui, wanted)
+            self.assertAlmostEqual(
+                actual, expected_mass, delta=0.01,
+                msg=f'RxCUI {rxcui}: {len(inside)} in-sheet NDCs should carry mass '
+                    f'{expected_mass:.2f}, actual is {actual:.3f}')
+            exercised[expected_mass] += 1
+
+        # The test must actually exercise all three tiers, not just the one
+        # that happens to match the brief's original flat value.
+        self.assertGreater(exercised[0.90], 0, 'no RxCUI exercised the 0.90 tier')
+        self.assertGreater(exercised[0.75], 0, 'no RxCUI exercised the 0.75 tier')
+        self.assertGreater(exercised[0.50], 0, 'no RxCUI exercised the 0.50 tier')
 
     def test_weights_never_zero_out_a_whole_drug(self):
         for rxcui, entries in MED.items():

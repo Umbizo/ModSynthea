@@ -596,9 +596,23 @@
     },
     "SurgicalPathology": {
       "type": "Simple",
+      "remarks": [
+        "Diagnostic fix (ta-code-coverage-remediation task 7): the targeted-",
+        "agent arm (Pembrolizumab/dostarlimab/bevacizumab/trastuzumab) is",
+        "only ever reachable through AdvancedDisease's SystemicTherapy or its",
+        "recurrence loop's SecondLineTherapy -- and both of those are only",
+        "reachable via the StageIII_IV branch here. At the old 0.05 weight,",
+        "only ~5% of diagnosed patients ever entered that branch at all (Stage",
+        "IA-II route to the FollowUpVisit physical-exam loop, which has no",
+        "systemic-therapy or targeted-agent path), so col2 stayed near 0%",
+        "even though col1 (does the code appear anywhere) was 50%. Raised to",
+        "0.22 so ~20-25% of diagnosed patients reach advanced disease,",
+        "matching SEER's combined regional+distant share at diagnosis; IA",
+        "reduced to absorb the difference, IB/II unchanged."
+      ],
       "distributed_transition": [
         {
-          "distribution": 0.7,
+          "distribution": 0.53,
           "transition": "StageIA"
         },
         {
@@ -610,7 +624,7 @@
           "transition": "StageII"
         },
         {
-          "distribution": 0.05,
+          "distribution": 0.22,
           "transition": "StageIII_IV"
         }
       ]
@@ -1205,26 +1219,65 @@
           "display": "Encounter for problem (procedure)"
         }
       ],
-      "direct_transition": "Pembrolizumab_Therapy"
+      "direct_transition": "Endometrial_Targeted_Selection"
     },
-    "Pembrolizumab_Therapy": {
+    "Endometrial_Targeted_Selection": {
+      "type": "Simple",
+      "remarks": [
+        "Advanced or recurrent endometrial cancer: dostarlimab and pembrolizumab",
+        "are the checkpoint inhibitors approved in this setting (dMMR/MSI-H for",
+        "dostarlimab; pembrolizumab with lenvatinib otherwise), bevacizumab is",
+        "used in recurrent disease, and trastuzumab is added for HER2-positive",
+        "uterine serous carcinoma (Fader, J Clin Oncol 2018). All IV, Part B.",
+        "Replaces the old single-agent Pembrolizumab_Therapy state -- this is",
+        "now the only route into any of these four agents, reached from both",
+        "SystemicTherapy and SecondLineTherapy via Pembrolizumab_Encounter."
+      ],
+      "distributed_transition": [
+        { "distribution": 0.34, "transition": "Endometrial_Pembrolizumab" },
+        { "distribution": 0.30, "transition": "Endometrial_Dostarlimab" },
+        { "distribution": 0.24, "transition": "Endometrial_Bevacizumab" },
+        { "distribution": 0.12, "transition": "Endometrial_Trastuzumab" }
+      ]
+    },
+    "Endometrial_Pembrolizumab": {
       "type": "MedicationOrder",
       "administration": true,
       "reason": "endometrial_cancer",
-      "remarks": [
-        "Consolidates the pre-fix module's two separate pembrolizumab order",
-        "paths (first-line TargetedTherapy and second-line Immunotherapy --",
-        "same RxCUI, same drug) into one administered state shared by both",
-        "SystemicTherapy and SecondLineTherapy. RxNorm 1657750 already maps",
-        "to HCPCS J9271 in rxnorm_hcpcs_map.json."
-      ],
       "codes": [
-        {
-          "system": "RxNorm",
-          "code": "1657750",
-          "display": "4 ML pembrolizumab 25 MG/ML Injection"
-        }
+        { "system": "RxNorm", "code": "1547545", "display": "pembrolizumab injection" }
       ],
+      "direct_transition": "Endometrial_Targeted_Done"
+    },
+    "Endometrial_Dostarlimab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "reason": "endometrial_cancer",
+      "codes": [
+        { "system": "RxNorm", "code": "2539972", "display": "dostarlimab injection" }
+      ],
+      "direct_transition": "Endometrial_Targeted_Done"
+    },
+    "Endometrial_Bevacizumab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "reason": "endometrial_cancer",
+      "codes": [
+        { "system": "RxNorm", "code": "1657066", "display": "bevacizumab injection" }
+      ],
+      "direct_transition": "Endometrial_Targeted_Done"
+    },
+    "Endometrial_Trastuzumab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "reason": "endometrial_cancer",
+      "codes": [
+        { "system": "RxNorm", "code": "1922509", "display": "trastuzumab injection" }
+      ],
+      "direct_transition": "Endometrial_Targeted_Done"
+    },
+    "Endometrial_Targeted_Done": {
+      "type": "Simple",
       "direct_transition": "Pembrolizumab_Encounter_End"
     },
     "Pembrolizumab_Encounter_End": {

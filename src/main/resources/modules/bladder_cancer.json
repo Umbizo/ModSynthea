@@ -2167,6 +2167,18 @@
         }
       ],
       "reason": "bladder_cancer_dx",
+      "direct_transition": "Chemotherapy_Administration_Periop"
+    },
+    "Chemotherapy_Administration_Periop": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "367336001",
+          "display": "Chemotherapy (procedure)"
+        }
+      ],
+      "reason": "bladder_cancer_dx",
       "direct_transition": "Periop_Ondansetron"
     },
     "Periop_Ondansetron": {
@@ -2603,6 +2615,18 @@
         }
       ],
       "reason": "bladder_cancer_dx",
+      "direct_transition": "Chemotherapy_Administration_Trimodal"
+    },
+    "Chemotherapy_Administration_Trimodal": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "367336001",
+          "display": "Chemotherapy (procedure)"
+        }
+      ],
+      "reason": "bladder_cancer_dx",
       "direct_transition": "Concurrent_Radiation"
     },
     "Concurrent_Radiation": {
@@ -2867,8 +2891,59 @@
           "display": "Encounter for problem"
         }
       ],
-      "direct_transition": "First_Line_Gemcitabine",
+      "direct_transition": "Bladder_First_Line_Regimen_Selection",
       "reason": "bladder_cancer_dx"
+    },
+    "Bladder_First_Line_Regimen_Selection": {
+      "type": "Simple",
+      "remarks": [
+        "Gemcitabine-cisplatin is the dominant first-line regimen for",
+        "cisplatin-eligible muscle-invasive and metastatic urothelial cancer;",
+        "dose-dense MVAC (methotrexate, vinblastine, doxorubicin, cisplatin) is",
+        "the main alternative, and both regimens are billed under the same",
+        "chemotherapy-administration procedure since they occupy the same",
+        "first-line regimen slot."
+      ],
+      "distributed_transition": [
+        { "distribution": 0.70, "transition": "First_Line_Gemcitabine" },
+        { "distribution": 0.30, "transition": "Bladder_DDMVAC_Methotrexate" }
+      ]
+    },
+    "Bladder_DDMVAC_Methotrexate": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "1544399", "display": "methotrexate sodium injection" }
+      ],
+      "reason": "bladder_cancer_dx",
+      "direct_transition": "Bladder_DDMVAC_Vinblastine"
+    },
+    "Bladder_DDMVAC_Vinblastine": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "239178", "display": "vinblastine sulfate injection" }
+      ],
+      "reason": "bladder_cancer_dx",
+      "direct_transition": "Bladder_DDMVAC_Doxorubicin"
+    },
+    "Bladder_DDMVAC_Doxorubicin": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "1191138", "display": "doxorubicin hydrochloride injection" }
+      ],
+      "reason": "bladder_cancer_dx",
+      "direct_transition": "Bladder_DDMVAC_Cisplatin"
+    },
+    "Bladder_DDMVAC_Cisplatin": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "2555", "display": "cisplatin injection" }
+      ],
+      "reason": "bladder_cancer_dx",
+      "direct_transition": "Chemotherapy_Administration_First_Line"
     },
     "First_Line_Gemcitabine": {
       "type": "MedicationOrder",
@@ -2891,6 +2966,18 @@
           "system": "RxNorm",
           "code": "2555",
           "display": "cisplatin"
+        }
+      ],
+      "reason": "bladder_cancer_dx",
+      "direct_transition": "Chemotherapy_Administration_First_Line"
+    },
+    "Chemotherapy_Administration_First_Line": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "367336001",
+          "display": "Chemotherapy (procedure)"
         }
       ],
       "reason": "bladder_cancer_dx",
@@ -3462,8 +3549,20 @@
           "display": "Encounter for problem"
         }
       ],
-      "direct_transition": "Enfortumab_Order",
+      "direct_transition": "Bladder_Later_Line_Selection",
       "reason": "bladder_cancer_dx"
+    },
+    "Bladder_Later_Line_Selection": {
+      "type": "Simple",
+      "remarks": [
+        "Enfortumab vedotin is the dominant later-line agent after platinum",
+        "and checkpoint-inhibitor therapy; sacituzumab govitecan is the main",
+        "alternative antibody-drug conjugate (TROPHY-U-01)."
+      ],
+      "distributed_transition": [
+        { "distribution": 0.65, "transition": "Enfortumab_Order" },
+        { "distribution": 0.35, "transition": "Bladder_Sacituzumab_Govitecan" }
+      ]
     },
     "Enfortumab_Order": {
       "type": "MedicationOrder",
@@ -3476,6 +3575,19 @@
         }
       ],
       "reason": "bladder_cancer_dx",
+      "direct_transition": "Bladder_Later_Line_Done"
+    },
+    "Bladder_Sacituzumab_Govitecan": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "2360534", "display": "sacituzumab govitecan injection" }
+      ],
+      "reason": "bladder_cancer_dx",
+      "direct_transition": "Bladder_Later_Line_Done"
+    },
+    "Bladder_Later_Line_Done": {
+      "type": "Simple",
       "direct_transition": "Third_Line_Visit_End"
     },
     "Third_Line_Visit_End": {
@@ -3617,6 +3729,18 @@
           "system": "RxNorm",
           "code": "40048",
           "display": "carboplatin"
+        }
+      ],
+      "reason": "bladder_cancer_dx",
+      "direct_transition": "Chemotherapy_Administration_Palliative"
+    },
+    "Chemotherapy_Administration_Palliative": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "367336001",
+          "display": "Chemotherapy (procedure)"
         }
       ],
       "reason": "bladder_cancer_dx",

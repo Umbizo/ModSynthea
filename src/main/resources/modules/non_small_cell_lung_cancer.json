@@ -2290,20 +2290,15 @@
       "direct_transition": "Pembrolizumab_Mono_Infusion"
     },
     "Pembrolizumab_Mono_Infusion": {
-      "type": "MedicationOrder",
+      "type": "SetAttribute",
       "remarks": [
-        "rxnorm_hcpcs_map already carries 1547545 -> J9271."
+        "Records which cycle-visit called into the shared checkpoint",
+        "inhibitor selector so NSCLC_IO_Selection_Done can resume the",
+        "correct original successor."
       ],
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "1547545",
-          "display": "Pembrolizumab"
-        }
-      ],
-      "administration": true,
-      "reason": "Non-Small Cell Lung Cancer",
-      "direct_transition": "Count_Pembrolizumab_Mono_Cycle"
+      "attribute": "nsclc_io_return",
+      "value": "Count_Pembrolizumab_Mono_Cycle",
+      "direct_transition": "NSCLC_IO_Agent_Router"
     },
     "Count_Pembrolizumab_Mono_Cycle": {
       "type": "Counter",
@@ -2386,17 +2381,207 @@
       "direct_transition": "Chemo_IO_Pembrolizumab"
     },
     "Chemo_IO_Pembrolizumab": {
-      "type": "MedicationOrder",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "1547545",
-          "display": "Pembrolizumab"
-        }
+      "type": "SetAttribute",
+      "remarks": [
+        "Records which cycle-visit called into the shared checkpoint",
+        "inhibitor selector so NSCLC_IO_Selection_Done can resume the",
+        "correct original successor."
       ],
+      "attribute": "nsclc_io_return",
+      "value": "Chemo_IO_Regimen_Router",
+      "direct_transition": "NSCLC_IO_Agent_Router"
+    },
+    "NSCLC_IO_Agent_Router": {
+      "type": "Simple",
+      "remarks": [
+        "Patients stay on one checkpoint inhibitor for the whole treatment",
+        "course; the drug is drawn once into nsclc_io_agent and every later",
+        "cycle -- from either entry loop -- resumes that same agent instead",
+        "of re-rolling. medicationStart is idempotent per RxCUI, so",
+        "re-ordering the same agent on later cycles is correct and harmless;",
+        "only switching agents mid-course would be a defect."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_io_agent",
+            "operator": "is not nil"
+          },
+          "transition": "NSCLC_IO_Agent_Dispatch"
+        },
+        {
+          "transition": "NSCLC_IO_Agent_Selection"
+        }
+      ]
+    },
+    "NSCLC_IO_Agent_Selection": {
+      "type": "Simple",
+      "remarks": [
+        "Pembrolizumab holds the largest share of first-line NSCLC checkpoint",
+        "inhibitor volume, with nivolumab, atezolizumab, cemiplimab and the",
+        "CTLA-4 agent ipilimumab (given with nivolumab) making up the balance.",
+        "Weights approximate US first-line market share; all are IV infusions",
+        "billed Part B."
+      ],
+      "distributed_transition": [
+        { "distribution": 0.52, "transition": "NSCLC_IO_Mark_Pembrolizumab" },
+        { "distribution": 0.20, "transition": "NSCLC_IO_Mark_Nivolumab" },
+        { "distribution": 0.14, "transition": "NSCLC_IO_Mark_Atezolizumab" },
+        { "distribution": 0.08, "transition": "NSCLC_IO_Mark_Cemiplimab" },
+        { "distribution": 0.06, "transition": "NSCLC_IO_Mark_Ipilimumab" }
+      ]
+    },
+    "NSCLC_IO_Mark_Pembrolizumab": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_io_agent",
+      "value": "pembrolizumab",
+      "direct_transition": "NSCLC_Pembrolizumab"
+    },
+    "NSCLC_IO_Mark_Nivolumab": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_io_agent",
+      "value": "nivolumab",
+      "direct_transition": "NSCLC_Nivolumab"
+    },
+    "NSCLC_IO_Mark_Atezolizumab": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_io_agent",
+      "value": "atezolizumab",
+      "direct_transition": "NSCLC_Atezolizumab"
+    },
+    "NSCLC_IO_Mark_Cemiplimab": {
+      "type": "SetAttribute",
+      "attribute": "nsclc_io_agent",
+      "value": "cemiplimab",
+      "direct_transition": "NSCLC_Cemiplimab"
+    },
+    "NSCLC_IO_Mark_Ipilimumab": {
+      "type": "SetAttribute",
+      "remarks": [
+        "Ipilimumab is never given alone in NSCLC -- identity is recorded",
+        "as the combination so a re-dispatch resumes the same ipi+nivo",
+        "regimen rather than nivolumab monotherapy."
+      ],
+      "attribute": "nsclc_io_agent",
+      "value": "ipilimumab_nivolumab",
+      "direct_transition": "NSCLC_Ipilimumab"
+    },
+    "NSCLC_Pembrolizumab": {
+      "type": "MedicationOrder",
       "administration": true,
-      "reason": "Non-Small Cell Lung Cancer",
-      "direct_transition": "Chemo_IO_Regimen_Router"
+      "codes": [
+        { "system": "RxNorm", "code": "1547545", "display": "pembrolizumab injection" }
+      ],
+      "direct_transition": "NSCLC_IO_Selection_Done"
+    },
+    "NSCLC_Nivolumab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "1657192", "display": "nivolumab injection" }
+      ],
+      "direct_transition": "NSCLC_IO_Selection_Done"
+    },
+    "NSCLC_Atezolizumab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "1792776", "display": "atezolizumab injection" }
+      ],
+      "direct_transition": "NSCLC_IO_Selection_Done"
+    },
+    "NSCLC_Cemiplimab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "2058830", "display": "cemiplimab injection" }
+      ],
+      "direct_transition": "NSCLC_IO_Selection_Done"
+    },
+    "NSCLC_Ipilimumab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "1657007", "display": "ipilimumab injection" }
+      ],
+      "direct_transition": "NSCLC_Nivolumab_Combination"
+    },
+    "NSCLC_Nivolumab_Combination": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "1657192", "display": "nivolumab injection" }
+      ],
+      "direct_transition": "NSCLC_IO_Selection_Done"
+    },
+    "NSCLC_IO_Agent_Dispatch": {
+      "type": "Simple",
+      "remarks": [
+        "Re-entry path: routes straight to the agent already drawn in",
+        "nsclc_io_agent, so a patient never switches checkpoint inhibitors",
+        "mid-course."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_io_agent",
+            "operator": "==",
+            "value": "pembrolizumab"
+          },
+          "transition": "NSCLC_Pembrolizumab"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_io_agent",
+            "operator": "==",
+            "value": "nivolumab"
+          },
+          "transition": "NSCLC_Nivolumab"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_io_agent",
+            "operator": "==",
+            "value": "atezolizumab"
+          },
+          "transition": "NSCLC_Atezolizumab"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_io_agent",
+            "operator": "==",
+            "value": "cemiplimab"
+          },
+          "transition": "NSCLC_Cemiplimab"
+        },
+        {
+          "transition": "NSCLC_Ipilimumab"
+        }
+      ]
+    },
+    "NSCLC_IO_Selection_Done": {
+      "type": "Simple",
+      "remarks": [
+        "Resumes whichever cycle-visit routed into the checkpoint inhibitor",
+        "selector, per nsclc_io_return set immediately before entry."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "nsclc_io_return",
+            "operator": "==",
+            "value": "Count_Pembrolizumab_Mono_Cycle"
+          },
+          "transition": "Count_Pembrolizumab_Mono_Cycle"
+        },
+        { "transition": "Chemo_IO_Regimen_Router" }
+      ]
     },
     "Chemo_IO_Regimen_Router": {
       "type": "Simple",
@@ -2496,7 +2681,8 @@
       "type": "MedicationOrder",
       "remarks": [
         "The SCD 1728072 is the concept rxnorm_hcpcs_map carries for",
-        "J9305; the RxNorm ingredient for pemetrexed is not in that map."
+        "J9305; the RxNorm ingredient for pemetrexed is not in that map.",
+        "direct_transition below routes to Nonsquamous_Antiangiogenic_Check."
       ],
       "codes": [
         {
@@ -2507,6 +2693,31 @@
       ],
       "administration": true,
       "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Nonsquamous_Antiangiogenic_Check"
+    },
+    "Nonsquamous_Antiangiogenic_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Bevacizumab is added to platinum-doublet chemotherapy in non-squamous",
+        "NSCLC only -- it is contraindicated in squamous histology because of",
+        "pulmonary haemorrhage risk (Sandler, N Engl J Med 2006). Ramucirumab is",
+        "a second-line antiangiogenic given with docetaxel."
+      ],
+      "distributed_transition": [
+        { "distribution": 0.35, "transition": "NSCLC_Bevacizumab" },
+        { "distribution": 0.65, "transition": "Nonsquamous_Antiangiogenic_Done" }
+      ]
+    },
+    "NSCLC_Bevacizumab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "1657066", "display": "bevacizumab injection" }
+      ],
+      "direct_transition": "Nonsquamous_Antiangiogenic_Done"
+    },
+    "Nonsquamous_Antiangiogenic_Done": {
+      "type": "Simple",
       "direct_transition": "Count_Chemoimmunotherapy_Cycle"
     },
     "Maintenance_Pemetrexed": {
@@ -2668,6 +2879,18 @@
       ],
       "administration": true,
       "reason": "Non-Small Cell Lung Cancer",
+      "direct_transition": "Second_Line_Ramucirumab"
+    },
+    "Second_Line_Ramucirumab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "1657777", "display": "ramucirumab injection" }
+      ],
+      "direct_transition": "Second_Line_Done"
+    },
+    "Second_Line_Done": {
+      "type": "Simple",
       "direct_transition": "Count_Second_Line_Cycle"
     },
     "Count_Second_Line_Cycle": {

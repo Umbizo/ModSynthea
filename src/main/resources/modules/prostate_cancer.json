@@ -885,44 +885,26 @@
       "direct_transition": "Surveillance_Monitoring"
     },
     "Start_ADT_Combined_Modality": {
-      "type": "MedicationOrder",
+      "type": "SetAttribute",
       "remarks": [
-        "Leuprolide depot is a clinician-administered intramuscular injection, not",
-        "a dispensed prescription: administration=true routes it through",
-        "export/rxnorm_hcpcs_map.json (42375 -> J9217) instead of an NDC."
+        "Records the return point for the ADT subroutine so control resumes at",
+        "the original successor (End_Visit_For_Radiation) once the shared agent-selection",
+        "and bone-health logic below has run. See ADT_Return_Router."
       ],
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "42375",
-          "display": "leuprolide"
-        }
-      ],
-      "administration": true,
-      "reason": "Prostate Cancer",
-      "direct_transition": "End_Visit_For_Radiation"
+      "attribute": "adt_return_target",
+      "value": "Combined",
+      "direct_transition": "ADT_Entry"
     },
     "Start_ADT_Systemic": {
-      "type": "MedicationOrder",
+      "type": "SetAttribute",
       "remarks": [
-        "MERGE (master): chronic:true on the old 'Systemic_Therapy'/'Salvage_Therapy'",
-        "states REJECTED. Depot leuprolide is a clinician-administered injection",
-        "(administration:true -> J9217), and continuation is already modelled",
-        "explicitly by Continue_ADT on the Advanced_Disease_Monitoring loop. chronic",
-        "alongside administration records both an administration and a prescription",
-        "for the same order (State.java:1527-1536) and would stack a second,",
-        "wellness-driven depot series on top of Continue_ADT."
+        "Records the return point for the ADT subroutine so control resumes at",
+        "the original successor (End_Visit_For_Systemic_Therapy) once the shared agent-selection",
+        "and bone-health logic below has run. See ADT_Return_Router."
       ],
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "42375",
-          "display": "leuprolide"
-        }
-      ],
-      "administration": true,
-      "reason": "Prostate Cancer",
-      "direct_transition": "End_Visit_For_Systemic_Therapy"
+      "attribute": "adt_return_target",
+      "value": "Systemic",
+      "direct_transition": "ADT_Entry"
     },
     "End_Visit_For_Systemic_Therapy": {
       "type": "EncounterEnd",
@@ -1232,17 +1214,15 @@
       "direct_transition": "Start_ADT_Salvage"
     },
     "Start_ADT_Salvage": {
-      "type": "MedicationOrder",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "42375",
-          "display": "leuprolide"
-        }
+      "type": "SetAttribute",
+      "remarks": [
+        "Records the return point for the ADT subroutine so control resumes at",
+        "the original successor (End_Recurrence_Visit) once the shared agent-selection",
+        "and bone-health logic below has run. See ADT_Return_Router."
       ],
-      "administration": true,
-      "reason": "Prostate Cancer",
-      "direct_transition": "End_Recurrence_Visit"
+      "attribute": "adt_return_target",
+      "value": "Salvage",
+      "direct_transition": "ADT_Entry"
     },
     "End_Recurrence_Visit": {
       "type": "EncounterEnd",
@@ -1305,17 +1285,15 @@
       ]
     },
     "Continue_ADT": {
-      "type": "MedicationOrder",
-      "codes": [
-        {
-          "system": "RxNorm",
-          "code": "42375",
-          "display": "leuprolide"
-        }
+      "type": "SetAttribute",
+      "remarks": [
+        "Records the return point for the ADT subroutine so control resumes at",
+        "the original successor (End_ADT_Followup_Visit) once the shared agent-selection",
+        "and bone-health logic below has run. See ADT_Return_Router."
       ],
-      "administration": true,
-      "reason": "Prostate Cancer",
-      "direct_transition": "End_ADT_Followup_Visit"
+      "attribute": "adt_return_target",
+      "value": "Continue",
+      "direct_transition": "ADT_Entry"
     },
     "End_ADT_Followup_Visit": {
       "type": "EncounterEnd",
@@ -1341,7 +1319,7 @@
       ],
       "administration": true,
       "reason": "Prostate Cancer",
-      "direct_transition": "Palliative_Care_Integration"
+      "direct_transition": "CRPC_Chemotherapy_Selection"
     },
     "Palliative_Care_Integration": {
       "type": "CarePlanStart",
@@ -1441,6 +1419,313 @@
     },
     "Terminal": {
       "type": "Terminal"
+    },
+    "ADT_Entry": {
+      "type": "Simple",
+      "remarks": [
+        "Gate that ensures the ADT agent is drawn only once per patient.",
+        "HealthRecord.medicationStart is idempotent per RxCUI, so a man already",
+        "started on (say) goserelin must not be switched to leuprolide by a",
+        "later Continue_ADT visit -- he is routed straight to his existing",
+        "agent's order state instead of re-rolling the distribution."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "adt_agent",
+            "operator": "is not nil"
+          },
+          "transition": "ADT_Agent_Router"
+        },
+        {
+          "transition": "ADT_Agent_Selection"
+        }
+      ]
+    },
+    "ADT_Agent_Selection": {
+      "type": "Simple",
+      "remarks": [
+        "GnRH agonists dominate US ADT prescribing; leuprolide alone is roughly",
+        "two-thirds of depot volume, with goserelin and triptorelin making up",
+        "most of the rest and the antagonist degarelix a small share used mainly",
+        "where rapid testosterone suppression is wanted (Shore, Eur Urol 2020).",
+        "Weights below reflect that split. Reached only once per patient (see",
+        "ADT_Entry); the draw is recorded in adt_agent and never re-rolled."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.62,
+          "transition": "ADT_Set_Leuprolide"
+        },
+        {
+          "distribution": 0.18,
+          "transition": "ADT_Set_Goserelin"
+        },
+        {
+          "distribution": 0.12,
+          "transition": "ADT_Set_Triptorelin"
+        },
+        {
+          "distribution": 0.08,
+          "transition": "ADT_Set_Degarelix"
+        }
+      ]
+    },
+    "ADT_Set_Leuprolide": {
+      "type": "SetAttribute",
+      "attribute": "adt_agent",
+      "value": "leuprolide",
+      "direct_transition": "ADT_Agent_Router"
+    },
+    "ADT_Set_Goserelin": {
+      "type": "SetAttribute",
+      "attribute": "adt_agent",
+      "value": "goserelin",
+      "direct_transition": "ADT_Agent_Router"
+    },
+    "ADT_Set_Triptorelin": {
+      "type": "SetAttribute",
+      "attribute": "adt_agent",
+      "value": "triptorelin",
+      "direct_transition": "ADT_Agent_Router"
+    },
+    "ADT_Set_Degarelix": {
+      "type": "SetAttribute",
+      "attribute": "adt_agent",
+      "value": "degarelix",
+      "direct_transition": "ADT_Agent_Router"
+    },
+    "ADT_Agent_Router": {
+      "type": "Simple",
+      "remarks": [
+        "Dispatches to the MedicationOrder for the patient's fixed adt_agent.",
+        "Every subsequent Continue_ADT visit passes through here and re-orders",
+        "the same drug, since adt_agent was set once in ADT_Agent_Selection."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "adt_agent",
+            "operator": "==",
+            "value": "leuprolide"
+          },
+          "transition": "ADT_Leuprolide"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "adt_agent",
+            "operator": "==",
+            "value": "goserelin"
+          },
+          "transition": "ADT_Goserelin"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "adt_agent",
+            "operator": "==",
+            "value": "triptorelin"
+          },
+          "transition": "ADT_Triptorelin"
+        },
+        {
+          "transition": "ADT_Degarelix"
+        }
+      ]
+    },
+    "ADT_Leuprolide": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "reason": "Prostate Cancer",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "42375",
+          "display": "leuprolide acetate depot injection"
+        }
+      ],
+      "direct_transition": "ADT_Bone_Health_Check"
+    },
+    "ADT_Goserelin": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "reason": "Prostate Cancer",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "310592",
+          "display": "goserelin acetate implant"
+        }
+      ],
+      "direct_transition": "ADT_Bone_Health_Check"
+    },
+    "ADT_Triptorelin": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "reason": "Prostate Cancer",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "905053",
+          "display": "triptorelin pamoate injection"
+        }
+      ],
+      "direct_transition": "ADT_Bone_Health_Check"
+    },
+    "ADT_Degarelix": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "reason": "Prostate Cancer",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "828749",
+          "display": "degarelix injection"
+        }
+      ],
+      "direct_transition": "ADT_Bone_Health_Check"
+    },
+    "ADT_Bone_Health_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Denosumab or zoledronic acid for ADT-induced bone loss and, in",
+        "metastatic disease, skeletal-related event prevention. Roughly half of",
+        "men on sustained ADT receive one; denosumab has the larger share of",
+        "current US volume. Re-evaluated at every ADT visit (not gated like the",
+        "agent draw), matching how the surrounding order states already repeat",
+        "at each visit."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.3,
+          "transition": "ADT_Denosumab"
+        },
+        {
+          "distribution": 0.2,
+          "transition": "ADT_Zoledronic_Acid"
+        },
+        {
+          "distribution": 0.5,
+          "transition": "ADT_Return_Router"
+        }
+      ]
+    },
+    "ADT_Denosumab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "reason": "Prostate Cancer",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1046398",
+          "display": "denosumab injection"
+        }
+      ],
+      "direct_transition": "ADT_Return_Router"
+    },
+    "ADT_Zoledronic_Acid": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "reason": "Prostate Cancer",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1546014",
+          "display": "zoledronic acid injection"
+        }
+      ],
+      "direct_transition": "ADT_Return_Router"
+    },
+    "ADT_Return_Router": {
+      "type": "Simple",
+      "remarks": [
+        "Routes back to whichever of the four original ADT entry-point",
+        "successors sent this patient into the subroutine, per adt_return_target",
+        "set by the corresponding Start_ADT_*/Continue_ADT state."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "adt_return_target",
+            "operator": "==",
+            "value": "Combined"
+          },
+          "transition": "End_Visit_For_Radiation"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "adt_return_target",
+            "operator": "==",
+            "value": "Systemic"
+          },
+          "transition": "End_Visit_For_Systemic_Therapy"
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "adt_return_target",
+            "operator": "==",
+            "value": "Salvage"
+          },
+          "transition": "End_Recurrence_Visit"
+        },
+        {
+          "transition": "End_ADT_Followup_Visit"
+        }
+      ]
+    },
+    "CRPC_Chemotherapy_Selection": {
+      "type": "Simple",
+      "remarks": [
+        "Docetaxel is first-line for metastatic CRPC; cabazitaxel is the",
+        "standard second taxane after docetaxel progression (de Bono, Lancet",
+        "2010). Modelled as a 3:1 split across chemotherapy starts."
+      ],
+      "distributed_transition": [
+        {
+          "distribution": 0.75,
+          "transition": "CRPC_Docetaxel"
+        },
+        {
+          "distribution": 0.25,
+          "transition": "CRPC_Cabazitaxel"
+        }
+      ]
+    },
+    "CRPC_Docetaxel": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "reason": "Prostate Cancer",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "72962",
+          "display": "docetaxel injection"
+        }
+      ],
+      "direct_transition": "CRPC_Chemotherapy_Done"
+    },
+    "CRPC_Cabazitaxel": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "reason": "Prostate Cancer",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": "1001433",
+          "display": "cabazitaxel injection"
+        }
+      ],
+      "direct_transition": "CRPC_Chemotherapy_Done"
+    },
+    "CRPC_Chemotherapy_Done": {
+      "type": "Simple",
+      "direct_transition": "Palliative_Care_Integration"
     }
   }
 }

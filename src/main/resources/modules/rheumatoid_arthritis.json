@@ -405,6 +405,109 @@
           "display": "Methotrexate 2.5 MG Oral Tablet"
         }
       ],
+      "direct_transition": "Biologic_Escalation_Check"
+    },
+    "Biologic_Escalation_Check": {
+      "type": "Simple",
+      "remarks": [
+        "Roughly 30% of RA patients escalate from conventional synthetic DMARD",
+        "monotherapy to a biologic within a few years of diagnosis (Curtis,",
+        "Arthritis Care Res 2018 reports 25-35% biologic use in commercially",
+        "insured RA cohorts). Guarded by an attribute so escalation happens",
+        "once, not at every visit."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "ra_biologic_started",
+            "operator": "is not nil"
+          },
+          "transition": "Biologic_Escalation_Done"
+        },
+        { "transition": "Biologic_Escalation_Uptake" }
+      ]
+    },
+    "Biologic_Escalation_Uptake": {
+      "type": "Simple",
+      "distributed_transition": [
+        { "distribution": 0.30, "transition": "Biologic_Agent_Selection" },
+        { "distribution": 0.70, "transition": "Biologic_Escalation_Done" }
+      ]
+    },
+    "Biologic_Agent_Selection": {
+      "type": "Simple",
+      "remarks": [
+        "TNF inhibitors are first-line biologics and hold the majority of RA",
+        "biologic volume, with adalimumab and etanercept the two largest;",
+        "abatacept, tocilizumab and rituximab follow after TNF failure.",
+        "All are injected or infused, hence administration: true."
+      ],
+      "distributed_transition": [
+        { "distribution": 0.32, "transition": "Biologic_Adalimumab" },
+        { "distribution": 0.26, "transition": "Biologic_Etanercept" },
+        { "distribution": 0.16, "transition": "Biologic_Infliximab" },
+        { "distribution": 0.12, "transition": "Biologic_Abatacept" },
+        { "distribution": 0.09, "transition": "Biologic_Tocilizumab" },
+        { "distribution": 0.05, "transition": "Biologic_Rituximab" }
+      ]
+    },
+    "Biologic_Adalimumab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "1551887", "display": "adalimumab injection" }
+      ],
+      "direct_transition": "Mark_Biologic_Started"
+    },
+    "Biologic_Etanercept": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "1653225", "display": "etanercept injection" }
+      ],
+      "direct_transition": "Mark_Biologic_Started"
+    },
+    "Biologic_Infliximab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "213361", "display": "infliximab injection" }
+      ],
+      "direct_transition": "Mark_Biologic_Started"
+    },
+    "Biologic_Abatacept": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "1145929", "display": "abatacept injection" }
+      ],
+      "direct_transition": "Mark_Biologic_Started"
+    },
+    "Biologic_Tocilizumab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "1441527", "display": "tocilizumab injection" }
+      ],
+      "direct_transition": "Mark_Biologic_Started"
+    },
+    "Biologic_Rituximab": {
+      "type": "MedicationOrder",
+      "administration": true,
+      "codes": [
+        { "system": "RxNorm", "code": "121191", "display": "rituximab injection" }
+      ],
+      "direct_transition": "Mark_Biologic_Started"
+    },
+    "Mark_Biologic_Started": {
+      "type": "SetAttribute",
+      "attribute": "ra_biologic_started",
+      "value": true,
+      "direct_transition": "Biologic_Escalation_Done"
+    },
+    "Biologic_Escalation_Done": {
+      "type": "Simple",
       "direct_transition": "Encounter_Ends_After_DMARD"
     },
     "Encounter_Ends_After_DMARD": {

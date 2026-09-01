@@ -14,6 +14,13 @@ real Part D long-tail behaviour.
     >= 10 in-sheet NDCs -> 0.90
     3-9   in-sheet NDCs -> 0.75
     1-2   in-sheet NDCs -> 0.50
+That per-product-dominance rationale only justifies picking a tier -- it does
+not guarantee the tier is an improvement over the RxCUI's pre-existing
+uniform draw (n_inside / n_total). When in-sheet NDCs are a large share of a
+small total (e.g. 2 of 3), a low tier can fall *below* uniform and make the
+reweighting counterproductive. favoured_mass() therefore takes both counts
+and floors the tier at the uniform baseline, so a reweighted RxCUI never
+lands below where it started.
 A zero weight is never used here -- every out-of-sheet NDC must stay
 selectable (RandomCollection.add() silently drops weight <= 0 entries).
 """
@@ -25,12 +32,15 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import tools_ta_coverage as T  # noqa: E402
 
 
-def favoured_mass(n_inside):
+def favoured_mass(n_inside, n_total):
     if n_inside >= 10:
-        return 0.90
-    if n_inside >= 3:
-        return 0.75
-    return 0.50
+        tier = 0.90
+    elif n_inside >= 3:
+        tier = 0.75
+    else:
+        tier = 0.50
+    uniform = n_inside / n_total
+    return max(tier, uniform)
 
 
 def rxcuis_by_ta():
@@ -90,7 +100,9 @@ def main():
         outside = [e for e in entries if str(e['code']) not in wanted]
         if not inside or not outside:
             continue  # nothing to favour, or nothing to demote
-        mass = favoured_mass(len(inside))
+        uniform = len(inside) / len(entries)
+        mass = favoured_mass(len(inside), len(entries))
+        raw_tier = 0.90 if len(inside) >= 10 else 0.75 if len(inside) >= 3 else 0.50
         w_in = mass / len(inside)
         w_out = (1.0 - mass) / len(outside)
         for e in inside:
@@ -98,9 +110,9 @@ def main():
         for e in outside:
             e['weight'] = '%.8f' % w_out
         changed += 1
-        tiers[mass] += 1
-        print('%-10s %5d NDCs, %4d in sheet -> mass %.2f, P(hit) %.2f' %
-              (cui, len(entries), len(inside), mass, mass))
+        tiers[raw_tier] += 1
+        print('%-10s %5d NDCs, %4d in sheet -> mass %.2f, uniform baseline %.2f, P(hit) %.2f' %
+              (cui, len(entries), len(inside), mass, uniform, mass))
 
     print('reweighted %d RxCUIs' % changed)
     print('tiers: 0.90=%d  0.75=%d  0.50=%d' % (tiers[0.90], tiers[0.75], tiers[0.50]))

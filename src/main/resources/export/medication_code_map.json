@@ -32328,17 +32328,17 @@
     {
       "code": "00078069620",
       "description": "sacubitril 97 MG / valsartan 103 MG Oral Tablet [Entresto]",
-      "weight": "0.25000000"
+      "weight": "0.33333333"
     },
     {
       "code": "00078069661",
       "description": "sacubitril 97 MG / valsartan 103 MG Oral Tablet [Entresto]",
-      "weight": "0.50000000"
+      "weight": "0.33333333"
     },
     {
       "code": "00078069667",
       "description": "sacubitril 97 MG / valsartan 103 MG Oral Tablet [Entresto]",
-      "weight": "0.25000000"
+      "weight": "0.33333333"
     }
   ],
   "1659131": [
@@ -50764,67 +50764,67 @@
     {
       "code": "00555088202",
       "description": "hydroxyurea 500 MG Oral Capsule",
-      "weight": "0.07500000"
+      "weight": "0.07692308"
     },
     {
       "code": "00904693961",
       "description": "hydroxyurea 500 MG Oral Capsule",
-      "weight": "0.07500000"
+      "weight": "0.07692308"
     },
     {
       "code": "10135070201",
       "description": "hydroxyurea 500 MG Oral Capsule",
-      "weight": "0.07500000"
+      "weight": "0.07692308"
     },
     {
       "code": "42291032101",
       "description": "hydroxyurea 500 MG Oral Capsule",
-      "weight": "0.07500000"
+      "weight": "0.07692308"
     },
     {
       "code": "49884072401",
       "description": "hydroxyurea 500 MG Oral Capsule",
-      "weight": "0.07500000"
+      "weight": "0.07692308"
     },
     {
       "code": "51407090901",
       "description": "hydroxyurea 500 MG Oral Capsule",
-      "weight": "0.07500000"
+      "weight": "0.07692308"
     },
     {
       "code": "60429026501",
       "description": "hydroxyurea 500 MG Oral Capsule",
-      "weight": "0.07500000"
+      "weight": "0.07692308"
     },
     {
       "code": "67046161903",
       "description": "hydroxyurea 500 MG Oral Capsule",
-      "weight": "0.10000000"
+      "weight": "0.07692308"
     },
     {
       "code": "67184060701",
       "description": "hydroxyurea 500 MG Oral Capsule",
-      "weight": "0.07500000"
+      "weight": "0.07692308"
     },
     {
       "code": "68084028401",
       "description": "hydroxyurea 500 MG Oral Capsule",
-      "weight": "0.07500000"
+      "weight": "0.07692308"
     },
     {
       "code": "68084028411",
       "description": "hydroxyurea 500 MG Oral Capsule",
-      "weight": "0.07500000"
+      "weight": "0.07692308"
     },
     {
       "code": "69315016401",
       "description": "hydroxyurea 500 MG Oral Capsule",
-      "weight": "0.07500000"
+      "weight": "0.07692308"
     },
     {
       "code": "70069082001",
       "description": "hydroxyurea 500 MG Oral Capsule",
-      "weight": "0.07500000"
+      "weight": "0.07692308"
     }
   ],
   "197862": [
@@ -186287,162 +186287,162 @@
     {
       "code": "00143909801",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "00409170001",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "10019099101",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "16729024103",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.05000000"
+      "weight": "0.03125000"
     },
     {
       "code": "25021024410",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "25021026210",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "31722030331",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "43598042660",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "43598086560",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "50742048401",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "51817058601",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "55150033701",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "55150033702",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "60505605004",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "63323072110",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "63323082110",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "67184053001",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "68001053436",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "68001054036",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "68001054136",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "70069083601",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "70710141101",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "70771170801",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "70860022510",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "71288011810",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "72205018301",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "72338020001",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "72603027001",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "75007050131",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "75007050132",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "83090000801",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.03000000"
+      "weight": "0.03125000"
     },
     {
       "code": "83634020810",
       "description": "bortezomib 3.5 MG Injection",
-      "weight": "0.05000000"
+      "weight": "0.03125000"
     }
   ],
   "403875": [
@@ -262523,47 +262523,47 @@
     {
       "code": "50090449200",
       "description": "empagliflozin 10 MG Oral Tablet",
-      "weight": "0.10714286"
+      "weight": "0.11111111"
     },
     {
       "code": "50090449201",
       "description": "empagliflozin 10 MG Oral Tablet",
-      "weight": "0.10714286"
+      "weight": "0.11111111"
     },
     {
       "code": "71610090009",
       "description": "empagliflozin 10 MG Oral Tablet",
-      "weight": "0.12500000"
+      "weight": "0.11111111"
     },
     {
       "code": "71610090097",
       "description": "empagliflozin 10 MG Oral Tablet",
-      "weight": "0.12500000"
+      "weight": "0.11111111"
     },
     {
       "code": "50090645200",
       "description": "empagliflozin 10 MG Oral Tablet",
-      "weight": "0.10714286"
+      "weight": "0.11111111"
     },
     {
       "code": "00597015207",
       "description": "Empagliflozin 10 MG Oral Tablet [Jardiance]",
-      "weight": "0.10714286"
+      "weight": "0.11111111"
     },
     {
       "code": "00597015230",
       "description": "Empagliflozin 10 MG Oral Tablet [Jardiance]",
-      "weight": "0.10714286"
+      "weight": "0.11111111"
     },
     {
       "code": "00597015237",
       "description": "Empagliflozin 10 MG Oral Tablet [Jardiance]",
-      "weight": "0.10714286"
+      "weight": "0.11111111"
     },
     {
       "code": "00597015290",
       "description": "Empagliflozin 10 MG Oral Tablet [Jardiance]",
-      "weight": "0.10714286"
+      "weight": "0.11111111"
     }
   ],
   "1442986": [

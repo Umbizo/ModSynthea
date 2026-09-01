@@ -47,19 +47,51 @@ class TestNDCWeighting(unittest.TestCase):
             outside = [e for e in entries if str(e['code']) not in wanted]
             if not inside or not outside:
                 continue  # nothing to favour, or nothing to demote -- tool skips these too
-            expected_mass = W.favoured_mass(len(inside))
+            expected_mass = W.favoured_mass(len(inside), len(entries))
             actual = in_sheet_mass_ratio(rxcui, wanted)
             self.assertAlmostEqual(
                 actual, expected_mass, delta=0.01,
                 msg=f'RxCUI {rxcui}: {len(inside)} in-sheet NDCs should carry mass '
                     f'{expected_mass:.2f}, actual is {actual:.3f}')
-            exercised[expected_mass] += 1
+            raw_tier = (0.90 if len(inside) >= 10 else
+                        0.75 if len(inside) >= 3 else 0.50)
+            exercised[raw_tier] += 1
 
         # The test must actually exercise all three tiers, not just the one
         # that happens to match the brief's original flat value.
         self.assertGreater(exercised[0.90], 0, 'no RxCUI exercised the 0.90 tier')
         self.assertGreater(exercised[0.75], 0, 'no RxCUI exercised the 0.75 tier')
         self.assertGreater(exercised[0.50], 0, 'no RxCUI exercised the 0.50 tier')
+
+    def test_reweighting_never_moves_below_uniform_baseline(self):
+        """A reweighted RxCUI must never end up LESS likely to land in the
+        codesheet than it was under the original uniform draw
+        (n_inside / n_total). Guards against a tier that, for a small
+        total NDC count, sits below the RxCUI's pre-existing baseline and
+        makes the reweighting counterproductive."""
+        by_ta = W.rxcuis_by_ta()
+        targets = {}
+        for ta, cuis in by_ta.items():
+            for c in cuis:
+                targets.setdefault(c, set()).update(T.TA_CONFIG[ta]['target_ndc'])
+
+        checked = 0
+        for rxcui, wanted in targets.items():
+            entries = MED.get(rxcui)
+            if not entries:
+                continue
+            inside = [e for e in entries if str(e['code']) in wanted]
+            outside = [e for e in entries if str(e['code']) not in wanted]
+            if not inside or not outside:
+                continue  # nothing to favour, or nothing to demote -- tool skips these too
+            uniform = len(inside) / len(entries)
+            actual = in_sheet_mass_ratio(rxcui, wanted)
+            self.assertGreaterEqual(
+                actual, uniform - 1e-9,
+                msg=f'RxCUI {rxcui}: reweighting dropped P(hit) to {actual:.3f}, '
+                    f'below the uniform baseline of {uniform:.3f}')
+            checked += 1
+        self.assertGreater(checked, 0, 'no reweighted RxCUI was checked')
 
     def test_weights_never_zero_out_a_whole_drug(self):
         for rxcui, entries in MED.items():

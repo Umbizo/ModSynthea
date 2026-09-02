@@ -364,6 +364,74 @@
         }
       ],
       "reason": "pneumonia",
+      "direct_transition": "Pneumococcal_Vaccination_Check"
+    },
+    "Pneumococcal_Vaccination_Check": {
+      "type": "Simple",
+      "remarks": [
+        "ACIP recommends pneumococcal vaccination for all adults 65+ and for",
+        "younger adults with risk conditions. NHIS/BRFSS report ~65-70% ever-",
+        "vaccinated coverage in the 65+ population. Guarded by an attribute so",
+        "the series is not re-ordered at every wellness visit."
+      ],
+      "conditional_transition": [
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "pneumococcal_vaccinated",
+            "operator": "is not nil"
+          },
+          "transition": "Pneumococcal_Vaccination_Done"
+        },
+        {
+          "condition": {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 65,
+            "unit": "years"
+          },
+          "transition": "Pneumococcal_Vaccination_Uptake"
+        },
+        { "transition": "Pneumococcal_Vaccination_Done" }
+      ]
+    },
+    "Pneumococcal_Vaccination_Uptake": {
+      "type": "Simple",
+      "distributed_transition": [
+        { "distribution": 0.18, "transition": "Administer_Pneumococcal_Vaccine" },
+        { "distribution": 0.82, "transition": "Pneumococcal_Vaccination_Done" }
+      ]
+    },
+    "Administer_Pneumococcal_Vaccine": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "12866006",
+          "display": "Pneumococcal vaccination (procedure)"
+        }
+      ],
+      "direct_transition": "Pneumococcal_Vaccine_Administration"
+    },
+    "Pneumococcal_Vaccine_Administration": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "33879002",
+          "display": "Administration of vaccine to produce active immunity (procedure)"
+        }
+      ],
+      "direct_transition": "Mark_Pneumococcal_Vaccinated"
+    },
+    "Mark_Pneumococcal_Vaccinated": {
+      "type": "SetAttribute",
+      "attribute": "pneumococcal_vaccinated",
+      "value": true,
+      "direct_transition": "Pneumococcal_Vaccination_Done"
+    },
+    "Pneumococcal_Vaccination_Done": {
+      "type": "Simple",
       "direct_transition": "FollowUpCare_End"
     },
     "FollowUpCare_End": {
@@ -693,11 +761,19 @@
     },
     "GeriatricComplications": {
       "type": "ConditionOnset",
+      "remarks": [
+        "Streptococcus pneumoniae, not Mycoplasma pneumoniae, is the leading",
+        "bacterial cause of severe community-acquired pneumonia in older",
+        "adults (File, Lancet 2003; Jain, NEJM 2015 CDC EPIC study).",
+        "Mycoplasma is disproportionately a younger-patient/atypical",
+        "pathogen and rarely drives ICU-level disease in the elderly.",
+        "Corrected from the prior Mycoplasma coding on clinical grounds."
+      ],
       "codes": [
         {
           "system": "SNOMED-CT",
-          "code": "46970008",
-          "display": "Pneumonia caused by Mycoplasma pneumoniae (disorder)"
+          "code": "34020007",
+          "display": "Pneumonia caused by Streptococcus (disorder)"
         }
       ],
       "direct_transition": "ICUAdmission_Stay"

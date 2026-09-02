@@ -48,12 +48,37 @@ class TestRevascularisation(unittest.TestCase):
 
 
 
+
 class TestHypertensionDiagnosisCode(unittest.TestCase):
     def test_essential_hypertension_cannot_resolve_to_neonatal_code(self):
         entries = CONDITIONS.get('59621000') or []
         non_i10_weight = sum(float(e.get('weight', 1)) for e in entries if e['code'] != 'I10')
         self.assertEqual(non_i10_weight, 0.0,
                           f'59621000 has nonzero weight on non-I10 codes: {entries}')
+
+
+class TestHypertension(unittest.TestCase):
+    def test_abpm_snomed_maps_to_abpm_cpt(self):
+        got = set(mapped_codes('164847006'))
+        self.assertTrue(got <= {'93784', '93786', '93788', '93790'} and got,
+                        f'ABPM 164847006 -> {got}')
+
+    def test_self_measured_bp_maps_to_smbp_cpt(self):
+        got = set(mapped_codes('413153004'))
+        self.assertTrue(got <= {'99473', '99474'} and got,
+                        f'self-measured BP 413153004 -> {got}')
+
+
+
+
+class TestPneumococcal(unittest.TestCase):
+    def test_pneumococcal_vaccine_maps_to_vaccine_cpt(self):
+        got = set(mapped_codes('12866006'))
+        self.assertTrue(got <= {'90670', '90671', '90677', '90732'} and got,
+                        f'pneumococcal vaccination 12866006 -> {got}')
+
+    def test_vaccine_administration_maps_to_g0009(self):
+        self.assertIn('G0009', mapped_codes('33879002'))
 
 
 

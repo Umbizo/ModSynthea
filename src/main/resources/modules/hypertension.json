@@ -63,6 +63,45 @@
           "display": "Follow-up encounter (procedure)"
         }
       ],
+      "direct_transition": "BP_Monitoring_Decision"
+    },
+    "BP_Monitoring_Decision": {
+      "type": "Simple",
+      "remarks": [
+        "Ambulatory BP monitoring is ordered for a minority of hypertensive",
+        "patients -- chiefly to confirm suspected white-coat or masked",
+        "hypertension, or resistant hypertension. US claims-based uptake is a",
+        "few percent per year, not routine (Kent, J Am Heart Assoc 2019;",
+        "Shimbo, J Am Coll Cardiol 2020). Modelled at 4% ABPM and 6% SMBP",
+        "per follow-up visit; anything approaching universal coverage here",
+        "would be a fabrication, not an improvement."
+      ],
+      "distributed_transition": [
+        { "distribution": 0.04, "transition": "Ambulatory_BP_Monitoring" },
+        { "distribution": 0.06, "transition": "Self_Measured_BP_Training" },
+        { "distribution": 0.90, "transition": "Record_BP" }
+      ]
+    },
+    "Ambulatory_BP_Monitoring": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "164847006",
+          "display": "Ambulatory blood pressure monitoring (procedure)"
+        }
+      ],
+      "direct_transition": "Record_BP"
+    },
+    "Self_Measured_BP_Training": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "413153004",
+          "display": "Self monitoring of blood pressure (procedure)"
+        }
+      ],
       "direct_transition": "Record_BP"
     },
     "End_Hypertension_Followup_Encounter": {
@@ -130,6 +169,45 @@
           "display": "Follow-up encounter (procedure)"
         }
       ],
+      "direct_transition": "BP_Monitoring_Decision_2"
+    },
+    "BP_Monitoring_Decision_2": {
+      "type": "Simple",
+      "remarks": [
+        "Ambulatory BP monitoring is ordered for a minority of hypertensive",
+        "patients -- chiefly to confirm suspected white-coat or masked",
+        "hypertension, or resistant hypertension. US claims-based uptake is a",
+        "few percent per year, not routine (Kent, J Am Heart Assoc 2019;",
+        "Shimbo, J Am Coll Cardiol 2020). Modelled at 4% ABPM and 6% SMBP",
+        "per follow-up visit; anything approaching universal coverage here",
+        "would be a fabrication, not an improvement."
+      ],
+      "distributed_transition": [
+        { "distribution": 0.04, "transition": "Ambulatory_BP_Monitoring_2" },
+        { "distribution": 0.06, "transition": "Self_Measured_BP_Training_2" },
+        { "distribution": 0.90, "transition": "Record_BP_2" }
+      ]
+    },
+    "Ambulatory_BP_Monitoring_2": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "164847006",
+          "display": "Ambulatory blood pressure monitoring (procedure)"
+        }
+      ],
+      "direct_transition": "Record_BP_2"
+    },
+    "Self_Measured_BP_Training_2": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "413153004",
+          "display": "Self monitoring of blood pressure (procedure)"
+        }
+      ],
       "direct_transition": "Record_BP_2"
     },
     "Hypertension_Followup_Encounter_3": {
@@ -143,8 +221,47 @@
           "display": "Follow-up encounter (procedure)"
         }
       ],
-      "direct_transition": "Record_BP_3",
+      "direct_transition": "BP_Monitoring_Decision_3",
       "reason": "hypertension_dx"
+    },
+    "BP_Monitoring_Decision_3": {
+      "type": "Simple",
+      "remarks": [
+        "Ambulatory BP monitoring is ordered for a minority of hypertensive",
+        "patients -- chiefly to confirm suspected white-coat or masked",
+        "hypertension, or resistant hypertension. US claims-based uptake is a",
+        "few percent per year, not routine (Kent, J Am Heart Assoc 2019;",
+        "Shimbo, J Am Coll Cardiol 2020). Modelled at 4% ABPM and 6% SMBP",
+        "per follow-up visit; anything approaching universal coverage here",
+        "would be a fabrication, not an improvement."
+      ],
+      "distributed_transition": [
+        { "distribution": 0.04, "transition": "Ambulatory_BP_Monitoring_3" },
+        { "distribution": 0.06, "transition": "Self_Measured_BP_Training_3" },
+        { "distribution": 0.90, "transition": "Record_BP_3" }
+      ]
+    },
+    "Ambulatory_BP_Monitoring_3": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "164847006",
+          "display": "Ambulatory blood pressure monitoring (procedure)"
+        }
+      ],
+      "direct_transition": "Record_BP_3"
+    },
+    "Self_Measured_BP_Training_3": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "413153004",
+          "display": "Self monitoring of blood pressure (procedure)"
+        }
+      ],
+      "direct_transition": "Record_BP_3"
     },
     "End_Hypertension_Followup_Encounter_2": {
       "type": "EncounterEnd",
